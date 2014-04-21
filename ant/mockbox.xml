@@ -41,7 +41,7 @@
 		<!-- Build Label -->
 		<property name="build.label" value="mockbox-${mockbox.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
 		<!-- Cleanup + Init -->
-		<delete dir="${dir.build}" />
+		<mkdir dir="${dir.build}/mockbox/apidocs"/>
 		<mkdir dir="${dir.build}"/>
 		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
 	</target>
