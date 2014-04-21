@@ -155,7 +155,11 @@ component{
 
 	private function genPropsFromCollection(required buffer, required collection ){
 		for( var thisProp in arguments.collection ){
-			if( !isNull( arguments.collection[ thisProp ] ) and isSimpleValue( arguments.collection[ thisProp ] ) ){
+			//null check
+			if( isNull( arguments.collection[ thisProp ] ) ){
+				continue;
+			}
+			if( isSimpleValue( arguments.collection[ thisProp ] ) ){
 				arguments.buffer.append( '<property name="#xmlFormat( lcase( thisProp ) )#" value="#xmlFormat( arguments.collection[ thisProp ] )#" />' );
 			}
 			else if( isArray( arguments.collection[ thisProp ] ) OR
