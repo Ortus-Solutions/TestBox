@@ -29,7 +29,7 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 	<!-- FILL OUT THE TEST REPORTER YOU WANT, AVAILABLE REPORTERS ARE: ANTJunit, Codexwiki, console, dot, doc, json, junit, min, raw, simple, tap, text, xml -->
 	<property name="test.reporter"		value="simple" />
 	<!-- FILL OUT WHERE REPORTING RESULTS ARE STORED --> 
-	<property name="report.dir"  		value="${basedir}/results" />
+	<property name="report.dir"  		value="${basedir}/results-mb" />
 	<property name="junitreport.dir"  	value="${report.dir}/junitreport" />
 
 	<target name="init" description="Init the tests">
@@ -49,7 +49,7 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 		<tstamp prefix="start">
 			<format property="TODAY" pattern="MM-dd-YYYY hh:mm:ss aa"/>
 		</tstamp>
-		<concat destfile="${report.dir}/latestrun-mockbox.log">Tests ran at ${start.TODAY}</concat>
+		<concat destfile="${report.dir}/latestrun.log">Tests ran at ${start.TODAY}</concat>
 	</target>
 	
 	<target name="run" depends="init" description="Run our tests and produce awesome results">  
@@ -64,8 +64,8 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			 - Recurse
 			 - Labels
 		-->
-		<get dest="${report.dir}/results-mockbox.html" 
-			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=${test.reporter}&amp;labels=${test.labels}&amp;propertiesSummary=true&amp;propertiesFilename=TESTMOCKBOX.properties" 
+		<get dest="${report.dir}/results.html" 
+			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=${test.reporter}&amp;labels=${test.labels}&amp;propertiesSummary=true" 
 			 verbose="true"/>
 		
 		<!-- Bundles Runner
@@ -82,7 +82,7 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 		 -->
 		
         <!-- Read Result Properties -->
-        <property file="${report.dir}/TESTMOCKBOX.properties"/>
+        <property file="${report.dir}/TEST.properties"/>
         <!-- Echo them out -->
         <echoproperties regex="^(test|total).*"/>
         <!-- Fail build if they failed -->
@@ -102,8 +102,8 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			 - Labels
 			 - ReportPath : The path where reports will be stored, by default it is the ${report.dir} directory.
 		-->
-		<get dest="${report.dir}/results-mockbox.xml" 
-			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=ANTJunit&amp;labels=${test.labels}&amp;reportPath=${report.dir}&amp;propertiesSummary=true&amp;propertiesFilename=TESTMOCKBOX.properties" 
+		<get dest="${report.dir}/results.xml" 
+			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=ANTJunit&amp;labels=${test.labels}&amp;reportPath=${report.dir}&amp;propertiesSummary=true" 
 			 verbose="true"/>
 		
 		<!-- Bundles Runner
@@ -130,7 +130,7 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 		</junitreport> 
 		
         <!-- Read Result Properties -->
-        <property file="${report.dir}/TESTMOCKBOX.properties"/>
+        <property file="${report.dir}/TEST.properties"/>
         <!-- Echo them out -->
         <echoproperties regex="^(test|total).*"/>
         <!-- Fail build if they failed -->
