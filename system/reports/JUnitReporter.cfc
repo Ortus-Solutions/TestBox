@@ -4,7 +4,7 @@ Copyright 2005-2009 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 * A JUnit reporter
-*/ 
+*/
 component{
 
 	function init(){ return this; }
@@ -24,7 +24,7 @@ component{
 	* @testbox.hint The TestBox core object
 	* @options.hint A structure of options this reporter needs to build the report with
 	*/
-	any function runReport( 
+	any function runReport(
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
 		struct options={}
@@ -39,13 +39,13 @@ component{
 		var r = arguments.results;
 
 		// build top level test suites container
-		buffer.append('<testsuites 
-			name="ColdBox.TestBox.TestResults" 
+		buffer.append('<testsuites
+			name="ColdBox.TestBox.TestResults"
 			time="#r.getTotalDuration()/1000#"
-			tests="#r.getTotalSpecs()#" 
+			tests="#r.getTotalSpecs()#"
 			failures="#r.getTotalFail()#"
 			disabled="#r.getTotalSkipped()#"
-			errors="#r.getTotalError()#" 
+			errors="#r.getTotalError()#"
 			labels="#arrayToList( r.getLabels() )#"
 			>');
 
@@ -54,16 +54,16 @@ component{
 		for( var thisBundle in bundleStats ){
 			buildTestSuites( buffer, r, thisBundle, thisBundle.suiteStats );
 		}
-		
+
 		buffer.append("</testsuites>");
 
 		return buffer.toString();
 	}
 
-	private function buildTestSuites( 
-		required buffer, 
-		required results, 
-		required bundleStats, 
+	private function buildTestSuites(
+		required buffer,
+		required results,
+		required bundleStats,
 		required suiteStats,
 		parentName=""
 	){
@@ -71,7 +71,7 @@ component{
 		var r 		 = arguments.results;
 		var out 	 = arguments.buffer;
 		var stats 	 = arguments.suiteStats;
-		
+
 		// iterate over
 		for( var thisSuite in arguments.suiteStats ){
 			// build out full suite name
@@ -161,15 +161,19 @@ component{
 
 	private function genPropsFromCollection(required buffer, required collection ){
 		for( var thisProp in arguments.collection ){
+			//null check
+			if( isNull( arguments.collection[ thisProp ] ) ){
+				continue;
+			}
 			if( isSimpleValue( arguments.collection[ thisProp ] ) ){
 				arguments.buffer.append( '<property name="#xmlFormat( lcase( thisProp ) )#" value="#xmlFormat( arguments.collection[ thisProp ] )#" />' );
 			}
 			else if( isArray( arguments.collection[ thisProp ] ) OR
 					 isStruct( arguments.collection[ thisProp ] ) OR
 					 isQuery( arguments.collection[ thisProp ] ) ){
-				arguments.buffer.append( '<property name="#xmlFormat( lcase( thisProp ) )#" value="#xmlFormat( arguments.collection[ thisProp ].toString() )#" />' );	
+				arguments.buffer.append( '<property name="#xmlFormat( lcase( thisProp ) )#" value="#xmlFormat( arguments.collection[ thisProp ].toString() )#" />' );
 			}
 		}
 	}
-	
+
 }
