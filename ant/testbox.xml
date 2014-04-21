@@ -42,7 +42,7 @@
 		<property name="build.label" value="testbox-${testbox.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />
-		<mkdir dir="${dir.build}"/>
+		<mkdir dir="${dir.build}/testbox/apidocs"/>
 		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
 	</target>
 	
