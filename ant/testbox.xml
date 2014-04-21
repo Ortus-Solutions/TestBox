@@ -1,0 +1,113 @@
+﻿<?xml version="1.0"?>
+<!-- ====================================================================== 
+     TestBox Build (www.coldbox.org)                                                     
+     ====================================================================== -->
+<project name="testbox-build" default="build" basedir="../">
+	<description>
+    	Build a new distribution of TestBox
+    </description>
+	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
+	<property name="testbox.version"	value="2.0.0"/>
+	<!-- Build Labels -->
+	<tstamp prefix="start"/>
+	<!-- Load Contrib Tasks -->
+	<path id="cp">
+		<fileset dir="ant/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<!-- Define Tasks -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
+	
+	<!-- Init -->
+	<target name="init" description="Init">
+		<!-- Default environment check, if not passed via -Denvironment -->
+    	<condition property="environment" value="local">
+    		<not><isset property="environment" /></not>
+    	</condition>
+    	<echo>Loading from environment: ${environment}</echo>
+		<!-- Load env properties -->
+		<loadproperties srcFile="ant/testbox-${environment}.properties"/>
+
+		<!-- Build Number -->
+		<propertyfile file="ant/build.number" comment="Build Number for ANT. Edit not!">
+			<entry key="build.number" 
+					type="int" 
+			     	operation="+"
+					pattern="00000"
+			     	default="1" />
+		</propertyfile>
+		<property file="ant/build.number"/>
+		<!-- Build Label -->
+		<property name="build.label" value="testbox-${testbox.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		<!-- Cleanup + Init -->
+		<delete dir="${dir.build}" />
+		<mkdir dir="${dir.build}"/>
+		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
+	</target>
+	
+	<!-- Build test reports -->
+    <target name="run-tests">
+        <subant target="run-junit">
+          	<fileset dir="test" includes="test.xml"/>
+    		<property name="environment" value="${environment}" />
+        </subant>
+    </target>
+	
+	<!--build-->
+	<target name="build" description="Build a new TestBox Distribution" depends="init,run-tests">
+      	
+		<!-- Copy build ID -->
+		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
+		
+		<!-- Copy SRC to TestBox namespace -->	
+      	<copy todir="${dir.build}/testbox/">
+        	<fileset dir=".">
+        		<exclude name="ant/**" />
+        		<exclude name="apidocs/**" />
+        		<exclude name="test/**" />
+        		<exclude name="cpu.json" />
+        		<exclude name=".*/**" />
+        		<exclude name="settings.xml" />
+        		<exclude name="${dir.build}" />
+        	</fileset>
+        </copy>
+        
+        <!-- Copy Samples -->
+		<copy todir="${dir.build}/testbox/samples">
+        	<fileset dir="test/" />
+        </copy>
+		
+		<!-- Replace Build Numbers -->
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
+		  <fileset dir="${dir.build}">
+		  </fileset>
+		</replaceregexp>
+						
+		<!-- Execute ColdDoc -->
+		<get dest="${dir.build}/colddoc.html" src="${url.api}${testbox.version}&amp;path=${dir.api}&amp;testbox_root=${dir.build}/testbox" verbose="true"/>
+		<delete file="${dir.build}/colddoc.html" />
+		
+		<!-- Zip API Docs -->
+		<zip destfile="${dir.exports}/TestBoxDocs-${testbox.version}.zip" basedir="${dir.build}/testbox/apidocs"></zip>
+				
+		<!-- Zip Bundle -->
+		<zip destfile="${dir.exports}/testbox_${testbox.version}.zip" basedir="${dir.build}"></zip>
+		
+		<!-- Perms for automated builds -->
+		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
+
+		<if>
+			<equals arg1="${be.name}" arg2="" />
+			<then></then>
+			<else>
+				<move file="${dir.exports}/testbox_${testbox.version}.zip" tofile="${dir.exports}/${be.name}.zip" />	
+			</else>
+		</if>
+
+		<!-- Cleanup -->
+		<delete dir="${dir.build}" />
+				
+    </target>
+	
+</project>

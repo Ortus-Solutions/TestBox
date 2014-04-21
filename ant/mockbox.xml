@@ -1,0 +1,117 @@
+﻿<?xml version="1.0"?>
+<!-- ====================================================================== 
+     MockBox Standalone Build (www.coldbox.org)                                                               
+     ====================================================================== -->
+<project name="mockbox-build" default="build" basedir="../">
+	<description>
+    	Build a new distribution of MockBox Standalone
+    </description>
+	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
+	<property name="mockbox.version"	value="3.0.0"/>
+	<!-- Build Labels -->
+	<tstamp prefix="start"/>
+	<!-- Load Contrib Tasks -->
+	<path id="cp">
+		<fileset dir="ant/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<!-- Define Tasks -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
+	
+	<!-- Init -->
+	<target name="init" description="Init">
+		<!-- Default environment check, if not passed via -Denvironment -->
+    	<condition property="environment" value="local">
+    		<not><isset property="environment" /></not>
+    	</condition>
+    	<echo>Loading from environment: ${environment}</echo>
+		<!-- Load env properties -->
+		<loadproperties srcFile="ant/mockbox-${environment}.properties"/>
+
+		<!-- Build Number -->
+		<propertyfile file="ant/build.number" comment="Build Number for ANT. Edit not!">
+			<entry key="build.number" 
+					type="int" 
+			     	operation="+"
+					pattern="00000"
+			     	default="1" />
+		</propertyfile>
+		<property file="ant/build.number"/>
+		<!-- Build Label -->
+		<property name="build.label" value="mockbox-${mockbox.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		<!-- Cleanup + Init -->
+		<delete dir="${dir.build}" />
+		<mkdir dir="${dir.build}"/>
+		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
+	</target>
+	
+	<!-- Build test reports -->
+    <target name="run-tests">
+        <subant target="run-junit">
+          	<fileset dir="test" includes="test-mockbox.xml"/>
+    		<property name="environment" value="${environment}" />
+        </subant>
+    </target>
+	
+	<!--build-->
+	<target name="build" description="Build a new MockBox distribution" depends="init,run-tests">
+		
+		<!-- Copy build ID -->
+		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
+		
+		<!-- Copy src to mockbox namespace -->	
+      	<copy todir="${dir.build}/mockbox/system">
+        	<fileset dir="system">
+        		<include name="MockBox.cfc"/>
+        		<include name="mockutils/**"/>
+        		<include name="util/**"/>
+        		<include name="stubs/**"/>
+        	</fileset>
+        </copy>
+
+		<!-- Replace Build Numbers -->
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
+		  <fileset dir="${dir.build}">
+		  </fileset>
+		</replaceregexp>
+					
+		<echo>Refactoring for testbox absolute paths</echo>
+		<replace dir="${dir.build}" value="/mockbox/system/" summary="yes">
+		  	<include name="**/*.cfc" />
+			<include name="**/*.cfm" />
+			<include name="**/*.xml" />
+			<replacetoken>/testbox/system/</replacetoken>
+		</replace>
+		<echo>Refactoring for testbox instantitation and cfc paths</echo>
+		<replace dir="${dir.build}" value="mockbox.system." summary="yes">
+		  	<include name="**/*.cfc" />
+			<include name="**/*.cfm" />
+			<include name="**/*.xml" />
+			<replacetoken>testbox.system.</replacetoken>
+		</replace>
+		
+		<!-- Execute ColdDoc -->
+		<get dest="${dir.build}/colddoc.html" src="${url.api}${mockbox.version}&amp;path=${dir.api}&amp;mockbox_root=${dir.build}/mockbox" verbose="true"/>
+		<delete file="${dir.build}/colddoc.html" />
+		
+		<!-- Zip API Docs -->
+		<zip destfile="${dir.exports}/MockBoxDocs-${mockbox.version}.zip" basedir="${dir.build}/mockbox/apidocs"></zip>
+				
+		<!-- Zip Bundle -->
+		<zip destfile="${dir.exports}/mockbox_${mockbox.version}.zip" basedir="${dir.build}"></zip>
+
+		<!-- Perms for automated builds -->
+		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
+
+		<if>
+			<equals arg1="${be.name}" arg2="" />
+			<then></then>
+			<else>
+				<move file="${dir.exports}/mockbox_${mockbox.version}.zip" tofile="${dir.exports}/${be.name}.zip" />	
+			</else>
+		</if>
+		
+		<delete dir="${dir.build}" />
+    </target>
+</project>
