@@ -4,7 +4,7 @@ Copyright 2005-2009 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 * A JUnit reporter for use with the ANT junitreport task, which uses an old version of JUnit formatting.
-*/ 
+*/
 component{
 
 	function init(){ return this; }
@@ -24,7 +24,7 @@ component{
 	* @testbox.hint The TestBox core object
 	* @options.hint A structure of options this reporter needs to build the report with
 	*/
-	any function runReport( 
+	any function runReport(
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
 		struct options={}
@@ -37,10 +37,10 @@ component{
 	private function toJUnit( required results ){
 		var buffer = createObject("java", "java.lang.StringBuilder").init('');
 		var r = arguments.results;
-	
+
 		// build top level test suites container
 		buffer.append('<testsuites>');
-			
+
 		// iterate over bundles
 		var bundlestats = r.getBundleStats();
 		for( var thisBundle in bundleStats ){
@@ -67,16 +67,16 @@ component{
 			// close header
 			buffer.append("</testsuite>");
 		}
-		
+
 		buffer.append('</testsuites>');
-		
+
 		return buffer.toString();
 	}
 
-	private function buildTestSuites( 
-		required buffer, 
-		required results, 
-		required bundleStats, 
+	private function buildTestSuites(
+		required buffer,
+		required results,
+		required bundleStats,
 		required suiteStats,
 		parentName=""
 	){
@@ -85,17 +85,17 @@ component{
 		var out 	 = arguments.buffer;
 		var stats 	 = arguments.suiteStats;
 		var index	 = 1;
-		
+
 		// iterate over
 		for( var thisSuite in arguments.suiteStats ){
 			// build out full suite name
 			var fullName = xmlFormat( arguments.parentName & thisSuite.name );
-			
+
 			// build out test cases
 			for( var thisSpecStat in thisSuite.specStats ){
 				buildTestCase( out, r, thisSpecStat, arguments.bundleStats, fullName );
 			}
-			
+
 			// Check embedded suites
 			if( arrayLen( thisSuite.suiteStats ) ){
 				buildTestSuites( out, r, arguments.bundlestats, thisSuite.suiteStats, xmlFormat( fullName & " " ) );
@@ -155,15 +155,15 @@ component{
 
 	private function genPropsFromCollection(required buffer, required collection ){
 		for( var thisProp in arguments.collection ){
-			if( isSimpleValue( arguments.collection[ thisProp ] ) ){
+			if( !isNull( arguments.collection[ thisProp ] ) and isSimpleValue( arguments.collection[ thisProp ] ) ){
 				arguments.buffer.append( '<property name="#xmlFormat( lcase( thisProp ) )#" value="#xmlFormat( arguments.collection[ thisProp ] )#" />' );
 			}
 			else if( isArray( arguments.collection[ thisProp ] ) OR
 					 isStruct( arguments.collection[ thisProp ] ) OR
 					 isQuery( arguments.collection[ thisProp ] ) ){
-				arguments.buffer.append( '<property name="#xmlFormat( lcase( thisProp ) )#" value="#xmlFormat( arguments.collection[ thisProp ].toString() )#" />' );	
+				arguments.buffer.append( '<property name="#xmlFormat( lcase( thisProp ) )#" value="#xmlFormat( arguments.collection[ thisProp ].toString() )#" />' );
 			}
 		}
 	}
-	
+
 }
