@@ -18,8 +18,6 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 -->
 <project name="testbox-ant-runner" default="run" basedir=".">
 	
-	<!-- THE URL TO THE RUNNER, PLEASE CHANGE ACCORDINGLY-->
-	<property name="url.runner"			value="http://cf10cboxdev.jfetmac/testbox/test/runner.cfm?"/>
 	<!-- FILL OUT THE BUNDLES TO TEST, CAN BE A LIST OF CFC PATHS -->
 	<property name="test.bundles"		value="" />
 	<!-- FILL OUT THE DIRECTORY MAPPING TO TEST -->
@@ -34,7 +32,16 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 	<property name="report.dir"  		value="${basedir}/results" />
 	<property name="junitreport.dir"  	value="${report.dir}/junitreport" />
 
+	<!-- Init -->
 	<target name="init" description="Init the tests">
+		<!-- Default environment check, if not passed via -Denvironment -->
+    	<condition property="environment" value="local">
+    		<not><isset property="environment" /></not>
+    	</condition>
+    	<echo>Loading from environment: ${environment}</echo>
+		<!-- Load env properties -->
+		<loadproperties srcFile="test-${environment}.properties"/>
+		<!-- Start Init -->
 		<mkdir dir="${junitreport.dir}" />
 		<tstamp prefix="start">
 			<format property="TODAY" pattern="MM-dd-YYYY hh:mm:ss aa"/>
