@@ -1,2 +1,6 @@
 .settings
 cpu.json
+/test/results/TEST-*.xml
+latestrun.log
+results.*
+test/results/junitreport/*.xml
