@@ -11,7 +11,7 @@ Description :
 <cfcomponent output="false" hint="The main ColdBox utility library filled with lots of nice goodies.">
 
 	<!--- getMixerUtil --->
-    <cffunction name="getMixerUtil" output="false" access="public" returntype="any" hint="Get the mixer utility" colddoc:generic="coldbox.system.core.dynamic.MixerUtil">
+    <cffunction name="getMixerUtil" output="false" access="public" returntype="any" hint="Get the mixer utility">
     	<cfscript>
     		if( structKeyExists(variables, "mixerUtil") ){ return variables.mixerUtil; }
 			variables.mixerUtil = createObject("component","MixerUtil").init();
@@ -221,32 +221,6 @@ Description :
 
 			return false;
     	</cfscript>
-    </cffunction>
-
-
-	<!--- isFamilyType --->
-    <cffunction name="isFamilyType" output="false" access="public" returntype="boolean" hint="Checks if an object is of the passed in family type">
-    	<cfargument name="family" required="true" hint="The family to covert it to: handler, plugin, interceptor"/>
-		<cfargument name="target" required="true" hint="The target object"/>
-		<cfscript>
-			var familyPath = "";
-
-			switch(arguments.family){
-				case "handler" 		: { familyPath = "coldbox.system.EventHandler"; break; }
-				case "plugin" 		: { familyPath = "coldbox.system.Plugin"; break; }
-				case "interceptor"  : { familyPath = "coldbox.system.Interceptor"; break; }
-				default:{
-					throwit('Invalid family sent #arguments.family#');
-				}
-			}
-
-			if( structKeyExists(getFunctionList(), "isInstanceOf") ){
-				return isInstanceOf(arguments.target,familyPath);
-			}
-			else{
-				return isInstanceCheck(arguments.target,familyPath);
-			}
-		</cfscript>
     </cffunction>
 
 	<!--- getInheritedMetaData --->

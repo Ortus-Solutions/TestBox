@@ -1,8 +1,8 @@
 /**
 * My BDD Test
 */
-component extends="coldbox.system.testing.BaseSpec"{
-	
+component extends="testbox.system.BaseSpec"{
+
 /*********************************** LIFE CYCLE Methods ***********************************/
 
 	// executes before all suites+specs in the run() method
@@ -10,7 +10,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 		variables.startDate = dateAdd("m",-1,Now());
 		variables.endDate = Now();
 
-		addAssertions( "coldbox.test.specs.testing.resources.CustomAsserts" );
+		addAssertions( "testbox.test.resources.CustomAsserts" );
 	}
 
 	// executes after all suites+specs in the run() method
@@ -22,7 +22,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 	function run(){
 		// all your suites go here.
 		describe( "Custom Assertions", function(){
-		
+
 			it( "awesome works", function(){
 				$assert.assertIsAwesome( true, true );
 			});
@@ -30,8 +30,8 @@ component extends="coldbox.system.testing.BaseSpec"{
 			it( "funky works", function(){
 				$assert.assertIsFunky( 200 );
 			});
-		
+
 		});
 	}
-	
+
 }

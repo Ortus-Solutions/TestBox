@@ -5,7 +5,7 @@
 <cfparam name="url.opt_run"		default="false">
 <cfscript>
 // create testbox
-testBox = new coldbox.system.testing.TestBox();		
+testBox = new testbox.system.TestBox();		
 // create reporters
 reporters = [ "ANTJunit", "Console", "Codexwiki", "Doc", "Dot", "JSON", "JUnit", "Min", "Raw", "Simple", "Tap", "Text", "XML" ];
 

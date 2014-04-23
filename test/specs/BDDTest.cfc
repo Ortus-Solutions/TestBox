@@ -1,7 +1,7 @@
 /**
 * This tests the BDD functionality in TestBox. This is CF10+, Railo4+
 */
-component extends="coldbox.system.testing.BaseSpec"{
+component extends="testbox.system.BaseSpec"{
 
 /*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -81,7 +81,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 			});
 
 			it( "can get private properties", function(){
-				var oTest = new coldbox.test.specs.testing.resources.Test();
+				var oTest = new testbox.test.resources.Test();
 				expect( getProperty( oTest, "reload" ) ).toBeFalse();
 			});
 
@@ -160,7 +160,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 
 				beforeEach(function(){
 					// add custom matcher via CFC
-					addMatchers( new coldbox.test.specs.testing.resources.CustomMatcher() );
+					addMatchers( new testbox.test.resources.CustomMatcher() );
 					foofoo = false;
 				});
 
@@ -218,7 +218,7 @@ component extends="coldbox.system.testing.BaseSpec"{
 			// before each spec in THIS suite group
 			beforeEach(function(){
 				// using request until railo fixes their closure bugs
-				request.calc = calc = new coldbox.test.specs.testing.resources.Calculator();
+				request.calc = calc = new testbox.test.resources.Calculator();
 			});
 
 			// after each spec in THIS suite group

@@ -1,3 +1,3 @@
 <cfsetting showdebugoutput="false" >
-<cfset r = new coldbox.system.testing.TestBox( "coldbox.test.specs.testing.specs.MXUnitCompatTest" ) >
+<cfset r = new testbox.system.TestBox( "testbox.test.specs.MXUnitCompatTest" ) >
 <cfoutput>#r.run()#</cfoutput>

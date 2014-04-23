@@ -1,4 +1,4 @@
-component displayName="TestBox xUnit suite for CF9" labels="railo,cf" extends="coldbox.system.testing.BaseSpec"{
+component displayName="TestBox xUnit suite for CF9" labels="railo,cf" extends="testbox.system.BaseSpec"{
 
 /*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -116,7 +116,7 @@ component displayName="TestBox xUnit suite for CF9" labels="railo,cf" extends="c
 
 		$assert.isEqual(f1, f1);
 
-		$assert.isEqual( new coldbox.system.testing.MockBox(), new coldbox.system.testing.MockBox() );
+		$assert.isEqual( new testbox.system.MockBox(), new testbox.system.MockBox() );
 
 		var xmlString = '<root><item attr="value" /><item attr="again" /></root>';
 		$assert.isEqual( XMLParse(xmlString), XMLParse(xmlString) );
@@ -128,7 +128,7 @@ component displayName="TestBox xUnit suite for CF9" labels="railo,cf" extends="c
 	}
 
 	function testisNotEqual() {
-		$assert.isNotEqual( this, new coldbox.system.testing.MockBox() );
+		$assert.isNotEqual( this, new testbox.system.MockBox() );
 		$assert.isNotEqual( "hello", "test" );
 		$assert.isNotEqual( 1, 2 );
 		$assert.isNotEqual( [], [1,3] );
@@ -178,11 +178,11 @@ component displayName="TestBox xUnit suite for CF9" labels="railo,cf" extends="c
 	}
 
 	function testInstanceOf() {
-		$assert.instanceOf( new coldbox.system.testing.MockBox(), "coldbox.system.testing.MockBox" );
+		$assert.instanceOf( new testbox.system.MockBox(), "testbox.system.MockBox" );
 	}
 
 	function testNotInstanceOf() {
-		$assert.notInstanceOf( this, "coldbox.system.testing.MockBox" );
+		$assert.notInstanceOf( this, "testbox.system.MockBox" );
 	}
 
 	function testMatch(){

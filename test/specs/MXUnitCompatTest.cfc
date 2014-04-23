@@ -3,7 +3,7 @@ component extends="BaseTest" {
 /*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeTests(){
-		addAssertDecorator( "coldbox.test.specs.testing.resources.CustomAsserts" );
+		addAssertDecorator( "testbox.test.resources.CustomAsserts" );
 		application.salvador = 1;
 	}
 
@@ -68,9 +68,9 @@ component extends="BaseTest" {
 	}
 
 	function testassertNotSame() {
-		assertNotSame( this, createObject("component", "coldbox.system.testing.MockBox") );
+		assertNotSame( this, createObject("component", "testbox.system.MockBox") );
 		// Even if the same CFC, two separate instances would be "equal" but not the "same".
-		assertNotSame( createObject("component", "coldbox.system.testing.MockBox"), createObject("component", "coldbox.system.testing.MockBox") );
+		assertNotSame( createObject("component", "testbox.system.MockBox"), createObject("component", "testbox.system.MockBox") );
 	}
 
 	function testassertQueryEquals() {
@@ -138,13 +138,13 @@ component extends="BaseTest" {
 	}
 
 	function testMakePublic(){
-		var t = new coldbox.test.resources.test1();
+		var t = new testbox.test.resources.test1();
 		assertTrue( makePublic( t, "aPrivateMethod").aPrivateMethod() );
 
-		var t = new coldbox.test.resources.test1();
+		var t = new testbox.test.resources.test1();
 		assertTrue( makePublic( t, "aPrivateMethod", "funkyMethod" ).funkyMethod() );
 
-		var obj1 = new coldbox.test.specs.testing.resources.CallPrivate();
+		var obj1 = new testbox.test.resources.CallPrivate();
         var obj2 = makePublic( obj1, "callPrivate" );
         assertEquals( "called", obj2.callIt() ); // will fail because variables.callPrivate no longer exists
 	}
@@ -223,7 +223,7 @@ component extends="BaseTest" {
 	function testMockMethods(){
 		setMockingFramework( "MockBox" );
 		var m = getMockFactory( "MockBox" );
-		var m = mock( "coldbox.system.testing.TestBox" );
+		var m = mock( "testbox.system.TestBox" );
 	}
 
 	function testRaiseException_pass(){

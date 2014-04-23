@@ -1,5 +1,5 @@
 ﻿<!--- Create Mock Box --->
-<cfset mockBox = createObject("component","coldbox.system.testing.MockBox").init()>
+<cfset mockBox = createObject("component","testbox.system.MockBox").init()>
 <!--- Create a mock based on Test CFC --->
 <cfset Test = mockBox.createMock("testbox.test.resources.Test")>
 

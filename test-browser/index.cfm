@@ -19,7 +19,7 @@
 </cfif>
 
 <!--- Prepare TestBox --->
-<cfset testbox = new coldbox.system.testing.TestBox()>
+<cfset testbox = new testbox.system.TestBox()>
 
 <!--- Run Tests Action?--->
 <cfif structKeyExists( url, "action")>

@@ -1,4 +1,4 @@
 <cfsetting showdebugoutput="false" >
 <!--- One runner --->
-<cfset r = new coldbox.system.testing.TestBox( bundles="coldbox.test.specs.testing.specs.Assertionscf9Test" ) >
+<cfset r = new testbox.system.TestBox( bundles="testbox.test.specs.Assertionscf9Test" ) >
 <cfoutput>#r.run(reporter="simple")#</cfoutput>

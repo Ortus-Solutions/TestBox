@@ -1,7 +1,7 @@
 <cfsetting showdebugoutput="false" >
 <cfscript>
-r = new coldbox.system.testing.TestBox( directory={ 
-		mapping = "coldbox.test.specs.testing.specs", 
+r = new testbox.system.TestBox( directory={ 
+		mapping = "testbox.test.specs", 
 		recurse = true,
 		filter = function( path ){ return true; }
 });

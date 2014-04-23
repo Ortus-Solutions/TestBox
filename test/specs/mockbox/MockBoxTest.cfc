@@ -1,4 +1,4 @@
-﻿<cfcomponent extends="coldbox.system.testing.BaseSpec" displayname="MockBox Suite">
+﻿<cfcomponent extends="testbox.system.BaseSpec" displayname="MockBox Suite">
 
 	<cfscript>
 
