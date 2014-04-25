@@ -31,6 +31,11 @@ component extends="testbox.system.BaseSpec"{
 				$assert.assertIsFunky( 200 );
 			});
 
+			it( "funky can fail", function(){
+				$assert.throws( function(){ $assert.assertIsFunky( 1 ); } );
+			});
+
+
 		});
 	}
 

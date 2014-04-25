@@ -1,11 +1,11 @@
 component{
 
 	function assertIsAwesome( expected, actual ){
-		return ( expected eq actual ? true : false );
+		return ( expected eq actual ? true : fail( 'actual is not awesome' ) );
 	}
 
 	function assertIsFunky( actual ){
-		return ( actual gte 100 ? true : false );
+		return ( actual gte 100 ? true : fail('Actual is not funky!') );
 	}
 
 }

@@ -11,3 +11,4 @@ test/results/junitreport/*.html
 test/results-mb/junitreport/*.html
 test/results-mb/junitreport/*.xml
 test/results-mb/junitreport/*.css
+test/results/junitreport

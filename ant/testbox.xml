@@ -69,7 +69,7 @@
         		<exclude name="cpu.json" />
         		<exclude name=".*/**" />
         		<exclude name="settings.xml" />
-        		<exclude name="${dir.build}" />
+        		<exclude name="build-testbox/**" />
         	</fileset>
         </copy>
         
