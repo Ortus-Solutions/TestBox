@@ -15,7 +15,6 @@ component{
 
 	// request start
 	public boolean function onRequestStart( String targetPage ){
-
 		return true;
 	}
 }

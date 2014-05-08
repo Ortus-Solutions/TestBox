@@ -4,9 +4,9 @@ Copyright 2005-2009 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 * This is a base spec object that is used to test XUnit and BDD style specification methods
-*/ 
+*/
 component{
-			
+
 	// MockBox mocking framework
 	variables.$mockBox = this.$mockBox 	= new testbox.system.MockBox();
 	// Assertions object
@@ -31,10 +31,10 @@ component{
 	this.$debugBuffer			= [];
 
 	/************************************** BDD & EXPECTATIONS METHODS *********************************************/
-	
+
 	/**
 	* Constructor
-	*/ 
+	*/
 	remote function init(){
 		return this;
 	}
@@ -138,7 +138,7 @@ component{
 			// Append this suite to the nested suite.
 			arrayAppend( this.$suitesReverseLookup[ this.$suiteContext ].suites, suite );
 			this.$suitesReverseLookup[ arguments.title ] = suite;
-			
+
 			// Setup parent reference
 			suite.parent 	= this.$suiteContext;
 			suite.parentRef = this.$suitesReverseLookup[ this.$suiteContext ];
@@ -146,7 +146,7 @@ component{
 			// Build hiearachy slug separated by /
 			suite.slug = this.$suitesReverseLookup[ this.$suiteContext ].slug & "/" & this.$suiteContext;
 			if( left( suite.slug, 1) != "/" ){ suite.slug = "/" & suite.slug; }
-				
+
 			// Store parent context
 			var parentContext 	= this.$suiteContext;
 			var parentSpecIndex = this.$specOrderIndex;
@@ -223,7 +223,7 @@ component{
 
 		// Attach this spec to the incoming context array of specs
 		arrayAppend( this.$suitesReverseLookup[ this.$suiteContext ].specs, spec );
-		
+
 		return this;
 	}
 
@@ -284,7 +284,7 @@ component{
 
 		return oExpectation;
 	}
-	
+
 	/**
 	* Add custom matchers to your expectations
 	* @matchers.hint The structure of custom matcher functions to register or a path or instance of a CFC containing all the matcher functions to register
@@ -319,7 +319,7 @@ component{
 	}
 
 	/**
-	* Add custom assertions to the $assert object 
+	* Add custom assertions to the $assert object
 	* @assertions.hint The structure of custom assertion functions to register or a path or instance of a CFC containing all the assertion functions to register
 	*/
 	function addAssertions( required any assertions ){
@@ -352,7 +352,7 @@ component{
 	}
 
 	/************************************** RUN BDD METHODS *********************************************/
-	
+
 	/**
 	* Run a test remotely, only useful if the spec inherits from this class. Useful for remote executions.
 	* @testSuites.hint A list or array of suite names that are the ones that will be executed ONLY!
@@ -360,20 +360,20 @@ component{
 	* @reporter.hint The type of reporter to run the test with
 	* @labels.hint A list or array of labels to apply to the testing.
 	*/
-	remote function runRemote( 
-		string testSpecs="", 
-		string testSuites="", 
-		string reporter="simple", 
-		string labels="" 
+	remote function runRemote(
+		string testSpecs="",
+		string testSuites="",
+		string reporter="simple",
+		string labels=""
 	) output=true{
-		var runner = new testbox.system.TestBox( bundles="#getMetadata(this).name#", 
+		var runner = new testbox.system.TestBox( bundles="#getMetadata(this).name#",
 														 labels=arguments.labels,
 														 reporter=arguments.reporter );
 
 		// Produce report
 		writeOutput( runner.run( testSuites=arguments.testSuites, testSpecs=arguments.testSpecs ) );
 	}
-	
+
 	/**
 	* Run a BDD test in this target CFC
 	* @spec.hint The spec definition to test
@@ -389,9 +389,9 @@ component{
 		required suiteStats,
 		required runner
 	){
-			
+
 		try{
-			
+
 			// init spec tests
 			var specStats = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
 			// init consolidated spec labels
@@ -404,34 +404,23 @@ component{
 			}
 
 			// Verify we can execute
-			if( !arguments.spec.skip && 
+			if( !arguments.spec.skip &&
 				arguments.runner.canRunLabel( consolidatedLabels, arguments.testResults ) &&
 				arguments.runner.canRunSpec( arguments.spec.name, arguments.testResults )
 			){
-				
-				// execute beforeEach()
-				arguments.suite.beforeEach( currentSpec=arguments.spec.name );
-				
-				// do we have nested suites? If so, traverse and execute life-cycle methods
-				var parentSuite = arguments.suite.parentRef;
-				while( !isSimpleValue( parentSuite ) ){
-					parentSuite.beforeEach( currentSpec=arguments.spec.name );
-					parentSuite = parentSuite.parentRef;
-				}
-				
-				// Execute the Spec body
-				arguments.spec.body();
-				
-				// execute afterEach()
-				arguments.suite.afterEach( currentSpec=arguments.spec.name );
 
-				// do we have nested suites? If so, traverse and execute life-cycle methods
-				var parentSuite = arguments.suite.parentRef;
-				while( !isSimpleValue( parentSuite ) ){
-					parentSuite.afterEach( currentSpec=arguments.spec.name );
-					parentSuite = parentSuite.parentRef;
+				// Run beforeEach closures
+				runBeforeEachClosures( arguments.suite, arguments.spec );
+
+				try{
+					// Execute the Spec body
+					arguments.spec.body();
+				} catch( any e ){
+					rethrow;
+				} finally {
+					runAfterEachClosures( arguments.suite, arguments.spec );
 				}
-				
+
 				// store spec status
 				specStats.status 	= "Passed";
 				// Increment recursive pass stats
@@ -465,7 +454,41 @@ component{
 			// Complete spec testing
 			arguments.testResults.endStats( specStats );
 		}
-		
+
+		return this;
+	}
+
+	/**
+	* Execute the before each closures in order for a suite and spec
+	*/
+	BaseSpec function runBeforeEachClosures( required suite, required spec ){
+
+		// do we have nested suites? If so, traverse and execute life-cycle methods
+		var parentSuite = arguments.suite.parentRef;
+		while( !isSimpleValue( parentSuite ) ){
+			parentSuite.beforeEach( currentSpec=arguments.spec.name );
+			parentSuite = parentSuite.parentRef;
+		}
+
+		// execute beforeEach()
+		arguments.suite.beforeEach( currentSpec=arguments.spec.name );
+
+		return this;
+	}
+
+	/**
+	* Execute the after each closures in order for a suite and spec
+	*/
+	BaseSpec function runAfterEachClosures( required suite, required spec ){
+		// execute nearest afterEach()
+		arguments.suite.afterEach( currentSpec=arguments.spec.name );
+
+		// do we have nested suites? If so, traverse and execute life-cycle methods up the tree backwards
+		var parentSuite = arguments.suite.parentRef;
+		while( !isSimpleValue( parentSuite ) ){
+			parentSuite.afterEach( currentSpec=arguments.spec.name );
+			parentSuite = parentSuite.parentRef;
+		}
 		return this;
 	}
 
@@ -482,12 +505,12 @@ component{
 		required suiteStats,
 		required runner
 	){
-			
+
 		try{
-			
+
 			// init spec tests
 			var specStats = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
-			
+
 			// Verify we can execute
 			if( !arguments.spec.skip &&
 				arguments.runner.canRunLabel( arguments.spec.labels, arguments.testResults ) &&
@@ -499,7 +522,7 @@ component{
 
 				// execute setup()
 				if( structKeyExists( this, "setup" ) ){ this.setup( currentMethod=arguments.spec.name ); }
-				
+
 				// Execute Spec
 				try{
 					evaluate( "this.#arguments.spec.name#()" );
@@ -508,21 +531,20 @@ component{
 					if( hasExpectedException( arguments.spec.name, arguments.runner ) ){
 						$assert.fail( 'Method did not throw expected exception: [#this.$expectedException.toString()#]' );
 					} // else all good.
-				}
-				catch( Any e ){
+				} catch( Any e ){
 					// do we have expected exception? else rethrow it
 					if( !hasExpectedException( arguments.spec.name, arguments.runner ) ){
 						rethrow;
 					}
 					// if not the expected exception, then fail it
-					if( !isExpectedException( e, arguments.spec.name, arguments.runner ) ){ 
+					if( !isExpectedException( e, arguments.spec.name, arguments.runner ) ){
 						$assert.fail( 'Method did not throw expected exception: [#this.$expectedException.toString()#], actual exception [type:#e.type#][message:#e.message#]' );
 					}
+				} finally {
+					// execute teardown()
+					if( structKeyExists( this, "teardown" ) ){ this.teardown( currentMethod=arguments.spec.name ); }
 				}
 
-				// execute teardown()
-				if( structKeyExists( this, "teardown" ) ){ this.teardown( currentMethod=arguments.spec.name ); }
-				
 				// store spec status
 				specStats.status 	= "Passed";
 				// Increment recursive pass stats
@@ -551,17 +573,16 @@ component{
 			specStats.error 		= e;
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="error", stats=specStats );
-		}
-		finally{
+		} finally {
 			// Complete spec testing
 			arguments.testResults.endStats( specStats );
 		}
-		
+
 		return this;
 	}
 
 	/************************************** UTILITY METHODS *********************************************/
-	
+
 	/**
 	* Send some information to the console via writedump( output="console" )
 	* @var.hint The data to send
@@ -571,7 +592,7 @@ component{
 		writedump( var=arguments.var, output="console", top=arguments.top );
 		return this;
 	}
-	
+
 	/**
 	* Debug some information into the TestBox debugger array buffer
 	* @var.hint The data to send
@@ -612,16 +633,16 @@ component{
 		writeOutput( arguments.message );
 		return this;
 	}
-	
+
 	/**
 	* Write some output to the ColdFusion output buffer using a <br> attached
 	*/
 	any function println(required message) output=true{
 		return print( arguments.message & "<br>" );
 	}
-	
+
 	/************************************** MOCKING METHODS *********************************************/
-	
+
 	/**
 	* Make a private method on a CFC public with or without a new name and returns the target object
 	* @target.hint The target object to expose the method
@@ -629,7 +650,7 @@ component{
 	* @newName.hint If passed, it will expose the method with this name, else just uses the same name
 	*/
 	any function makePublic( required any target, required string method, string newName="" ){
-		
+
 		// decorate it
 		this.$utility.getMixerUtil().start( arguments.target );
 		// expose it
@@ -657,9 +678,9 @@ component{
 	function querySim(required queryData){
 		return this.$mockBox.querySim( arguments.queryData );
 	}
-	
+
 	/**
-	* Get a reference to the MockBox engine 
+	* Get a reference to the MockBox engine
 	* @generationPath.hint The path to generate the mocks if passed, else uses default location.
 	*/
 	function getMockBox( string generationPath ){
@@ -723,8 +744,8 @@ component{
 		string implements=""
 	){
 		return this.$mockBox.createStub( argumentCollection=arguments );
-	}	
-	
+	}
+
 	// Closure Stub
 	function closureStub(){}
 
@@ -750,7 +771,7 @@ component{
 	*/
 	boolean function isExpectedException( required exception, required specName, required runner ){
 		var results = false;
-		
+
 		// normalize expected exception
 		if( hasExpectedException( arguments.specName, arguments.runner ) ){
 			// If no type, message expectations
@@ -758,14 +779,14 @@ component{
 				results = true;
 			}
 			// Type expectation then
-			else if( len( this.$expectedException.type ) && 
-					 arguments.exception.type eq this.$expectedException.type && 
-					 arrayLen( reMatchNoCase( this.$expectedException.regex, arguments.exception.message ) ) 
+			else if( len( this.$expectedException.type ) &&
+					 arguments.exception.type eq this.$expectedException.type &&
+					 arrayLen( reMatchNoCase( this.$expectedException.regex, arguments.exception.message ) )
 			){
 				results = true;
 			}
 			// Message regex then only
-			else if( this.$expectedException.regex neq ".*" && 
+			else if( this.$expectedException.regex neq ".*" &&
 				arrayLen( reMatchNoCase( this.$expectedException.regex, arguments.exception.message ) )
 			){
 				results = true;

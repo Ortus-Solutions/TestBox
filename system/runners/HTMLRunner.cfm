@@ -9,7 +9,6 @@
 <cfparam name="url.propertiesFilename" 	default="TEST.properties">
 <cfparam name="url.propertiesSummary" 	default="false" type="boolean">
 <cfscript>
-
 // decode paths
 url.bundles 			= URLDecode( url.bundles );
 url.directory 			= URLDecode( url.directory );
