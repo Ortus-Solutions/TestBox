@@ -462,12 +462,22 @@ component{
 	* Execute the before each closures in order for a suite and spec
 	*/
 	BaseSpec function runBeforeEachClosures( required suite, required spec ){
+		var reverseTree = [];
 
-		// do we have nested suites? If so, traverse and execute life-cycle methods
+		// do we have nested suites? If so, traverse the tree to build reverse execution map
 		var parentSuite = arguments.suite.parentRef;
 		while( !isSimpleValue( parentSuite ) ){
-			parentSuite.beforeEach( currentSpec=arguments.spec.name );
+			arrayAppend( reverseTree, parentSuite.beforeEach );
 			parentSuite = parentSuite.parentRef;
+		}
+
+		// Execute reverse tree
+		var treeLen = arrayLen( reverseTree );
+		if( treeLen gt 0 ){
+			for( var x=treeLen; x gte 1; x-- ){
+				var thisBeforeClosure = reverseTree[ x ];
+				thisBeforeClosure( currentSpec=arguments.spec.name );
+			}
 		}
 
 		// execute beforeEach()

@@ -10,6 +10,7 @@ component extends="testbox.system.BaseSpec"{
 	}
 
 	function afterAll(){
+
 	}
 
 /*********************************** BDD SUITES ***********************************/
@@ -17,38 +18,52 @@ component extends="testbox.system.BaseSpec"{
 	function run(){
 
 		describe( "A suite", function(){
-		
+
 			// before each spec in THIS suite group
-			beforeEach(function(){
+			beforeEach(function( currentSpec ){
 				coldbox++;
-				debug( "beforeEach suite: coldbox = #coldbox#" );
+				debug( "beforeEach #arguments.currentSpec#: coldbox = #coldbox#" );
 			});
-			
+
 			// after each spec in THIS suite group
-			afterEach(function(){
-				debug( "afterEach suite: coldbox = #coldbox#" );
+			afterEach(function( currentSpec ){
+				debug( "afterEach #arguments.currentSpec#: coldbox = #coldbox#" );
 			});
-			
+
 			it("before should be 1", function(){
 				expect( coldbox ).toBe( 1 );
 			});
 
 			describe( "A nested suite", function(){
-				
-				it( "before should be 2", function(){
-					expect(	coldbox ).toBe( 2 );
+
+				// before each spec in THIS suite group
+				beforeEach(function( currentSpec ){
+					coldbox = coldbox * 2;
+					debug( "beforeEach #arguments.currentSpec#: coldbox = #coldbox#" );
 				});
 
-				it( "before should be 3", function(){
-					expect(	coldbox ).toBe( 3 );
+				it( "before should be 4", function(){
+					expect(	coldbox ).toBe( 4 );
 				});
-			
+
+				describe( "Another nested suite", function(){
+					// before each spec in THIS suite group
+					beforeEach(function( currentSpec ){
+						coldbox++;
+						debug( "beforeEach #arguments.currentSpec#: coldbox = #coldbox#" );
+					});
+
+					it( "before should be 11", function(){
+						expect(	coldbox ).toBe( 11 );
+					});
+				});
+
 			});
-			
-			
+
+
 		});
 
-		
+
 
 	}
 
