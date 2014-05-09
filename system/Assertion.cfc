@@ -11,7 +11,7 @@ component{
 	* Fail assertion
 	* @message.hint The message to send in the failure
 	*/
-	function fail(message=""){
+	function fail( message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "A test failure occurred" );
 		throw(type="TestBox.AssertionFailed", message=arguments.message);
 	}
@@ -60,7 +60,9 @@ component{
 	function isEqual( required any expected, required any actual, message="" ){
 		// validate equality
 		if( equalize( arguments.expected, arguments.actual ) ){ return this; }
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]" );
+		arguments.message = ( len( arguments.message ) ? 
+			arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" : 
+			"Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]" );
 		// if we reach here, nothing is equal man!
 		fail( arguments.message );
 	}
@@ -72,7 +74,9 @@ component{
 	* @message.hint The message to send in the failure
 	*/
 	function isNotEqual( required any expected, required any actual, message="" ){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#] to not be [#getStringName( arguments.actual )#]" );
+		arguments.message = ( len( arguments.message ) ? 
+			arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" : 
+			"Expected [#getStringName( arguments.expected )#] to not be [#getStringName( arguments.actual )#]" );
 		// validate equality
 		if( !equalize( arguments.expected, arguments.actual ) ){ return this; }
 		// if we reach here, they are equal!
