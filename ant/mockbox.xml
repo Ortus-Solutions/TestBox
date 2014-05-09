@@ -49,7 +49,7 @@
 	<!-- Build test reports -->
     <target name="run-tests">
         <subant target="run-junit">
-          	<fileset dir="test" includes="test-mockbox.xml"/>
+          	<fileset dir="tests" includes="test-mockbox.xml"/>
     		<property name="environment" value="${environment}" />
         </subant>
     </target>

@@ -1,14 +1,5 @@
 .settings
+.project
 cpu.json
-latestrun.log
-results.*
-TEST.properties
-/test/results-mb/TEST-*.xml
-/test/results/TEST-*.xml
-test/results/junitreport/*.xml
-test/results/junitreport/*.css
-test/results/junitreport/*.html
-test/results-mb/junitreport/*.html
-test/results-mb/junitreport/*.xml
-test/results-mb/junitreport/*.css
-test/results/junitreport
+tests/results
+tests/results-mb

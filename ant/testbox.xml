@@ -49,7 +49,7 @@
 	<!-- Build test reports -->
     <target name="run-tests">
         <subant target="run-junit">
-          	<fileset dir="test" includes="test.xml"/>
+          	<fileset dir="tests" includes="test.xml"/>
     		<property name="environment" value="${environment}" />
         </subant>
     </target>
@@ -65,7 +65,7 @@
         	<fileset dir=".">
         		<exclude name="ant/**" />
         		<exclude name="apidocs/**" />
-        		<exclude name="test/**" />
+        		<exclude name="tests/**" />
         		<exclude name="cpu.json" />
         		<exclude name=".*/**" />
         		<exclude name="settings.xml" />
@@ -75,7 +75,7 @@
         
         <!-- Copy Samples -->
 		<copy todir="${dir.build}/testbox/samples">
-        	<fileset dir="test/" />
+        	<fileset dir="tests/" />
         </copy>
 		
 		<!-- Replace Build Numbers -->
