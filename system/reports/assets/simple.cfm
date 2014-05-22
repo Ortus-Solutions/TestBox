@@ -27,26 +27,25 @@
 		});
 	}
 	function toggleSpecs( type, bundleID ){
-		$("div.spec").each( function(){
+		$("div.suite").each( function(){
 			handleToggle( $( this ), bundleID, type );
 		} );
-		$("div.suite").each( function(){
+		$("div.spec").each( function(){
 			handleToggle( $( this ), bundleID, type );
 		} );
 	}
 	function handleToggle( target, bundleID, type ){
 		var $this = target;
-		
 		// if bundleid passed and not the same bundle, skip
 		if( bundleID != undefined && $this.attr( "data-bundleid" ) != bundleID ){
 			return;
 		}
-
 		// toggle the opposite type
 		if( !$this.hasClass( type ) ){
 			$this.fadeOut();
 		} else {
 			// show the type you sent
+			$this.parents().fadeIn();
 			$this.fadeIn();
 		}
 	}
