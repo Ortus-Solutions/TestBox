@@ -8,6 +8,7 @@
     </description>
 	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
 	<property name="testbox.version"	value="2.0.0"/>
+	<property name="testbox.slug"		value="testbox"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	<!-- Load Contrib Tasks -->
@@ -28,7 +29,6 @@
     	<echo>Loading from environment: ${environment}</echo>
 		<!-- Load env properties -->
 		<loadproperties srcFile="ant/testbox-${environment}.properties"/>
-
 		<!-- Build Number -->
 		<propertyfile file="ant/build.number" comment="Build Number for ANT. Edit not!">
 			<entry key="build.number" 
@@ -58,7 +58,7 @@
 	<target name="build" description="Build a new TestBox Distribution" depends="init,run-tests">
       	
 		<!-- Copy build ID -->
-		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
+		<concat destfile="${dir.build}/testbox/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy SRC to TestBox namespace -->	
       	<copy todir="${dir.build}/testbox/">
