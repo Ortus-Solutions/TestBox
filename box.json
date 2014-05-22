@@ -1,7 +1,7 @@
 {
 	"name" 				: "TestBox",
 	"version"			: "2.0.0",
-	"author" 			: "Luis Majano <lmajano@ortussolutions.com",
+	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "testbox",
 	"type"				: "testing",
 	"keywords"			: "testing,xunit,bdd,testbox,mxunit,tdd",

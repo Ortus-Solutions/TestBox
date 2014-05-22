@@ -1,7 +1,7 @@
 {
 	"name" 				: "MockBox",
 	"version"			: "3.0.0",
-	"author" 			: "Luis Majano <lmajano@ortussolutions.com",
+	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "mockbox",
 	"type"				: "testing",
 	"keywords"			: "mocking,testing,xunit,bdd,testbox,mxunit,tdd",
