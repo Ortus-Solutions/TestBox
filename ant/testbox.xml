@@ -67,6 +67,7 @@
         		<exclude name="apidocs/**" />
         		<exclude name="tests/**" />
         		<exclude name="cpu.json" />
+        		<exclude name="box-mockbox.json" />
         		<exclude name=".*/**" />
         		<exclude name="settings.xml" />
         		<exclude name="build-testbox/**" />
@@ -97,11 +98,12 @@
 		<!-- Perms for automated builds -->
 		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
 
+		<!-- Bleeding edge, always stored in root of integration server -->
 		<if>
 			<equals arg1="${be.name}" arg2="" />
 			<then></then>
 			<else>
-				<move file="${dir.exports}/testbox_${testbox.version}.zip" tofile="${dir.exports}/${be.name}.zip" />	
+				<copy file="${dir.exports}/testbox_${testbox.version}.zip" tofile="${be.exports}/${be.name}.zip" />	
 			</else>
 		</if>
 

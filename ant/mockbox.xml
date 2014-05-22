@@ -8,6 +8,7 @@
     </description>
 	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
 	<property name="mockbox.version"	value="3.0.0"/>
+	<property name="mockbox.slug"		value="mockbox"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	<!-- Load Contrib Tasks -->
@@ -28,7 +29,6 @@
     	<echo>Loading from environment: ${environment}</echo>
 		<!-- Load env properties -->
 		<loadproperties srcFile="ant/mockbox-${environment}.properties"/>
-
 		<!-- Build Number -->
 		<propertyfile file="ant/build.number" comment="Build Number for ANT. Edit not!">
 			<entry key="build.number" 
@@ -58,7 +58,7 @@
 	<target name="build" description="Build a new MockBox distribution" depends="init,run-tests">
 		
 		<!-- Copy build ID -->
-		<concat destfile="${dir.build}/${build.label}">Built on ${start.TODAY}</concat>
+		<concat destfile="${dir.build}/mockbox/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy src to mockbox namespace -->	
       	<copy todir="${dir.build}/mockbox/system">
@@ -69,6 +69,9 @@
         		<include name="stubs/**"/>
         	</fileset>
         </copy>
+
+        <!-- Copy box.json -->	
+      	<copy file="box-mockbox.json" toFile="${dir.build}/mockbox/box.json" />
 
 		<!-- Replace Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
@@ -104,11 +107,12 @@
 		<!-- Perms for automated builds -->
 		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
 
+		<!-- Bleeding edge, always stored in root of integration server -->
 		<if>
 			<equals arg1="${be.name}" arg2="" />
 			<then></then>
 			<else>
-				<move file="${dir.exports}/mockbox_${mockbox.version}.zip" tofile="${dir.exports}/${be.name}.zip" />	
+				<copy file="${dir.exports}/mockbox_${mockbox.version}.zip" tofile="${be.exports}/${be.name}.zip" />	
 			</else>
 		</if>
 		
