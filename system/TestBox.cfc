@@ -96,7 +96,7 @@ component accessors="true"{
 		var results = runRaw( argumentCollection=arguments );
 		// store latest results
         variables.result = results;
-		// return report
+        // return report
 		return produceReport( results );
 	}
 
@@ -167,6 +167,8 @@ component accessors="true"{
 
 		// mark end of testing bundles
 		results.end();
+
+		sendStatusHeaders( results );
 
 		return results;
 	}
@@ -242,6 +244,34 @@ component accessors="true"{
 			// return report
 			writeOutput( produceReport( results ) );
 		}
+
+		// create status headers
+		sendStatusHeaders( results );
+	}
+
+	/**
+	* Send some status headers
+	*/
+	private function sendStatusHeaders( required results ){
+
+		try{
+			var response = getPageContext().getResponse();
+
+			response.addHeader( "x-testbox-totalDuration", javaCast( "string", results.getTotalDuration() ) );
+			response.addHeader( "x-testbox-totalBundles", javaCast( "string", results.getTotalBundles() ) );
+			response.addHeader( "x-testbox-totalSuites", javaCast( "string", results.getTotalSuites() ) );
+			response.addHeader( "x-testbox-totalSpecs", javaCast( "string", results.getTotalSpecs() ) );
+			response.addHeader( "x-testbox-totalPass", javaCast( "string", results.getTotalPass() ) );
+			response.addHeader( "x-testbox-totalFail", javaCast( "string", results.getTotalFail() ) );
+			response.addHeader( "x-testbox-totalError", javaCast( "string", results.getTotalError() ) );
+			response.addHeader( "x-testbox-totalSkipped", javaCast( "string", results.getTotalSkipped() ) );
+		} catch( Any e ){
+			writeLog( type="error", 
+					  text="Error sending TestBox headers: #e.message# #e.detail# #e.stackTrace#", 
+					  file="testbox.log" );
+		}
+
+		return this;
 	}
 
 	/************************************** REPORTING COMMON METHODS *********************************************/
