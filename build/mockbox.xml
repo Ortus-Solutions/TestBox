@@ -13,7 +13,7 @@
 	<tstamp prefix="start"/>
 	<!-- Load Contrib Tasks -->
 	<path id="cp">
-		<fileset dir="ant/lib">
+		<fileset dir="build/lib">
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
@@ -28,16 +28,16 @@
     	</condition>
     	<echo>Loading from environment: ${environment}</echo>
 		<!-- Load env properties -->
-		<loadproperties srcFile="ant/mockbox-${environment}.properties"/>
+		<loadproperties srcFile="build/mockbox-${environment}.properties"/>
 		<!-- Build Number -->
-		<propertyfile file="ant/build.number" comment="Build Number for ANT. Edit not!">
+		<propertyfile file="build/build.number" comment="Build Number for ANT. Edit not!">
 			<entry key="build.number" 
 					type="int" 
 			     	operation="+"
 					pattern="00000"
 			     	default="1" />
 		</propertyfile>
-		<property file="ant/build.number"/>
+		<property file="build/build.number"/>
 		<!-- Build Label -->
 		<property name="build.label" value="mockbox-${mockbox.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
 		<!-- Cleanup + Init -->
@@ -71,7 +71,7 @@
         </copy>
 
         <!-- Copy box.json -->	
-      	<copy file="box-mockbox.json" toFile="${dir.build}/mockbox/box.json" />
+      	<copy file="box-mockbox.json" toFile="${dir.build}/box.json" />
 
 		<!-- Replace Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
@@ -100,9 +100,14 @@
 		
 		<!-- Zip API Docs -->
 		<zip destfile="${dir.exports}/MockBoxDocs-${mockbox.version}.zip" basedir="${dir.build}/mockbox/apidocs"></zip>
-				
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/mockbox_${mockbox.version}.zip" basedir="${dir.build}"></zip>
+		<!-- Build Checksum -->
+		<checksum forceoverwrite="true" fileext=".md5">
+			<fileset dir="${dir.exports}">
+				<include name="*.zip" />
+			</fileset>
+		</checksum>
 
 		<!-- Perms for automated builds -->
 		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />

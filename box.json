@@ -13,7 +13,7 @@
 	"shortDescription"	: "A BDD and xUnit testing framework",
 	"engines"			: [
 		{ "type" : "railo", "version" : ">4.1" },
-		{ "type" : "adobe", "version" : ">10.0" }
+		{ "type" : "adobe", "version" : ">9" }
 	],
 	"license"			: [ 
 		{ "type" : "Apache2", "url" : "http://www.apache.org/licenses/LICENSE-2.0.html" } 
