@@ -118,6 +118,7 @@
 			<then></then>
 			<else>
 				<copy file="${dir.exports}/mockbox_${mockbox.version}.zip" tofile="${be.exports}/${be.name}.zip" />	
+				<copy file="${dir.exports}/mockbox_${mockbox.version}.zip" tofile="${be.exports}/${be.name}.zip" />	
 			</else>
 		</if>
 		

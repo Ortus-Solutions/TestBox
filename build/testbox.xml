@@ -113,7 +113,7 @@
 			<then></then>
 			<else>
 				<copy file="${dir.exports}/testbox_${testbox.version}.zip" tofile="${be.exports}/${be.name}.zip" />
-				<copy file="${dir.exports}/testbox_${testbox.version}.md5" tofile="${be.exports}/${be.name}.md5" />
+				<copy file="${dir.exports}/testbox_${testbox.version}.zip.md5" tofile="${be.exports}/${be.name}.zip.md5" />
 			</else>
 		</if>
 
