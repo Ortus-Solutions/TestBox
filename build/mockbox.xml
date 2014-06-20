@@ -99,7 +99,7 @@
 		<delete file="${dir.build}/colddoc.html" />
 		
 		<!-- Zip API Docs -->
-		<zip destfile="${dir.exports}/MockBoxDocs-${mockbox.version}.zip" basedir="${dir.build}/mockbox/apidocs"></zip>
+		<zip destfile="${dir.exports}/mockbox_docs_${mockbox.version}.zip" basedir="${dir.build}/mockbox/apidocs"></zip>
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.exports}/mockbox_${mockbox.version}.zip" basedir="${dir.build}"></zip>
 		<!-- Build Checksum -->
@@ -117,6 +117,11 @@
 			<equals arg1="${be.name}" arg2="" />
 			<then></then>
 			<else>
+				<delete>
+					<fileset dir="${be.exports}">
+						<include name="${be.name}*" />
+					</fileset>
+				</delete>
 				<copy file="${dir.exports}/mockbox_${mockbox.version}.zip" tofile="${be.exports}/${be.name}.zip" />	
 				<copy file="${dir.exports}/mockbox_${mockbox.version}.zip" tofile="${be.exports}/${be.name}.zip" />	
 			</else>
