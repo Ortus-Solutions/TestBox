@@ -1,5 +1,7 @@
 .settings
+settings.xml
 .project
 cpu.json
 tests/results
 tests/results-mb
+WEB-INF

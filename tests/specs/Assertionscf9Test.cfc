@@ -126,6 +126,32 @@ component displayName="TestBox xUnit suite for CF9" labels="railo,cf" extends="t
 		$assert.isEqual( [], [] );
 		$assert.isEqual( [1,2,3, {name="hello", test="this"} ], [1,2,3, {test="this", name="hello"} ] );
 	}
+	
+	function testIsEqualQuery() {
+
+		var a = '';
+		var b = '';
+		var testQuery = queryNew("column_a,column_b");
+		queryAddRow(testQuery);
+		querySetCell(testQuery,'column_a','1');
+		querySetCell(testQuery,'column_b','2');
+			    		
+		a = new Query(
+			    sql = "SELECT column_a ,column_b
+						FROM testQuery",
+			    dbtype = "query",
+			    testQuery = testQuery
+	    	).execute().getResult();
+			    		
+		b = new Query(
+			    sql = "SELECT column_b ,column_a
+						FROM testQuery",
+			    dbtype = "query",
+			    testQuery = testQuery
+	    	).execute().getResult(); 
+	    						
+		$assert.isEqual(a, b);
+	}
 
 	function testisNotEqual() {
 		$assert.isNotEqual( this, new testbox.system.MockBox() );
