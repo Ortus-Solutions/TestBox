@@ -660,8 +660,39 @@ component{
 		}
 
 		// Queries
-		if( isQuery( arguments.actual ) && isQuery( arguments.expected ) &&
-			serializeJSON( arguments.actual ) eq serializeJSON( arguments.expected ) ){
+		if( isQuery( arguments.actual ) && isQuery( arguments.expected ) ){
+			
+			// Check number of records
+			if( arguments.actual.recordCount != arguments.expected.recordCount ) {
+				return false;
+			}
+			
+			// Get both column lists and sort them the same
+			var actualColumnList = listSort( arguments.actual.columnList, 'textNoCase' );
+			var expectedColumnList = listSort( arguments.expected.columnList, 'textNoCase' );
+						
+			// Check column lists
+			if( actualColumnList != expectedColumnList ) {
+				return false;
+			}
+			
+			// Loop over each row
+			var i = 0;
+			while( ++i <= arguments.actual.recordCount ) {
+								
+				// Loop over each column
+				for( var column in listToArray( actualColumnList ) ) {
+					
+					// Compare each value
+					if( arguments.actual[ column ][ i ] != arguments.expected[ column ][ i ] ) {
+						
+						// At the first sign of trouble, bail!
+						return false;
+					}	
+				}
+			}
+			
+			// We made it here so nothing looked wrong
 			return true;
 		}
 
