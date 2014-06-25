@@ -6,7 +6,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 * This object represents our Assertion style DSL for Unit style testing
 */
 component{
-	
+
 	/**
 	* Fail assertion
 	* @message.hint The message to send in the failure
@@ -15,7 +15,7 @@ component{
 		arguments.message = ( len( arguments.message ) ? arguments.message : "A test failure occurred" );
 		throw(type="TestBox.AssertionFailed", message=arguments.message);
 	}
-	
+
 	/**
 	* Assert that the passed expression is true
 	* @expression.hint The expression to test
@@ -24,7 +24,7 @@ component{
 	function assert( required boolean expression, message="" ){
 		return isTrue( arguments.expression, arguments.message );
 	}
-	
+
 	/**
 	* Assert something is true
 	* @actual.hint The actual data to test
@@ -50,7 +50,7 @@ component{
 		}
 		return this;
 	}
-	
+
 	/**
 	* Assert something is equal to each other, no case is required
 	* @expected.hint The expected data
@@ -60,8 +60,8 @@ component{
 	function isEqual( required any expected, required any actual, message="" ){
 		// validate equality
 		if( equalize( arguments.expected, arguments.actual ) ){ return this; }
-		arguments.message = ( len( arguments.message ) ? 
-			arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" : 
+		arguments.message = ( len( arguments.message ) ?
+			arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" :
 			"Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]" );
 		// if we reach here, nothing is equal man!
 		fail( arguments.message );
@@ -74,25 +74,25 @@ component{
 	* @message.hint The message to send in the failure
 	*/
 	function isNotEqual( required any expected, required any actual, message="" ){
-		arguments.message = ( len( arguments.message ) ? 
-			arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" : 
+		arguments.message = ( len( arguments.message ) ?
+			arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" :
 			"Expected [#getStringName( arguments.expected )#] to not be [#getStringName( arguments.actual )#]" );
 		// validate equality
 		if( !equalize( arguments.expected, arguments.actual ) ){ return this; }
 		// if we reach here, they are equal!
 		fail( arguments.message );
 	}
-	
+
 	/**
-	* Assert an object is the same instance as another object 
+	* Assert an object is the same instance as another object
 	* @expected.hint The expected data
 	* @actual.hint The actual data to test
 	* @message.hint The message to send in the failure
 	*/
-	function isSameInstance( required any expected, required any actual, message="" ){ 
+	function isSameInstance( required any expected, required any actual, message="" ){
 		var expectedIdentityHashCode = getIdentityHashCode( arguments.expected );
 		var actualIdentityHashCode = getIdentityHashCode( arguments.actual );
-		
+
 		// validate same object
 		if( expectedIdentityHashCode == actualIdentityHashCode ){ return this; }
 		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#:#expectedIdentityHashCode#] but received [#getStringName( arguments.actual )#:#actualIdentityHashCode#]" );
@@ -106,10 +106,10 @@ component{
 	* @actual.hint The actual data to test
 	* @message.hint The message to send in the failure
 	*/
-	function isNotSameInstance( required any expected, required any actual, message="" ){ 
+	function isNotSameInstance( required any expected, required any actual, message="" ){
 		var expectedIdentityHashCode = getIdentityHashCode( arguments.expected );
 		var actualIdentityHashCode = getIdentityHashCode( arguments.actual );
-		
+
 		// validate not same object
 		if( expectedIdentityHashCode != actualIdentityHashCode ){ return this; }
 		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#:#expectedIdentityHashCode#] to not be [#getStringName( arguments.actual )#:#actualIdentityHashCode#]" );
@@ -118,7 +118,7 @@ component{
 	}
 
 	/**
-	* Assert strings are equal to each other with case. 
+	* Assert strings are equal to each other with case.
 	* @expected.hint The expected data
 	* @actual.hint The actual data to test
 	* @message.hint The message to send in the failure
@@ -139,7 +139,7 @@ component{
 	function null( any actual, message="" ){
 		// equalize with case
 		if( isNull( arguments.actual ) ){ return this; }
-		arguments.message = ( len( arguments.message ) ? 
+		arguments.message = ( len( arguments.message ) ?
 			arguments.message : "Expected a null value but got #getStringName( arguments.actual )#" );
 		// if we reach here, nothing is equal man!
 		fail( arguments.message );
@@ -364,7 +364,7 @@ component{
 	* @message.hint The message to send in the failure
 	*/
 	function throws( required any target, type="", regex=".*", message="" ){
-		
+
 		try{
 			arguments.target();
 			arguments.message = ( len( arguments.message ) ? arguments.message : "The incoming function did not throw an expected exception. Type=[#arguments.type#], Regex=[#arguments.regex#]" );
@@ -374,15 +374,15 @@ component{
 			if( !len( arguments.type ) && arguments.regex eq ".*" ){ return this; }
 
 			// Type expectation + message regex, do match no case to account for empty messages
-			if( len( arguments.type ) && 
-				e.type eq arguments.type && 
+			if( len( arguments.type ) &&
+				e.type eq arguments.type &&
 				( arrayLen( reMatchNoCase( arguments.regex, e.message ) ) OR arrayLen( reMatchNoCase( arguments.regex, e.detail ) ) )
 			){
 				return this;
 			}
 
 			// Message+Detail regex then only
-			if( arguments.regex neq ".*" && 
+			if( arguments.regex neq ".*" &&
 				( arrayLen( reMatchNoCase( arguments.regex, e.message ) ) OR arrayLen( reMatchNoCase( arguments.regex, e.detail ) ) )
 			){
 				return this;
@@ -409,14 +409,14 @@ component{
 		}
 		catch(Any e){
 			arguments.message = ( len( arguments.message ) ? arguments.message : "The incoming function DID throw an exception of type [#e.type#] with message [#e.message#] detail [#e.detail#]" );
-		
+
 			// If type passed and matches, then its ok
 			if( len( arguments.type ) AND e.type neq arguments.type ){
 				return this;
 			}
 
 			// Message+Detail regex must not match
-			if( len( arguments.regex ) AND 
+			if( len( arguments.regex ) AND
 				( !arrayLen( reMatchNoCase( arguments.regex, e.message ) ) OR !arrayLen( reMatchNoCase( arguments.regex, e.detail ) ) )
 			){
 				return this;
@@ -438,11 +438,11 @@ component{
 	*/
 	function closeTo( required any expected, required any actual, required any delta, datePart="", message=""){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not in range of [#arguments.expected#] by +/- [#arguments.delta#]" );
-		
+
 		if( isNumeric( arguments.actual ) ){
 			if( isValid( "range", arguments.actual, (arguments.expected-arguments.delta), (arguments.expected+arguments.delta) ) ){ return this; }
 		}
-		else if( isDate( arguments.actual ) ){ 
+		else if( isDate( arguments.actual ) ){
 
 			if( !listFindNoCase( "yyyy,q,m,ww,w,y,d,h,n,s,l", arguments.datePart ) ){
 				fail( "The passed in datepart [#arguments.datepart#] is not valid." );
@@ -463,7 +463,7 @@ component{
 	*/
 	function between( required any actual, required any min, required any max, message=""){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not between [#arguments.min#] and [#arguments.max#]" );
-		
+
 		// numeric between
 		if( isNumeric( arguments.actual ) ){
 			if( isValid( "range", arguments.actual, arguments.min, arguments.max ) ){
@@ -477,8 +477,8 @@ component{
 			}
 
 			// To pass, ( actual > min && actual < max )
-			if( ( dateCompare( arguments.actual, arguments.min ) EQ 1 ) AND 
-				( dateCompare( arguments.actual, arguments.max ) EQ -1 ) 
+			if( ( dateCompare( arguments.actual, arguments.min ) EQ 1 ) AND
+				( dateCompare( arguments.actual, arguments.max ) EQ -1 )
 			){
 				return this;
 			}
@@ -495,7 +495,7 @@ component{
 	*/
 	function includes( required any target, required any needle, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was not found in [#arguments.target.toString()#]" );
-		
+
 		// string
 		if( isSimpleValue( arguments.target ) AND findNoCase( arguments.needle, arguments.target ) ){
 			return this;
@@ -516,7 +516,7 @@ component{
 	*/
 	function includesWithCase( required any target, required any needle, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was not found in [#arguments.target.toString()#]" );
-		
+
 		// string
 		if( isSimpleValue( arguments.target ) AND find( arguments.needle, arguments.target ) ){
 			return this;
@@ -537,7 +537,7 @@ component{
 	*/
 	function notIncludesWithCase( required any target, required any needle, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was found in [#arguments.target.toString()#]" );
-		
+
 		// string
 		if( isSimpleValue( arguments.target ) AND !find( arguments.needle, arguments.target ) ){
 			return this;
@@ -558,7 +558,7 @@ component{
 	*/
 	function notIncludes( required any target, required any needle, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was found in [#arguments.target.toString()#]" );
-		
+
 		// string
 		if( isSimpleValue( arguments.target ) AND !findNoCase( arguments.needle, arguments.target ) ){
 			return this;
@@ -579,7 +579,7 @@ component{
 	*/
 	function isGT( required any actual, required any target, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not greater than [#arguments.target#]" );
-		
+
 		if( arguments.actual gt arguments.target ){
 			return this;
 		}
@@ -595,7 +595,7 @@ component{
 	*/
 	function isGTE( required any actual, required any target, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not greater than or equal to [#arguments.target#]" );
-		
+
 		if( arguments.actual gte arguments.target ){
 			return this;
 		}
@@ -611,7 +611,7 @@ component{
 	*/
 	function isLT( required any actual, required any target, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not less than [#arguments.target#]" );
-		
+
 		if( arguments.actual lt arguments.target ){
 			return this;
 		}
@@ -627,7 +627,7 @@ component{
 	*/
 	function isLTE( required any actual, required any target, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not less than or equal to [#arguments.target#]" );
-		
+
 		if( arguments.actual lte arguments.target ){
 			return this;
 		}
@@ -635,20 +635,26 @@ component{
 		fail( arguments.message );
 	}
 
-	
+
 	/**
 	* Get a string name representation of an incoming object.
 	*/
 	function getStringName( required obj ){
-		if( isSimpleValue( arguments.obj) ){ return arguments.obj; }
-		if( isObject( arguments.obj) ){ return getMetadata( arguments.obj ).name; }
-		return arguments.obj.toString();		
+		if( isSimpleValue( arguments.obj ) ){ return arguments.obj; }
+		if( isObject( arguments.obj ) ){
+			try{
+				return getMetadata( arguments.obj ).name;
+			}catch( any e ){
+				return "Uknown Object";
+			}
+		}
+		return arguments.obj.toString();
 	}
 
-/*********************************** PRIVATE Methods ***********************************/	
+/*********************************** PRIVATE Methods ***********************************/
 
 	private function equalize( required expected, required actual ){
-				
+
 		// Numerics
 		if( isNumeric( arguments.actual ) && isNumeric( arguments.expected ) && arguments.actual eq arguments.expected ){
 			return true;
@@ -661,100 +667,114 @@ component{
 
 		// Queries
 		if( isQuery( arguments.actual ) && isQuery( arguments.expected ) ){
-			
+
 			// Check number of records
 			if( arguments.actual.recordCount != arguments.expected.recordCount ) {
 				return false;
 			}
-			
+
 			// Get both column lists and sort them the same
 			var actualColumnList = listSort( arguments.actual.columnList, 'textNoCase' );
 			var expectedColumnList = listSort( arguments.expected.columnList, 'textNoCase' );
-						
+
 			// Check column lists
 			if( actualColumnList != expectedColumnList ) {
 				return false;
 			}
-			
+
 			// Loop over each row
 			var i = 0;
 			while( ++i <= arguments.actual.recordCount ) {
-								
+
 				// Loop over each column
 				for( var column in listToArray( actualColumnList ) ) {
-					
+
 					// Compare each value
 					if( arguments.actual[ column ][ i ] != arguments.expected[ column ][ i ] ) {
-						
+
 						// At the first sign of trouble, bail!
 						return false;
-					}	
+					}
 				}
 			}
-			
+
 			// We made it here so nothing looked wrong
 			return true;
 		}
 
 		// UDFs
-		if( isCustomFunction(arguments.actual) && isCustomFunction(arguments.expected) && arguments.actual.toString() eq arguments.expected.toString() ) {
+		if( isCustomFunction( arguments.actual ) && isCustomFunction( arguments.expected ) &&
+		    arguments.actual.toString() eq arguments.expected.toString() ) {
 			return true;
 		}
 
 		// XML
-		if( IsXmlDoc(arguments.actual) && IsXmlDoc(arguments.expected) && toString(arguments.actual) eq toString(arguments.expected) ) {
+		if( IsXmlDoc( arguments.actual ) && IsXmlDoc( arguments.expected ) &&
+			toString( arguments.actual ) eq toString( arguments.expected ) ) {
 			return true;
 		}
-		
+
 		// Arrays
 		if( isArray( arguments.actual ) && isArray( arguments.expected ) ) {
-			var i = 0;
-			
 			// Confirm both arrays are the same length
-			if( arrayLen(arguments.actual) neq arrayLen(arguments.expected) ) {
+			if( arrayLen( arguments.actual ) neq arrayLen( arguments.expected ) ) {
 				return false;
 			}
-						
-			// Loop over each item
-			while( ++i lte arrayLen(arguments.actual) ) {
+
+			for( var i=1; i lte arrayLen( arguments.actual ); i++ ){
+				// check for both nulls
+				if( isNull( arguments.actual[ i ] ) and isNull( arguments.expected[ i ] ) ){
+					continue;
+				}
+				// check if one is null mismatch
+				if( isNull( arguments.actual[ i ] ) OR isNull( arguments.expected[ i ] ) ){
+					return false;
+				}
 				// And make sure they match
-				if( !equalize( arguments.actual[i], arguments.expected[i] ) ) {
+				if( !equalize( arguments.actual[ i ], arguments.expected[ i ] ) ) {
 					return false;
 				}
 			}
-			
+
 			// If we made it here, we couldn't find anything different
 			return true;
 		}
-		
+
 		// Structs / Object
 		if( isStruct( arguments.actual ) && isStruct( arguments.expected ) ){
-			
-			var actualKeys = listSort(structKeyList(arguments.actual),'textNoCase');
-			var expectedKeys = listSort(structKeyList(arguments.expected),'textNoCase');
+
+			var actualKeys 		= listSort( structKeyList( arguments.actual ),'textNoCase' );
+			var expectedKeys 	= listSort( structKeyList( arguments.expected ),'textNoCase' );
 			var key = '';
-			
+
 			// Confirm both structs have the same keys
 			if( actualKeys neq expectedKeys ) {
 				return false;
 			}
-			
+
 			// Loop over each key
 			for( key in arguments.actual ) {
-				// And make sure they match
-				if( !equalize( arguments.actual[key], arguments.expected[key] ) ) {
+				// check for both nulls
+				if( isNull( arguments.actual[ key ] ) and isNull( arguments.expected[ key ] ) ){
+					continue;
+				}
+				// check if one is null mismatch
+				if( isNull( arguments.actual[ key ] ) OR isNull( arguments.expected[ key ] ) ){
+					return false;
+				}
+				// And make sure they match when actual values exist
+				if( !equalize( arguments.actual[ key ], arguments.expected[ key ] ) ) {
 					return false;
 				}
 			}
-			
+
 			// If we made it here, we couldn't find anything different
 			return true;
-		
 		}
-				
+
 		return false;
 	}
-	
+
 	private function getTargetLength( required any target ){
 		var aLength = 0;
 
@@ -768,7 +788,7 @@ component{
 
 		return aLength;
 	}
-	
+
 	private function getIdentityHashCode( required any target ){
 		var system = createObject("java", "java.lang.System");
 		return system.identityHashCode(arguments.target);
