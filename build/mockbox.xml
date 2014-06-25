@@ -7,7 +7,7 @@
     	Build a new distribution of MockBox Standalone
     </description>
 	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
-	<property name="mockbox.version"	value="3.0.0"/>
+	<property name="mockbox.version"	value="3.0.1"/>
 	<property name="mockbox.slug"		value="mockbox"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>

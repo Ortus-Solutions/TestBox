@@ -7,7 +7,7 @@
     	Build a new distribution of TestBox
     </description>
 	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
-	<property name="testbox.version"	value="2.0.0"/>
+	<property name="testbox.version"	value="2.0.1"/>
 	<property name="testbox.slug"		value="testbox"/>
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
