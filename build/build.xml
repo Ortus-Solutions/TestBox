@@ -59,8 +59,8 @@
 		
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />
-		<mkdir dir="${dir.build}/testbox/apidocs"/>
-		<chmod file="${dir.build}/**" perm="g+wxrs" type="both" />
+		<mkdir dir="${dir.build}"/>
+		<chmod file="${dir.build}/**" perm="og+wrs" type="both" />
 		<!-- Mark as init -->
 		<property name="src.isInit" value="true" />
 	</target>
@@ -98,6 +98,7 @@
 	<!-- Build TestBox-->
 	<target name="build.testbox" description="Build a new TestBox Distribution" depends="init">
 		<!-- prepare dirs -->
+		<mkdir dir="${dir.build}/testbox/apidocs"/>
 		<property name="dir.testbox.exports"	value="${dir.exports}/${testbox.slug}/${testbox.version}" />
 		<property name="be.testbox.exports" 	value="${be.exports}/${testbox.slug}" />
 		<!-- Update Permissions -->
@@ -172,6 +173,7 @@
 	<!-- Build MockBox-->
 	<target name="build.mockbox" description="Build a new MockBox distribution" depends="init">
 		<!-- prepare dirs -->
+		<mkdir dir="${dir.build}/mockbox/apidocs"/>
 		<property name="dir.mockbox.exports"	value="${dir.exports}/${mockbox.slug}/${mockbox.version}" />
 		<property name="be.mockbox.exports" 	value="${be.exports}/${mockbox.slug}" />
 		<!-- Update Permissions -->
