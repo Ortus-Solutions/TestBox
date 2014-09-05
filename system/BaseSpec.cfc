@@ -130,7 +130,11 @@ component{
 
 		// skip constraint for suite as a closure
 		if( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ){
-			suite.skip = arguments.skip();
+			suite.skip = arguments.skip( title=arguments.title, 
+										 body=arguments.body, 
+										 labels=arguments.labels, 
+										 asyncAll=arguments.asyncAll,
+										 suite=suite );
 		}
 
 		// Are we in a nested describe() block
@@ -218,7 +222,10 @@ component{
 
 		// skip constraint for suite as a closure
 		if( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ){
-			spec.skip = arguments.skip();
+			spec.skip = arguments.skip( title=arguments.title, 
+										body=arguments.body, 
+										labels=arguments.labels, 
+										spec=spec );
 		}
 
 		// Attach this spec to the incoming context array of specs

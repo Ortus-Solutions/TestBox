@@ -20,6 +20,15 @@ component displayName="TestBox xUnit suite for CF9" labels="railo,cf" extends="t
 
 /*********************************** Test Methods ***********************************/
 
+	any function testFloatingPointNumberAddition() output="false" {
+		var sum = 196.4 + 196.4 + 180.8 + 196.4 + 196.4 + 180.8 + 609.6;
+		// sum.toString() outputs: 1756.8000000000002
+		debug( sum );
+		writeDump( isNumeric( 1756.8 ) );
+		writeDump( isNumeric( sum ) );abort;
+		$assert.isEqual( sum, 1756.8 );
+	}
+
 	function testIncludes(){
 		$assert.includes( "hello", "HE" );
 		$assert.includes( [ "Monday", "Tuesday" ] , "monday" );

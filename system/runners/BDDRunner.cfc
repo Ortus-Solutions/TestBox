@@ -35,7 +35,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 		var bundleName 	= ( structKeyExists( targetMD, "displayName" ) ? targetMD.displayname : targetMD.name );
 		
 		// Execute the suite descriptors
-		arguments.target.run();
+		arguments.target.run( testResults=arguments.testResults );
 
 		// Discover the test suite data to use for testing
 		var testSuites 		= getTestSuites( arguments.target, targetMD );
