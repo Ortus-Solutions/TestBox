@@ -9,14 +9,18 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 
 	// runner options
 	property name="options";
+	// testbox reference
+	property name="testbox";
 
 	/**
 	* Constructor
 	* @options.hint The options for this runner
+	* @testbox.hint The TestBox class reference
 	*/
-	function init( required struct options ){
+	function init( required struct options, required testBox ){
 
 		variables.options = arguments.options;
+		variables.testbox = arguments.testbox;
 		
 		return this;
 	}
@@ -35,7 +39,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 		var bundleName 	= ( structKeyExists( targetMD, "displayName" ) ? targetMD.displayname : targetMD.name );
 		
 		// Execute the suite descriptors
-		arguments.target.run( testResults=arguments.testResults );
+		arguments.target.run( testResults=arguments.testResults, testbox=variables.testbox );
 
 		// Discover the test suite data to use for testing
 		var testSuites 		= getTestSuites( arguments.target, targetMD );

@@ -9,14 +9,18 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 
 	// runner options
 	property name="options";
+	// testbox reference
+	property name="testbox";
 
 	/**
 	* Constructor
 	* @options.hint The options for this runner
+	* @testbox.hint The TestBox class reference
 	*/
-	function init( required struct options ){
+	function init( required struct options, required testBox ){
 
 		variables.options = arguments.options;
+		variables.testbox = arguments.testbox;
 		
 		return this;
 	}
