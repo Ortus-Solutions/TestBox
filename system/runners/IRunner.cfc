@@ -10,8 +10,9 @@ interface{
 	/**
 	* Constructor
 	* @options.hint The options for a runner
+	* @testbox.hint The TestBox class reference
 	*/
-	function init( required struct options );
+	function init( required struct options, required testbox );
 
 	/**
 	* Execute a test run on a target bundle CFC
