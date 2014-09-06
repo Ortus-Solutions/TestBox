@@ -171,6 +171,7 @@
 		<box-repo location="${dir.exports}/${testbox.slug}" 
 				  artifactID="${testbox.slug}" 
 				  groupID="${groupID}"
+				  buildID="${build.number}"
 				  latest="${testbox.version}"
 				  classifiers="apidocs"/>
 
@@ -260,6 +261,7 @@
 		<box-repo location="${dir.exports}/${mockbox.slug}" 
 				  artifactID="${mockbox.slug}" 
 				  groupID="${groupID}"
+				  buildID="${build.number}"
 				  latest="${mockbox.version}"
 				  classifiers="apidocs"/>
 
