@@ -141,8 +141,9 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 
 				// is this async or not?
 				if( arguments.suite.asyncAll ){
-					// prepare thread names
-					var thisThreadName = "tb-suite-#hash( thisSpec.name )#";
+					// prepare thread name
+					var thisThreadName = variables.testBox.getUtility().slugify( "tb-" & thisSpec.name & "-#createUUID()#" );
+					// append to used thread names
 					arrayAppend( threadNames, thisThreadName );
 					// thread it
 					thread name="#thisThreadName#" thisSpec="#thisSpec#" suite="#arguments.suite#" threadName="#thisThreadName#"{
