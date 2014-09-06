@@ -540,7 +540,7 @@ component{
 				// Reset expected exceptions: Only works on synchronous testing.
 				this.$expectedException = {};
 				// setup the current executing spec for debug purposes
-				this.$currentExecutingSpec = arguments.suite.slug & "/" & arguments.suite.name & "/" & arguments.spec.name;
+				this.$currentExecutingSpec = arguments.spec.name;
 
 				// execute setup()
 				if( structKeyExists( this, "setup" ) ){ this.setup( currentMethod=arguments.spec.name ); }
@@ -635,7 +635,7 @@ component{
 				data=newVar,
 				label=arguments.label,
 				timestamp=now(),
-				thread=cfthread
+				thread=( isNull( cfthread ) ? structNew() : cfthread )
 			} );
 		}
 		return this;
