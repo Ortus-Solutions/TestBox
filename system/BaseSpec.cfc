@@ -29,6 +29,8 @@ component{
 	this.$testID 				= createUUID();
 	// Debug buffer
 	this.$debugBuffer			= [];
+	// Current Executing Spec
+	this.$currentExecutingSpec 	= "";
 
 	/************************************** BDD & EXPECTATIONS METHODS *********************************************/
 
@@ -130,9 +132,9 @@ component{
 
 		// skip constraint for suite as a closure
 		if( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ){
-			suite.skip = arguments.skip( title=arguments.title, 
-										 body=arguments.body, 
-										 labels=arguments.labels, 
+			suite.skip = arguments.skip( title=arguments.title,
+										 body=arguments.body,
+										 labels=arguments.labels,
 										 asyncAll=arguments.asyncAll,
 										 suite=suite );
 		}
@@ -222,9 +224,9 @@ component{
 
 		// skip constraint for suite as a closure
 		if( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ){
-			spec.skip = arguments.skip( title=arguments.title, 
-										body=arguments.body, 
-										labels=arguments.labels, 
+			spec.skip = arguments.skip( title=arguments.title,
+										body=arguments.body,
+										labels=arguments.labels,
 										spec=spec );
 		}
 
@@ -415,7 +417,8 @@ component{
 				arguments.runner.canRunLabel( consolidatedLabels, arguments.testResults ) &&
 				arguments.runner.canRunSpec( arguments.spec.name, arguments.testResults )
 			){
-
+				// setup the current executing spec for debug purposes
+				this.$currentExecutingSpec = arguments.suite.slug & "/" & arguments.suite.name & "/" & arguments.spec.name;
 				// Run beforeEach closures
 				runBeforeEachClosures( arguments.suite, arguments.spec );
 
@@ -536,6 +539,8 @@ component{
 
 				// Reset expected exceptions: Only works on synchronous testing.
 				this.$expectedException = {};
+				// setup the current executing spec for debug purposes
+				this.$currentExecutingSpec = arguments.suite.slug & "/" & arguments.suite.name & "/" & arguments.spec.name;
 
 				// execute setup()
 				if( structKeyExists( this, "setup" ) ){ this.setup( currentMethod=arguments.spec.name ); }
@@ -612,14 +617,26 @@ component{
 
 	/**
 	* Debug some information into the TestBox debugger array buffer
-	* @var.hint The data to send
+	* @var.hint The data to debug
+	* @label.hint The label to add to the debug entry
 	* @deepCopy.hint By default we do not duplicate the incoming information, but you can :)
 	*/
-	any function debug( var, boolean deepCopy=false ){
+	any function debug( any var, string label="", boolean deepCopy=false ){
+		// null check
 		if( isNull( arguments.var ) ){ arrayAppend( this.$debugBuffer, "null" ); return; }
+		// lock and add
 		lock name="tb-debug-#this.$testID#" type="exclusive" timeout="10"{
+			// duplication control
 			var newVar = ( arguments.deepCopy ? duplicate( arguments.var ) : arguments.var );
-			arrayAppend( this.$debugBuffer, newVar );
+			// comput label?
+			if( !len( trim( arguments.label ) ) ){ arguments.label = this.$currentExecutingSpec; }
+			// add to debug output
+			arrayAppend( this.$debugBuffer, {
+				data=newVar,
+				label=arguments.label,
+				timestamp=now(),
+				thread=cfthread
+			} );
 		}
 		return this;
 	}
