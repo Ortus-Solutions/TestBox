@@ -5,7 +5,7 @@ www.coldbox.org | www.luismajano.com | www.ortussolutions.com
 ********************************************************************************
 Author 	 		: Luis Majano
 Date     		: April 20, 2009
-Description		: 
+Description		:
 	A mock generator
 ----------------------------------------------------------------------->
 <cfcomponent output="false" hint="The guy in charge of creating mocks">
@@ -21,11 +21,11 @@ Description		:
 			instance.lb 			= "#chr(13)##chr(10)#";
 			instance.mockBox 		= arguments.mockBox;
 			instance.removeStubs 	= arguments.removeStubs;
-			
+
 			return this;
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- generate --->
 	<cffunction name="generate" output="false" access="public" returntype="string" hint="Generate a mock method and return the generated path">
 		<!--- ************************************************************* --->
@@ -58,9 +58,9 @@ Description		:
 
 			// Create Method Signature
 			udfOut.append('
-			<cfset this[ "#safeMethodName#" ] = variables[ "#safeMethodName#" ]> 
+			<cfset this[ "#safeMethodName#" ] = variables[ "#safeMethodName#" ]>
 			<cffunction name="#safeMethodName#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#">#instance.lb#');
-			
+
 			// Create Arguments Signature
 			if( structKeyExists( fncMD, "parameters" ) AND arguments.preserveArguments ){
 			for( var x=1; x lte arrayLen( fncMD.parameters ); x++ ){
@@ -71,7 +71,7 @@ Description		:
 				udfOut.append('>#instance.lb#');
 			}
 			}
-			
+
 			// Continue Method Generation
 			udfOut.append('
 			<cfset var results = this._mockResults>
@@ -82,11 +82,11 @@ Description		:
 			<cfset var callbackLen = 0>
 			<cfset var argsHashKey = resultsKey & "|" & this.mockBox.normalizeArguments( arguments )>
 			<cfset var fCallBack = "">
-			
+
 			<!--- If Method & argument Hash Results, switch the results struct --->
 			<cfif structKeyExists( this._mockArgResults, argsHashKey )>
 				<!--- Check if it is a callback --->
-				<cfif isStruct( this._mockArgResults[ argsHashKey ] ) and 
+				<cfif isStruct( this._mockArgResults[ argsHashKey ] ) and
 					  structKeyExists( this._mockArgResults[ argsHashKey ], "type" ) and
 					  structKeyExists( this._mockArgResults[ argsHashKey ], "target" )>
 					<cfset fCallBack = this._mockArgResults[ argsHashKey ].target>
@@ -96,7 +96,7 @@ Description		:
 					<cfset resultsKey = argsHashKey>
 				</cfif>
 			</cfif>
-			
+
 			<!--- Get the statemachine counter --->
 			<cfif isSimpleValue( fCallBack )>
 				<cfset resultsLen = arrayLen( results[ resultsKey ] )>
@@ -106,23 +106,23 @@ Description		:
 			<cfif structKeyExists( this._mockCallbacks, resultsKey )>
 				<cfset callbackLen = arrayLen( this._mockCallbacks[ resultsKey ] )>
 			</cfif>
-			
+
 			<!--- Log the Method Call --->
 			<cfset this._mockMethodCallCounters[ listFirst( resultsKey, "|" ) ] = this._mockMethodCallCounters[ listFirst( resultsKey, "|" ) ] + 1>
-			
+
 			<!--- Get the CallCounter Reference --->
 			<cfset internalCounter = this._mockMethodCallCounters[listFirst(resultsKey,"|")]>
 			');
-			
+
 			// Call Logging argument or Global Flag
 			if( arguments.callLogging OR arguments.targetObject._mockCallLoggingActive  ){
 				udfOut.append('<cfset arrayAppend(this._mockCallLoggers["#arguments.method#"], arguments)>#instance.lb#');
 			}
-			
+
 			// Exceptions? To Throw
 			if( arguments.throwException ){
 				udfOut.append('<cfthrow type="#arguments.throwType#" message="#arguments.throwMessage#" detail="#arguments.throwDetail#" />#instance.lb#');
-			}	
+			}
 
 			// Returns Something according to metadata?
 			if ( fncMD["returntype"] neq "void" ){
@@ -136,7 +136,7 @@ Description		:
 						<cfreturn results[resultsKey][internalCounter]>
 					</cfif>
 				</cfif>
-				');		
+				');
 				// Callback Single
 				udfOut.append('
 				<cfif callbackLen neq 0>
@@ -152,10 +152,10 @@ Description		:
 				');
 			}
 			udfOut.append('</cffunction>');
-			
+
 			// Write it out
 			writeStub(genPath & tmpFile, udfOUt.toString());
-		
+
 			// Mix In Stub
 			try{
 				// include it
@@ -168,30 +168,30 @@ Description		:
 					arguments.targetObject[ arguments.method ] = arguments.targetObject[ safeMethodName ];
 				}
 
-				// Remove Stub	
-				removeStub( genPath & tmpFile );				
+				// Remove Stub
+				removeStub( genPath & tmpFile );
 			}
 			catch(Any e){
 				// Remove Stub
 				removeStub(genPath & tmpFile);
-				rethrowit( e );
-			}			
+				rethrow;
+			}
 		</cfscript>
 	</cffunction>
-	
+
 	<!--- writeStub --->
 	<cffunction name="writeStub" output="false" access="public" returntype="void" hint="Write a method generator stub">
 		<cfargument name="genPath" 	type="string" required="true"/>
 		<cfargument name="code" 	type="string" required="true"/>
-		
+
 		<cffile action="write" file="#arguments.genPath#" output="#arguments.code#">
-		
+
 	</cffunction>
 
 	<!--- removeStub --->
 	<cffunction name="removeStub" output="false" access="public" returntype="boolean" hint="Remove a method generator stub">
 		<cfargument name="genPath" type="string" required="true"/>
-		
+
 		<cfif fileExists(arguments.genPath) and instance.removeStubs>
 			<cffile action="delete" file="#arguments.genPath#">
 			<cfreturn true>
@@ -199,19 +199,19 @@ Description		:
 			<cfreturn false>
 		</cfif>
 	</cffunction>
-	
-	<!--- generateCFC --->    
-    <cffunction name="generateCFC" output="false" access="public" returntype="any" hint="Generate CFC's according to specs">    
+
+	<!--- generateCFC --->
+    <cffunction name="generateCFC" output="false" access="public" returntype="any" hint="Generate CFC's according to specs">
 		<cfargument name="extends" 		type="string" required="false" default="" hint="The class the CFC should extend"/>
 		<cfargument name="implements" 	type="string" required="false" default="" hint="The class(es) the CFC should implement"/>
-    	<cfscript>	 
+    	<cfscript>
 			var udfOut 	= createObject("java","java.lang.StringBuffer").init('');
 			var genPath = expandPath( instance.mockBox.getGenerationPath() );
 			var tmpFile = createUUID() & ".cfc";
 			var cfcPath = replace( instance.mockBox.getGenerationPath(), "/", ".", "all" ) & listFirst( tmpFile, "." );
 			var oStub	= "";
 			var local 	= {};
-			
+
 			// Create CFC Signature
 			udfOut.append('<cfcomponent output="false" hint="A MockBox awesome Component"');
 			// extends
@@ -222,58 +222,58 @@ Description		:
 			if( len( trim( arguments.implements ) ) ){
 				udfOut.append(' implements="#arguments.implements#"');
 			}
-			
+
 			// close tag
 			udfOut.append('>#instance.lb#');
-			   
+
 			// iterate over implementations
 			for( local.x=1; local.x lte listLen( arguments.implements ); local.x++ ){
 				// generate interface methods
 				generateMethodsFromMD( udfOut, getComponentMetadata( listGetAt( arguments.implements, x) ) );
 			}
-			
+
 			// close it
 			udfOut.append('</cfcomponent>');
-			
+
 			// Write it out
 			writeStub( genPath & tmpFile, udfOUt.toString() );
-		
+
 			try{
 				// create stub + clean first . if found.
 				cfcPath = reReplace( cfcPath, "^\.", "" );
 				oStub = createObject( "component", cfcPath );
-				// Remove Stub	
+				// Remove Stub
 				removeStub(genPath & tmpFile);
 				// Return it
-				return oStub;				
+				return oStub;
 			}
 			catch(Any e){
 				// Remove Stub
 				removeStub( genPath & tmpFile );
-				rethrowit( e );
-			}	
-    	</cfscript>    
+				rethrow;
+			}
+    	</cfscript>
     </cffunction>
-    
-    <!--- generateMethodsFromMD --->    
-    <cffunction name="generateMethodsFromMD" output="false" access="private" returntype="any" hint="Generates methods from functions metadata">    
+
+    <!--- generateMethodsFromMD --->
+    <cffunction name="generateMethodsFromMD" output="false" access="private" returntype="any" hint="Generates methods from functions metadata">
     	<cfargument name="buffer" 	type="any" required="true" hint="The string buffer to append stuff to"/>
 		<cfargument name="md" 		type="any" required="true" hint="The metadata to generate"/>
-    	<cfscript>	  
+    	<cfscript>
 			var local 	= {};
 			var udfOut  = arguments.buffer;
-			
+
 			// local functions if they exist
 			local.oMD = [];
 			if( structKeyExists( arguments.md, "functions" ) ){
 				local.oMD = arguments.md.functions;
 			}
-			
+
 			// iterate and create functions
 			for( local.x = 1; local.x lte arrayLen( local.oMD ); local.x++ ){
 				// start function tag
 				udfOut.append('<cffunction');
-				
+
 				// iterate over the values of the function
 				for( local.fncKey in local.oMD[ x ] ){
 					// Do Simple values only
@@ -283,7 +283,7 @@ Description		:
 				}
 				// close function start tag
 				udfOut.append('>#instance.lb#');
-				
+
 				// Do parameters if they exist
 				for( local.y=1; local.y lte arrayLen( local.oMD[ x ].parameters ); local.y++ ){
 					// start argument
@@ -294,30 +294,25 @@ Description		:
 					}
 					// close argument
 					udfOut.append('>#instance.lb#');
-				} 
-				
+				}
+
 				// close full function
 				udfOut.append("</cffunction>#instance.lb#");
 			}
-			
+
 			// Check extends and recurse
 			if( structKeyExists( arguments.md, "extends") ){
 				generateMethodsFromMD( udfOut, arguments.md.extends );
 			}
-    	</cfscript>    
+    	</cfscript>
     </cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
-	
+
 	<!--- $include --->
 	<cffunction name="$include" output="false" access="private" returntype="void" hint="Mix in a template">
 		<cfargument name="templatePath" type="string" required="true"/>
 		<cfinclude template="#arguments.templatePath#">
 	</cffunction>
-	
-		<!--- rethrowit --->
-	<cffunction name="rethrowit" access="private" returntype="void" hint="Rethrow an exception" output="false" >
-		<cfargument name="throwObject" required="true" hint="The exception object">
-		<cfthrow object="#arguments.throwObject#">
-	</cffunction>
+
 </cfcomponent>

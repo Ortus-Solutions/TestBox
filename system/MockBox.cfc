@@ -95,7 +95,7 @@ Description		:
 				obj = arguments.object;
 			}
 			else{
-				getUtil().throwit(type="mock.invalidArguments",message="Invalid mocking arguments: className or object not found");
+				throw( type="mock.invalidArguments", message="Invalid mocking arguments: className or object not found");
 			}
 
 			// Clear up Mock object?
