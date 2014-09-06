@@ -109,7 +109,7 @@
 		<concat destfile="${dir.build}/testbox/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy SRC to TestBox namespace -->	
-      	<copy todir="${dir.build}/testbox/">
+      	<copy todir="${dir.build}/testbox/" outputencoding="UTF-8">
         	<fileset dir=".">
         		<exclude name="build/**" />
         		<exclude name="apidocs/**" />
@@ -124,17 +124,16 @@
         </copy>
 
         <!-- Copy box.json -->	
-      	<copy file="box.json" toFile="${dir.build}/box.json" />
+      	<copy file="box.json" toFile="${dir.build}/box.json" outputencoding="UTF-8"/>
         
         <!-- Copy Samples -->
-		<copy todir="${dir.build}/testbox/samples">
+		<copy todir="${dir.build}/testbox/samples" outputencoding="UTF-8">
         	<fileset dir="tests/" />
         </copy>
 		
 		<!-- Replace Build Numbers -->
-		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
-		  <fileset dir="${dir.build}">
-		  </fileset>
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
+		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 						
 		<!-- Execute ColdDoc -->
@@ -152,12 +151,21 @@
 			</fileset>
 		</checksum>
 		<!-- Copy box.json to exports -->
-		<copy file="${dir.build}/box.json" toFile="${dir.testbox.exports}/box.json" />
+		<copy file="${dir.build}/box.json" toFile="${dir.testbox.exports}/box.json" outputencoding="UTF-8"/>
 		
 		<!-- Move Bleeding Edge to Root -->
-		<copy file="${dir.testbox.exports}/box.json" 							toFile="${be.testbox.exports}/box.json" overwrite="true" />
-		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip" 		tofile="${be.testbox.exports}/${testbox.slug}-be.zip" overwrite="true" />
-		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip.md5" 	tofile="${be.testbox.exports}/${testbox.slug}-be.zip.md5" overwrite="true" />
+		<copy file="${dir.testbox.exports}/box.json" 							
+			  toFile="${be.testbox.exports}/box.json" 
+			  overwrite="true" 
+			  outputencoding="UTF-8"/>
+		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip" 		
+			  tofile="${be.testbox.exports}/${testbox.slug}-be.zip" 
+			  overwrite="true" 
+			  outputencoding="UTF-8"/>
+		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip.md5" 
+			  tofile="${be.testbox.exports}/${testbox.slug}-be.zip.md5" 
+			  overwrite="true" 
+			  outputencoding="UTF-8"/>
 
 		<!-- Create Box Repo From macrodef -->
 		<box-repo location="${dir.exports}/${testbox.slug}" 
@@ -184,7 +192,7 @@
 		<concat destfile="${dir.build}/mockbox/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy src to mockbox namespace -->	
-      	<copy todir="${dir.build}/mockbox/system">
+      	<copy todir="${dir.build}/mockbox/system" outputencoding="UTF-8">
         	<fileset dir="system">
         		<include name="MockBox.cfc"/>
         		<include name="mockutils/**"/>
@@ -194,23 +202,23 @@
         </copy>
 
         <!-- Copy box.json -->	
-      	<copy file="box-mockbox.json" toFile="${dir.build}/box.json" />
+      	<copy file="box-mockbox.json" toFile="${dir.build}/box.json" outputencoding="UTF-8"/>
 
 		<!-- Replace Build Numbers -->
-		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true">
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}">
 		  </fileset>
 		</replaceregexp>
 					
 		<echo>Refactoring for testbox absolute paths</echo>
-		<replace dir="${dir.build}" value="/mockbox/system/" summary="yes">
+		<replace dir="${dir.build}" value="/mockbox/system/" summary="yes" encoding="UTF-8">
 		  	<include name="**/*.cfc" />
 			<include name="**/*.cfm" />
 			<include name="**/*.xml" />
 			<replacetoken>/testbox/system/</replacetoken>
 		</replace>
 		<echo>Refactoring for testbox instantitation and cfc paths</echo>
-		<replace dir="${dir.build}" value="mockbox.system." summary="yes">
+		<replace dir="${dir.build}" value="mockbox.system." summary="yes" encoding="UTF-8">
 		  	<include name="**/*.cfc" />
 			<include name="**/*.cfm" />
 			<include name="**/*.xml" />
@@ -226,7 +234,7 @@
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.mockbox.exports}/mockbox-${mockbox.version}.zip" basedir="${dir.build}" />
 		<!-- Copy box.json to exports -->
-		<copy file="${dir.build}/box.json" toFile="${dir.mockbox.exports}/box.json" />
+		<copy file="${dir.build}/box.json" toFile="${dir.mockbox.exports}/box.json" outputencoding="UTF-8"/>
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
 			<fileset dir="${dir.mockbox.exports}">
@@ -235,9 +243,18 @@
 		</checksum>
 
 		<!-- Move Bleeding Edge to Root -->
-		<copy file="${dir.mockbox.exports}/box.json" 							toFile="${be.mockbox.exports}/box.json" overwrite="true" />
-		<copy file="${dir.mockbox.exports}/mockbox-${mockbox.version}.zip" 		tofile="${be.mockbox.exports}/${mockbox.slug}-be.zip" overwrite="true"/>	
-		<copy file="${dir.mockbox.exports}/mockbox-${mockbox.version}.zip.md5" 	tofile="${be.mockbox.exports}/${mockbox.slug}-be.zip.md5" overwrite="true"/>	
+		<copy file="${dir.mockbox.exports}/box.json" 							
+			  toFile="${be.mockbox.exports}/box.json" 
+			  overwrite="true" 
+			  outputencoding="UTF-8"/>
+		<copy file="${dir.mockbox.exports}/mockbox-${mockbox.version}.zip" 		
+			  tofile="${be.mockbox.exports}/${mockbox.slug}-be.zip" 
+			  overwrite="true"
+			  outputencoding="UTF-8"/>	
+		<copy file="${dir.mockbox.exports}/mockbox-${mockbox.version}.zip.md5" 	
+			  tofile="${be.mockbox.exports}/${mockbox.slug}-be.zip.md5" 
+			  overwrite="true"
+			  outputencoding="UTF-8"/>	
 		
 		<!-- Create Box Repo From macrodef -->
 		<box-repo location="${dir.exports}/${mockbox.slug}" 
