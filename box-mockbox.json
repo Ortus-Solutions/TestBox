@@ -5,7 +5,7 @@
 	"slug"				: "mockbox",
 	"type"				: "testing",
 	"keywords"			: "mocking,testing,xunit,bdd,testbox,mxunit,tdd",
-	"directory"			: "/",
+	"packageDirectory"	: "mockbox",
 	"homepage"			: "http://www.coldbox.org",
 	"documentation"		: "http://wiki.coldbox.org/wiki/MockBox.cfm",
 	"repository"		: { "type" : "git", "url" : "https://github.com/Ortus-Solutions/TestBox" },
