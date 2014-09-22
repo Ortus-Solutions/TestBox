@@ -656,7 +656,7 @@ component{
 	private function equalize( required expected, required actual ){
 
 		// Numerics
-		if( isNumeric( arguments.actual ) && isNumeric( arguments.expected ) && arguments.actual eq arguments.expected ){
+		if( isNumeric( arguments.actual ) && isNumeric( arguments.expected ) && toString( arguments.actual ) eq toString( arguments.expected ) ){
 			return true;
 		}
 
