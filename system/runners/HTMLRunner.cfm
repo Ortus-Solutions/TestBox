@@ -1,4 +1,5 @@
 <cfsetting showDebugOutput="false">
+<cfsetting requesttimeout="99999999">
 <!--- Executes all tests in the 'specs' folder with simple reporter by default --->
 <cfparam name="url.reporter" 			default="simple">
 <cfparam name="url.directory" 			default="">
