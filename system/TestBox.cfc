@@ -42,7 +42,7 @@ component accessors="true"{
 	){
 
 		// TestBox version
-		variables.version 	= "2.1.0.@build.number@";
+		variables.version 	= "2.1.0+@build.number@";
 		variables.codename 	= "";
 		// init util
 		variables.utility = new testbox.system.util.Util();
@@ -266,8 +266,8 @@ component accessors="true"{
 			response.addHeader( "x-testbox-totalError", javaCast( "string", results.getTotalError() ) );
 			response.addHeader( "x-testbox-totalSkipped", javaCast( "string", results.getTotalSkipped() ) );
 		} catch( Any e ){
-			writeLog( type="error", 
-					  text="Error sending TestBox headers: #e.message# #e.detail# #e.stackTrace#", 
+			writeLog( type="error",
+					  text="Error sending TestBox headers: #e.message# #e.detail# #e.stackTrace#",
 					  file="testbox.log" );
 		}
 

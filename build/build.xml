@@ -56,7 +56,7 @@
 		<property file="build/build.number"/>
 		
 		<!-- Build Label -->
-		<property name="build.label" value="testbox-${testbox.version}.${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		<property name="build.label" value="testbox-${testbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
 		
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />

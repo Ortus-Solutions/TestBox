@@ -34,7 +34,7 @@ Description		:
 				instance.generationPath = instance.generationPath & "/";
 			}
 
-			instance.version 		= "3.1.0.@build.number@";
+			instance.version 		= "3.1.0+@build.number@";
 			instance.mockGenerator 	= createObject("component","testbox.system.mockutils.MockGenerator").init( this, true );
 
 			return this;
