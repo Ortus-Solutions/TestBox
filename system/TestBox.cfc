@@ -91,7 +91,7 @@ component accessors="true"{
 	){
 
 		// reporter passed?
-		if( structKeyExists( arguments, "reporter" ) ){ variables.reporter = arguments.reporter; }
+		if( !IsNull( arguments.reporter ) ){ variables.reporter = arguments.reporter; }
 		// run it and get results
 		var results = runRaw( argumentCollection=arguments );
 		// store latest results
@@ -121,37 +121,37 @@ component accessors="true"{
 	){
 
 		// inflate options if passed
-		if( structKeyExists( arguments, "options" ) ){ variables.options = arguments.options; }
+		if( !IsNull( arguments.options ) ){ variables.options = arguments.options; }
 		// inflate directory?
-		if( structKeyExists( arguments, "directory" ) && isSimpleValue( arguments.directory ) ){ arguments.directory = { mapping=arguments.directory, recurse=true }; }
+		if( !IsNull( arguments.directory ) && isSimpleValue( arguments.directory ) ){ arguments.directory = { mapping=arguments.directory, recurse=true }; }
 		// inflate test bundles, suites and specs from incoming variables.
 		arguments.testBundles 	= ( isSimpleValue( arguments.testBundles ) ? listToArray( arguments.testBundles ) : arguments.testBundles );
 		arguments.testSuites 	= ( isSimpleValue( arguments.testSuites ) ? listToArray( arguments.testSuites ) : arguments.testSuites );
 		arguments.testSpecs 	= ( isSimpleValue( arguments.testSpecs ) ? listToArray( arguments.testSpecs ) : arguments.testSpecs );
 
 		// Verify URL conventions for bundle, suites and specs exclusions.
-		if( structKeyExists( url, "testBundles") ){
+		if( !IsNull( url.testBundles) ){
 			testBundles.addAll( listToArray( url.testBundles ) );
 		}
-		if( structKeyExists( url, "testSuites") ){
+		if( !IsNull( url.testSuites) ){
 			arguments.testSuites.addAll( listToArray( url.testSuites ) );
 		}
-		if( structKeyExists( url, "testSpecs") ){
+		if( !IsNull( url.testSpecs) ){
 			arguments.testSpecs.addAll( listToArray( url.testSpecs ) );
 		}
-		if( structKeyExists( url, "testMethod") ){
+		if( !IsNull( url.testMethod) ){
 			arguments.testSpecs.addAll( listToArray( url.testMethod ) );
 		}
 
 		// Using a directory runner?
-		if( structKeyExists( arguments, "directory" ) && !structIsEmpty( arguments.directory ) ){
+		if( !IsNull( arguments.directory ) && !structIsEmpty( arguments.directory ) ){
 			arguments.bundles = getSpecPaths( arguments.directory );
 		}
 
 		// Inflate labels if passed
-		if( structKeyExists( arguments, "labels" ) ){ inflateLabels( arguments.labels ); }
+		if( !IsNull( arguments.labels ) ){ inflateLabels( arguments.labels ); }
 		// If bundles passed, inflate those as the target
-		if( structKeyExists( arguments, "bundles" ) ){ inflateBundles( arguments.bundles ); }
+		if( !IsNull( arguments.bundles ) ){ inflateBundles( arguments.bundles ); }
 
 		// create results object
 		var results = new testbox.system.TestResult( bundleCount=arrayLen( variables.bundles ),
@@ -208,7 +208,7 @@ component accessors="true"{
 		arguments.testSpecs 	= listToArray( arguments.testSpecs );
 
 		// options inflate from JSON
-		if( structKeyExists( arguments, "options" ) and isJSON( arguments.options ) ){
+		if( !IsNull( arguments.options ) and isJSON( arguments.options ) ){
 			arguments.options = deserializeJSON( arguments.options );
 		}
 		else{
@@ -216,12 +216,12 @@ component accessors="true"{
 		}
 
 		// Inflate directory?
-		if( structKeyExists( arguments, "directory" ) and len( arguments.directory ) ){
+		if( !IsNull( arguments.directory ) and len( arguments.directory ) ){
 			arguments.directory = { mapping = arguments.directory, recurse = arguments.recurse };
 		}
 
 		// reporter options inflate from JSON
-		if( structKeyExists( arguments, "reporterOptions" ) and isJSON( arguments.reporterOptions ) ){
+		if( !IsNull( arguments.reporterOptions ) and isJSON( arguments.reporterOptions ) ){
 			arguments.reporterOptions = deserializeJSON( arguments.reporterOptions );
 		}
 		else{
@@ -229,7 +229,7 @@ component accessors="true"{
 		}
 
 		// setup reporter
-		if( structKeyExists( arguments, "reporter" ) and len( arguments.reporter ) ){
+		if( !IsNull( arguments.reporter ) and len( arguments.reporter ) ){
 			variables.reporter = { type = arguments.reporter, options = arguments.reporterOptions };
 		}
 
@@ -266,8 +266,8 @@ component accessors="true"{
 			response.addHeader( "x-testbox-totalError", javaCast( "string", results.getTotalError() ) );
 			response.addHeader( "x-testbox-totalSkipped", javaCast( "string", results.getTotalSkipped() ) );
 		} catch( Any e ){
-			writeLog( type="error", 
-					  text="Error sending TestBox headers: #e.message# #e.detail# #e.stackTrace#", 
+			writeLog( type="error",
+					  text="Error sending TestBox headers: #e.message# #e.detail# #e.stackTrace#",
 					  file="testbox.log" );
 		}
 
