@@ -1,7 +1,7 @@
 /**
 ********************************************************************************
-Copyright 2005-2009 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.ortussolutions.com
 ********************************************************************************
 * Welcome to the next generation of BDD and xUnit testing for CFML applications
 * The TestBox core class allows you to execute all kinds of test bundles, directories and more.
