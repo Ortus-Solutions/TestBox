@@ -5,12 +5,12 @@
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
-	<style>#fileRead( '/testbox/system/reports/assets/css/simple.css' )#</style>
+	<style>#fileRead( expandPath( '/testbox/system/reports/assets/css/simple.css' ) )#</style>
 	<style>
 	.dots{ font-size: 60px; clear: both; margin-bottom: 20px; }
 	.dots span{ float: left; margin: -6px;}
 	</style>
-	<script>#fileRead( '/testbox/system/reports/assets/js/jquery.js' )#</script>
+	<script>#fileRead( expandPath( '/testbox/system/reports/assets/js/jquery.js' ) )#</script>
 	<script>
 	function showInfo( failMessage, specID, isError ){
 		if( failMessage.length ){

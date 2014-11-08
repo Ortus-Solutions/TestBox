@@ -5,8 +5,8 @@
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
-	<script>#fileRead( '/testbox/system/reports/assets/js/jquery.js' )#</script>
-	<style>#fileRead( '/testbox/system/reports/assets/css/simple.css' )#</style>
+	<script>#fileRead( expandPath( '/testbox/system/reports/assets/js/jquery.js' ) )#</script>
+	<style>#fileRead( expandPath( '/testbox/system/reports/assets/css/simple.css' ) )#</style>
 	<script>
 	$(document).ready(function() {
 		// spec toggler
