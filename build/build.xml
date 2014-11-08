@@ -127,7 +127,7 @@
       	<copy file="box.json" toFile="${dir.build}/box.json" encoding="UTF-8"/>
         
         <!-- Copy Samples -->
-		<copy todir="${dir.build}/testbox/samples" encoding="UTF-8">
+		<copy todir="${dir.build}/testbox/tests" encoding="UTF-8">
         	<fileset dir="tests/" />
         </copy>
 		
