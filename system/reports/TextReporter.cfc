@@ -4,11 +4,11 @@ Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
 www.coldbox.org | www.ortussolutions.com
 ********************************************************************************
 * A text reporter
-*/ 
+*/
 component{
 
-	function init(){ 
-		return this; 
+	function init(){
+		return this;
 	}
 
 	/**
@@ -26,7 +26,7 @@ component{
 	* @testbox.hint The TestBox core object
 	* @options.hint A structure of options this reporter needs to build the report with
 	*/
-	any function runReport( 
+	any function runReport(
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
 		struct options={}
@@ -35,13 +35,13 @@ component{
 		getPageContext().getResponse().setContentType( "text/plain" );
 		// bundle stats
 		bundleStats = arguments.results.getBundleStats();
-		
+
 		// prepare the report
 		savecontent variable="local.report"{
 			include "assets/text.cfm";
 		}
 
-		return local.report;
+		return reReplace( trim( local.report ), '[\r\n]+', chr(10), 'all' );
 	}
-	
+
 }
