@@ -722,16 +722,26 @@ component{
 			}
 
 			for( var i=1; i lte arrayLen( arguments.actual ); i++ ){
-				// check for both nulls
-				if( isNull( arguments.actual[ i ] ) and isNull( arguments.expected[ i ] ) ){
+				// check for both being defined
+				if( arrayIsDefined( arguments.actual, i ) and arrayIsDefined( arguments.expected, i ) ){
+					// check for both nulls
+					if( isNull( arguments.actual[ i ] ) and isNull( arguments.expected[ i ] ) ){
+						continue;
+					}
+					// check if one is null mismatch
+					if( isNull( arguments.actual[ i ] ) OR isNull( arguments.expected[ i ] ) ){
+						return false;
+					}
+					// And make sure they match
+					if( !equalize( arguments.actual[ i ], arguments.expected[ i ] ) ) {
+						return false;
+					}
 					continue;
 				}
-				// check if one is null mismatch
-				if( isNull( arguments.actual[ i ] ) OR isNull( arguments.expected[ i ] ) ){
-					return false;
-				}
-				// And make sure they match
-				if( !equalize( arguments.actual[ i ], arguments.expected[ i ] ) ) {
+				// check if both not defined, then continue to next element
+				if( !arrayIsDefined( arguments.actual, i ) and !arrayIsDefined( arguments.expected, i ) ){
+					continue;
+				} else {
 					return false;
 				}
 			}
