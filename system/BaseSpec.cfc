@@ -84,6 +84,14 @@ component{
 	}
 
 	/**
+	* This is used to surround a spec with your own closure code to provide a nice around decoration advice
+	* @body The closure function
+	*/
+	function aroundEach( required any body ){
+		this.$suitesReverseLookup[ this.$suiteContext ].aroundEach = arguments.body;
+	}
+
+	/**
 	* The way to describe BDD test suites in TestBox. The title is usually what you are testing or grouping of tests.
 	* The body is the function that implements the suite.
 	* @title The name of this test suite
@@ -122,6 +130,8 @@ component{
 			beforeEach 	= variables.closureStub,
 			// the afterEach closure
 			afterEach 	= variables.closureStub,
+			// the aroundEach closure, init to empty to distinguish
+			aroundEach	= "",
 			// the parent suite
 			parent 		= "",
 			// the parent ref
@@ -423,8 +433,14 @@ component{
 				runBeforeEachClosures( arguments.suite, arguments.spec );
 
 				try{
-					// Execute the Spec body
-					arguments.spec.body();
+					// around each test
+					if( isClosure( suite.aroundEach ) ){
+						runAroundEachClosures( arguments.suite, arguments.spec );
+						//suite.aroundEach( spec=arguments.spec );
+					} else {
+						// Execute the Spec body
+						arguments.spec.body();
+					}
 				} catch( any e ){
 					rethrow;
 				} finally {
@@ -492,6 +508,35 @@ component{
 
 		// execute beforeEach()
 		arguments.suite.beforeEach( currentSpec=arguments.spec.name );
+
+		return this;
+	}
+
+	/**
+	* Execute the around each closures in order for a suite and spec
+	*/
+	BaseSpec function runAroundEachClosures( required suite, required spec ){
+		var reverseTree = [];
+
+		// do we have nested suites? If so, traverse the tree to build reverse execution map
+		var parentSuite = arguments.suite.parentRef;
+		while( !isSimpleValue( parentSuite ) ){
+			arrayAppend( reverseTree, parentSuite.aroundEach );
+			parentSuite = parentSuite.parentRef;
+		}
+		// Execute reverse tree
+		var treeLen = arrayLen( reverseTree );
+		if( treeLen gt 0 ){
+			for( var x=treeLen; x gte 1; x-- ){
+				var thisAroundClosure = reverseTree[ x ];
+				if( isClosure( thisAroundClosure ) ){
+					thisAroundClosure( spec=arguments.spec );
+				}
+			}
+		}
+
+		// execute aroundEach()
+		arguments.suite.aroundEach( spec=arguments.spec );
 
 		return this;
 	}
@@ -622,9 +667,9 @@ component{
 	* @deepCopy By default we do not duplicate the incoming information, but you can :)
 	* @top The top numeric number to dump on the screen in the report, defaults to 999
 	*/
-	any function debug( 
-		any var, 
-		string label="", 
+	any function debug(
+		any var,
+		string label="",
 		boolean deepCopy=false,
 		numeric top="999"
 	){
