@@ -31,11 +31,19 @@ component extends="testbox.system.BaseSpec"{
 				expect( buffer[ 2 ].label ).toBe( "/Debug/can have generic labels" );
 			});
 
+			it( "can do top functionality", function(){
+				var nested = [
+					1, 2, 3, 4,
+					[ 1, 2, 3, 4, [ 1, 2, 3, 4 ] ]
+				];
+				debug( var=nested, top=1 );
+			});
+
 			describe( "another Suite", function(){
 				it( "can have generic labels too", function(){
 					debug( var=[1,2,3,4] );
 					var buffer = getDebugBuffer();
-					expect( buffer[ 3 ].label ).toBe( "/Debug/another Suite/can have generic labels too" );
+					expect( buffer[ 4 ].label ).toBe( "/Debug/another Suite/can have generic labels too" );
 				});
 			});
 

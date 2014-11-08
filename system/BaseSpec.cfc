@@ -43,8 +43,8 @@ component{
 
 	/**
 	* Expect an exception from the testing spec
-	* @type.hint The type to expect
-	* @regex.hint Optional exception message regular expression to match, by default it matches .*
+	* @type The type to expect
+	* @regex Optional exception message regular expression to match, by default it matches .*
 	*/
 	function expectedException( type="", regex=".*" ){
 		this.$expectedException = arguments;
@@ -69,7 +69,7 @@ component{
 
 	/**
 	* This function is used for BDD test suites to store the beforeEach() function to execute for a test suite group
-	* @body.hint The closure function
+	* @body The closure function
 	*/
 	function beforeEach( required any body ){
 		this.$suitesReverseLookup[ this.$suiteContext ].beforeEach = arguments.body;
@@ -77,7 +77,7 @@ component{
 
 	/**
 	* This function is used for BDD test suites to store the afterEach() function to execute for a test suite group
-	* @body.hint The closure function
+	* @body The closure function
 	*/
 	function afterEach( required any body ){
 		this.$suitesReverseLookup[ this.$suiteContext ].afterEach = arguments.body;
@@ -86,8 +86,8 @@ component{
 	/**
 	* The way to describe BDD test suites in TestBox. The title is usually what you are testing or grouping of tests.
 	* The body is the function that implements the suite.
-	* @title.hint The name of this test suite
-	* @body.hint The closure that represents the test suite
+	* @title The name of this test suite
+	* @body The closure that represents the test suite
 	* @labels The list or array of labels this suite group belongs to
 	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
 	* @skip A flag or a closure that tells TestBox to skip this suite group from testing if true. If this is a closure it must return boolean.
@@ -187,8 +187,8 @@ component{
 	/**
 	* The it() function describes a spec or a test in TestBox.  The body argument is the closure that implements
 	* the test which usually contains one or more expectations that test the state of the code under test.
-	* @title.hint The title of this spec
-	* @body.hint The closure that represents the test
+	* @title The title of this spec
+	* @body The closure that represents the test
 	* @labels The list or array of labels this spec belongs to
 	* @skip A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
 	*/
@@ -238,8 +238,8 @@ component{
 
 	/**
 	* This is a convenience method that makes sure the test suite is skipped from execution
-	* @title.hint The name of this test suite
-	* @body.hint The closure that represents the test suite
+	* @title The name of this test suite
+	* @body The closure that represents the test suite
 	* @labels The list or array of labels this suite group belongs to
 	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
 	*/
@@ -255,8 +255,8 @@ component{
 
 	/**
 	* This is a convenience method that makes sure the test spec is skipped from execution
-	* @title.hint The title of this spec
-	* @body.hint The closure that represents the test
+	* @title The title of this spec
+	* @body The closure that represents the test
 	* @labels The list or array of labels this spec belongs to
 	*/
 	any function xit(
@@ -270,7 +270,7 @@ component{
 
 	/**
 	* Start an expectation expression. This returns an instance of Expectation so you can work with its matchers.
-	* @actual.hint The actual value, it is not required as it can be null.
+	* @actual The actual value, it is not required as it can be null.
 	*/
 	Expectation function expect( any actual ){
 		// build an expectation
@@ -296,7 +296,7 @@ component{
 
 	/**
 	* Add custom matchers to your expectations
-	* @matchers.hint The structure of custom matcher functions to register or a path or instance of a CFC containing all the matcher functions to register
+	* @matchers The structure of custom matcher functions to register or a path or instance of a CFC containing all the matcher functions to register
 	*/
 	function addMatchers( required any matchers ){
 		// register structure
@@ -329,7 +329,7 @@ component{
 
 	/**
 	* Add custom assertions to the $assert object
-	* @assertions.hint The structure of custom assertion functions to register or a path or instance of a CFC containing all the assertion functions to register
+	* @assertions The structure of custom assertion functions to register or a path or instance of a CFC containing all the assertion functions to register
 	*/
 	function addAssertions( required any assertions ){
 		// register structure
@@ -364,10 +364,10 @@ component{
 
 	/**
 	* Run a test remotely, only useful if the spec inherits from this class. Useful for remote executions.
-	* @testSuites.hint A list or array of suite names that are the ones that will be executed ONLY!
-	* @testSpecs.hint A list or array of test names that are the ones that will be executed ONLY!
-	* @reporter.hint The type of reporter to run the test with
-	* @labels.hint A list or array of labels to apply to the testing.
+	* @testSuites A list or array of suite names that are the ones that will be executed ONLY!
+	* @testSpecs A list or array of test names that are the ones that will be executed ONLY!
+	* @reporter The type of reporter to run the test with
+	* @labels A list or array of labels to apply to the testing.
 	*/
 	remote function runRemote(
 		string testSpecs="",
@@ -385,11 +385,11 @@ component{
 
 	/**
 	* Run a BDD test in this target CFC
-	* @spec.hint The spec definition to test
-	* @suite.hint The suite definition this spec belongs to
-	* @testResults.hint The testing results object
-	* @suiteStats.hint The suite stats that the incoming spec definition belongs to
-	* @runner.hint The runner calling this BDD test
+	* @spec The spec definition to test
+	* @suite The suite definition this spec belongs to
+	* @testResults The testing results object
+	* @suiteStats The suite stats that the incoming spec definition belongs to
+	* @runner The runner calling this BDD test
 	*/
 	function runSpec(
 		required spec,
@@ -514,10 +514,10 @@ component{
 
 	/**
 	* Runs a xUnit style test method in this target CFC
-	* @spec.hint The spec definition to test
-	* @testResults.hint The testing results object
-	* @suiteStats.hint The suite stats that the incoming spec definition belongs to
-	* @runner.hint The runner calling this BDD test
+	* @spec The spec definition to test
+	* @testResults The testing results object
+	* @suiteStats The suite stats that the incoming spec definition belongs to
+	* @runner The runner calling this BDD test
 	*/
 	function runTestMethod(
 		required spec,
@@ -607,8 +607,8 @@ component{
 
 	/**
 	* Send some information to the console via writedump( output="console" )
-	* @var.hint The data to send
-	* @top.hint Apply a top to the dump, by default it does 9999 levels
+	* @var The data to send
+	* @top Apply a top to the dump, by default it does 9999 levels
 	*/
 	any function console( required var, top=9999 ){
 		writedump( var=arguments.var, output="console", top=arguments.top );
@@ -617,25 +617,32 @@ component{
 
 	/**
 	* Debug some information into the TestBox debugger array buffer
-	* @var.hint The data to debug
-	* @label.hint The label to add to the debug entry
-	* @deepCopy.hint By default we do not duplicate the incoming information, but you can :)
+	* @var The data to debug
+	* @label The label to add to the debug entry
+	* @deepCopy By default we do not duplicate the incoming information, but you can :)
+	* @top The top numeric number to dump on the screen in the report, defaults to 999
 	*/
-	any function debug( any var, string label="", boolean deepCopy=false ){
+	any function debug( 
+		any var, 
+		string label="", 
+		boolean deepCopy=false,
+		numeric top="999"
+	){
 		// null check
 		if( isNull( arguments.var ) ){ arrayAppend( this.$debugBuffer, "null" ); return; }
 		// lock and add
 		lock name="tb-debug-#this.$testID#" type="exclusive" timeout="10"{
 			// duplication control
 			var newVar = ( arguments.deepCopy ? duplicate( arguments.var ) : arguments.var );
-			// comput label?
+			// compute label?
 			if( !len( trim( arguments.label ) ) ){ arguments.label = this.$currentExecutingSpec; }
 			// add to debug output
 			arrayAppend( this.$debugBuffer, {
 				data=newVar,
 				label=arguments.label,
 				timestamp=now(),
-				thread=( isNull( cfthread ) ? structNew() : cfthread )
+				thread=( isNull( cfthread ) ? structNew() : cfthread ),
+				top=arguments.top
 			} );
 		}
 		return this;
@@ -679,9 +686,9 @@ component{
 
 	/**
 	* Make a private method on a CFC public with or without a new name and returns the target object
-	* @target.hint The target object to expose the method
-	* @method.hint The private method to expose
-	* @newName.hint If passed, it will expose the method with this name, else just uses the same name
+	* @target The target object to expose the method
+	* @method The private method to expose
+	* @newName If passed, it will expose the method with this name, else just uses the same name
 	*/
 	any function makePublic( required any target, required string method, string newName="" ){
 
@@ -695,10 +702,10 @@ component{
 
 	/**
 	* Get a private property
-	* @target.hint The target to get a property from
-	* @name.hint The name of the property to retrieve
-	* @scope.hint The scope to get it from, defaults to 'variables' scope
-	* @defaultValue.hint A default value if the property does not exist
+	* @target The target to get a property from
+	* @name The name of the property to retrieve
+	* @scope The scope to get it from, defaults to 'variables' scope
+	* @defaultValue A default value if the property does not exist
 	*/
 	any function getProperty( required target, required name, scope="variables", defaultValue ){
 		// stupid cf10 parser
@@ -715,7 +722,7 @@ component{
 
 	/**
 	* Get a reference to the MockBox engine
-	* @generationPath.hint The path to generate the mocks if passed, else uses default location.
+	* @generationPath The path to generate the mocks if passed, else uses default location.
 	*/
 	function getMockBox( string generationPath ){
 		if( structKeyExists( arguments, "generationPath" ) ){
@@ -726,9 +733,9 @@ component{
 
 	/**
 	* Create an empty mock
-	* @className.hint The class name of the object to mock. The mock factory will instantiate it for you
-	* @object.hint The object to mock, already instantiated
-	* @callLogging.hint Add method call logging for all mocked methods. Defaults to true
+	* @className The class name of the object to mock. The mock factory will instantiate it for you
+	* @object The object to mock, already instantiated
+	* @callLogging Add method call logging for all mocked methods. Defaults to true
 	*/
 	function createEmptyMock(
 		string className,
@@ -740,10 +747,10 @@ component{
 
 	/**
 	* Create a mock with or without clearing implementations, usually not clearing means you want to build object spies
-	* @className.hint The class name of the object to mock. The mock factory will instantiate it for you
-	* @object.hint The object to mock, already instantiated
-	* @clearMethods.hint If true, all methods in the target mock object will be removed. You can then mock only the methods that you want to mock. Defaults to false
-	* @callLogging.hint Add method call logging for all mocked methods. Defaults to true
+	* @className The class name of the object to mock. The mock factory will instantiate it for you
+	* @object The object to mock, already instantiated
+	* @clearMethods If true, all methods in the target mock object will be removed. You can then mock only the methods that you want to mock. Defaults to false
+	* @callLogging Add method call logging for all mocked methods. Defaults to true
 	*/
 	function createMock(
 		string className,
@@ -756,8 +763,8 @@ component{
 
 	/**
 	* Prepares an already instantiated object to act as a mock for spying and much more
-	* @object.hint The object to mock, already instantiated
-	* @callLogging.hint Add method call logging for all mocked methods. Defaults to true
+	* @object The object to mock, already instantiated
+	* @callLogging Add method call logging for all mocked methods. Defaults to true
 	*/
 	function prepareMock(
 		any object,
@@ -768,9 +775,9 @@ component{
 
 	/**
 	* Create an empty stub object that you can use for mocking
-	* @callLogging.hint Add method call logging for all mocked methods. Defaults to true
-	* @extends.hint Make the stub extend from certain CFC
-	* @implements.hint Make the stub adhere to an interface
+	* @callLogging Add method call logging for all mocked methods. Defaults to true
+	* @extends Make the stub extend from certain CFC
+	* @implements Make the stub adhere to an interface
 	*/
 	function createStub(
 		boolean callLogging=true,
