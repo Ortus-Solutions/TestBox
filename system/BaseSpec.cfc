@@ -516,28 +516,9 @@ component{
 	* Execute the around each closures in order for a suite and spec
 	*/
 	BaseSpec function runAroundEachClosures( required suite, required spec ){
-		var reverseTree = [];
-
-		// do we have nested suites? If so, traverse the tree to build reverse execution map
-		var parentSuite = arguments.suite.parentRef;
-		while( !isSimpleValue( parentSuite ) ){
-			arrayAppend( reverseTree, parentSuite.aroundEach );
-			parentSuite = parentSuite.parentRef;
-		}
-		// Execute reverse tree
-		var treeLen = arrayLen( reverseTree );
-		if( treeLen gt 0 ){
-			for( var x=treeLen; x gte 1; x-- ){
-				var thisAroundClosure = reverseTree[ x ];
-				if( isClosure( thisAroundClosure ) ){
-					thisAroundClosure( spec=arguments.spec );
-				}
-			}
-		}
-
+		// TODO: Add multi-tree traversal aroundEach(), 1 level as of now.
 		// execute aroundEach()
-		arguments.suite.aroundEach( spec=arguments.spec );
-
+		arguments.suite.aroundEach( spec=arguments.spec, suite=arguments.suite );
 		return this;
 	}
 
