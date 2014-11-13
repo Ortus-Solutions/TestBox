@@ -59,9 +59,9 @@ component extends="testbox.system.BaseSpec"{
 			it("can have more than one expectation test", function(){
 				coldbox = coldbox * 8;
 				// type checks
-				expect( coldbox ).toBeTypeOf( 'numeric' );
-				// dynamic type methods
-				expect( coldbox ).toBeNumeric();
+				expect( coldbox )
+					.toBeTypeOf( 'numeric' )
+					.toBeNumeric();
 				// delta ranges
 				expect( coldbox ).toBeCloseTo( expected=10, delta=2 );
 				// negations

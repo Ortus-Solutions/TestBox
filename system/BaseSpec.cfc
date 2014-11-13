@@ -289,8 +289,7 @@ component{
 		// Store the actual data
 		if( !isNull( arguments.actual ) ){
 			oExpectation.actual = arguments.actual;
-		}
-		else{
+		} else {
 			oExpectation.actual = javacast( "null", "" );
 		}
 
