@@ -1,0 +1,272 @@
+﻿<?xml version="1.0"?>
+<!-- ====================================================================== 
+     TestBox Build (www.coldbox.org)                                                     
+     ====================================================================== -->
+<project name="testbox-build" default="build.all" basedir="../">
+	<description>
+    	Build a new distribution of TestBox and MockBox
+    </description>
+	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
+	<property name="groupID"			value="ortussolutions" />
+	<property name="testbox.version"	value="2.1.0"/>
+	<property name="testbox.slug"		value="testbox"/>
+	<property name="mockbox.version"	value="3.1.0"/>
+	<property name="mockbox.slug"		value="mockbox"/>
+		
+	<!-- Build Labels -->
+	<tstamp prefix="start"/>
+	<!-- Load Contrib Tasks -->
+	<path id="cp">
+		<fileset dir="build/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<!-- Define Tasks -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
+	<!-- Import Box-Repo Tasks -->
+	<import><url url="https://raw.githubusercontent.com/Ortus-Solutions/box-tasks/master/box-repo.xml"/></import>
+	 	
+		
+	<!-- Init -->
+	<target name="init" description="Init the build" unless="src.isInit">
+		<!-- Default environment check, if not passed via -Denvironment -->
+		<condition property="environment" value="local">
+			<not><isset property="environment" /></not>
+		</condition>
+		<if>
+			<available file="build/build-${environment}.properties" />
+			<then>
+				<!-- Load env properties -->
+				<echo>Loading properties from environment: ${environment}</echo>
+				<loadproperties srcFile="build/build-${environment}.properties"/>
+			</then>
+		</if>
+		<!-- Load root properties -->
+		<echo>Loading base properties</echo>
+		<loadproperties srcFile="build/build.properties"/>
+
+		<!-- Build Number -->
+		<propertyfile file="build/build.number" comment="Build Number for ANT. Edit not!">
+			<entry key="build.number" 
+					type="int" 
+			     	operation="+"
+					pattern="00000"
+			     	default="1" />
+		</propertyfile>
+		<property file="build/build.number"/>
+		
+		<!-- Build Label -->
+		<property name="build.label" value="testbox-${testbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		
+		<!-- Cleanup + Init -->
+		<delete dir="${dir.build}" />
+		<mkdir dir="${dir.build}"/>
+		<chmod file="${dir.build}/**" perm="og+wrs" type="both" />
+		<!-- Mark as init -->
+		<property name="src.isInit" value="true" />
+	</target>
+	
+	<!-- update permissions on reports -->
+	<target name="update.permissions" description="Update staging server permissions">
+		<!-- Integration permissions -->
+		<if>
+			<equals arg1="${environment}" arg2="auto" />
+			<then>
+				<chmod file="${dir.build}/**" perm="go+wrs" type="both" verbose="true" />
+				<chown owner="stg-ortus" verbose="true">
+					<fileset dir="${dir.build}" />
+				</chown>
+			</then>
+			<else>
+			</else>
+		</if>
+	</target>
+	
+	<!-- Build test reports -->
+    <target name="run-tests" depends="init">
+    	<!-- Execute tests -->
+        <subant target="run-junit">
+          	<fileset dir="tests" includes="test.xml"/>
+    		<property name="environment" value="${environment}" />
+        </subant>
+    </target>
+    	
+    <!-- Build All Releases -->
+	<target name="build.all" description="Builds TestBox + MockBox Standalone Libraries" depends="run-tests,build.testbox,build.mockbox">
+		
+	</target>
+	
+	<!-- Build TestBox-->
+	<target name="build.testbox" description="Build a new TestBox Distribution" depends="init">
+		<!-- prepare dirs -->
+		<mkdir dir="${dir.build}/testbox/apidocs"/>
+		<property name="dir.testbox.exports"	value="${dir.exports}/${testbox.slug}/${testbox.version}" />
+		<property name="be.testbox.exports" 	value="${be.exports}/${testbox.slug}" />
+		<!-- Update Permissions -->
+		<antcall target="update.permissions" />
+							
+		<!-- Copy build ID -->
+		<concat destfile="${dir.build}/testbox/${build.label}">Built on ${start.TODAY}</concat>
+		
+		<!-- Copy SRC to TestBox namespace -->	
+      	<copy todir="${dir.build}/testbox/" encoding="UTF-8">
+        	<fileset dir=".">
+        		<exclude name="build/**" />
+        		<exclude name="apidocs/**" />
+        		<exclude name="tests/**" />
+        		<exclude name="cpu.json" />
+        		<exclude name="box.json" />
+        		<exclude name="box-mockbox.json" />
+        		<exclude name=".*/**" />
+        		<exclude name="settings.xml" />
+        		<exclude name="build-testbox/**" />
+        	</fileset>
+        </copy>
+
+        <!-- Copy box.json -->	
+      	<copy file="box.json" toFile="${dir.build}/box.json" encoding="UTF-8"/>
+        
+        <!-- Copy Samples -->
+		<copy todir="${dir.build}/testbox/tests" encoding="UTF-8">
+        	<fileset dir="tests/" />
+        </copy>
+		
+		<!-- Replace Build Numbers -->
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
+		  <fileset dir="${dir.build}" />
+		</replaceregexp>
+						
+		<!-- Execute ColdDoc -->
+		<get dest="${dir.build}/colddoc.html" src="${url.testbox.api}${testbox.version}&amp;path=${dir.build}/testbox/apidocs&amp;testbox_root=${dir.build}/testbox" verbose="true"/>
+		<delete file="${dir.build}/colddoc.html" />
+		
+		<!-- Zip API Docs -->
+		<zip destfile="${dir.testbox.exports}/testbox-apidocs-${testbox.version}.zip" basedir="${dir.build}/testbox/apidocs" />
+		<!-- Zip Bundle -->
+		<zip destfile="${dir.testbox.exports}/testbox-${testbox.version}.zip" basedir="${dir.build}" />
+		<!-- Build Checksum -->
+		<checksum forceoverwrite="true" fileext=".md5">
+			<fileset dir="${dir.testbox.exports}">
+				<include name="*.zip" />
+			</fileset>
+		</checksum>
+		<!-- Copy box.json to exports -->
+		<copy file="${dir.build}/box.json" toFile="${dir.testbox.exports}/box.json" encoding="UTF-8"/>
+		
+		<!-- Move Bleeding Edge to Root -->
+		<copy file="${dir.testbox.exports}/box.json" 							
+			  toFile="${be.testbox.exports}/box.json" 
+			  overwrite="true" 
+			  encoding="UTF-8"/>
+		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip" 		
+			  tofile="${be.testbox.exports}/${testbox.slug}-be.zip" 
+			  overwrite="true" 
+			  encoding="UTF-8"/>
+		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip.md5" 
+			  tofile="${be.testbox.exports}/${testbox.slug}-be.zip.md5" 
+			  overwrite="true" 
+			  encoding="UTF-8"/>
+
+		<!-- Create Box Repo From macrodef -->
+		<box-repo location="${dir.exports}/${testbox.slug}" 
+				  artifactID="${testbox.slug}" 
+				  groupID="${groupID}"
+				  buildID="${build.number}"
+				  latest="${testbox.version}"
+				  classifiers="apidocs"/>
+
+		<!-- Cleanup -->
+		<delete dir="${dir.build}" />
+				
+    </target>
+
+	<!-- Build MockBox-->
+	<target name="build.mockbox" description="Build a new MockBox distribution" depends="init">
+		<!-- prepare dirs -->
+		<mkdir dir="${dir.build}/mockbox/apidocs"/>
+		<property name="dir.mockbox.exports"	value="${dir.exports}/${mockbox.slug}/${mockbox.version}" />
+		<property name="be.mockbox.exports" 	value="${be.exports}/${mockbox.slug}" />
+		<!-- Update Permissions -->
+		<antcall target="update.permissions" />
+		
+		<!-- Copy build ID -->
+		<concat destfile="${dir.build}/mockbox/${build.label}">Built on ${start.TODAY}</concat>
+		
+		<!-- Copy src to mockbox namespace -->	
+      	<copy todir="${dir.build}/mockbox/system" encoding="UTF-8">
+        	<fileset dir="system">
+        		<include name="MockBox.cfc"/>
+        		<include name="mockutils/**"/>
+        		<include name="util/**"/>
+        		<include name="stubs/**"/>
+        	</fileset>
+        </copy>
+
+        <!-- Copy box.json -->	
+      	<copy file="box-mockbox.json" toFile="${dir.build}/box.json" encoding="UTF-8"/>
+
+		<!-- Replace Build Numbers -->
+		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
+		  <fileset dir="${dir.build}">
+		  </fileset>
+		</replaceregexp>
+					
+		<echo>Refactoring for testbox absolute paths</echo>
+		<replace dir="${dir.build}" value="/mockbox/system/" summary="yes" encoding="UTF-8">
+		  	<include name="**/*.cfc" />
+			<include name="**/*.cfm" />
+			<include name="**/*.xml" />
+			<replacetoken>/testbox/system/</replacetoken>
+		</replace>
+		<echo>Refactoring for testbox instantitation and cfc paths</echo>
+		<replace dir="${dir.build}" value="mockbox.system." summary="yes" encoding="UTF-8">
+		  	<include name="**/*.cfc" />
+			<include name="**/*.cfm" />
+			<include name="**/*.xml" />
+			<replacetoken>testbox.system.</replacetoken>
+		</replace>
+		
+		<!-- Execute ColdDoc -->
+		<get dest="${dir.build}/colddoc.html" src="${url.mockbox.api}${mockbox.version}&amp;path=${dir.build}/mockbox/apidocs&amp;mockbox_root=${dir.build}/mockbox" verbose="true"/>
+		<delete file="${dir.build}/colddoc.html" />
+		
+		<!-- Zip API Docs -->
+		<zip destfile="${dir.mockbox.exports}/mockbox-apidocs-${mockbox.version}.zip" basedir="${dir.build}/mockbox/apidocs" />
+		<!-- Zip Bundle -->
+		<zip destfile="${dir.mockbox.exports}/mockbox-${mockbox.version}.zip" basedir="${dir.build}" />
+		<!-- Copy box.json to exports -->
+		<copy file="${dir.build}/box.json" toFile="${dir.mockbox.exports}/box.json" encoding="UTF-8"/>
+		<!-- Build Checksum -->
+		<checksum forceoverwrite="true" fileext=".md5">
+			<fileset dir="${dir.mockbox.exports}">
+				<include name="*.zip" />
+			</fileset>
+		</checksum>
+
+		<!-- Move Bleeding Edge to Root -->
+		<copy file="${dir.mockbox.exports}/box.json" 							
+			  toFile="${be.mockbox.exports}/box.json" 
+			  overwrite="true" 
+			  encoding="UTF-8"/>
+		<copy file="${dir.mockbox.exports}/mockbox-${mockbox.version}.zip" 		
+			  tofile="${be.mockbox.exports}/${mockbox.slug}-be.zip" 
+			  overwrite="true"
+			  encoding="UTF-8"/>	
+		<copy file="${dir.mockbox.exports}/mockbox-${mockbox.version}.zip.md5" 	
+			  tofile="${be.mockbox.exports}/${mockbox.slug}-be.zip.md5" 
+			  overwrite="true"
+			  encoding="UTF-8"/>	
+		
+		<!-- Create Box Repo From macrodef -->
+		<box-repo location="${dir.exports}/${mockbox.slug}" 
+				  artifactID="${mockbox.slug}" 
+				  groupID="${groupID}"
+				  buildID="${build.number}"
+				  latest="${mockbox.version}"
+				  classifiers="apidocs"/>
+
+		<!-- cleanup -->
+		<delete dir="${dir.build}" />
+    </target>
+	
+</project>

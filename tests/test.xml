@@ -31,6 +31,15 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 	<!-- FILL OUT WHERE REPORTING RESULTS ARE STORED --> 
 	<property name="report.dir"  		value="${basedir}/results" />
 	<property name="junitreport.dir"  	value="${report.dir}/junitreport" />
+	
+	<!-- Load Contrib Tasks -->
+	<path id="cp">
+		<fileset dir="../build/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<!-- Define Tasks -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
 
 	<!-- Init -->
 	<target name="init" description="Init the tests">
@@ -43,6 +52,9 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 		<loadproperties srcFile="test-${environment}.properties"/>
 		<!-- Start Init -->
 		<mkdir dir="${junitreport.dir}" />
+		<delete>
+			<fileset dir="${report.dir}" />
+		</delete>
 		<tstamp prefix="start">
 			<format property="TODAY" pattern="MM-dd-YYYY hh:mm:ss aa"/>
 		</tstamp>
@@ -63,7 +75,10 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 		-->
 		<get dest="${report.dir}/results.html" 
 			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=${test.reporter}&amp;labels=${test.labels}&amp;propertiesSummary=true" 
-			 verbose="true"/>
+			 verbose="true" 
+			 ignoreerrors="true"
+		     maxtime="0"
+			 retries="0"/>
 		
 		<!-- Bundles Runner
 			You can also run tests for specific bundles by using the runner with the bundles params
@@ -101,22 +116,22 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 		-->
 		<get dest="${report.dir}/results.xml" 
 			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=ANTJunit&amp;labels=${test.labels}&amp;reportPath=${report.dir}&amp;propertiesSummary=true" 
-			 verbose="true"/>
+			 verbose="true" 
+			 ignoreerrors="true"
+		     maxtime="0"
+			 retries="0"/>
 		
-		<!-- Bundles Runner
-			You can also run tests for specific bundles by using the runner with the bundles params
+		<!-- Check if file was created -->
+		<if>
+			<available file="${report.dir}/TEST.properties" />
+			<then>
+			</then>
+			<else>
+				<fail message="Build failed as ${report.dir}/TEST.properties was not found!" />
+			</else>
+		</if>
 
-			Available params for runner:
-			 - Reporter
-			 - Bundles
-			 - Labels
-
-		<get dest="${report.dir}/results.html" 
-			 src="${url.runner}&amp;bundles=${test.bundles}&amp;reporter=${test.reporter}&amp;labels=${test.labels}&amp;propertiesSummary=true" 
-			 verbose="true"/>
-		 -->
-
-		 <!-- Create fancy junit reports -->
+		<!-- Create fancy junit reports -->
 		<junitreport todir="${junitreport.dir}">  
 			<fileset dir="${report.dir}">  
 				<include name="TEST-*.xml"/>  
@@ -125,7 +140,9 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 				<param name="TITLE" expression="My Awesome TestBox Results"/>
 			</report>
 		</junitreport> 
-		
+		<!-- Rename report -->
+		<move file="${junitreport.dir}/junit-noframes.html" tofile="${junitreport.dir}/index.html" />
+		        
         <!-- Read Result Properties -->
         <property file="${report.dir}/TEST.properties"/>
         <!-- Echo them out -->

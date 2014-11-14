@@ -30,6 +30,12 @@ component extends="testbox.system.BaseSpec"{
 				debug( "afterEach #arguments.currentSpec#: coldbox = #coldbox#" );
 			});
 
+			// around each spec in THIS suite group
+			aroundEach(function( spec ){
+				// execute the spec manually now, we can decorate things here too.
+				spec.body();
+			});
+
 			it("before should be 1", function(){
 				expect( coldbox ).toBe( 1 );
 			});
@@ -40,6 +46,12 @@ component extends="testbox.system.BaseSpec"{
 				beforeEach(function( currentSpec ){
 					coldbox = coldbox * 2;
 					debug( "beforeEach #arguments.currentSpec#: coldbox = #coldbox#" );
+				});
+
+				// around each spec in THIS suite group
+				aroundEach(function( spec ){
+					// execute the spec manually now, we can decorate things here too.
+					spec.body();
 				});
 
 				it( "before should be 4", function(){

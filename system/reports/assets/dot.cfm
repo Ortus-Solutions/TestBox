@@ -5,12 +5,12 @@
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
-	<style><cfinclude template="/testbox/system/reports/assets/css/simple.css"></style>
+	<style>#fileRead( expandPath( '/testbox/system/reports/assets/css/simple.css' ) )#</style>
 	<style>
 	.dots{ font-size: 60px; clear: both; margin-bottom: 20px; }
 	.dots span{ float: left; margin: -6px;}
 	</style>
-	<script><cfinclude template="/testbox/system/reports/assets/js/jquery.js"></script>
+	<script>#fileRead( expandPath( '/testbox/system/reports/assets/js/jquery.js' ) )#</script>
 	<script>
 	function showInfo( failMessage, specID, isError ){
 		if( failMessage.length ){
@@ -23,7 +23,7 @@
 	function toggleDebug( specid ){
 		$("div.debugdata").each( function(){
 			var $this = $( this );
-		
+
 			// if bundleid passed and not the same bundle
 			if( specid != undefined && $this.attr( "data-specid" ) != specid ){
 				return;
@@ -101,27 +101,27 @@
 <cffunction name="genSuiteReport" output="false">
 	<cfargument name="suiteStats">
 	<cfargument name="bundleStats">
-	
+
 	<cfset var thisSpec = "">
-	
+
 	<cfsavecontent variable="local.report">
 		<cfoutput>
-			
+
 			<!--- Iterate over suite specs --->
 			<cfloop array="#arguments.suiteStats.specStats#" index="thisSpec">
-				<a href="javascript:showInfo( '#JSStringFormat( thisSpec.failMessage )#', '#thisSpec.id#', '#lcase( NOT structIsEmpty( thisSpec.error ) )#' )" 
-				   title="#htmlEditFormat( thisSpec.name )# (#thisSpec.totalDuration# ms)" 
+				<a href="javascript:showInfo( '#JSStringFormat( thisSpec.failMessage )#', '#thisSpec.id#', '#lcase( NOT structIsEmpty( thisSpec.error ) )#' )"
+				   title="#htmlEditFormat( thisSpec.name )# (#thisSpec.totalDuration# ms)"
 				   data-info="#HTMLEditFormat( thisSpec.failMessage )#"><span class="#lcase( thisSpec.status )#">.</span></a>
-				
+
 				<div style="display:none;" id="error_#thisSpec.id#"><cfdump var="#thisSpec.error#"></div>
-			</cfloop>			
+			</cfloop>
 
 			<!--- Do we have nested suites --->
 			<cfif arrayLen( arguments.suiteStats.suiteStats )>
 				<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
 					#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
 				</cfloop>
-			</cfif>	
+			</cfif>
 
 		</cfoutput>
 	</cfsavecontent>

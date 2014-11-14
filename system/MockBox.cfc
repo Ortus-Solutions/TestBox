@@ -1,7 +1,7 @@
 ﻿<!-----------------------------------------------------------------------
 ********************************************************************************
-Copyright Since 2005 ColdBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.luismajano.com | www.ortussolutions.com
+Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+www.coldbox.org | www.ortussolutions.com
 ********************************************************************************
 Author 	 		: Luis Majano
 Date     		: April 20, 2009
@@ -34,7 +34,7 @@ Description		:
 				instance.generationPath = instance.generationPath & "/";
 			}
 
-			instance.version 		= "3.0.0.@build.number@";
+			instance.version 		= "3.1.0+@build.number@";
 			instance.mockGenerator 	= createObject("component","testbox.system.mockutils.MockGenerator").init( this, true );
 
 			return this;
@@ -95,7 +95,7 @@ Description		:
 				obj = arguments.object;
 			}
 			else{
-				getUtil().throwit(type="mock.invalidArguments",message="Invalid mocking arguments: className or object not found");
+				throw( type="mock.invalidArguments", message="Invalid mocking arguments: className or object not found");
 			}
 
 			// Clear up Mock object?
