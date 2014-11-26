@@ -87,10 +87,10 @@ Description		:
 			var obj = 0;
 
 			// class to mock
-			if ( structKeyExists(arguments, "className") ){
+			if ( !isNull(arguments.className) ){
 				obj = createObject("component",arguments.className);
 			}
-			else if ( structKeyExists(arguments, "object") ){
+			else if ( !isNull(arguments.object) ){
 				// Object to Mock
 				obj = arguments.object;
 			}
@@ -166,7 +166,7 @@ Description		:
 				return thisScope[ arguments.name ];
 			}
 
-			if( structKeyExists( arguments, "default" ) ){
+			if( !isNull( arguments.default ) ){
 				return arguments.default;
 			}
 		</cfscript>
@@ -369,7 +369,7 @@ Description		:
 			oMockGenerator.generate( argumentCollection=arguments );
 
 			// Results Setup For No Argument Definitions or base results
-			if( structKeyExists( arguments, "returns" ) ){
+			if( !isNull( arguments.returns ) ){
 				this._mockResults[ arguments.method ] = ArrayNew( 1 );
 				this._mockResults[ arguments.method ][ 1 ] = arguments.returns;
 			}
@@ -378,7 +378,7 @@ Description		:
 			}
 
 			// Callbacks Setup For No Argument Definitions or base results
-			if( structKeyExists( arguments, "callback" ) ){
+			if( !isNull( arguments.callback ) ){
 				this._mockCallbacks[ arguments.method ] = ArrayNew( 1 );
 				this._mockCallbacks[ arguments.method ][ 1 ] = arguments.callback;
 			}
@@ -494,7 +494,7 @@ Description		:
 			var arg = "";
 
 			for(arg in argOrderedTree) {
-				if( NOT structKeyExists( argOrderedTree, arg ) ){
+				if( isNull( argOrderedTree[ arg ] ) ){
 					/* we aren't going to be able to serialize an undefined variable, this might occur if an arguments structure
 					 * containing optional parameters is passed by argumentCollection=arguments to the mocked method.
 					 */

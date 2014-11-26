@@ -141,20 +141,20 @@ Description		:
 				udfOut.append('
 				<cfif callbackLen neq 0>
 					<cfset fCallBack = this._mockCallbacks[ resultsKey ][ 1 ]>
-					<cfreturn fCallBack()>
+					<cfreturn fCallBack(argumentCollection = arguments)>
 				</cfif>
 				');
 				// Callback Args
 				udfOut.append('
 				<cfif not isSimpleValue( fCallBack )>
-					<cfreturn fCallBack()>
+					<cfreturn fCallBack(argumentCollection = arguments)>
 				</cfif>
 				');
 			}
 			udfOut.append('</cffunction>');
 
 			// Write it out
-			writeStub(genPath & tmpFile, udfOUt.toString());
+			writeStub(genPath & tmpFile, udfOut.toString());
 
 			// Mix In Stub
 			try{
