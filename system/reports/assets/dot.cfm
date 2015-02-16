@@ -1,3 +1,4 @@
+<cfset cDir = getDirectoryFromPath( getCurrentTemplatePath() )>
 <cfoutput>
 <!DOCTYPE html>
 <html>
@@ -5,12 +6,12 @@
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
-	<style>#fileRead( expandPath( '/testbox/system/reports/assets/css/simple.css' ) )#</style>
+	<style>#fileRead( '#cDir#/css/simple.css' )#</style>
+	<script>#fileRead( '#cDir#/js/jquery.js' )#</script>
 	<style>
 	.dots{ font-size: 60px; clear: both; margin-bottom: 20px; }
 	.dots span{ float: left; margin: -6px;}
 	</style>
-	<script>#fileRead( expandPath( '/testbox/system/reports/assets/js/jquery.js' ) )#</script>
 	<script>
 	function showInfo( failMessage, specID, isError ){
 		if( failMessage.length ){
