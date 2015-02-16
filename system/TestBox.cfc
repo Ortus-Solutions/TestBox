@@ -348,12 +348,12 @@ component accessors="true"{
 		// Discover type?
 		if( structKeyExists( target, "run" ) ){
 			// Run via BDD Style
-			new testbox.system.runners.BDDRunner( testbox=this, options=variables.options )
+			new testbox.system.runners.BDDRunner( options=variables.options, testbox=this )
 				.run( target, arguments.testResults );
 		}
 		else{
 			// Run via xUnit Style
-			new testbox.system.runners.UnitRunner( testbox=this, options=variables.options )
+			new testbox.system.runners.UnitRunner( options=variables.options, testbox=this )
 				.run( target, arguments.testResults );
 		}
 
