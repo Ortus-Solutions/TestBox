@@ -128,7 +128,9 @@
         
         <!-- Copy Samples -->
 		<copy todir="${dir.build}/testbox/tests" encoding="UTF-8">
-        	<fileset dir="tests/" />
+        	<fileset dir="tests/">
+        		<exclude name="results/**" />
+        	</fileset>
         </copy>
 		
 		<!-- Replace Build Numbers -->
