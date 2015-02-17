@@ -1,6 +1,6 @@
 {
 	"name" 				: "MockBox",
-	"version"			: "3.0.0",
+	"version"			: "3.2.0",
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "mockbox",
 	"type"				: "testing",
@@ -13,6 +13,7 @@
 	"shortDescription"	: "A mocking and stubbing library",
 	"engines"			: [
 		{ "type" : "railo", "version" : ">4.1" },
+		{ "type" : "lucee", "version" : ">4.5" },
 		{ "type" : "adobe", "version" : ">9.0.2" }
 	],
 	"license"			: [ 

@@ -1,6 +1,6 @@
 {
 	"name" 				: "TestBox",
-	"version"			: "2.0.0",
+	"version"			: "2.2.0",
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "testbox",
 	"type"				: "testing",
@@ -13,6 +13,7 @@
 	"shortDescription"	: "A BDD and xUnit testing framework",
 	"engines"			: [
 		{ "type" : "railo", "version" : ">4.1" },
+		{ "type" : "lucee", "version" : ">4.5" },
 		{ "type" : "adobe", "version" : ">9" }
 	],
 	"license"			: [ 
