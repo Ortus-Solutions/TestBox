@@ -12,7 +12,7 @@
 
 #chr(10)#
 
-<cfloop array="#bundleStats#" index="thisBundle">
+<cfloop array="#variables.bundleStats#" index="thisBundle">
 = #thisBundle.path# (#thisBundle.totalDuration# ms) =
 
 * '''Suites/Specs:''' #thisBundle.totalSuites#/#thisBundle.totalSpecs#

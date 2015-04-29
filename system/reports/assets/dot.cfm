@@ -44,7 +44,7 @@
 	<div class="box" id="globalStats">
 
 		<div class="buttonBar">
-			<a href="#baseURL#"><button title="Run all the tests">Run All</button></a>
+			<a href="#variables.baseURL#"><button title="Run all the tests">Run All</button></a>
 		</div>
 
 		<cfif results.getTotalFail() gt 0>
@@ -66,7 +66,7 @@
 	<!--- Dots --->
 	<div class="dots">
 		<!--- Iterate over bundles --->
-		<cfloop array="#bundleStats#" index="thisBundle">
+		<cfloop array="#variables.bundleStats#" index="thisBundle">
 			<!-- Iterate over suites -->
 			<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
 				#genSuiteReport( suiteStats, thisBundle )#
@@ -77,7 +77,7 @@
 	<div style="clear:both;margin:20px">&nbsp;</div>
 
 	<!--- Debug Panel --->
-	<cfloop array="#bundleStats#" index="thisBundle">
+	<cfloop array="#variables.bundleStats#" index="thisBundle">
 
 		<!-- Global Error --->
 		<cfif !isSimpleValue( thisBundle.globalException )>

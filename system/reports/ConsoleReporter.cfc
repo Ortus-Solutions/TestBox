@@ -35,7 +35,7 @@ component{
 		// content type
 		getPageContext().getResponse().setContentType( "text/plain" );
 		// bundle stats
-		bundleStats = arguments.results.getBundleStats();
+		variables.bundleStats = arguments.results.getBundleStats();
 		
 		// prepare the report
 		savecontent variable="local.report"{

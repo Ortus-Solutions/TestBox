@@ -17,7 +17,7 @@
 </section>
 
 <!--- Bundle Info --->
-<cfloop array="#bundleStats#" index="thisBundle">
+<cfloop array="#variables.bundleStats#" index="thisBundle">
 	<section class="bundle" id="bundle-#thisBundle.path#">
 		
 		<!--- bundle stats --->

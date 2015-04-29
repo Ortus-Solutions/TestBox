@@ -34,7 +34,7 @@
 <!-- Global Stats --->
 <div class="box" id="globalStats">
 	<div class="buttonBar">
-		<a href="#baseURL#"><button title="Run all the tests">Run All</button></a>
+		<a href="#variables.baseURL#"><button title="Run all the tests">Run All</button></a>
 	</div>
 
 	<h3>Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#  (#results.getTotalDuration()# ms)</h3>
@@ -51,7 +51,7 @@
 </div>
 
 <!--- Debug Panel --->
-<cfloop array="#bundleStats#" index="thisBundle">
+<cfloop array="#variables.bundleStats#" index="thisBundle">
 
 	<!-- Global Error --->
 	<cfif !isSimpleValue( thisBundle.globalException )>
