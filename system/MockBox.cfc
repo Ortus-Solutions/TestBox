@@ -326,6 +326,7 @@ Description		:
 		<cfargument name="throwType" 	  		type="string"   required="false" default="" hint="The type of the exception to throw"/>
 		<cfargument name="throwDetail" 	  		type="string"   required="false" default="" hint="The detail of the exception to throw"/>
 		<cfargument name="throwMessage"	  		type="string"   required="false" default="" hint="The message of the exception to throw"/>
+		<cfargument name="throwErrorCode"  		type="string"   required="false" default="" hint="The errorCode of the exception to throw"/>
 		<cfargument name="callLogging" 	  		type="boolean"  required="false" default="false" hint="Will add the machinery to also log the incoming arguments to each subsequent calls to this method"/>
 		<cfargument name="preserveArguments" 	type="boolean"  required="false" default="false" hint="If true, argument signatures are kept, else they are ignored. If true, BEWARE with $args() matching as default values and missing arguments need to be passed too."/>
 		<cfargument name="callback" 			type="any" 		required="false" hint="A callback to execute that should return the desired results, this can be a UDF or closure."/>
