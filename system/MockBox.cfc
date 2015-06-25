@@ -513,7 +513,7 @@ Description		:
 					 */
 					serializedArgs &= toString( argOrderedTree[ arg ] );
 				}
-				else if( isObject( argOrderedTree[ arg ] ) and isInstanceOf( argOrderedTree[ arg ], "Component" ) ){
+				else if( (isObject( argOrderedTree[ arg ] ) and isInstanceOf( argOrderedTree[ arg ], "Component" )) or isQuery( argOrderedTree[ arg ] ) ){
 					// If an object and CFC, just use serializeJSON
 					serializedArgs &= serializeJSON( argOrderedTree[ arg ] );
 				}

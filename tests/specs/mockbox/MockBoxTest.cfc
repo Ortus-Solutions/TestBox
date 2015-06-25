@@ -249,6 +249,80 @@
 			$assert.isEqual( "UnitTest3", results );
 		}
 
+		function testMethodArgumentSignaturesWithNonBlankQueries(){
+
+			args = {
+				string = "test" // string
+				,integer = 23 // integer
+				,xmlDoc = xmlNew()
+				,query = queryNew('id,name','numeric,varchar',[ { id = 1, name = 'Eric'} ])
+				,datetime = now()
+				,boolean = true
+				,realNumber = 2.5
+				,structure = {key1 = 'value1',key2 = getMockBox().createStub()}
+				,array = ['element1', getMockBox().createStub()]
+				,object = getMockBox().createStub()
+				,aNull = javaCast("null", "")
+			};
+
+			//1: Mock with positional and all calls should validate.
+			test.$( "getSetting" )
+				.$args( args.string, args.integer, args.xmlDoc, args.query, args.datetime, args.boolean, args.realNumber, args.structure, args.array, args.object )
+				.$results( "UnitTest" );
+
+			// Test positional
+			results = test.getSetting( args.string, args.integer, args.xmlDoc, args.query, args.datetime, args.boolean, args.realNumber, args.structure, args.array, args.object );
+			$assert.isEqual( "UnitTest", results );
+			// Test case sensitivity
+			args.string = "TEST";
+			results = test.getSetting( args.string, args.integer, args.xmlDoc, args.query, args.datetime, args.boolean, args.realNumber, args.structure, args.array, args.object );
+			$assert.isEqual( "UnitTest", results );
+			args.string = "test";
+			// Test increment/decrement value (ColdFusion bug converts integers to real numbers with increment and decrement operator)
+			args.integer++; args.integer--;
+			results = test.getSetting( args.string, args.integer, args.xmlDoc, args.query, args.datetime, args.boolean, args.realNumber, args.structure, args.array, args.object );
+			$assert.isEqual( "UnitTest", results );
+			args.integer = 23;
+			args.integer = 23;
+
+			//2. Mock with named values and all calls should validate.
+			test.$( "getSetting" ).$args( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object ).$results( "UnitTest2" );
+
+			// Test name-value pairs
+			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
+			$assert.isEqual( "UnitTest2", results );
+			// Test argCollection
+			results = test.getSetting( argumentCollection=args );
+			$assert.isEqual( "UnitTest2", results );
+			// Test case sensitivity
+			args.string = "TEST";
+			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
+			$assert.isEqual( "UnitTest2", results );
+			args.string = "test";
+			// Test increment/decrement value (ColdFusion bug converts integers to real numbers with increment and decrement operator)
+			args.integer++;args.integer--;
+			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
+			$assert.isEqual( "UnitTest2", results );
+			args.integer = 23;
+
+			test.$( "getSetting" ).$args( argumentCollection=args ).$results( "UnitTest3" );
+			// Test name-value pairs
+			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
+			$assert.isEqual( "UnitTest3", results );
+			// Test argCollection
+			results = test.getSetting( argumentCollection=args );
+			$assert.isEqual( "UnitTest3", results );
+			// Test case sensitivity
+			args.string = "TEST";
+			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
+			$assert.isEqual( "UnitTest3", results );
+			args.string = "test";
+			// Test increment/decrement value (ColdFusion bug converts integers to real numbers with increment and decrement operator)
+			args.integer++;args.integer--;
+			results = test.getSetting( string=args.string, integer = args.integer, xmlDoc = args.xmlDoc, query = args.query, datetime = args.datetime, boolean = args.boolean, realNumber = args.realNumber, struct = args.structure, array = args.array, object = args.object );
+			$assert.isEqual( "UnitTest3", results );
+		}
+
 		function testGetProperty(){
 			mock = getMockBox().createStub();
 			mock.luis = "Majano";
