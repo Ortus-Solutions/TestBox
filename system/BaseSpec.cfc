@@ -109,7 +109,7 @@ component{
 	){
 
 		// closure checks
-		if( !isClosure( arguments.body ) ){
+		if( !isClosure( arguments.body ) && !isCustomFunction( arguments.body ) ){
 			throw( type="TestBox.InvalidBody", message="The body of this test suite must be a closure and you did not give me one, what's up with that!" );
 		}
 
@@ -209,7 +209,7 @@ component{
 		any skip=false
 	){
 		// closure checks
-		if( !isClosure( arguments.body ) ){
+		if( !isClosure( arguments.body ) && !isCustomFunction( arguments.body ) ){
 			throw( type="TestBox.InvalidBody", message="The body of this test suite must be a closure and you did not give me one, what's up with that!" );
 		}
 
@@ -433,7 +433,7 @@ component{
 
 				try{
 					// around each test
-					if( isClosure( suite.aroundEach ) ){
+					if( isClosure( suite.aroundEach ) || isCustomFunction( suite.aroundEach ) ){
 						runAroundEachClosures( arguments.suite, arguments.spec );
 						//suite.aroundEach( spec=arguments.spec );
 					} else {
