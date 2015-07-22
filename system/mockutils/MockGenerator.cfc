@@ -36,6 +36,7 @@ Description		:
 		<cfargument name="throwType" 	  		type="string" 	required="false" 	default="" hint="The type of the exception to throw"/>
 		<cfargument name="throwDetail" 	  		type="string" 	required="false" 	default="" hint="The detail of the exception to throw"/>
 		<cfargument name="throwMessage"	  		type="string" 	required="false" 	default="" hint="The message of the exception to throw"/>
+		<cfargument name="throwErrorCode"  		type="string"   required="false" default="" hint="The errorCode of the exception to throw"/>
 		<cfargument name="metadata" 	  		type="any" 		required="true" 	default="" hint="The function metadata"/>
 		<cfargument name="targetObject"	  		type="any" 		required="true" 	hint="The target object to mix in"/>
 		<cfargument name="callLogging" 	  		type="boolean" 	required="false" 	default="false" hint="Will add the machinery to also log the incoming arguments to each subsequent calls to this method"/>
@@ -121,7 +122,7 @@ Description		:
 
 			// Exceptions? To Throw
 			if( arguments.throwException ){
-				udfOut.append('<cfthrow type="#arguments.throwType#" message="#arguments.throwMessage#" detail="#arguments.throwDetail#" />#instance.lb#');
+				udfOut.append('<cfthrow type="#arguments.throwType#" message="#arguments.throwMessage#" detail="#arguments.throwDetail#" errorCode="#arguments.throwErrorCode#" />#instance.lb#');
 			}
 
 			// Returns Something according to metadata?
