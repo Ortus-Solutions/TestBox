@@ -310,14 +310,16 @@
 			// no arguments
 			var mocked = getMockBox().createStub().$("getAmigo").$callback( variables.testFunction );
 			$assert.isEqual( mocked.getAmigo(), testFunction() );
+			// test argument passing
+			$assert.isEqual( mocked.getAmigo( "luis" ), testFunction( "luis" ) );
 
 			// with arguments
 			var mocked = getMockBox().createStub().$("getAmigo").$args( "luis" ).$callback( variables.testFunction );
-			$assert.isEqual( mocked.getAmigo( "luis" ), testFunction() );
+			$assert.isEqual( mocked.getAmigo( "luis" ), testFunction( "luis" ) );
 		}
 
-		private function testFunction(){
-			return "Hola Amigo!";
+		private function testFunction(string amigo = "Amigo"){
+			return "Hola #arguments.amigo#!";
 		}
 	</cfscript>
 
