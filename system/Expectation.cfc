@@ -313,7 +313,7 @@ component accessors="true"{
 	* @regex Match this regex against the message of the exception
 	* @message The message to send in the failure
 	*/
-	function toThrow( type="", regex=".*", message="" ){
+	function toThrow( type="", regex=".*", errorCode="", message="" ){
 		arguments.target = this.actual;
 		if( this.isNot ){
 			variables.assert.notThrows( argumentCollection=arguments );
