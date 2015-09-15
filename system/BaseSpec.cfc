@@ -195,6 +195,82 @@ component{
 	}
 
 	/**
+	* The way to describe BDD test suites in TestBox. The feature is an alias for describe usually use when you are writing in a Given-When-Then style
+	* The body is the function that implements the suite.
+	* @feature The name of this test suite
+	* @body The closure that represents the test suite
+	* @labels The list or array of labels this suite group belongs to
+	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
+	* @skip A flag or a closure that tells TestBox to skip this suite group from testing if true. If this is a closure it must return boolean.
+	*/
+	any function feature(
+		required string feature,
+		required any body,
+		any labels=[],
+		boolean asyncAll=false,
+		any skip=false
+	){
+		return describe(argumentCollection=arguments, title="Feature: " & arguments.feature);
+	}
+
+	/**
+	* The way to describe BDD test suites in TestBox. The given is an alias for describe usually use when you are writing in a Given-When-Then style
+	* The body is the function that implements the suite.
+	* @feature The name of this test suite
+	* @body The closure that represents the test suite
+	* @labels The list or array of labels this suite group belongs to
+	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
+	* @skip A flag or a closure that tells TestBox to skip this suite group from testing if true. If this is a closure it must return boolean.
+	*/
+	any function given(
+		required string given,
+		required any body,
+		any labels=[],
+		boolean asyncAll=false,
+		any skip=false
+	){
+		return describe(argumentCollection=arguments, title="Given " & arguments.given);
+	}
+
+	/**
+	* The way to describe BDD test suites in TestBox. The scenario is an alias for describe usually use when you are writing in a Given-When-Then style
+	* The body is the function that implements the suite.
+	* @feature The name of this test suite
+	* @body The closure that represents the test suite
+	* @labels The list or array of labels this suite group belongs to
+	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
+	* @skip A flag or a closure that tells TestBox to skip this suite group from testing if true. If this is a closure it must return boolean.
+	*/
+	any function scenario(
+		required string scenario,
+		required any body,
+		any labels=[],
+		boolean asyncAll=false,
+		any skip=false
+	){
+		return describe(argumentCollection=arguments, title="Scenario: " & arguments.scenario);
+	}
+
+	/**
+	* The way to describe BDD test suites in TestBox. The when is an alias for scenario usually use when you are writing in a Given-When-Then style
+	* The body is the function that implements the suite.
+	* @feature The name of this test suite
+	* @body The closure that represents the test suite
+	* @labels The list or array of labels this suite group belongs to
+	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
+	* @skip A flag or a closure that tells TestBox to skip this suite group from testing if true. If this is a closure it must return boolean.
+	*/
+	any function when(
+		required string when,
+		required any body,
+		any labels=[],
+		boolean asyncAll=false,
+		any skip=false
+	){
+		return describe(argumentCollection=arguments, title="When " & arguments.when);
+	}
+
+	/**
 	* The it() function describes a spec or a test in TestBox.  The body argument is the closure that implements
 	* the test which usually contains one or more expectations that test the state of the code under test.
 	* @title The title of this spec
@@ -244,6 +320,25 @@ component{
 		arrayAppend( this.$suitesReverseLookup[ this.$suiteContext ].specs, spec );
 
 		return this;
+	}
+
+
+
+	/**
+	* The then() function describes a spec or a test in TestBox and is an alias for it.  The body argument is the closure that implements
+	* the test which usually contains one or more expectations that test the state of the code under test.
+	* @then The title of this spec
+	* @body The closure that represents the test
+	* @labels The list or array of labels this spec belongs to
+	* @skip A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+	*/
+	any function then(
+		required string then,
+		required any body,
+		any labels=[],
+		any skip=false
+	){
+		return it(argumentCollection=arguments, title="Then " & arguments.then);
 	}
 
 	/**
