@@ -521,7 +521,7 @@ Description		:
 					serializedArgs &= toString( argOrderedTree[ arg ] );
 				}
 				else if( isObject( argOrderedTree[ arg ] ) and isInstanceOf( argOrderedTree[ arg ], "Component" ) ){
-					// If an object and CFC, just use serializeJSON
+					// If an object and CFC, get its unique identity hash code
 					serializedArgs &= getIdentityHashCode( argOrderedTree[ arg ] );
 				}
 				else{
