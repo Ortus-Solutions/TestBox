@@ -389,7 +389,7 @@ component accessors="true"{
 	* @needle The substring to find in a string or the value to find in an array
 	* @message The message to send in the failure
 	*/
-	function toIncludeWithCase( required any target, required any needle, message="" ){
+	function toIncludeWithCase( required any needle, message="" ){
 		arguments.target = this.actual;
 		if( this.isNot ){
 			variables.assert.notIncludesWithCase( argumentCollection=arguments );
