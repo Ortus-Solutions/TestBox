@@ -193,6 +193,25 @@ component{
 
 		return this;
 	}
+	
+	/**
+	* The way to describe BDD test suites in TestBox. The story is an alias for describe usually use when you are writing using Gherkin-esque language
+	* The body is the function that implements the suite.
+	* @story The name of this test suite
+	* @body The closure that represents the test suite
+	* @labels The list or array of labels this suite group belongs to
+	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
+	* @skip A flag or a closure that tells TestBox to skip this suite group from testing if true. If this is a closure it must return boolean.
+	*/
+	any function story(
+		required string story,
+		required any body,
+		any labels=[],
+		boolean asyncAll=false,
+		any skip=false
+	){
+		return describe(argumentCollection=arguments, title="Story: " & arguments.story);
+	}
 
 	/**
 	* The way to describe BDD test suites in TestBox. The feature is an alias for describe usually use when you are writing in a Given-When-Then style
