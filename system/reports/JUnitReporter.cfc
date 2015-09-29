@@ -151,8 +151,8 @@ component{
 
 		genPropsFromCollection( out, server.coldfusion );
 		genPropsFromCollection( out, server.os );
-		if( structKeyExists( server, "railo" ) ){
-			genPropsFromCollection( out, server.railo );
+		if( structKeyExists( server, "lucee" ) ){
+			genPropsFromCollection( out, server.lucee );
 		}
 		genPropsFromCollection( out, cgi );
 

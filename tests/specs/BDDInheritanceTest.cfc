@@ -1,5 +1,5 @@
 /**
-* This tests the BDD functionality in TestBox. This is CF10+, Railo4+
+* This tests the BDD functionality in TestBox.
 */
 component extends="testbox.system.BaseSpec"{
 
@@ -81,14 +81,14 @@ component extends="testbox.system.BaseSpec"{
 			});
 			
 			// acf dynamic skips
-			it( title="can have tests that execute if the right environment exists (railo only)", body=function(){
-				expect( server ).toHaveKey( "railo" );
-			}, skip=( !isRailo() ));
+			it( title="can have tests that execute if the right environment exists (Lucee only)", body=function(){
+				expect( server ).toHaveKey( "Lucee" );
+			}, skip=( !isLucee() ));
 
-			// railo dynamic skips
+			// Lucee dynamic skips
 			it( title="can have tests that execute if the right environment exists (acf only)", body=function(){
-				expect( server ).notToHaveKey( "railo" );
-			}, skip=( isRailo() ));
+				expect( server ).notToHaveKey( "Lucee" );
+			}, skip=( isLucee() ));
 			
 			// specs with a random skip closure
 			it(title="can have a skip that is executed at runtime", body=function(){
@@ -100,8 +100,8 @@ component extends="testbox.system.BaseSpec"{
 
 	}
 
-	private function isRailo(){
-		return ( structKeyExists( server, "railo" ) );
+	private function isLucee(){
+		return ( structKeyExists( server, "lucee" ) );
 	}
 
 }

@@ -1,4 +1,4 @@
-component displayName="TestBox xUnit suite for cf10 and above" labels="railo,cf" extends="Assertionscf9Test"{
+component displayName="TestBox xUnit suite for cf10 and above" labels="lucee,cf" extends="Assertionscf9Test"{
 
 	function beforeTests(){
 		super.beforeTests();

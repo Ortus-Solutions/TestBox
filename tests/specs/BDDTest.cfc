@@ -1,5 +1,5 @@
 /**
-* This tests the BDD functionality in TestBox. This is CF10+, Railo4+
+* This tests the BDD functionality in TestBox.
 */
 component extends="testbox.system.BaseSpec"{
 
@@ -91,14 +91,14 @@ component extends="testbox.system.BaseSpec"{
 			});
 
 			// acf dynamic skips
-			it( title="can have tests that execute if the right environment exists (railo only)", body=function(){
-				expect( server ).toHaveKey( "railo" );
-			}, skip=( !isRailo() ));
+			it( title="can have tests that execute if the right environment exists (Lucee only)", body=function(){
+				expect( server ).toHaveKey( "Lucee" );
+			}, skip=( !isLucee() ));
 
-			// railo dynamic skips
+			// Lucee dynamic skips
 			it( title="can have tests that execute if the right environment exists (acf only)", body=function(){
-				expect( server ).notToHaveKey( "railo" );
-			}, skip=( isRailo() ));
+				expect( server ).notToHaveKey( "Lucee" );
+			}, skip=( isLucee() ));
 
 			// specs with a random skip closure
 			it(title="can have a skip that is executed at runtime", body=function(){
@@ -199,13 +199,13 @@ component extends="testbox.system.BaseSpec"{
 		});
 
 		// Skip by env suite
-		describe(title="A railo only suite", body=function(){
+		describe(title="A Lucee only suite", body=function(){
 
-			it("should only execute for railo", function(){
-				expect( server ).toHaveKey( "railo" );
+			it("should only execute for Lucee", function(){
+				expect( server ).toHaveKey( "Lucee" );
 			});
 
-		}, skip=( !isRailo() ));
+		}, skip=( !isLucee() ));
 
 		// xdescribe() skips the entire suite
 		xdescribe("A suite that is skipped via xdescribe()", function(){
@@ -217,7 +217,7 @@ component extends="testbox.system.BaseSpec"{
 		describe("A calculator test suite", function(){
 			// before each spec in THIS suite group
 			beforeEach(function(){
-				// using request until railo fixes their closure bugs
+				// using request until Lucee fixes their closure bugs
 				request.calc = calc = new testbox.tests.resources.Calculator();
 			});
 
@@ -278,8 +278,8 @@ component extends="testbox.system.BaseSpec"{
 
 	}
 
-	private function isRailo(){
-		return ( structKeyExists( server, "railo" ) );
+	private function isLucee(){
+		return ( structKeyExists( server, "lucee" ) );
 	}
 
 }

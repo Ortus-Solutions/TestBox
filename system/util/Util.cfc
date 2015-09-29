@@ -70,7 +70,7 @@ Description :
 		<cfscript>
 			var engine = "ADOBE";
 
-			if ( server.coldfusion.productname eq "Railo" ){ engine = "RAILO"; }
+			if ( server.coldfusion.productname eq "Lucee" ){ engine = "LUCEE"; }
 
 			switch(engine){
 				case "ADOBE"	: {
@@ -80,7 +80,7 @@ Description :
 					break;
 				}
 
-				case "RAILO"	: {
+				case "LUCEE"	: {
 					return getPageContext().hasFamily();
 				}
 

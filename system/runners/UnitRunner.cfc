@@ -130,7 +130,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					arrayAppend( threadNames, thisThreadName );
 					// thread it
 					thread name="#thisThreadName#" thisSpec="#thisSpec#" suite="#arguments.suite#" threadName="#thisThreadName#"{
-						// execute the test within the context of the spec target due to railo closure bug, move back once it is resolved.
+						// execute the test within the context of the spec target due to lucee closure bug, move back once it is resolved.
 						thread.target.runTestMethod( spec=attributes.thisSpec,
 										  	   		 testResults=thread.testResults,
 						  				  	   		 suiteStats=thread.suiteStats,
@@ -139,7 +139,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					}
 
 				} else {
-					// execute the test within the context of the spec target due to railo closure bug, move back once it is resolved.
+					// execute the test within the context of the spec target due to lucee closure bug, move back once it is resolved.
 					thread.target.runTestMethod( spec=thisSpec,
 								  		   		 testResults=thread.testResults,
 								  		   		 suiteStats=thread.suiteStats,

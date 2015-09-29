@@ -1,4 +1,4 @@
-component displayName="TestBox xUnit suite for CF9" labels="railo,cf" extends="testbox.system.BaseSpec"{
+component displayName="TestBox xUnit suite for CF9" labels="lucee,cf" extends="testbox.system.BaseSpec"{
 
 /*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -15,7 +15,7 @@ component displayName="TestBox xUnit suite for CF9" labels="railo,cf" extends="t
 	}
 
 	function teardown(){
-		structClear( request );
+		structDelete( request, "foo" );
 	}
 
 /*********************************** Test Methods ***********************************/
@@ -66,8 +66,8 @@ component displayName="TestBox xUnit suite for CF9" labels="railo,cf" extends="t
 		$assert.fail( "This Test should fail" );
 	}
 
-	boolean function isRailo(){
-		return structKeyExists( server, "railo" );
+	boolean function isLucee(){
+		return structKeyExists( server, "lucee" );
 	}
 
 	function testThatShouldFail(){
