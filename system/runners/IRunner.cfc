@@ -9,19 +9,21 @@ interface{
 
 	/**
 	* Constructor
-	* @options.hint The options for a runner
-	* @testbox.hint The TestBox class reference
+	* @options The options for a runner
+	* @testbox The TestBox class reference
 	*/
 	function init( required struct options, required testbox );
 
 	/**
 	* Execute a test run on a target bundle CFC
-	* @target.hint The target bundle CFC to test
-	* @testResults.hint The test results object to keep track of results for this test case
+	* @target The target bundle CFC to test
+	* @testResults The test results object to keep track of results for this test case
+	* @callbacks A struct of listener callbacks or a CFC with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
 	*/
 	any function run( 
 		required any target,
-		required testbox.system.TestResult testResults 
+		required testbox.system.TestResult testResults,
+		required callbacks
 	);
 	
 }
