@@ -122,12 +122,31 @@ component extends="testbox.system.BaseSpec"{
 	){
 		// Mock it baby
 		getMockBox().prepareMock( arguments.giver );
+		getMockBox().prepareMock( arguments.receiver );
 
 		// inject it.
 		if( structkeyexists( arguments.giver, arguments.functionName ) ){
-			arguments.receiver[ arguments.functionNameInReceiver ] = arguments.giver.$getProperty( name=arguments.functionName, scope="this" );
+			arguments.receiver.$property(
+				propertyName 	= arguments.functionNameInReceiver,
+				propertyScope 	= "this",
+				mock 			= arguments.giver.$getProperty( name=arguments.functionName, scope="this" )
+			);
+			arguments.receiver.$property(
+				propertyName 	= arguments.functionNameInReceiver,
+				propertyScope 	= "variables",
+				mock 			= arguments.giver.$getProperty( name=arguments.functionName, scope="this" )
+			);
 		} else {
-			arguments.receiver[ arguments.functionNameInReceiver ] = arguments.giver.$getProperty( name=arguments.functionName, scope="variables" );
+			arguments.receiver.$property(
+				propertyName 	= arguments.functionNameInReceiver,
+				propertyScope 	= "this",
+				mock 			= arguments.giver.$getProperty( name=arguments.functionName, scope="variables" )
+			);
+			arguments.receiver.$property(
+				propertyName 	= arguments.functionNameInReceiver,
+				propertyScope 	= "variables",
+				mock 			= arguments.giver.$getProperty( name=arguments.functionName, scope="variables" )
+			);
 		}
 
 		return arguments.receiver;
