@@ -210,7 +210,7 @@ component{
 		boolean asyncAll=false,
 		any skip=false
 	){
-		return describe(argumentCollection=arguments, title="Story: " & arguments.story);
+		return describe( argumentCollection=arguments, title="Story: " & arguments.story );
 	}
 
 	/**
@@ -229,7 +229,7 @@ component{
 		boolean asyncAll=false,
 		any skip=false
 	){
-		return describe(argumentCollection=arguments, title="Feature: " & arguments.feature);
+		return describe( argumentCollection=arguments, title="Feature: " & arguments.feature );
 	}
 
 	/**
@@ -248,7 +248,7 @@ component{
 		boolean asyncAll=false,
 		any skip=false
 	){
-		return describe(argumentCollection=arguments, title="Given " & arguments.given);
+		return describe( argumentCollection=arguments, title="Given " & arguments.given );
 	}
 
 	/**
@@ -267,7 +267,7 @@ component{
 		boolean asyncAll=false,
 		any skip=false
 	){
-		return describe(argumentCollection=arguments, title="Scenario: " & arguments.scenario);
+		return describe( argumentCollection=arguments, title="Scenario: " & arguments.scenario );
 	}
 
 	/**
@@ -286,7 +286,7 @@ component{
 		boolean asyncAll=false,
 		any skip=false
 	){
-		return describe(argumentCollection=arguments, title="When " & arguments.when);
+		return describe( argumentCollection=arguments, title="When " & arguments.when );
 	}
 
 	/**
@@ -296,19 +296,21 @@ component{
 	* @body The closure that represents the test
 	* @labels The list or array of labels this spec belongs to
 	* @skip A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+	* @data A struct of data you would like to bind into the spec so it can be later passed into the executing body function
 	*/
 	any function it(
 		required string title,
 		required any body,
 		any labels=[],
-		any skip=false
+		any skip=false,
+		struct data={}
 	){
 		// closure checks
 		if( !isClosure( arguments.body ) && !isCustomFunction( arguments.body ) ){
 			throw( type="TestBox.InvalidBody", message="The body of this test suite must be a closure and you did not give me one, what's up with that!" );
 		}
 
-		// Context checks
+		// context checks
 		if( !len( this.$suiteContext ) ){
 			throw( type="TestBox.InvalidContext", message="You cannot define a spec without a test suite! This it() must exist within a describe() body! Go fix it :)" );
 		}
@@ -323,16 +325,20 @@ component{
 			labels 		= ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
 			// the spec body
 			body 		= arguments.body,
-			// The order of execution
-			order 		= this.$specOrderIndex++
+			// the order of execution
+			order 		= this.$specOrderIndex++,
+			// the data binding
+			data 		= arguments.data
 		};
 
 		// skip constraint for suite as a closure
 		if( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ){
-			spec.skip = arguments.skip( title=arguments.title,
-										body=arguments.body,
-										labels=arguments.labels,
-										spec=spec );
+			spec.skip = arguments.skip( 
+				title	= arguments.title,
+				body	= arguments.body,
+				labels	= arguments.labels,
+				spec	= spec 
+			);
 		}
 
 		// Attach this spec to the incoming context array of specs
@@ -350,14 +356,16 @@ component{
 	* @body The closure that represents the test
 	* @labels The list or array of labels this spec belongs to
 	* @skip A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+	* @data A struct of data you would like to bind into the spec so it can be later passed into the executing body function
 	*/
 	any function then(
 		required string then,
 		required any body,
 		any labels=[],
-		any skip=false
+		any skip=false,
+		struct data={}
 	){
-		return it(argumentCollection=arguments, title="Then " & arguments.then);
+		return it( argumentCollection=arguments, title="Then " & arguments.then );
 	}
 
 	/**
@@ -382,11 +390,13 @@ component{
 	* @title The title of this spec
 	* @body The closure that represents the test
 	* @labels The list or array of labels this spec belongs to
+	* @data A struct of data you would like to bind into the spec so it can be later passed into the executing body function
 	*/
 	any function xit(
 		required string title,
 		required any body,
-		any labels=[]
+		any labels=[],
+		struct data={}
 	){
 		arguments.skip = true;
 		return it( argumentCollection=arguments );
@@ -498,9 +508,11 @@ component{
 		string reporter="simple",
 		string labels=""
 	) output=true{
-		var runner = new testbox.system.TestBox( bundles="#getMetadata(this).name#",
-														 labels=arguments.labels,
-														 reporter=arguments.reporter );
+		var runner = new testbox.system.TestBox( 
+			bundles		= "#getMetadata(this).name#",
+			labels		= arguments.labels,
+			reporter	= arguments.reporter 
+		);
 
 		// Produce report
 		writeOutput( runner.run( testSuites=arguments.testSuites, testSpecs=arguments.testSpecs ) );
@@ -552,7 +564,7 @@ component{
 						//suite.aroundEach( spec=arguments.spec );
 					} else {
 						// Execute the Spec body
-						arguments.spec.body();
+						arguments.spec.body( data=arguments.spec.data );
 					}
 				} catch( any e ){
 					rethrow;
