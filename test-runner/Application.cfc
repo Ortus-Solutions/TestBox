@@ -1,6 +1,6 @@
 /**
 * Copyright Since 2005 Ortus Solutions, Corp
-* www.coldbox.org | www.luismajano.com | www.ortussolutions.com | www.gocontentbox.org
+* www.ortussolutions.com
 **************************************************************************************
 */
 component{

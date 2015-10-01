@@ -1,7 +1,7 @@
 /**
 ********************************************************************************
 Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 * This TestBox runner is used to run and report on xUnit style test suites.
 */

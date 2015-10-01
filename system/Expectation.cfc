@@ -1,7 +1,7 @@
 /**
 ********************************************************************************
 Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 * The Expectation CFC holds a current expectation with all the required matcher methods to provide you
 * with awesome BDD expressions and testing.

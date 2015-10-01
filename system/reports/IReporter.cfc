@@ -1,7 +1,7 @@
 /**
 ********************************************************************************
 Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 * The TestBox main reporting interface for producing awesome testing reports
 */ 
