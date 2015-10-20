@@ -1,6 +1,6 @@
 {
 	"name" 				: "TestBox",
-	"version"			: "2.2.0",
+	"version"			: "2.3.0",
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "testbox",
 	"type"				: "testing",

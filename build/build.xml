@@ -8,7 +8,7 @@
     </description>
 	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
 	<property name="groupID"			value="ortussolutions" />
-	<property name="testbox.version"	value="2.2.0"/>
+	<property name="testbox.version"	value="2.3.0"/>
 	<property name="testbox.slug"		value="testbox"/>
 		
 	<!-- Build Labels -->
