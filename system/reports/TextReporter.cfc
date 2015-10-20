@@ -1,7 +1,7 @@
 /**
 ********************************************************************************
 Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 * A text reporter
 */
@@ -34,7 +34,7 @@ component{
 		// content type
 		getPageContext().getResponse().setContentType( "text/plain" );
 		// bundle stats
-		bundleStats = arguments.results.getBundleStats();
+		variables.bundleStats = arguments.results.getBundleStats();
 
 		// prepare the report
 		savecontent variable="local.report"{

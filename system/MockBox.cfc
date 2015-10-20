@@ -1,7 +1,7 @@
 ﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 Author 	 		: Luis Majano
 Date     		: April 20, 2009
@@ -34,7 +34,6 @@ Description		:
 				instance.generationPath = instance.generationPath & "/";
 			}
 
-			instance.version 		= "3.1.0+@build.number@";
 			instance.mockGenerator 	= createObject("component","testbox.system.mockutils.MockGenerator").init( this, true );
 
 			return this;
@@ -55,11 +54,6 @@ Description		:
 	<cffunction name="setGenerationPath" access="public" returntype="void" output="false" hint="Override the mocks generation path">
 		<cfargument name="generationPath" type="string" required="true">
 		<cfset instance.generationPath = arguments.generationPath>
-	</cffunction>
-
-	<!--- Get MockBox Version --->
-	<cffunction name="getVersion" access="public" returntype="string" output="false" hint="Get the MockBox version">
-		<cfreturn instance.version>
 	</cffunction>
 
 <!------------------------------------------- MOCK CREATION METHODS ------------------------------------------>

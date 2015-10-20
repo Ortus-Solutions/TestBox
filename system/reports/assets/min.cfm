@@ -1,3 +1,4 @@
+<cfset cDir = getDirectoryFromPath( getCurrentTemplatePath() )>
 <cfoutput>
 <!DOCTYPE html>
 <html>
@@ -5,8 +6,8 @@
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
-	<script>#fileRead( expandPath( '/testbox/system/reports/assets/js/jquery.js' ) )#</script>
-	<style>#fileRead( expandPath( '/testbox/system/reports/assets/css/simple.css' ) )#</style>
+	<script>#fileRead( '#cDir#/js/jquery.js' )#</script>
+	<style>#fileRead( '#cDir#/css/simple.css' )#</style>
 	<script>
 	$(document).ready(function() {
 	});
@@ -33,7 +34,7 @@
 <!-- Global Stats --->
 <div class="box" id="globalStats">
 	<div class="buttonBar">
-		<a href="#baseURL#"><button title="Run all the tests">Run All</button></a>
+		<a href="#variables.baseURL#"><button title="Run all the tests">Run All</button></a>
 	</div>
 
 	<h3>Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#  (#results.getTotalDuration()# ms)</h3>
@@ -50,7 +51,7 @@
 </div>
 
 <!--- Debug Panel --->
-<cfloop array="#bundleStats#" index="thisBundle">
+<cfloop array="#variables.bundleStats#" index="thisBundle">
 
 	<!-- Global Error --->
 	<cfif !isSimpleValue( thisBundle.globalException )>

@@ -122,12 +122,31 @@ component extends="testbox.system.BaseSpec"{
 	){
 		// Mock it baby
 		getMockBox().prepareMock( arguments.giver );
+		getMockBox().prepareMock( arguments.receiver );
 
 		// inject it.
 		if( structkeyexists( arguments.giver, arguments.functionName ) ){
-			arguments.receiver[ arguments.functionNameInReceiver ] = arguments.giver.$getProperty( name=arguments.functionName, scope="this" );
+			arguments.receiver.$property(
+				propertyName 	= arguments.functionNameInReceiver,
+				propertyScope 	= "this",
+				mock 			= arguments.giver.$getProperty( name=arguments.functionName, scope="this" )
+			);
+			arguments.receiver.$property(
+				propertyName 	= arguments.functionNameInReceiver,
+				propertyScope 	= "variables",
+				mock 			= arguments.giver.$getProperty( name=arguments.functionName, scope="this" )
+			);
 		} else {
-			arguments.receiver[ arguments.functionNameInReceiver ] = arguments.giver.$getProperty( name=arguments.functionName, scope="variables" );
+			arguments.receiver.$property(
+				propertyName 	= arguments.functionNameInReceiver,
+				propertyScope 	= "this",
+				mock 			= arguments.giver.$getProperty( name=arguments.functionName, scope="variables" )
+			);
+			arguments.receiver.$property(
+				propertyName 	= arguments.functionNameInReceiver,
+				propertyScope 	= "variables",
+				mock 			= arguments.giver.$getProperty( name=arguments.functionName, scope="variables" )
+			);
 		}
 
 		return arguments.receiver;
@@ -187,7 +206,7 @@ component extends="testbox.system.BaseSpec"{
 
 	/**
 	* Assert that an expected and actual objec is NOT the same instance
-	* This only works on objects that are passed by reference, please remember that in Railo
+	* This only works on objects that are passed by reference, please remember that in Lucee
 	* arrays pass by reference and in Adobe CF they pass by value.
 	*/
 	function assertNotSame( required expected, required actual, message="" ){
@@ -203,7 +222,7 @@ component extends="testbox.system.BaseSpec"{
 
 	/**
 	* Assert that an expected and actual objec is the same instance
-	* This only works on objects that are passed by reference, please remember that in Railo
+	* This only works on objects that are passed by reference, please remember that in Lucee
 	* arrays pass by reference and in Adobe CF they pass by value.
 	*/
 	function assertSame( required expected, required actual, message="" ){

@@ -1,7 +1,7 @@
 /**
 ********************************************************************************
 Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 * This object represents our Assertion style DSL for Unit style testing
 */
@@ -352,7 +352,7 @@ component{
 		if( aLength GT 0 ){ return this; }
 
 		// found, so throw it
-		arguments.message = ( len( arguments.message ) ? arguments.message : "The expected target is not empty, actual size [#aLength#]" );
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The expected target is empty." );
 		fail( arguments.message );
 	}
 

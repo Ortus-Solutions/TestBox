@@ -1,7 +1,7 @@
 ﻿<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 Author 	 		: Luis Majano
 Date     		: April 20, 2009
@@ -142,13 +142,13 @@ Description		:
 				udfOut.append('
 				<cfif callbackLen neq 0>
 					<cfset fCallBack = this._mockCallbacks[ resultsKey ][ 1 ]>
-					<cfreturn fCallBack()>
+					<cfreturn fCallBack( argumentCollection = arguments )>
 				</cfif>
 				');
 				// Callback Args
 				udfOut.append('
 				<cfif not isSimpleValue( fCallBack )>
-					<cfreturn fCallBack()>
+					<cfreturn fCallBack( argumentCollection = arguments )>
 				</cfif>
 				');
 			}

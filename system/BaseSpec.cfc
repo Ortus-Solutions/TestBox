@@ -1,7 +1,7 @@
 /**
 ********************************************************************************
 Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 * This is a base spec object that is used to test XUnit and BDD style specification methods
 */
@@ -109,7 +109,7 @@ component{
 	){
 
 		// closure checks
-		if( !isClosure( arguments.body ) ){
+		if( !isClosure( arguments.body ) && !isCustomFunction( arguments.body ) ){
 			throw( type="TestBox.InvalidBody", message="The body of this test suite must be a closure and you did not give me one, what's up with that!" );
 		}
 
@@ -193,6 +193,101 @@ component{
 
 		return this;
 	}
+	
+	/**
+	* The way to describe BDD test suites in TestBox. The story is an alias for describe usually use when you are writing using Gherkin-esque language
+	* The body is the function that implements the suite.
+	* @story The name of this test suite
+	* @body The closure that represents the test suite
+	* @labels The list or array of labels this suite group belongs to
+	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
+	* @skip A flag or a closure that tells TestBox to skip this suite group from testing if true. If this is a closure it must return boolean.
+	*/
+	any function story(
+		required string story,
+		required any body,
+		any labels=[],
+		boolean asyncAll=false,
+		any skip=false
+	){
+		return describe( argumentCollection=arguments, title="Story: " & arguments.story );
+	}
+
+	/**
+	* The way to describe BDD test suites in TestBox. The feature is an alias for describe usually use when you are writing in a Given-When-Then style
+	* The body is the function that implements the suite.
+	* @feature The name of this test suite
+	* @body The closure that represents the test suite
+	* @labels The list or array of labels this suite group belongs to
+	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
+	* @skip A flag or a closure that tells TestBox to skip this suite group from testing if true. If this is a closure it must return boolean.
+	*/
+	any function feature(
+		required string feature,
+		required any body,
+		any labels=[],
+		boolean asyncAll=false,
+		any skip=false
+	){
+		return describe( argumentCollection=arguments, title="Feature: " & arguments.feature );
+	}
+
+	/**
+	* The way to describe BDD test suites in TestBox. The given is an alias for describe usually use when you are writing in a Given-When-Then style
+	* The body is the function that implements the suite.
+	* @feature The name of this test suite
+	* @body The closure that represents the test suite
+	* @labels The list or array of labels this suite group belongs to
+	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
+	* @skip A flag or a closure that tells TestBox to skip this suite group from testing if true. If this is a closure it must return boolean.
+	*/
+	any function given(
+		required string given,
+		required any body,
+		any labels=[],
+		boolean asyncAll=false,
+		any skip=false
+	){
+		return describe( argumentCollection=arguments, title="Given " & arguments.given );
+	}
+
+	/**
+	* The way to describe BDD test suites in TestBox. The scenario is an alias for describe usually use when you are writing in a Given-When-Then style
+	* The body is the function that implements the suite.
+	* @feature The name of this test suite
+	* @body The closure that represents the test suite
+	* @labels The list or array of labels this suite group belongs to
+	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
+	* @skip A flag or a closure that tells TestBox to skip this suite group from testing if true. If this is a closure it must return boolean.
+	*/
+	any function scenario(
+		required string scenario,
+		required any body,
+		any labels=[],
+		boolean asyncAll=false,
+		any skip=false
+	){
+		return describe( argumentCollection=arguments, title="Scenario: " & arguments.scenario );
+	}
+
+	/**
+	* The way to describe BDD test suites in TestBox. The when is an alias for scenario usually use when you are writing in a Given-When-Then style
+	* The body is the function that implements the suite.
+	* @feature The name of this test suite
+	* @body The closure that represents the test suite
+	* @labels The list or array of labels this suite group belongs to
+	* @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
+	* @skip A flag or a closure that tells TestBox to skip this suite group from testing if true. If this is a closure it must return boolean.
+	*/
+	any function when(
+		required string when,
+		required any body,
+		any labels=[],
+		boolean asyncAll=false,
+		any skip=false
+	){
+		return describe( argumentCollection=arguments, title="When " & arguments.when );
+	}
 
 	/**
 	* The it() function describes a spec or a test in TestBox.  The body argument is the closure that implements
@@ -201,19 +296,21 @@ component{
 	* @body The closure that represents the test
 	* @labels The list or array of labels this spec belongs to
 	* @skip A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+	* @data A struct of data you would like to bind into the spec so it can be later passed into the executing body function
 	*/
 	any function it(
 		required string title,
 		required any body,
 		any labels=[],
-		any skip=false
+		any skip=false,
+		struct data={}
 	){
 		// closure checks
-		if( !isClosure( arguments.body ) ){
+		if( !isClosure( arguments.body ) && !isCustomFunction( arguments.body ) ){
 			throw( type="TestBox.InvalidBody", message="The body of this test suite must be a closure and you did not give me one, what's up with that!" );
 		}
 
-		// Context checks
+		// context checks
 		if( !len( this.$suiteContext ) ){
 			throw( type="TestBox.InvalidContext", message="You cannot define a spec without a test suite! This it() must exist within a describe() body! Go fix it :)" );
 		}
@@ -228,22 +325,47 @@ component{
 			labels 		= ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
 			// the spec body
 			body 		= arguments.body,
-			// The order of execution
-			order 		= this.$specOrderIndex++
+			// the order of execution
+			order 		= this.$specOrderIndex++,
+			// the data binding
+			data 		= arguments.data
 		};
 
 		// skip constraint for suite as a closure
 		if( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ){
-			spec.skip = arguments.skip( title=arguments.title,
-										body=arguments.body,
-										labels=arguments.labels,
-										spec=spec );
+			spec.skip = arguments.skip( 
+				title	= arguments.title,
+				body	= arguments.body,
+				labels	= arguments.labels,
+				spec	= spec 
+			);
 		}
 
 		// Attach this spec to the incoming context array of specs
 		arrayAppend( this.$suitesReverseLookup[ this.$suiteContext ].specs, spec );
 
 		return this;
+	}
+
+
+
+	/**
+	* The then() function describes a spec or a test in TestBox and is an alias for it.  The body argument is the closure that implements
+	* the test which usually contains one or more expectations that test the state of the code under test.
+	* @then The title of this spec
+	* @body The closure that represents the test
+	* @labels The list or array of labels this spec belongs to
+	* @skip A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+	* @data A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	*/
+	any function then(
+		required string then,
+		required any body,
+		any labels=[],
+		any skip=false,
+		struct data={}
+	){
+		return it( argumentCollection=arguments, title="Then " & arguments.then );
 	}
 
 	/**
@@ -268,11 +390,13 @@ component{
 	* @title The title of this spec
 	* @body The closure that represents the test
 	* @labels The list or array of labels this spec belongs to
+	* @data A struct of data you would like to bind into the spec so it can be later passed into the executing body function
 	*/
 	any function xit(
 		required string title,
 		required any body,
-		any labels=[]
+		any labels=[],
+		struct data={}
 	){
 		arguments.skip = true;
 		return it( argumentCollection=arguments );
@@ -384,9 +508,11 @@ component{
 		string reporter="simple",
 		string labels=""
 	) output=true{
-		var runner = new testbox.system.TestBox( bundles="#getMetadata(this).name#",
-														 labels=arguments.labels,
-														 reporter=arguments.reporter );
+		var runner = new testbox.system.TestBox( 
+			bundles		= "#getMetadata(this).name#",
+			labels		= arguments.labels,
+			reporter	= arguments.reporter 
+		);
 
 		// Produce report
 		writeOutput( runner.run( testSuites=arguments.testSuites, testSpecs=arguments.testSpecs ) );
@@ -433,12 +559,12 @@ component{
 
 				try{
 					// around each test
-					if( isClosure( suite.aroundEach ) ){
+					if( isClosure( suite.aroundEach ) || isCustomFunction( suite.aroundEach ) ){
 						runAroundEachClosures( arguments.suite, arguments.spec );
 						//suite.aroundEach( spec=arguments.spec );
 					} else {
 						// Execute the Spec body
-						arguments.spec.body();
+						arguments.spec.body( data=arguments.spec.data );
 					}
 				} catch( any e ){
 					rethrow;

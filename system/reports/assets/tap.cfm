@@ -1,6 +1,6 @@
 <cfset totalIndex = 1>
 <cfoutput>1..#results.getTotalSpecs()##chr(13)#
-<cfloop array="#bundleStats#" index="thisBundle">
+<cfloop array="#variables.bundleStats#" index="thisBundle">
 <cfloop array="#thisBundle.suiteStats#" index="suiteStats">#genSuiteReport( suiteStats, thisBundle )#</cfloop>
 </cfloop>
 </cfoutput>

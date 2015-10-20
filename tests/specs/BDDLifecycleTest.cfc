@@ -1,5 +1,5 @@
 /**
-* This tests the BDD functionality in TestBox. This is CF10+, Railo4+
+* This tests the BDD functionality in TestBox.
 */
 component extends="testbox.system.BaseSpec"{
 

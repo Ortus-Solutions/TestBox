@@ -1,18 +1,19 @@
 {
 	"name" 				: "TestBox",
-	"version"			: "2.0.0",
+	"version"			: "2.2.0",
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "testbox",
 	"type"				: "testing",
 	"packageDirectory"	: "testbox",
 	"keywords"			: "testing,xunit,bdd,testbox,mxunit,tdd",
 	"homepage"			: "http://www.coldbox.org",
-	"documentation"		: "http://wiki.coldbox.org/wiki/TestBox.cfm",
+	"documentation"		: "http://testbox.ortusbooks.com",
 	"repository"		: { "type" : "git", "url" : "https://github.com/Ortus-Solutions/TestBox" },
 	"bugs"				: "https://ortussolutions.atlassian.net/browse/TESTBOX",
-	"shortDescription"	: "A BDD and xUnit testing framework",
+	"shortDescription"	: "A BDD and xUnit testing framework with Mocking Goodness",
 	"engines"			: [
 		{ "type" : "railo", "version" : ">4.1" },
+		{ "type" : "lucee", "version" : ">4.5" },
 		{ "type" : "adobe", "version" : ">9" }
 	],
 	"license"			: [ 

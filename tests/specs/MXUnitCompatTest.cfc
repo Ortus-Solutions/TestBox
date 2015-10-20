@@ -16,7 +16,7 @@ component extends="BaseTest" {
 	}
 
 	function teardown(){
-		structClear( request );
+		structDelete( request, "foo" );
 	}
 
 /*********************************** Test Methods ***********************************/
@@ -150,7 +150,7 @@ component extends="BaseTest" {
 	}
 
 	function testMakePublicWithPackage(){
-		variables.test = new test.resources.somepackage.ComponentInDifferentPackage();
+		variables.test = new tests.resources.somepackage.ComponentInDifferentPackage();
 		makepublic(variables.test, "aPackageMethod");
 		assertEquals("test for this value", variables.test.aPackageMethod());
 	}

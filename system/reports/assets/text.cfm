@@ -13,7 +13,7 @@ Global Stats (#results.getTotalDuration()# ms)
 ->[Errors: #results.getTotalError()#]
 ->[Skipped: #results.getTotalSkipped()#]
 ->[Labels Applied: #arrayToList( results.getLabels() )#]
-<cfloop array="#bundleStats#" index="thisBundle">
+<cfloop array="#variables.bundleStats#" index="thisBundle">
 =============================================================
 #thisBundle.path# (#thisBundle.totalDuration# ms)
 =============================================================

@@ -1,7 +1,7 @@
 /**
 ********************************************************************************
 Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.coldbox.org | www.ortussolutions.com
+www.ortussolutions.com
 ********************************************************************************
 * The Expectation CFC holds a current expectation with all the required matcher methods to provide you
 * with awesome BDD expressions and testing.
@@ -389,7 +389,7 @@ component accessors="true"{
 	* @needle The substring to find in a string or the value to find in an array
 	* @message The message to send in the failure
 	*/
-	function toIncludeWithCase( required any target, required any needle, message="" ){
+	function toIncludeWithCase( required any needle, message="" ){
 		arguments.target = this.actual;
 		if( this.isNot ){
 			variables.assert.notIncludesWithCase( argumentCollection=arguments );

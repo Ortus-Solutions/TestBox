@@ -1,3 +1,3 @@
-component extends="test.specs.AssertionsTest"{
+component extends="tests.specs.AssertionsTest"{
 
 }
