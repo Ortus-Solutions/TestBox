@@ -131,7 +131,7 @@ component{
 			// the afterEach closure
 			afterEach 	= variables.closureStub,
 			// the aroundEach closure, init to empty to distinguish
-			aroundEach	= "",
+			aroundEach	= variables.aroundStub,
 			// the parent suite
 			parent 		= "",
 			// the parent ref
@@ -193,7 +193,7 @@ component{
 
 		return this;
 	}
-	
+
 	/**
 	* The way to describe BDD test suites in TestBox. The story is an alias for describe usually use when you are writing using Gherkin-esque language
 	* The body is the function that implements the suite.
@@ -508,10 +508,10 @@ component{
 		string reporter="simple",
 		string labels=""
 	) output=true{
-		var runner = new testbox.system.TestBox( 
+		var runner = new testbox.system.TestBox(
 			bundles		= "#getMetadata(this).name#",
 			labels		= arguments.labels,
-			reporter	= arguments.reporter 
+			reporter	= arguments.reporter
 		);
 
 		// Produce report
@@ -558,14 +558,7 @@ component{
 				runBeforeEachClosures( arguments.suite, arguments.spec );
 
 				try{
-					// around each test
-					if( isClosure( suite.aroundEach ) || isCustomFunction( suite.aroundEach ) ){
-						runAroundEachClosures( arguments.suite, arguments.spec );
-						//suite.aroundEach( spec=arguments.spec );
-					} else {
-						// Execute the Spec body
-						arguments.spec.body( data=arguments.spec.data );
-					}
+					runAroundEachClosures( arguments.suite, arguments.spec );
 				} catch( any e ){
 					rethrow;
 				} finally {
@@ -641,11 +634,90 @@ component{
 	* Execute the around each closures in order for a suite and spec
 	*/
 	BaseSpec function runAroundEachClosures( required suite, required spec ){
-		// TODO: Add multi-tree traversal aroundEach(), 1 level as of now.
-		// execute aroundEach()
-		arguments.suite.aroundEach( spec=arguments.spec, suite=arguments.suite );
+        var reverseTree = [
+            {
+                name = arguments.suite.name,
+                body = arguments.suite.aroundEach,
+                data = {},
+                labels = arguments.suite.labels,
+                order = 0,
+                skip = arguments.suite.skip
+            }
+        ];
+
+        // do we have nested suites? If so, traverse the tree to build reverse execution map
+        var parentSuite = arguments.suite.parentRef;
+        while( !isSimpleValue( parentSuite ) ){
+            arrayAppend( reverseTree, {
+                name = parentSuite.name,
+                body = parentSuite.aroundEach,
+                data = {},
+                labels = parentSuite.labels,
+                order = 0,
+                skip = parentSuite.skip
+            } );
+            parentSuite = parentSuite.parentRef;
+        }
+
+        // Sort the closures from the oldest parent down to the current spec
+        var correctOrderTree = [];
+        var treeLen = arrayLen( reverseTree );
+		if( treeLen gt 0 ){
+			for( var x=treeLen; x gte 1; x-- ){
+                arrayAppend( correctOrderTree, reverseTree[ x ] );
+			}
+		}
+
+        // writeDump(var = correctOrderTree, abort = true);
+
+        // Build a function that will execute down the tree
+        var specStack = generateAroundEachClosuresStack(
+            correctOrderTree,
+            arguments.suite,
+            arguments.spec
+        );
+
+        // Run the tests
+        specStack();
+
 		return this;
 	}
+
+    function generateAroundEachClosuresStack( array closures, required suite, required spec ) {
+
+        variables.closures = arguments.closures;
+        variables.suite = arguments.suite;
+        variables.spec = arguments.spec;
+
+        var nextClosure = variables.closures[1];
+        arrayDeleteAt(variables.closures, 1);
+
+        if (arrayLen(variables.closures) == 0) {
+            return function() {
+                nextClosure.body(spec = variables.spec, suite = variables.suite);
+            };
+        }
+
+        var nextSpecInfo = variables.closures[1];
+
+        return function() {
+            nextClosure.body(
+                {
+                    name = nextSpecInfo.name,
+                    body = generateAroundEachClosuresStack(
+                        variables.closures,
+                        variables.suite,
+                        variables.spec
+                    ),
+                    data = nextSpecInfo.data,
+                    labels = nextSpecInfo.labels,
+                    order = nextSpecInfo.order,
+                    skip = nextSpecInfo.skip
+                },
+                variables.suite
+            );
+        };
+    }
 
 	/**
 	* Execute the after each closures in order for a suite and spec
@@ -940,6 +1012,9 @@ component{
 
 	// Closure Stub
 	function closureStub(){}
+
+    // Around Stub
+    function aroundStub(spec) { spec.body(spec.data); }
 
 	/**
 	* Check if an expected exception is defined
