@@ -1014,7 +1014,7 @@ component{
 	function closureStub(){}
 
     // Around Stub
-    function aroundStub(spec) { spec.body(); }
+    function aroundStub(spec) { spec.body(spec.data); }
 
 	/**
 	* Check if an expected exception is defined
