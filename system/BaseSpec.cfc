@@ -333,11 +333,11 @@ component{
 
 		// skip constraint for suite as a closure
 		if( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ){
-			spec.skip = arguments.skip( 
+			spec.skip = arguments.skip(
 				title	= arguments.title,
 				body	= arguments.body,
 				labels	= arguments.labels,
-				spec	= spec 
+				spec	= spec
 			);
 		}
 
@@ -657,6 +657,18 @@ component{
                 skip = parentSuite.skip
             } );
             parentSuite = parentSuite.parentRef;
+        }
+
+        // Do we have an aroundEvery callback?  If so, add it now so it is ran first.
+        if( structKeyExists( this, "aroundEvery" ) ){
+            arrayAppend(reverseTree, {
+                name = "aroundEvery",
+                body = this.aroundEvery,
+                data = {},
+                labels = [],
+                order = 0,
+                skip = false
+            });
         }
 
         // Sort the closures from the oldest parent down to the current spec

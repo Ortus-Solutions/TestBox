@@ -15,14 +15,21 @@ component extends="testbox.system.BaseSpec"{
 	function afterAll(){
 	}
 
+    // executes around every spec in the run() method
+    // NOT just once
+    function aroundEvery(spec, suite){
+        variables.counter++;
+        spec.body();
+    }
+
 /*********************************** BDD SUITES ***********************************/
 
 	function run(){
 
 		describe( "Outer describe", function(){
 
-            it( "the counter should be initially at 0", function() {
-                expect( variables.counter ).toBe( 0 );
+            it( "the aroundEvery should be executed", function() {
+                expect( variables.counter ).toBe( 1 );
             });
 
 			describe( "Some describe block", function(){
@@ -33,13 +40,13 @@ component extends="testbox.system.BaseSpec"{
                 });
 
                 it( "should additionally execute the aroundEach as normal", function() {
-                    expect( variables.counter ).toBe( 1 );
+                    expect( variables.counter ).toBe( 3 );
                 });
 
                 describe( "Inner describe block", function(){
 
                     it( "the aroundEach from the parent context should be ran", function(){
-                        expect( variables.counter ).toBe( 2 );
+                        expect( variables.counter ).toBe( 5 );
                     });
 
                 });
