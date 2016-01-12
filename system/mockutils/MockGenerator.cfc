@@ -11,7 +11,7 @@ Description		:
 <cfcomponent output="false" hint="The guy in charge of creating mocks">
 
 	<cfscript>
-		instance = structnew();
+		variables.instance = structnew();
 	</cfscript>
 
 	<cffunction name="init" access="public" output="false" returntype="MockGenerator" hint="Constructor">

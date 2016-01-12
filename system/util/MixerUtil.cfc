@@ -14,7 +14,7 @@ Description :
 
 	<cffunction name="init" access="public" returntype="MixerUtil" output="false" hint="Constructor">
 		<cfscript>
-			instance = structnew();
+			variables.instance = structnew();
 			instance.mixins = StructNew();
 
 			// Place our methods on the mixins struct

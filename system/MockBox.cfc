@@ -18,7 +18,7 @@ Description		:
 		<cfscript>
 			var tempDir =  "/testbox/system/stubs";
 
-			instance = structnew();
+			variables.instance = structnew();
 
 			// Setup the generation Path
 			if( len(trim(arguments.generationPath)) neq 0 ){
