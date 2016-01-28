@@ -1,8 +1,7 @@
 /**
-********************************************************************************
-Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+* Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
 * This is a base spec object that is used to test XUnit and BDD style specification methods
 */
 component{
@@ -604,6 +603,8 @@ component{
 
 	/**
 	* Execute the before each closures in order for a suite and spec
+	* @suite The suite definition
+	* @spec The spec definition
 	*/
 	BaseSpec function runBeforeEachClosures( required suite, required spec ){
 		var reverseTree = [];
@@ -632,16 +633,18 @@ component{
 
 	/**
 	* Execute the around each closures in order for a suite and spec
+	* @suite The suite definition
+	* @spec The spec definition
 	*/
 	BaseSpec function runAroundEachClosures( required suite, required spec ){
         var reverseTree = [
             {
-                name = arguments.suite.name,
-                body = arguments.suite.aroundEach,
-                data = {},
-                labels = arguments.suite.labels,
-                order = 0,
-                skip = arguments.suite.skip
+                name 	= arguments.suite.name,
+                body 	= arguments.suite.aroundEach,
+                data 	= {},
+                labels 	= arguments.suite.labels,
+                order 	= 0,
+                skip 	= arguments.suite.skip
             }
         ];
 
@@ -649,13 +652,14 @@ component{
         var parentSuite = arguments.suite.parentRef;
         while( !isSimpleValue( parentSuite ) ){
             arrayAppend( reverseTree, {
-                name = parentSuite.name,
-                body = parentSuite.aroundEach,
-                data = {},
-                labels = parentSuite.labels,
-                order = 0,
-                skip = parentSuite.skip
+                name 	= parentSuite.name,
+                body 	= parentSuite.aroundEach,
+                data 	= {},
+                labels 	= parentSuite.labels,
+                order 	= 0,
+                skip 	= parentSuite.skip
             } );
+            // go deep
             parentSuite = parentSuite.parentRef;
         }
 
@@ -663,43 +667,52 @@ component{
         var correctOrderTree = [];
         var treeLen = arrayLen( reverseTree );
 		if( treeLen gt 0 ){
-			for( var x=treeLen; x gte 1; x-- ){
+			for( var x = treeLen; x gte 1; x-- ){
                 arrayAppend( correctOrderTree, reverseTree[ x ] );
 			}
 		}
 
-        // writeDump(var = correctOrderTree, abort = true);
-
         // Build a function that will execute down the tree
         var specStack = generateAroundEachClosuresStack(
-            correctOrderTree,
-            arguments.suite,
-            arguments.spec
+            closures 	= correctOrderTree,
+            suite 		= arguments.suite,
+            spec 		= arguments.spec
         );
 
-        // Run the tests
+        // Run the specs
         specStack();
 
 		return this;
 	}
 
+    /**
+    * Generates a specs stack for executions
+    * @closures The array of closures data to build
+    * @suite The target suite
+    * @spec The target spec
+    */
     function generateAroundEachClosuresStack( array closures, required suite, required spec ) {
 
-        variables.closures = arguments.closures;
-        variables.suite = arguments.suite;
-        variables.spec = arguments.spec;
+        variables.closures 	= arguments.closures;
+        variables.suite 	= arguments.suite;
+        variables.spec 		= arguments.spec;
 
-        var nextClosure = variables.closures[1];
-        arrayDeleteAt(variables.closures, 1);
+        // Get closure data from stack and pop it
+        var nextClosure = variables.closures[ 1 ];
+        arrayDeleteAt( variables.closures, 1 );
 
-        if (arrayLen(variables.closures) == 0) {
-            return function() {
-                nextClosure.body(spec = variables.spec, suite = variables.suite);
+        // Check if we have more in the stack or empty
+        if( arrayLen( variables.closures ) == 0 ){
+        	// Return the closure of execution for a single spec ONLY
+            return function(){
+            	// Execute the body of the spec
+                nextClosure.body( spec = variables.spec, suite = variables.suite );
             };
         }
 
-        var nextSpecInfo = variables.closures[1];
-
+        // Get next Spec in stack
+        var nextSpecInfo = variables.closures[ 1 ];
+        // Return generated closure
         return function() {
             nextClosure.body(
                 {
@@ -721,6 +734,8 @@ component{
 
 	/**
 	* Execute the after each closures in order for a suite and spec
+	* @suite The suite definition
+	* @spec The spec definition
 	*/
 	BaseSpec function runAfterEachClosures( required suite, required spec ){
 		// execute nearest afterEach()

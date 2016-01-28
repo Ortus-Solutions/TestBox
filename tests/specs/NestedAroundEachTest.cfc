@@ -33,6 +33,17 @@ component extends="testbox.system.BaseSpec"{
 				});
 			});
 		});
+
+		describe( "Another describe with no aroundEach", function(){
+			it( "can execute as normal", function(){
+				expect(	counter ).toBe( 2 );
+			});
+			describe( "with yet another describe", function(){
+				it( "can execute as normal", function(){
+					expect(	counter ).toBe( 2 );
+				});
+			});
+		});
 	}
 
 }
