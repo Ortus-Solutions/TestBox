@@ -492,6 +492,38 @@ component{
 		return this;
 	}
 
+    /**
+     * Find all methods on a given metadata and it's parents with a given annotation
+     *
+     * @annotation The annotation name to look for on methods
+     * @metadata The metadata to search (recursively) for the provided annotation
+     */
+    private function getAnnotatedMethods(
+        required string annotation,
+        required struct metadata
+    ){
+        var lifecycleMethods = [];
+
+        if( StructKeyExists( arguments.metadata, "functions" ) ){
+            var funcs = arguments.metadata.functions;
+            lifecycleMethods.addAll( ArrayFilter( funcs, function( func ){
+                return StructKeyExists( func, annotation );
+            } ) );
+        }
+
+        if( StructKeyExists( arguments.metadata, "extends" ) ){
+            // recursively call up the inheritance chain
+            lifecycleMethods.addAll(
+                getAnnotatedMethods(
+                    arguments.annotation,
+                    arguments.metadata.extends
+                )
+            );
+        }
+
+        return lifecycleMethods;
+    }
+
 	/************************************** RUN BDD METHODS *********************************************/
 
 	/**
@@ -618,6 +650,15 @@ component{
 			parentSuite = parentSuite.parentRef;
 		}
 
+        var annotationMethods = getAnnotatedMethods(
+            annotation = "beforeEach",
+            metadata   = getMetadata( this )
+        );
+
+        for( var method in annotationMethods ){
+            arrayAppend( reverseTree, this[ method.name ] );
+        }
+
 		// Execute reverse tree
 		var treeLen = arrayLen( reverseTree );
 		if( treeLen gt 0 ){
@@ -663,6 +704,22 @@ component{
             } );
             // go deep
             parentSuite = parentSuite.parentRef;
+        }
+
+        var annotationMethods = getAnnotatedMethods(
+            annotation = "aroundEach",
+            metadata   = getMetadata( this )
+        );
+
+        for( var method in annotationMethods ){
+            arrayAppend( reverseTree, {
+                name 	= method.name,
+                body 	= this[method.name],
+                data 	= {},
+                labels 	= {},
+                order 	= 0,
+                skip 	= false
+            } );
         }
 
         // Sort the closures from the oldest parent down to the current spec
@@ -749,6 +806,17 @@ component{
 			parentSuite.afterEach( currentSpec=arguments.spec.name );
 			parentSuite = parentSuite.parentRef;
 		}
+
+        var annotationMethods = getAnnotatedMethods(
+            annotation = "afterEach",
+            metadata = getMetadata( this )
+        );
+
+        for( var method in annotationMethods ){
+            var afterEachMethod = this[ method.name ];
+            afterEachMethod( currentSpec = arguments.spec.name );
+        }
+
 		return this;
 	}
 
