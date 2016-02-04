@@ -750,41 +750,41 @@ component{
     */
     function generateAroundEachClosuresStack( array closures, required suite, required spec ) {
 
-        variables.closures 	= arguments.closures;
-        variables.suite 	= arguments.suite;
-        variables.spec 		= arguments.spec;
+        thread.closures = arguments.closures;
+        thread.suite 	= arguments.suite;
+        thread.spec 	= arguments.spec;
 
         // Get closure data from stack and pop it
-        var nextClosure = variables.closures[ 1 ];
-        arrayDeleteAt( variables.closures, 1 );
+        var nextClosure = thread.closures[ 1 ];
+        arrayDeleteAt( thread.closures, 1 );
 
         // Check if we have more in the stack or empty
-        if( arrayLen( variables.closures ) == 0 ){
+        if( arrayLen( thread.closures ) == 0 ){
         	// Return the closure of execution for a single spec ONLY
             return function(){
             	// Execute the body of the spec
-                nextClosure.body( spec = variables.spec, suite = variables.suite );
+                nextClosure.body( spec = thread.spec, suite = thread.suite );
             };
         }
 
         // Get next Spec in stack
-        var nextSpecInfo = variables.closures[ 1 ];
+        var nextSpecInfo = thread.closures[ 1 ];
         // Return generated closure
         return function() {
             nextClosure.body(
                 {
                     name = nextSpecInfo.name,
                     body = generateAroundEachClosuresStack(
-                        variables.closures,
-                        variables.suite,
-                        variables.spec
+                        thread.closures,
+                        thread.suite,
+                        thread.spec
                     ),
                     data = nextSpecInfo.data,
                     labels = nextSpecInfo.labels,
                     order = nextSpecInfo.order,
                     skip = nextSpecInfo.skip
                 },
-                variables.suite
+                thread.suite
             );
         };
     }
