@@ -16,7 +16,7 @@ component extends="tests.utils.ExampleParentTestCase"{
     /**
      * @aroundEach
      */
-    function testAroundEach(spec, suite) {
+    function testAroundEach( spec, suite ){
         variables.counter++;
         arguments.spec.body();
     }
@@ -28,7 +28,7 @@ component extends="tests.utils.ExampleParentTestCase"{
 		describe( "Lifecycle annotations", function(){
 
 			it("runs lifecycle annotation hooks just as if they were in the suite", function(){
-				expect( variables.counter ).toBe( 2 );
+				expect( variables.counter ).toBe( 4 );
 			});
 
             describe( "Lifecycle Annotation Hooks with normal Lifecycle Methods", function() {
@@ -37,7 +37,7 @@ component extends="tests.utils.ExampleParentTestCase"{
                 })
 
                 it("runs both types of methods", function() {
-                    expect( variables.counter ).toBe( 5 );
+                    expect( variables.counter ).toBe( 8 );
                 });
             });
 

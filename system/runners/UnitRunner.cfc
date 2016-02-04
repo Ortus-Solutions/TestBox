@@ -52,6 +52,20 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 			try{
 				// execute beforeAll(), beforeTests() for this bundle, no matter how many suites they have.
 				if( structKeyExists( arguments.target, "beforeAll" ) ){ arguments.target.beforeAll(); }
+
+                // find any methods annotated 'beforeAll' and execute them
+                var beforeAllAnnotationMethods = variables.testbox.getUtility().getAnnotatedMethods(
+                    annotation = "beforeAll",
+                    metadata   = getMetadata( arguments.target )
+                );
+
+                for ( var beforeAllMethod in beforeAllAnnotationMethods ){
+                    // We use evalute here for two reasons:
+                    // 1. We want the scopes to be the target class, not this one.
+                    // 2. We want this code to be cross-platform ( hence no cfinvoke() )
+                    Evaluate( "arguments.target.#beforeAllMethod.name#()" );
+                }
+
 				if( structKeyExists( arguments.target, "beforeTests" ) ){ arguments.target.beforeTests(); }
 
 				// Iterate over found test suites and test them, if nested suites, then this will recurse as well.
@@ -62,7 +76,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					}
 
 					// Execute Suite
-					testSuite( 
+					testSuite(
 						target=arguments.target,
 						suite=thisSuite,
 						testResults=arguments.testResults,
@@ -78,6 +92,20 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 
 				// execute afterAll(), afterTests() for this bundle, no matter how many suites they have.
 				if( structKeyExists( arguments.target, "afterAll" ) ){ arguments.target.afterAll(); }
+
+                // find any methods annotated 'afterAll' and execute them
+                var afterAllAnnotationMethods = variables.testbox.getUtility().getAnnotatedMethods(
+                    annotation = "afterAll",
+                    metadata   = getMetadata( arguments.target )
+                );
+
+                for ( var afterAllMethod in afterAllAnnotationMethods ){
+                    // We use evalute here for two reasons:
+                    // 1. We want the scopes to be the target class, not this one.
+                    // 2. We want this code to be cross-platform ( hence no cfinvoke() )
+                    Evaluate( "arguments.target.#afterAllMethod.name#()" );
+                }
+
 				if( structKeyExists( arguments.target, "afterTests" ) ){ arguments.target.afterTests(); }
 			} catch(Any e) {
 				bundleStats.globalException = e;
@@ -146,18 +174,18 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					// append to used thread names
 					arrayAppend( threadNames, thisThreadName );
 					// thread it
-					thread  name="#thisThreadName#" 
-							thisSpec="#thisSpec#" 
-							suite="#arguments.suite#" 
+					thread  name="#thisThreadName#"
+							thisSpec="#thisSpec#"
+							suite="#arguments.suite#"
 							threadName="#thisThreadName#"{
-						
+
 						// verify call backs
 						if( structKeyExists( attributes.callbacks, "onSpecStart" ) ){
 							attributes.callbacks.onSpecStart( thread.target, thread.testResults, thread.suiteStats, attributes.thisSpec );
 						}
 
 						// execute the test within the context of the spec target due to lucee closure bug, move back once it is resolved.
-						thread.target.runTestMethod( 
+						thread.target.runTestMethod(
 							spec=attributes.thisSpec,
 							testResults=thread.testResults,
 						  	suiteStats=thread.suiteStats,
@@ -177,11 +205,11 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					}
 
 					// execute the test within the context of the spec target due to lucee closure bug, move back once it is resolved.
-					thread.target.runTestMethod( 
+					thread.target.runTestMethod(
 						spec=thisSpec,
 						testResults=thread.testResults,
 						suiteStats=thread.suiteStats,
-						runner=this 
+						runner=this
 					);
 
 					// verify call backs
