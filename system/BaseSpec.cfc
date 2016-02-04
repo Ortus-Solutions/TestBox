@@ -492,25 +492,36 @@ component{
 		return this;
 	}
 
-    public function getAnnotatedMethods(required string annotation, required struct metadata) {
+    /**
+     * Find all methods on a given metadata and it's parents with a given annotation
+     *
+     * @annotation The annotation name to look for on methods
+     * @metadata The metadata to search (recursively) for the provided annotation
+     */
+    private function getAnnotatedMethods(
+        required string annotation,
+        required struct metadata
+    ){
         var lifecycleMethods = [];
 
-        if (StructKeyExists(arguments.metadata, "functions")) {
+        if( StructKeyExists( arguments.metadata, "functions" ) ){
             var funcs = arguments.metadata.functions;
-            lifecycleMethods.addAll(ArrayFilter(funcs, function(func) {
-                return StructKeyExists(func, annotation);
-            }));
+            lifecycleMethods.addAll( ArrayFilter( funcs, function( func ){
+                return StructKeyExists( func, annotation );
+            } ) );
         }
 
-        if (StructKeyExists(arguments.metadata, "extends")) {
-            lifecycleMethods.addAll(getAnnotatedMethods(arguments.annotation, arguments.metadata.extends));
+        if( StructKeyExists( arguments.metadata, "extends" ) ){
+            // recursively call up the inheritance chain
+            lifecycleMethods.addAll(
+                getAnnotatedMethods(
+                    arguments.annotation,
+                    arguments.metadata.extends
+                )
+            );
         }
 
         return lifecycleMethods;
-    }
-
-    private function generateClosure(required string functionName) {
-
     }
 
 	/************************************** RUN BDD METHODS *********************************************/
@@ -639,10 +650,13 @@ component{
 			parentSuite = parentSuite.parentRef;
 		}
 
-        var annotationMethods = getAnnotatedMethods(annotation = "beforeEach", metadata = getMetadata(this));
+        var annotationMethods = getAnnotatedMethods(
+            annotation = "beforeEach",
+            metadata   = getMetadata( this )
+        );
 
-        for (var method in annotationMethods) {
-            arrayAppend( reverseTree, this[method.name] );
+        for( var method in annotationMethods ){
+            arrayAppend( reverseTree, this[ method.name ] );
         }
 
 		// Execute reverse tree
@@ -692,9 +706,12 @@ component{
             parentSuite = parentSuite.parentRef;
         }
 
-        var annotationMethods = getAnnotatedMethods(annotation = "aroundEach", metadata = getMetadata(this));
+        var annotationMethods = getAnnotatedMethods(
+            annotation = "aroundEach",
+            metadata   = getMetadata( this )
+        );
 
-        for (var method in annotationMethods) {
+        for( var method in annotationMethods ){
             arrayAppend( reverseTree, {
                 name 	= method.name,
                 body 	= this[method.name],
@@ -790,12 +807,16 @@ component{
 			parentSuite = parentSuite.parentRef;
 		}
 
-        var annotationMethods = getAnnotatedMethods(annotation = "afterEach", metadata = getMetadata(this));
+        var annotationMethods = getAnnotatedMethods(
+            annotation = "afterEach",
+            metadata = getMetadata( this )
+        );
 
-        for (var method in annotationMethods) {
-            var afterEachMethod = this[method.name];
-            afterEachMethod(currentSpec = arguments.spec.name);
+        for( var method in annotationMethods ){
+            var afterEachMethod = this[ method.name ];
+            afterEachMethod( currentSpec = arguments.spec.name );
         }
+
 		return this;
 	}
 
