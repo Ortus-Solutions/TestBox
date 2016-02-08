@@ -581,7 +581,7 @@ component{
 			// store spec status and debug data
 			specStats.status 		= "Failed";
 			specStats.failMessage 	= e.message;
-			specStats.failOrigin 	= this.sliceTagContext(e.tagContext);
+			specStats.failOrigin 	= this.sliceTagContext( e.tagContext );
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );
@@ -823,7 +823,7 @@ component{
 			// store spec status and debug data
 			specStats.status 		= "Failed";
 			specStats.failMessage 	= e.message;
-			specStats.failOrigin 	= this.sliceTagContext(e.tagContext);
+			specStats.failOrigin 	= this.sliceTagContext( e.tagContext );
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );
@@ -1083,33 +1083,29 @@ component{
 
 	/**
 	* removes the TestBox tag contexts from the beginning of the Failure Origin
+	* @tagContext The tag context
 	*/
-	private function sliceTagContext(tagContext) {
+	private function sliceTagContext( required tagContext ){
+		var result 			= arguments.tagContext;
+		var testcasePath 	= getDirectoryFromPath( getCurrentTemplatePath() );
+		var ix 				= 1;
 
-		var result = arguments.tagContext;
+		for( var tc in arguments.tagContext ){
 
-		var testcasePath = getDirectoryFromPath(getCurrentTemplatePath());
-		var ix = 1;
-
-		for (var tc in arguments.tagContext) {
-
-			if (find(testcasePath, tc.template) == 1)
+			if( find( testcasePath, tc.template ) == 1 ){
 				break;
+			}
 
 			ix++;
 		}
-
+		// if found, then slice
 		if (ix > 1) {
+			result 	= [];
+			var len = arrayLen( arguments.tagContext );
 
-			// result = arraySlice(result, ix);		/* commented out to support CF9
-			
-			result = arrayNew();
-			var len = arrayLen(arguments.tagContext);
-
-			while (ix < len) {
-
-				arrayAppend(result, arguments.tagContext[ix++]);
-			}	//*/
+			while ( ix < len ) {
+				arrayAppend( result, arguments.tagContext[ ix++ ] );
+			}
 		}
 		
 		return result;

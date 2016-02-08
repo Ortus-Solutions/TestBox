@@ -118,7 +118,7 @@ component extends="testbox.system.BaseSpec"{
 
 				expect( 4 ).toBeGTE( 4 );
 				expect( 1 ).toBeLT( 10 );
-				expect( 10 ).toBeLTE( 10 );
+				expect( 10 ).toBeLTE( 8 );
 			});
 
 		});
