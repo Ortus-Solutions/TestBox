@@ -1,12 +1,16 @@
 /**
-********************************************************************************
-Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+* Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
 * A compat class for MXUnit Directory Test Suite
 */ 
 component{
 
+	/**
+	* Constructor
+	* @bundles
+	* @testSpecs
+	*/
 	function init( 
 		required bundles,
 		testSpecs=""
@@ -19,6 +23,10 @@ component{
 		return this;
 	}	
 	
+	/**
+	* Get the results output in a specific mode
+	* @mode The mode of the output
+	*/
 	any function getResultsOutput( mode="simple" ){
 
 		switch( arguments.mode ){

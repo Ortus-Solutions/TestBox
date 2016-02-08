@@ -1,8 +1,7 @@
 /**
-********************************************************************************
-Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+* Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
 * The TestBox main base runner which has all the common methods needed for runner implementations.
 */ 
 component{

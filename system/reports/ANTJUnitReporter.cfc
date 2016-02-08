@@ -1,8 +1,7 @@
 /**
-********************************************************************************
-Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+* Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
 * A JUnit reporter for use with the ANT junitreport task, which uses an old version of JUnit formatting.
 */
 component{

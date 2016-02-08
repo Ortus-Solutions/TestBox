@@ -1,8 +1,7 @@
 /**
-********************************************************************************
-Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+* Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
 * Welcome to the next generation of BDD and xUnit testing for CFML applications
 * The TestBox core class allows you to execute all kinds of test bundles, directories and more.
 */

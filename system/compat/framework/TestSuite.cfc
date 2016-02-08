@@ -1,4 +1,7 @@
 /**
+* Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
 * MXUnit compatibility for Test Suites
 */
 component accessors="true"{
