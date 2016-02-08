@@ -591,6 +591,7 @@ component{
 			// store spec status and debug data
 			specStats.status 		= "Error";
 			specStats.error 		= e;
+			specStats.failOrigin 	= this.sliceTagContext( e.tagContext );
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="error", stats=specStats );
 		}
@@ -833,6 +834,7 @@ component{
 			// store spec status and debug data
 			specStats.status 		= "Error";
 			specStats.error 		= e;
+			specStats.failOrigin 	= this.sliceTagContext( e.tagContext );
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="error", stats=specStats );
 		} finally {
