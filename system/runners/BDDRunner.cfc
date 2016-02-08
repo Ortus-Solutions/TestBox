@@ -58,6 +58,19 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					arguments.target.beforeAll();
 				}
 
+                // find any methods annotated 'beforeAll' and execute them
+                var beforeAllAnnotationMethods = getAnnotatedMethods(
+                    annotation = "beforeAll",
+                    metadata   = getMetadata( arguments.target )
+                );
+
+                for (var beforeAllMethod in beforeAllAnnotationMethods) {
+                    // We use evalute here for two reasons:
+                    // 1. We want the scopes to be the target class, not this one.
+                    // 2. We want this code to be cross-platform ( hence no cfinvoke() )
+                    Evaluate( "arguments.target.#beforeAllMethod.name#()" );
+                }
+
 				// Iterate over found test suites and test them, if nested suites, then this will recurse as well.
 				for( var thisSuite in testSuites ){
 					// verify call backs
@@ -66,7 +79,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					}
 
 					// Test Suite
-					testSuite( 
+					testSuite(
 						target=arguments.target,
 						suite=thisSuite,
 						testResults=arguments.testResults,
@@ -84,6 +97,19 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 				if( structKeyExists( arguments.target, "afterAll" ) ){
 					arguments.target.afterAll();
 				}
+
+                // find any methods annotated 'afterAll' and execute them
+                var afterAllAnnotationMethods = getAnnotatedMethods(
+                    annotation = "afterAll",
+                    metadata   = getMetadata( arguments.target )
+                );
+
+                for (var afterAllMethod in afterAllAnnotationMethods) {
+                    // We use evalute here for two reasons:
+                    // 1. We want the scopes to be the target class, not this one.
+                    // 2. We want this code to be cross-platform ( hence no cfinvoke() )
+                    Evaluate( "arguments.target.#afterAllMethod.name#()" );
+                }
 
 			} catch(Any e) {
 				bundleStats.globalException = e;
@@ -161,9 +187,9 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					// append to used thread names
 					arrayAppend( threadNames, thisThreadName );
 					// thread it
-					thread 	name="#thisThreadName#" 
-							thisSpec="#thisSpec#" 
-							suite="#arguments.suite#" 
+					thread 	name="#thisThreadName#"
+							thisSpec="#thisSpec#"
+							suite="#arguments.suite#"
 							threadName="#thisThreadName#"
 							callbacks="#arguments.callbacks#"{
 
@@ -173,12 +199,12 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 						}
 
 						// execute the test within the context of the spec target due to lucee closure bug, move back once it is resolved.
-						thread.target.runSpec( 
+						thread.target.runSpec(
 							spec=attributes.thisSpec,
 							suite=attributes.suite,
 							testResults=thread.testResults,
 							suiteStats=thread.suiteStats,
-							runner=this 
+							runner=this
 						);
 
 						// verify call backs
@@ -194,12 +220,12 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					}
 
 					// execute the test within the context of the spec target due to lucee closure bug, move back once it is resolved.
-					thread.target.runSpec( 
+					thread.target.runSpec(
 						spec=thisSpec,
 						suite=arguments.suite,
 						testResults=thread.testResults,
 						suiteStats=thread.suiteStats,
-						runner=this 
+						runner=this
 					);
 
 					// verify call backs
@@ -221,7 +247,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 			for( var thisInternalSuite in arguments.suite.suites ){
 
 				// run the suite specs recursively
-				testSuite( 
+				testSuite(
 					target=arguments.target,
 					suite=thisInternalSuite,
 					testResults=arguments.testResults,
@@ -273,5 +299,37 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 		// get the spec suites
 		return arguments.target.$suites;
 	}
+
+    /**
+     * Find all methods on a given metadata and it's parents with a given annotation
+     *
+     * @annotation The annotation name to look for on methods
+     * @metadata The metadata to search (recursively) for the provided annotation
+     */
+    private function getAnnotatedMethods(
+        required string annotation,
+        required struct metadata
+    ){
+        var lifecycleMethods = [];
+
+        if( StructKeyExists( arguments.metadata, "functions" ) ){
+            var funcs = arguments.metadata.functions;
+            lifecycleMethods.addAll( ArrayFilter( funcs, function( func ){
+                return StructKeyExists( func, annotation );
+            } ) );
+        }
+
+        if( StructKeyExists( arguments.metadata, "extends" ) ){
+            // recursively call up the inheritance chain
+            lifecycleMethods.addAll(
+                getAnnotatedMethods(
+                    arguments.annotation,
+                    arguments.metadata.extends
+                )
+            );
+        }
+
+        return lifecycleMethods;
+    }
 
 }
