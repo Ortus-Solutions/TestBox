@@ -1,4 +1,4 @@
-﻿/**
+/**
 * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
 * ---
@@ -111,4 +111,36 @@ component{
 		return slug;
 	}
 
-}	
+
+	/**
+	* Find all methods on a given metadata and it's parents with a given annotation
+	* @annotation The annotation name to look for on methods
+	* @metadata The metadata to search (recursively) for the provided annotation
+	*/
+    public array function getAnnotatedMethods(
+		required string annotation,
+		required struct metadata
+	) {
+        var lifecycleMethods = [];
+
+        if( StructKeyExists( arguments.metadata, "functions" ) ){
+            var funcs = arguments.metadata.functions;
+            lifecycleMethods.addAll( ArrayFilter( funcs, function( func ){
+                return StructKeyExists( func, annotation );
+            } ) );
+        }
+
+        if( StructKeyExists( arguments.metadata, "extends" ) ){
+            // recursively call up the inheritance chain
+            lifecycleMethods.addAll(
+                getAnnotatedMethods(
+                    arguments.annotation,
+                    arguments.metadata.extends
+                )
+            );
+        }
+
+        return lifecycleMethods;
+	}
+
+}

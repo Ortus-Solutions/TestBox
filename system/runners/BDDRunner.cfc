@@ -59,7 +59,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 				}
 
                 // find any methods annotated 'beforeAll' and execute them
-                var beforeAllAnnotationMethods = getAnnotatedMethods(
+                var beforeAllAnnotationMethods = variables.testbox.getUtility().getAnnotatedMethods(
                     annotation = "beforeAll",
                     metadata   = getMetadata( arguments.target )
                 );
@@ -99,7 +99,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 				}
 
                 // find any methods annotated 'afterAll' and execute them
-                var afterAllAnnotationMethods = getAnnotatedMethods(
+                var afterAllAnnotationMethods = variables.testbox.getUtility().getAnnotatedMethods(
                     annotation = "afterAll",
                     metadata   = getMetadata( arguments.target )
                 );
@@ -299,37 +299,5 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 		// get the spec suites
 		return arguments.target.$suites;
 	}
-
-    /**
-     * Find all methods on a given metadata and it's parents with a given annotation
-     *
-     * @annotation The annotation name to look for on methods
-     * @metadata The metadata to search (recursively) for the provided annotation
-     */
-    private function getAnnotatedMethods(
-        required string annotation,
-        required struct metadata
-    ){
-        var lifecycleMethods = [];
-
-        if( StructKeyExists( arguments.metadata, "functions" ) ){
-            var funcs = arguments.metadata.functions;
-            lifecycleMethods.addAll( ArrayFilter( funcs, function( func ){
-                return StructKeyExists( func, annotation );
-            } ) );
-        }
-
-        if( StructKeyExists( arguments.metadata, "extends" ) ){
-            // recursively call up the inheritance chain
-            lifecycleMethods.addAll(
-                getAnnotatedMethods(
-                    arguments.annotation,
-                    arguments.metadata.extends
-                )
-            );
-        }
-
-        return lifecycleMethods;
-    }
 
 }
