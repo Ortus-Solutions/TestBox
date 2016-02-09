@@ -64,7 +64,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
                     metadata   = getMetadata( arguments.target )
                 );
 
-                for (var beforeAllMethod in beforeAllAnnotationMethods) {
+                for ( var beforeAllMethod in beforeAllAnnotationMethods ){
                     // We use evalute here for two reasons:
                     // 1. We want the scopes to be the target class, not this one.
                     // 2. We want this code to be cross-platform ( hence no cfinvoke() )
@@ -104,7 +104,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
                     metadata   = getMetadata( arguments.target )
                 );
 
-                for (var afterAllMethod in afterAllAnnotationMethods) {
+                for ( var afterAllMethod in afterAllAnnotationMethods ){
                     // We use evalute here for two reasons:
                     // 1. We want the scopes to be the target class, not this one.
                     // 2. We want this code to be cross-platform ( hence no cfinvoke() )

@@ -16,7 +16,7 @@ component extends="tests.utils.ExampleParentTestCase"{
     /**
      * @aroundEach
      */
-    function testAroundEach(spec, suite) {
+    function testAroundEach( spec, suite ){
         variables.counter++;
         arguments.spec.body();
     }
