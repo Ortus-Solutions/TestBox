@@ -35,7 +35,7 @@ component{
 	/**
 	* Get the last modified date of a file
 	* @filename The target
-	* 
+	*
 	* @return date
 	*/
 	function fileLastModified( required filename ){
@@ -90,7 +90,7 @@ component{
 
 		return false;
 	}
-	
+
 	/**
 	* Create a URL safe slug from a string
 	* @str The target
@@ -125,9 +125,11 @@ component{
 
         if( StructKeyExists( arguments.metadata, "functions" ) ){
             var funcs = arguments.metadata.functions;
-            lifecycleMethods.addAll( ArrayFilter( funcs, function( func ){
-                return StructKeyExists( func, annotation );
-            } ) );
+            for ( var func in funcs ){
+                if ( StructKeyExists( func, annotation ) ){
+                    ArrayAppend( lifecycleMethods, func );
+                }
+            }
         }
 
         if( StructKeyExists( arguments.metadata, "extends" ) ){
