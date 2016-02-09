@@ -18,15 +18,15 @@ component{
 
 	/**
 	* Convert an array to struct argument notation
-	* @in The array to convert
+	* @input The array to convert
 	*/
-	struct function arrayToStruct( required array in ){
+	struct function arrayToStruct( required array input ){
 		var results = structnew();
 		var x       = 1;
-		var inLen   = Arraylen( arguments.in );
+		var inLen   = Arraylen( arguments.input );
 
 		for( x=1; x lte inLen; x=x+1 ){
-			results[ x ] = arguments.in[ x ];
+			results[ x ] = arguments.input[ x ];
 		}
 
 		return results;
