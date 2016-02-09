@@ -618,6 +618,15 @@ component{
 			parentSuite = parentSuite.parentRef;
 		}
 
+        var annotationMethods = this.$utility.getAnnotatedMethods(
+            annotation = "beforeEach",
+            metadata   = getMetadata( this )
+        );
+
+        for( var method in annotationMethods ){
+            arrayAppend( reverseTree, this[ method.name ] );
+        }
+
 		// Execute reverse tree
 		var treeLen = arrayLen( reverseTree );
 		if( treeLen gt 0 ){
@@ -665,6 +674,22 @@ component{
             parentSuite = parentSuite.parentRef;
         }
 
+        var annotationMethods = this.$utility.getAnnotatedMethods(
+            annotation = "aroundEach",
+            metadata   = getMetadata( this )
+        );
+
+        for( var method in annotationMethods ){
+            arrayAppend( reverseTree, {
+                name 	= method.name,
+                body 	= this[method.name],
+                data 	= {},
+                labels 	= {},
+                order 	= 0,
+                skip 	= false
+            } );
+        }
+
         // Sort the closures from the oldest parent down to the current spec
         var correctOrderTree = [];
         var treeLen = arrayLen( reverseTree );
@@ -695,41 +720,41 @@ component{
     */
     function generateAroundEachClosuresStack( array closures, required suite, required spec ) {
 
-        variables.closures 	= arguments.closures;
-        variables.suite 	= arguments.suite;
-        variables.spec 		= arguments.spec;
+        thread.closures = arguments.closures;
+        thread.suite 	= arguments.suite;
+        thread.spec 	= arguments.spec;
 
         // Get closure data from stack and pop it
-        var nextClosure = variables.closures[ 1 ];
-        arrayDeleteAt( variables.closures, 1 );
+        var nextClosure = thread.closures[ 1 ];
+        arrayDeleteAt( thread.closures, 1 );
 
         // Check if we have more in the stack or empty
-        if( arrayLen( variables.closures ) == 0 ){
+        if( arrayLen( thread.closures ) == 0 ){
         	// Return the closure of execution for a single spec ONLY
             return function(){
             	// Execute the body of the spec
-                nextClosure.body( spec = variables.spec, suite = variables.suite );
+                nextClosure.body( spec = thread.spec, suite = thread.suite );
             };
         }
 
         // Get next Spec in stack
-        var nextSpecInfo = variables.closures[ 1 ];
+        var nextSpecInfo = thread.closures[ 1 ];
         // Return generated closure
         return function() {
             nextClosure.body(
                 {
                     name = nextSpecInfo.name,
                     body = generateAroundEachClosuresStack(
-                        variables.closures,
-                        variables.suite,
-                        variables.spec
+                        thread.closures,
+                        thread.suite,
+                        thread.spec
                     ),
                     data = nextSpecInfo.data,
                     labels = nextSpecInfo.labels,
                     order = nextSpecInfo.order,
                     skip = nextSpecInfo.skip
                 },
-                variables.suite
+                thread.suite
             );
         };
     }
@@ -749,6 +774,17 @@ component{
 			parentSuite.afterEach( currentSpec=arguments.spec.name );
 			parentSuite = parentSuite.parentRef;
 		}
+
+        var annotationMethods = this.$utility.getAnnotatedMethods(
+            annotation = "afterEach",
+            metadata = getMetadata( this )
+        );
+
+        for( var method in annotationMethods ){
+            var afterEachMethod = this[ method.name ];
+            afterEachMethod( currentSpec = arguments.spec.name );
+        }
+
 		return this;
 	}
 
