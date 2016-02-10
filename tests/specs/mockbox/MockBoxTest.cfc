@@ -341,6 +341,7 @@
 		}
 
 		function testStubInheritedInterfaces(){
+			// If this can be created, then our test has passed.
 			var canBeMockedOne = getMockBox().createStub(implements = "TestBox.tests.resources.NestedInterface");
 		}
 
