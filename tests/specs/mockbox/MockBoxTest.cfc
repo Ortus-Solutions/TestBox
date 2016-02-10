@@ -318,6 +318,11 @@
 			$assert.isEqual( mocked.getAmigo( "luis" ), testFunction( "luis" ) );
 		}
 
+		function testStubInheritedInterfaces(){
+			// If this can be created, then our test has passed.
+			var canBeMockedOne = getMockBox().createStub(implements = "TestBox.tests.resources.NestedInterface");
+		}
+
 		private function testFunction(string amigo = "Amigo"){
 			return "Hola #arguments.amigo#!";
 		}
