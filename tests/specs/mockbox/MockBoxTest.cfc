@@ -318,6 +318,28 @@
 			$assert.isEqual( mocked.getAmigo( "luis" ), testFunction( "luis" ) );
 		}
 
+		function test$Throws(){
+			var mocked = getMockBox()
+				.createStub()
+				.$( "dontPassThrowToMe" )
+				.$args( "throw" )
+				.$throws(
+					message = "My Custom Exception Message",
+					type = "MyCustomException",
+					detail = "A detail message here."
+				);
+
+			$assert.notThrows(
+				target = function() { mocked.dontPassThrowToMe() }
+			);
+
+			$assert.throws(
+				target = function() { mocked.dontPassThrowToMe( "throw" ) },
+				type = "MyCustomException",
+				message = "My Custom Exception Message"
+			);
+		}
+
 		private function testFunction(string amigo = "Amigo"){
 			return "Hola #arguments.amigo#!";
 		}

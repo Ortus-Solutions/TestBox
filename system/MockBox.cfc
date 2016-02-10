@@ -290,6 +290,19 @@ Description		:
 			     detail="This method was probably called without chaining it to a $() call. Ex: obj.$().$callback(), or obj.$('method').$args().$callback()">
 	</cffunction>
 
+	<!--- $throws --->
+	<cffunction name="$throws" output="false" access="public" returntype="any" hint="Use this method to return an exception when called.  Can only be called when chained to a $() or $().$args() call.  Results will be recycled on a multiple of their lengths according to how many times they are called, simulating a state-machine algorithm. Injected as: $throws()">
+		<!--- Check if current method set? --->
+		<cfif len( this._mockCurrentMethod )>
+			<cfset args = arguments />
+			<cfreturn this.$callback(function() { throw(argumentCollection = args); }) />
+		</cfif>
+
+		<cfthrow type="MockFactory.IllegalStateException"
+			     message="No current method name set"
+			     detail="This method was probably called without chaining it to a $() call. Ex: obj.$().$throws(), or obj.$('method').$args().$throws()">
+	</cffunction>
+
 	<!--- $args --->
 	<cffunction name="$args" output="false" access="public" returntype="any" hint="Use this method to mock specific arguments when calling a mocked method.  Can only be called when chained to a $() call.  If a method is called with arguments and no match, it defaults to the base results defined. Injected as: $args()">
 		<cfscript>
@@ -556,6 +569,7 @@ Description		:
 			obj.$getProperty	 	= variables.$getProperty;
 			// Mock Results
 			obj.$results			= variables.$results;
+			obj.$throws             = variables.$throws;
 			obj.$callback 			= variables.$callback;
 			// Mock Arguments
 			obj.$args				= variables.$args;
