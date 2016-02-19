@@ -61,6 +61,16 @@
 		<chmod file="${dir.build}/**" perm="og+wrs" type="both" />
 		<!-- Mark as init -->
 		<property name="src.isInit" value="true" />
+
+		<!-- Make sure server is stopped -->
+		<exec executable="box" dir="${basedir}">
+			<arg line="server stop" />
+		</exec>
+		<!-- Startup the testing server, wait for a few seconds for server to start -->
+		<exec executable="box" dir="${basedir}">
+			<arg line="server start" />
+		</exec>
+		<sleep seconds="5"/>
 	</target>
 	
 	<!-- update permissions on reports -->
@@ -90,7 +100,9 @@
     	
     <!-- Build All Releases -->
 	<target name="build.all" description="Builds TestBox" depends="run-tests,build.testbox">
-		
+		<exec executable="box" dir="${basedir}">
+			<arg line="server stop" />
+		</exec>
 	</target>
 	
 	<!-- Build TestBox-->
@@ -138,20 +150,24 @@
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 						
-		<!-- Execute ColdDoc -->
-		<get dest="${dir.build}/colddoc.html" src="${url.testbox.api}${testbox.version}&amp;path=${dir.build}/testbox/apidocs&amp;testbox_root=${dir.build}/testbox" verbose="true"/>
-		<delete file="${dir.build}/colddoc.html" />
+		<!-- Api Docs -->
+		<antcall target="build.apidocs" />
 		
-		<!-- Zip API Docs -->
-		<zip destfile="${dir.testbox.exports}/testbox-apidocs-${testbox.version}.zip" basedir="${dir.build}/testbox/apidocs" />
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.testbox.exports}/testbox-${testbox.version}.zip" basedir="${dir.build}" />
+
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
 			<fileset dir="${dir.testbox.exports}">
 				<include name="*.zip" />
 			</fileset>
 		</checksum>
+		<checksum forceoverwrite="true" algorithm="SHA-512" fileext=".sha512">
+			<fileset dir="${dir.testbox.exports}">
+				<include name="*.zip" />
+			</fileset>
+		</checksum>
+
 		<!-- Copy box.json to exports -->
 		<copy file="${dir.build}/box.json" toFile="${dir.testbox.exports}/box.json" encoding="UTF-8"/>
 		
@@ -168,6 +184,10 @@
 			  tofile="${be.testbox.exports}/${testbox.slug}-be.zip.md5" 
 			  overwrite="true" 
 			  encoding="UTF-8"/>
+		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip.sha512" 
+			  tofile="${be.testbox.exports}/${testbox.slug}-be.zip.sha512" 
+			  overwrite="true" 
+			  encoding="UTF-8"/>
 
 		<!-- Create Box Repo From macrodef -->
 		<box-repo location="${dir.exports}/${testbox.slug}" 
@@ -179,7 +199,23 @@
 
 		<!-- Cleanup -->
 		<delete dir="${dir.build}" />
-				
     </target>
+
+    <!-- Build API Docs -->
+ 	<target name="build.apidocs" description="Builds the api docs" depends="init">
+ 		<!-- Create API apidocs dir -->
+ 		<mkdir dir="${dir.api}"/>
+ 		<!-- Install dependencies for docs -->
+		<exec executable="box" dir="${dir.apidocs}">
+			<arg line="install --force" />
+		</exec>
+		<!-- Get the apidocs now -->
+		<get dest="${dir.build}/docbox.html" 
+			 src="${url.apidocs}?version=${testbox.version}&amp;path=${dir.api}" 
+			 verbose="true"
+			 retries="5"/>
+		<!-- Zip API Docs -->
+		<zip destfile="${dir.testbox.exports}/${testbox.slug}-apidocs-${testbox.version}.zip" basedir="${dir.api}"></zip>
+ 	</target>
 
 </project>
