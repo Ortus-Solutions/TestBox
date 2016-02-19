@@ -26,7 +26,7 @@
 		"runner" : [
 			{ "cf10" 	: "http://cf10cboxdev.jfetmac/testbox/tests/runner.cfm" },
 			{ "cf11" 	: "http://cf11cboxdev.jfetmac/testbox/tests/runner.cfm" },
-			{ "railo" 	: "http://railocboxdev.jfetmac/testbox/tests/runner.cfm" }
+			{ "lucee" 	: "http://localhost:49616/tests/runner.cfm" }
 		]
 	}
 }
