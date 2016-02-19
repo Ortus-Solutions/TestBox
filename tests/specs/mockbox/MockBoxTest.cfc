@@ -1,4 +1,4 @@
-﻿<cfcomponent extends="testbox.system.BaseSpec" displayname="MockBox Suite">
+<cfcomponent extends="testbox.system.BaseSpec" displayname="MockBox Suite">
 
 	<cfscript>
 
@@ -338,6 +338,11 @@
 				type = "MyCustomException",
 				message = "My Custom Exception Message"
 			);
+		}
+
+		function testStubInheritedInterfaces(){
+			// If this can be created, then our test has passed.
+			var canBeMockedOne = getMockBox().createStub(implements = "TestBox.tests.resources.NestedInterface");
 		}
 
 		private function testFunction(string amigo = "Amigo"){
