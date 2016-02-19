@@ -138,12 +138,12 @@ if( url.opt_run ){
 <body>
 
 <!--- Title --->
-<div id="tb-runner" class="box">
+<div id="tb-runner" class="box" style="min-height:220px">
 <form name="runnerForm" id="runnerForm">
 <input type="hidden" name="opt_run" id="opt_run" value="true">
 
 	<div id="tb-left" class="centered">
-		<img src="TestBoxLogo125.png" alt="TestBox" id="tb-logo"/><br>v#testbox.getVersion()#
+		<img src="http://www.ortussolutions.com/__media/testbox-185.png" alt="TestBox" id="tb-logo"/><br>v#testbox.getVersion()#
 	</div>
 
 	<div id="tb-right">
