@@ -303,7 +303,9 @@ Description		:
 
 			// Check extends and recurse
 			if( structKeyExists( arguments.md, "extends") ){
-				generateMethodsFromMD( udfOut, arguments.md.extends );
+				for( var thisKey in arguments.md.extends ){
+					generateMethodsFromMD( udfOut, arguments.md.extends[ thisKey ] );
+				}
 			}
     	</cfscript>
     </cffunction>
