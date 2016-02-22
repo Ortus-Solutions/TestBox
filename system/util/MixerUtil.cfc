@@ -1,4 +1,4 @@
-﻿<!-----------------------------------------------------------------------
+<!-----------------------------------------------------------------------
 ********************************************************************************
 Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
@@ -15,21 +15,21 @@ Description :
 	<cffunction name="init" access="public" returntype="MixerUtil" output="false" hint="Constructor">
 		<cfscript>
 			variables.instance = structnew();
-			instance.mixins = StructNew();
+			variables.instance.mixins = StructNew();
 
 			// Place our methods on the mixins struct
-			instance.mixins[ "removeMixin" ] 				= variables.removeMixin;
-			instance.mixins[ "injectMixin" ] 				= variables.injectMixin;
-			instance.mixins[ "invokerMixin" ] 				= variables.invokerMixin;
-			instance.mixins[ "injectPropertyMixin" ] 		= variables.injectPropertyMixin;
-			instance.mixins[ "removePropertyMixin" ] 		= variables.removePropertyMixin;
-			instance.mixins[ "populatePropertyMixin" ] 		= variables.populatePropertyMixin;
-			instance.mixins[ "includeitMixin" ] 			= variables.includeitMixin;
-			instance.mixins[ "getPropertyMixin" ]			= variables.getPropertyMixin;
-			instance.mixins[ "exposeMixin" ]				= variables.exposeMixin;
-			instance.mixins[ "methodProxy" ]				= variables.methodProxy;
+			variables.instance.mixins[ "removeMixin" ] 				= variables.removeMixin;
+			variables.instance.mixins[ "injectMixin" ] 				= variables.injectMixin;
+			variables.instance.mixins[ "invokerMixin" ] 				= variables.invokerMixin;
+			variables.instance.mixins[ "injectPropertyMixin" ] 		= variables.injectPropertyMixin;
+			variables.instance.mixins[ "removePropertyMixin" ] 		= variables.removePropertyMixin;
+			variables.instance.mixins[ "populatePropertyMixin" ] 		= variables.populatePropertyMixin;
+			variables.instance.mixins[ "includeitMixin" ] 			= variables.includeitMixin;
+			variables.instance.mixins[ "getPropertyMixin" ]			= variables.getPropertyMixin;
+			variables.instance.mixins[ "exposeMixin" ]				= variables.exposeMixin;
+			variables.instance.mixins[ "methodProxy" ]				= variables.methodProxy;
 
-			instance.system = createObject('java','java.lang.System');
+			variables.instance.system = createObject('java','java.lang.System');
 
 			return this;
 		</cfscript>
@@ -43,11 +43,11 @@ Description :
 		<cfset var udf = 0>
 
 		<cfif NOT structKeyExists(arguments.CFC, "$mixed")>
-		<cflock name="mixerUtil.#instance.system.identityHashCode(arguments.CFC)#" type="exclusive" timeout="15" throwontimeout="true">
+		<cflock name="mixerUtil.#variables.instance.system.identityHashCode(arguments.CFC)#" type="exclusive" timeout="15" throwontimeout="true">
 			<cfif NOT structKeyExists(arguments.CFC, "$mixed")>
 			<cfscript>
-				for( udf in instance.mixins ){
-					arguments.CFC[udf] = instance.mixins[udf];
+				for( udf in variables.instance.mixins ){
+					arguments.CFC[udf] = variables.instance.mixins[udf];
 				}
 				arguments.CFC.$mixed = true;
 			</cfscript>
@@ -61,10 +61,10 @@ Description :
 		<cfargument name="CFC" hint="The cfc to inject the method into" type="any" required="Yes">
 		<cfset var udf = 0>
 
-		<cflock name="mixerUtil.#instance.system.identityHashCode(arguments.CFC)#" type="exclusive" timeout="15" throwontimeout="true">
+		<cflock name="mixerUtil.#variables.instance.system.identityHashCode(arguments.CFC)#" type="exclusive" timeout="15" throwontimeout="true">
 			<cfscript>
-				for( udf in instance.mixins ){
-					arguments.CFC[udf] = instance.mixins[udf];
+				for( udf in variables.instance.mixins ){
+					arguments.CFC[udf] = variables.instance.mixins[udf];
 					StructDelete(arguments.CFC, udf);
 				}
 			</cfscript>
