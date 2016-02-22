@@ -489,7 +489,7 @@ Description		:
 			var arg = "";
 
 			for(arg in argOrderedTree) {
-				if( NOT structKeyExists( argOrderedTree, arg ) ){
+				if( NOT structKeyExists( argOrderedTree, arg ) OR IsNull(argOrderedTree.get(arg)) ){
 					/* we aren't going to be able to serialize an undefined variable, this might occur if an arguments structure
 					 * containing optional parameters is passed by argumentCollection=arguments to the mocked method.
 					 */
