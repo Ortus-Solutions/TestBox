@@ -30,8 +30,8 @@ component extends="testbox.system.BaseSpec"{
 		
 			// before each spec in THIS suite group
 			beforeEach(function(){
-				coldbox = 0;
-				coldbox++;
+				application.coldbox = 0;
+				application.coldbox++;
 			});
 			
 			// after each spec in THIS suite group
@@ -48,31 +48,31 @@ component extends="testbox.system.BaseSpec"{
 			* @skip A flag that tells TestBox to skip this spec from testing if true
 			*/
 			it("is just a closure so it can contain code", function(){
-				expect( coldbox ).toBe( 1 );
+				expect( application.coldbox ).toBe( 1 );
 			});
 			
 			// more than 1 expectation
 			it("can have more than one expectation test", function(){
-				coldbox = coldbox * 8;
+				application.coldbox = application.coldbox * 8;
 				// type checks
-				expect( coldbox ).toBeTypeOf( 'numeric' );
+				expect( application.coldbox ).toBeTypeOf( 'numeric' );
 				// dynamic type methods
-				expect( coldbox ).toBeNumeric();
+				expect( application.coldbox ).toBeNumeric();
 				// delta ranges
-				expect( coldbox ).toBeCloseTo( expected=10, delta=2 );
+				expect( application.coldbox ).toBeCloseTo( expected=10, delta=2 );
 				// negations
-				expect( coldbox ).notToBe( 4 );
+				expect( application.coldbox ).notToBe( 4 );
 			});
 
 			// negations
 			it("can have negative expectations", function(){
-				coldbox = coldbox * 8;
+				application.coldbox = application.coldbox * 8;
 				// type checks
-				expect( coldbox ).notToBeTypeOf( 'usdate' );
+				expect( application.coldbox ).notToBeTypeOf( 'usdate' );
 				// dynamic type methods
-				expect( coldbox ).notToBeArray();
+				expect( application.coldbox ).notToBeArray();
 				// delta ranges
-				expect( coldbox ).notToBeCloseTo( expected=10, delta=2 );
+				expect( application.coldbox ).notToBeCloseTo( expected=10, delta=2 );
 			});
 			
 			// xit() skips

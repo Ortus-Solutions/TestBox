@@ -23,18 +23,18 @@ Description		:
 			// Setup the generation Path
 			if( len(trim(arguments.generationPath)) neq 0 ){
 				// Default to coldbox tmp path
-				instance.generationPath = arguments.generationPath;
+				variables.instance.generationPath = arguments.generationPath;
 			}
 			else{
-				instance.generationPath = tempDir;
+				variables.instance.generationPath = tempDir;
 			}
 
 			// Cleanup of paths.
-			if( right(instance.generationPath,1) neq "/" ){
-				instance.generationPath = instance.generationPath & "/";
+			if( right(variables.instance.generationPath,1) neq "/" ){
+				variables.instance.generationPath = variables.instance.generationPath & "/";
 			}
 
-			instance.mockGenerator 	= createObject("component","testbox.system.mockutils.MockGenerator").init( this, true );
+			variables.instance.mockGenerator 	= createObject("component","testbox.system.mockutils.MockGenerator").init( this, true );
 
 			return this;
 		</cfscript>
@@ -44,16 +44,16 @@ Description		:
 
 	<!--- Get Generator --->
 	<cffunction name="getMockGenerator" access="public" returntype="testbox.system.mockutils.MockGenerator" output="false" hint="Get the Mock Generator Utility">
-		<cfreturn instance.mockGenerator>
+		<cfreturn variables.instance.mockGenerator>
 	</cffunction>
 
 	<!--- Get/Set generation path --->
 	<cffunction name="getGenerationPath" access="public" returntype="string" output="false" hint="Get the current generation path">
-		<cfreturn instance.generationPath>
+		<cfreturn variables.instance.generationPath>
 	</cffunction>
 	<cffunction name="setGenerationPath" access="public" returntype="void" output="false" hint="Override the mocks generation path">
 		<cfargument name="generationPath" type="string" required="true">
-		<cfset instance.generationPath = arguments.generationPath>
+		<cfset variables.instance.generationPath = arguments.generationPath>
 	</cffunction>
 
 <!------------------------------------------- MOCK CREATION METHODS ------------------------------------------>
@@ -129,7 +129,7 @@ Description		:
 				return createMock(className="testbox.system.mockutils.Stub", callLogging=arguments.callLogging);
 			}
 			// Generate the CFC + Create it + Remove it
-			return prepareMock( instance.mockGenerator.generateCFC(argumentCollection=arguments) );
+			return prepareMock( variables.instance.mockGenerator.generateCFC(argumentCollection=arguments) );
 		</cfscript>
 	</cffunction>
 

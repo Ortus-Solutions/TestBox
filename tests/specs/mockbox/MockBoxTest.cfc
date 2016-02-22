@@ -3,7 +3,7 @@
 	<cfscript>
 
 		function setup(){
-			test = getMockBox().createEmptyMock( "testbox.tests.resources.Test" );
+			variables.test = getMockBox().createEmptyMock( "testbox.tests.resources.Test" );
 		}
 
 		function testMockRealMethods(){
@@ -103,76 +103,76 @@
 		}
 
 		function testVerifyOnce(){
-			test.$( "displayData", queryNew( '' ) ).$( "testIt" ).$( "testNone" );
-			test.testIt();
-			$assert.isTrue( test.$once() );
-			test.displayData();
-			$assert.isTrue( test.$once( "displayData" ) );
+			variables.test.$( "displayData", queryNew( '' ) ).$( "testIt" ).$( "testNone" );
+			variables.test.testIt();
+			$assert.isTrue( variables.test.$once() );
+			variables.test.displayData();
+			$assert.isTrue( variables.test.$once( "displayData" ) );
 
-			$assert.isFalse( test.$once( "testNone" ) );
+			$assert.isFalse( variables.test.$once( "testNone" ) );
 		}
 
 		function testVerifyNever(){
-			test.$( "displayData", queryNew( '' ) );
-			test.$( "testIt" );
-			$assert.isTrue( test.$never() );
-			test.testIt();
-			$assert.isTrue( test.$never( "displayData" ) );
-			test.displayData();
-			$assert.isFalse( test.$never( "displayData" ) );
+			variables.test.$( "displayData", queryNew( '' ) );
+			variables.test.$( "testIt" );
+			$assert.isTrue( variables.test.$never() );
+			variables.test.testIt();
+			$assert.isTrue( variables.test.$never( "displayData" ) );
+			variables.test.displayData();
+			$assert.isFalse( variables.test.$never( "displayData" ) );
 		}
 
 		function testVerifyAtMost(){
-			test.$( "displayData", queryNew( '' ) );
-			test.displayData();
-			test.displayData();
-			test.displayData();
-			test.displayData();
-			test.displayData();
-			$assert.isFalse( test.$atMost( 3 ) );
-			$assert.isTrue( test.$atMost( 5 ) );
+			variables.test.$( "displayData", queryNew( '' ) );
+			variables.test.displayData();
+			variables.test.displayData();
+			variables.test.displayData();
+			variables.test.displayData();
+			variables.test.displayData();
+			$assert.isFalse( variables.test.$atMost( 3 ) );
+			$assert.isTrue( variables.test.$atMost( 5 ) );
 		}
 
 		function testVerifyAtLeast(){
-			test.$( "displayData", queryNew( '' ) );
-			$assert.isTrue( test.$atLeast( 0 ) );
-			test.displayData();
-			test.displayData();
-			test.displayData();
-			test.displayData();
-			test.displayData();
-			$assert.isTrue( test.$atLeast( 3 ) );
+			variables.test.$( "displayData", queryNew( '' ) );
+			$assert.isTrue( variables.test.$atLeast( 0 ) );
+			variables.test.displayData();
+			variables.test.displayData();
+			variables.test.displayData();
+			variables.test.displayData();
+			variables.test.displayData();
+			$assert.isTrue( variables.test.$atLeast( 3 ) );
 		}
 
 		function testVerifyCallCount(){
-			test.$( "displayData", queryNew( '' ) );
-			$assert.isTrue( test.$verifyCallCount( 0 ) );
-			$assert.isFalse( test.$verifyCallCount( 1 ) );
+			variables.test.$( "displayData", queryNew( '' ) );
+			$assert.isTrue( variables.test.$verifyCallCount( 0 ) );
+			$assert.isFalse( variables.test.$verifyCallCount( 1 ) );
 
-			test.displayData();
-			$assert.isEqual( true, test.$verifyCallCount( 1 ) );
+			variables.test.displayData();
+			$assert.isEqual( true, variables.test.$verifyCallCount( 1 ) );
 
-			test.displayData();
-			test.displayData();
-			test.displayData();
-			$assert.isEqual( true, test.$verifyCallCount( 4 ) );
-			$assert.isEqual( true, test.$verifyCallCount( 4, "displayData" ) );
+			variables.test.displayData();
+			variables.test.displayData();
+			variables.test.displayData();
+			$assert.isEqual( true, variables.test.$verifyCallCount( 4 ) );
+			$assert.isEqual( true, variables.test.$verifyCallCount( 4, "displayData" ) );
 		}
 
 		function testMockMethodCallCount(){
-			test.$( "displayData", queryNew( '' ) );
-			test.$( "getLuis", 1 );
+			variables.test.$( "displayData", queryNew( '' ) );
+			variables.test.$( "getLuis", 1 );
 
-			$assert.isEqual( 0, test.$count( "displayData" ) );
-			$assert.isEqual( -1, test.$count( "displayData2" ) );
+			$assert.isEqual( 0, variables.test.$count( "displayData" ) );
+			$assert.isEqual( -1, variables.test.$count( "displayData2" ) );
 
-			test.displayData();
+			variables.test.displayData();
 
-			$assert.isEqual( 1, test.$count( "displayData" ) );
+			$assert.isEqual( 1, variables.test.$count( "displayData" ) );
 
-			test.getLuis();
-			test.getLuis();
-			$assert.isEqual( 3, test.$count() );
+			variables.test.getLuis();
+			variables.test.getLuis();
+			$assert.isEqual( 3, variables.test.$count() );
 		}
 
 		function testMethodArgumentSignatures(){
