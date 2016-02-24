@@ -292,15 +292,26 @@ Description		:
 
 	<!--- $throws --->
 	<cffunction name="$throws" output="false" access="public" returntype="any" hint="Use this method to return an exception when called.  Can only be called when chained to a $() or $().$args() call.  Results will be recycled on a multiple of their lengths according to how many times they are called, simulating a state-machine algorithm. Injected as: $throws()">
-		<!--- Check if current method set? --->
-		<cfif len( this._mockCurrentMethod )>
-			<cfset args = arguments />
-			<cfreturn this.$callback(function() { throw(argumentCollection = args); }) />
-		</cfif>
+		<cfscript>
+			if( len( this._mockCurrentMethod ) ){
+				var args = arguments;
+				return this.$callback( function(){ 
+					throw(
+						type  		= structKeyExists( args, "type" ) ? args.type : "",
+						message  	= structKeyExists( args, "message" ) ? args.message : ""
+						detail  	= structKeyExists( args, "detail" ) ? args.detail : ""
+						errorCode 	= structKeyExists( args, "errorCode" ) ? args.errorCode : "0"
+					); 
+				} );
+			}
 
-		<cfthrow type="MockFactory.IllegalStateException"
-			     message="No current method name set"
-			     detail="This method was probably called without chaining it to a $() call. Ex: obj.$().$throws(), or obj.$('method').$args().$throws()">
+			throw( 
+				type 	= "MockFactory.IllegalStateException"
+			    message = "No current method name set"
+			    detail 	= "This method was probably called without chaining it to a $() call. Ex: obj.$().$throws(), or obj.$('method').$args().$throws()"
+			);
+
+		</cfscript>
 	</cffunction>
 
 	<!--- $args --->
