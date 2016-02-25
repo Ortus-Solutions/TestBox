@@ -306,8 +306,8 @@ Description		:
 			}
 
 			throw( 
-				type 	= "MockFactory.IllegalStateException"
-			    message = "No current method name set"
+				type 	= "MockFactory.IllegalStateException",
+			    message = "No current method name set",
 			    detail 	= "This method was probably called without chaining it to a $() call. Ex: obj.$().$throws(), or obj.$('method').$args().$throws()"
 			);
 
