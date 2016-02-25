@@ -1,5 +1,9 @@
 {
-    "port":"49616",
+    "force":true,
     "openbrowser":"false",
-    "force":"true"
+    "web":{
+        "http":{
+            "port":"49616"
+        }
+    }
 }
