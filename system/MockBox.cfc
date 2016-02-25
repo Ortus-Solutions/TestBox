@@ -298,8 +298,8 @@ Description		:
 				return this.$callback( function(){ 
 					throw(
 						type  		= structKeyExists( args, "type" ) ? args.type : "",
-						message  	= structKeyExists( args, "message" ) ? args.message : ""
-						detail  	= structKeyExists( args, "detail" ) ? args.detail : ""
+						message  	= structKeyExists( args, "message" ) ? args.message : "",
+						detail  	= structKeyExists( args, "detail" ) ? args.detail : "",
 						errorCode 	= structKeyExists( args, "errorCode" ) ? args.errorCode : "0"
 					); 
 				} );
