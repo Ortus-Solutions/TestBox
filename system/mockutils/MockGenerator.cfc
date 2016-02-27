@@ -44,7 +44,7 @@ Description		:
 		<cfargument name="callback" 			type="any" 		required="false"	hint="A callback to execute that should return the desired results, this can be a UDF or closure."/>
 		<!--- ************************************************************* --->
 		<cfscript>
-			var udfOut  		= createObject( "java", "java.lang.StringBuffer" ).init( '' );
+			var udfOut  		= createObject( "java", "java.lang.StringBuilder" ).init( '' );
 			var genPath 		= expandPath( instance.mockBox.getGenerationPath() );
 			var tmpFile 		= createUUID() & ".cfm";
 			var fncMD 			= arguments.metadata;
@@ -206,7 +206,7 @@ Description		:
 		<cfargument name="extends" 		type="string" required="false" default="" hint="The class the CFC should extend"/>
 		<cfargument name="implements" 	type="string" required="false" default="" hint="The class(es) the CFC should implement"/>
     	<cfscript>
-			var udfOut 	= createObject("java","java.lang.StringBuffer").init('');
+			var udfOut 	= createObject("java","java.lang.StringBuilder").init('');
 			var genPath = expandPath( instance.mockBox.getGenerationPath() );
 			var tmpFile = createUUID() & ".cfc";
 			var cfcPath = replace( instance.mockBox.getGenerationPath(), "/", ".", "all" ) & listFirst( tmpFile, "." );
