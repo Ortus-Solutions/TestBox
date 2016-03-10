@@ -1,8 +1,7 @@
 /**
-********************************************************************************
-Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+* Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
 * This is a base spec object that is used to test XUnit and BDD style specification methods
 */
 component{
@@ -131,7 +130,7 @@ component{
 			// the afterEach closure
 			afterEach 	= variables.closureStub,
 			// the aroundEach closure, init to empty to distinguish
-			aroundEach	= "",
+			aroundEach	= variables.aroundStub,
 			// the parent suite
 			parent 		= "",
 			// the parent ref
@@ -193,7 +192,7 @@ component{
 
 		return this;
 	}
-	
+
 	/**
 	* The way to describe BDD test suites in TestBox. The story is an alias for describe usually use when you are writing using Gherkin-esque language
 	* The body is the function that implements the suite.
@@ -333,11 +332,11 @@ component{
 
 		// skip constraint for suite as a closure
 		if( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ){
-			spec.skip = arguments.skip( 
+			spec.skip = arguments.skip(
 				title	= arguments.title,
 				body	= arguments.body,
 				labels	= arguments.labels,
-				spec	= spec 
+				spec	= spec
 			);
 		}
 
@@ -508,10 +507,10 @@ component{
 		string reporter="simple",
 		string labels=""
 	) output=true{
-		var runner = new testbox.system.TestBox( 
+		var runner = new testbox.system.TestBox(
 			bundles		= "#getMetadata(this).name#",
 			labels		= arguments.labels,
-			reporter	= arguments.reporter 
+			reporter	= arguments.reporter
 		);
 
 		// Produce report
@@ -558,14 +557,7 @@ component{
 				runBeforeEachClosures( arguments.suite, arguments.spec );
 
 				try{
-					// around each test
-					if( isClosure( suite.aroundEach ) || isCustomFunction( suite.aroundEach ) ){
-						runAroundEachClosures( arguments.suite, arguments.spec );
-						//suite.aroundEach( spec=arguments.spec );
-					} else {
-						// Execute the Spec body
-						arguments.spec.body( data=arguments.spec.data );
-					}
+					runAroundEachClosures( arguments.suite, arguments.spec );
 				} catch( any e ){
 					rethrow;
 				} finally {
@@ -589,7 +581,8 @@ component{
 			// store spec status and debug data
 			specStats.status 		= "Failed";
 			specStats.failMessage 	= e.message;
-			specStats.failOrigin 	= e.tagContext;
+			specStats.failOrigin 	= sliceTagContext( e.tagContext );
+
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );
 		}
@@ -598,6 +591,7 @@ component{
 			// store spec status and debug data
 			specStats.status 		= "Error";
 			specStats.error 		= e;
+			specStats.failOrigin 	= sliceTagContext( e.tagContext );
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="error", stats=specStats );
 		}
@@ -611,6 +605,8 @@ component{
 
 	/**
 	* Execute the before each closures in order for a suite and spec
+	* @suite The suite definition
+	* @spec The spec definition
 	*/
 	BaseSpec function runBeforeEachClosures( required suite, required spec ){
 		var reverseTree = [];
@@ -621,6 +617,15 @@ component{
 			arrayAppend( reverseTree, parentSuite.beforeEach );
 			parentSuite = parentSuite.parentRef;
 		}
+
+        var annotationMethods = this.$utility.getAnnotatedMethods(
+            annotation = "beforeEach",
+            metadata   = getMetadata( this )
+        );
+
+        for( var method in annotationMethods ){
+            arrayAppend( reverseTree, this[ method.name ] );
+        }
 
 		// Execute reverse tree
 		var treeLen = arrayLen( reverseTree );
@@ -639,16 +644,125 @@ component{
 
 	/**
 	* Execute the around each closures in order for a suite and spec
+	* @suite The suite definition
+	* @spec The spec definition
 	*/
 	BaseSpec function runAroundEachClosures( required suite, required spec ){
-		// TODO: Add multi-tree traversal aroundEach(), 1 level as of now.
-		// execute aroundEach()
-		arguments.suite.aroundEach( spec=arguments.spec, suite=arguments.suite );
+        var reverseTree = [
+            {
+                name 	= arguments.suite.name,
+                body 	= arguments.suite.aroundEach,
+                data 	= {},
+                labels 	= arguments.suite.labels,
+                order 	= 0,
+                skip 	= arguments.suite.skip
+            }
+        ];
+
+        // do we have nested suites? If so, traverse the tree to build reverse execution map
+        var parentSuite = arguments.suite.parentRef;
+        while( !isSimpleValue( parentSuite ) ){
+            arrayAppend( reverseTree, {
+                name 	= parentSuite.name,
+                body 	= parentSuite.aroundEach,
+                data 	= {},
+                labels 	= parentSuite.labels,
+                order 	= 0,
+                skip 	= parentSuite.skip
+            } );
+            // go deep
+            parentSuite = parentSuite.parentRef;
+        }
+
+        var annotationMethods = this.$utility.getAnnotatedMethods(
+            annotation = "aroundEach",
+            metadata   = getMetadata( this )
+        );
+
+        for( var method in annotationMethods ){
+            arrayAppend( reverseTree, {
+                name 	= method.name,
+                body 	= this[method.name],
+                data 	= {},
+                labels 	= {},
+                order 	= 0,
+                skip 	= false
+            } );
+        }
+
+        // Sort the closures from the oldest parent down to the current spec
+        var correctOrderTree = [];
+        var treeLen = arrayLen( reverseTree );
+		if( treeLen gt 0 ){
+			for( var x = treeLen; x gte 1; x-- ){
+                arrayAppend( correctOrderTree, reverseTree[ x ] );
+			}
+		}
+
+        // Build a function that will execute down the tree
+        var specStack = generateAroundEachClosuresStack(
+            closures 	= correctOrderTree,
+            suite 		= arguments.suite,
+            spec 		= arguments.spec
+        );
+
+        // Run the specs
+        specStack();
+
 		return this;
 	}
 
+    /**
+    * Generates a specs stack for executions
+    * @closures The array of closures data to build
+    * @suite The target suite
+    * @spec The target spec
+    */
+    function generateAroundEachClosuresStack( array closures, required suite, required spec ) {
+
+        thread.closures = arguments.closures;
+        thread.suite 	= arguments.suite;
+        thread.spec 	= arguments.spec;
+
+        // Get closure data from stack and pop it
+        var nextClosure = thread.closures[ 1 ];
+        arrayDeleteAt( thread.closures, 1 );
+
+        // Check if we have more in the stack or empty
+        if( arrayLen( thread.closures ) == 0 ){
+        	// Return the closure of execution for a single spec ONLY
+            return function(){
+            	// Execute the body of the spec
+                nextClosure.body( spec = thread.spec, suite = thread.suite );
+            };
+        }
+
+        // Get next Spec in stack
+        var nextSpecInfo = thread.closures[ 1 ];
+        // Return generated closure
+        return function() {
+            nextClosure.body(
+                {
+                    name = nextSpecInfo.name,
+                    body = generateAroundEachClosuresStack(
+                        thread.closures,
+                        thread.suite,
+                        thread.spec
+                    ),
+                    data = nextSpecInfo.data,
+                    labels = nextSpecInfo.labels,
+                    order = nextSpecInfo.order,
+                    skip = nextSpecInfo.skip
+                },
+                thread.suite
+            );
+        };
+    }
+
 	/**
 	* Execute the after each closures in order for a suite and spec
+	* @suite The suite definition
+	* @spec The spec definition
 	*/
 	BaseSpec function runAfterEachClosures( required suite, required spec ){
 		// execute nearest afterEach()
@@ -660,6 +774,17 @@ component{
 			parentSuite.afterEach( currentSpec=arguments.spec.name );
 			parentSuite = parentSuite.parentRef;
 		}
+
+        var annotationMethods = this.$utility.getAnnotatedMethods(
+            annotation = "afterEach",
+            metadata = getMetadata( this )
+        );
+
+        for( var method in annotationMethods ){
+            var afterEachMethod = this[ method.name ];
+            afterEachMethod( currentSpec = arguments.spec.name );
+        }
+
 		return this;
 	}
 
@@ -735,7 +860,8 @@ component{
 			// store spec status and debug data
 			specStats.status 		= "Failed";
 			specStats.failMessage 	= e.message;
-			specStats.failOrigin 	= e.tagContext;
+			specStats.failOrigin 	= sliceTagContext( e.tagContext );
+
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );
 		}
@@ -744,6 +870,7 @@ component{
 			// store spec status and debug data
 			specStats.status 		= "Error";
 			specStats.error 		= e;
+			specStats.failOrigin 	= sliceTagContext( e.tagContext );
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="error", stats=specStats );
 		} finally {
@@ -941,6 +1068,9 @@ component{
 	// Closure Stub
 	function closureStub(){}
 
+    // Around Stub
+    function aroundStub(spec) { spec.body(spec.data); }
+
 	/**
 	* Check if an expected exception is defined
 	*/
@@ -987,4 +1117,36 @@ component{
 
 		return results;
 	}
+
+
+	/**
+	* removes the TestBox tag contexts from the beginning of the Failure Origin
+	* @tagContext The tag context
+	*/
+	private function sliceTagContext( required tagContext ){
+		var result 			= arguments.tagContext;
+		var testcasePath 	= getDirectoryFromPath( getCurrentTemplatePath() );
+		var ix 				= 1;
+
+		for( var tc in arguments.tagContext ){
+
+			if( find( testcasePath, tc.template ) == 1 ){
+				break;
+			}
+
+			ix++;
+		}
+		// if found, then slice
+		if (ix > 1) {
+			result 	= [];
+			var len = arrayLen( arguments.tagContext );
+
+			while ( ix < len ) {
+				arrayAppend( result, arguments.tagContext[ ix++ ] );
+			}
+		}
+		
+		return result;
+	}
+
 }

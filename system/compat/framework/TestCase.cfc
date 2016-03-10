@@ -1,4 +1,7 @@
 /**
+* Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
 * This is the TestBox MXUnit compatible object. You can use this object as a direct replacement
 * To MXUnit BaseTest Case.
 * All assertions found in this object delegate to our core Assertion object.

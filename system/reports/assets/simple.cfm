@@ -191,6 +191,10 @@
 						<cfif local.thisSpec.status eq "failed">
 							- <strong>#htmlEditFormat( local.thisSpec.failMessage )#</strong>
 							  <button onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">+</button><br>
+							  <div class="">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
+							  <cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
+								<div class="">#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</div>								  
+							  </cfif>
 							<div class="box debugdata" data-specid="#local.thisSpec.id#">
 								<cfdump var="#local.thisSpec.failorigin#" label="Failure Origin">
 							</div>
@@ -199,6 +203,10 @@
 						<cfif local.thisSpec.status eq "error">
 							- <strong>#htmlEditFormat( local.thisSpec.error.message )#</strong>
 							  <button onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">+</button><br>
+							  <div class="">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
+							  <cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
+								<div class="">#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</div>								  
+							  </cfif>
 							<div class="box debugdata" data-specid="#local.thisSpec.id#">
 								<cfdump var="#local.thisSpec.error#" label="Exception Structure">
 							</div>

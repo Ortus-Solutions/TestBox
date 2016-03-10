@@ -1,11 +1,8 @@
 /**
-********************************************************************************
-Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
-Author 	  : Luis Majano
-Description :
-Wraps tests in Base ORM services transaction blocks so you can automatically rollback
+* Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+* www.ortussolutions.com
+* ---
+* Wraps tests in Base ORM services transaction blocks so you can automatically rollback
 */
 component extends="mxunit.framework.TestDecorator" {
 

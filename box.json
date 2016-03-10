@@ -1,6 +1,6 @@
 {
 	"name" 				: "TestBox",
-	"version"			: "2.2.0",
+	"version"			: "@version.number@+@build.number@",
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "testbox",
 	"type"				: "testing",
@@ -12,7 +12,6 @@
 	"bugs"				: "https://ortussolutions.atlassian.net/browse/TESTBOX",
 	"shortDescription"	: "A BDD and xUnit testing framework with Mocking Goodness",
 	"engines"			: [
-		{ "type" : "railo", "version" : ">4.1" },
 		{ "type" : "lucee", "version" : ">4.5" },
 		{ "type" : "adobe", "version" : ">9" }
 	],
@@ -27,7 +26,7 @@
 		"runner" : [
 			{ "cf10" 	: "http://cf10cboxdev.jfetmac/testbox/tests/runner.cfm" },
 			{ "cf11" 	: "http://cf11cboxdev.jfetmac/testbox/tests/runner.cfm" },
-			{ "railo" 	: "http://railocboxdev.jfetmac/testbox/tests/runner.cfm" }
+			{ "lucee" 	: "http://localhost:49616/tests/runner.cfm" }
 		]
 	}
 }

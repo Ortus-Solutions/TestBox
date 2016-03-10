@@ -6,3 +6,5 @@ tests/results
 tests/results-mb
 WEB-INF
 build/build.number
+artifacts
+apidocs/docbox
