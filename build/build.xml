@@ -108,7 +108,6 @@
 	<!-- Build TestBox-->
 	<target name="build.testbox" description="Build a new TestBox Distribution" depends="init">
 		<!-- prepare dirs -->
-		<mkdir dir="${dir.build}/testbox/apidocs"/>
 		<property name="dir.testbox.exports"	value="${dir.exports}/${testbox.slug}/${testbox.version}" />
 		<property name="be.testbox.exports" 	value="${be.exports}/${testbox.slug}" />
 		<!-- Update Permissions -->
@@ -204,14 +203,14 @@
     <!-- Build API Docs -->
  	<target name="build.apidocs" description="Builds the api docs" depends="init">
  		<!-- Create API apidocs dir -->
- 		<mkdir dir="${dir.api}"/>
+ 		<mkdir dir="${dir.build}/testbox/apidocs"/>
  		<!-- Install dependencies for docs -->
 		<exec executable="box" dir="${dir.apidocs}">
 			<arg line="install --force" />
 		</exec>
 		<!-- Get the apidocs now -->
 		<get dest="${dir.build}/docbox.html" 
-			 src="${url.apidocs}?version=${testbox.version}&amp;path=${dir.api}" 
+			 src="${url.apidocs}?version=${testbox.version}&amp;path=${dir.build}/testbox/apidocs" 
 			 verbose="true"
 			 retries="5"/>
 		<delete file="${dir.build}/docbox.html"/>
