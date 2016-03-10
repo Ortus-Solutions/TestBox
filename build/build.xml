@@ -215,7 +215,7 @@
 			 retries="5"/>
 		<delete file="${dir.build}/docbox.html"/>
 		<!-- Zip API Docs -->
-		<zip destfile="${dir.testbox.exports}/${testbox.slug}-apidocs-${testbox.version}.zip" basedir="${dir.api}"></zip>
+		<zip destfile="${dir.testbox.exports}/${testbox.slug}-apidocs-${testbox.version}.zip" basedir="${dir.build}/testbox/apidocs"></zip>
  	</target>
 
 </project>
