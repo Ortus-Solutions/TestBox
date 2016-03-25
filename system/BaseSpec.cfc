@@ -507,12 +507,14 @@ component{
 		string reporter="simple",
 		string labels=""
 	) output=true{
+		// content type defaulted, to avoid dreaded wddx default
+		getPageContext().getResponse().setContentType( "text/html" );
+		// run tests
 		var runner = new testbox.system.TestBox(
 			bundles		= "#getMetadata(this).name#",
 			labels		= arguments.labels,
 			reporter	= arguments.reporter
 		);
-
 		// Produce report
 		writeOutput( runner.run( testSuites=arguments.testSuites, testSpecs=arguments.testSpecs ) );
 	}
