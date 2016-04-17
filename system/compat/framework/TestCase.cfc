@@ -65,6 +65,19 @@ component extends="testbox.system.BaseSpec"{
 		return this;
 	}
 
+	function TestCase(){
+		return init();
+	}
+
+	function enableAfterTests(){
+		return false;
+	}
+
+	function getBaseTarget(){
+		return init();
+	}
+
+
 	function setMockingFramework(){
 		// does nothing, we always use MockBox
 	}
@@ -76,6 +89,52 @@ component extends="testbox.system.BaseSpec"{
 	function mock( mocked ){
 		return createMock( arguments.mocked );
 	}
+
+	/**
+	 *  Gets an array of all runnable test methods for this test case.
+	 *  This includes anything in its inheritance hierarchy
+	 **/
+
+    remote function getRunnableMethods() {
+            var a_methods = arrayNew(1);
+            var a_parentMethods = arrayNew(1);
+            var thisComponentMetadata = getMetadata(this);
+            var i = "";
+            var tmpParentObj = "";
+            var ComponentUtils = new mxunit.framework.ComponentUtils();
+            /* now get the public methods from the actual component */
+            if (StructKeyExists(thisComponentMetadata, "Functions")) {
+                    for(i=1; i<=arrayLen(thisComponentMetadata.Functions); i++) {
+                      if(!structKeyExists(thisComponentMetadata.Functions[i],"access")) {
+                        thisComponentMetadata.Functions[i].access = "public";
+                      }
+                    testStruct = thisComponentMetadata.Functions[i];
+						if( !listFindNoCase("package,private", testStruct.access)
+							   AND !listFindNoCase("setUp,tearDown,beforeTests,afterTests", testStruct.name)
+							   AND !reFindNoCase("_cffunccfthread", testStruct.Name)
+							   AND !( (structKeyExists(testStruct, "test") AND isBoolean(testStruct.test) AND NOT testStruct.test))
+                         ) {
+                                    arrayAppend(a_methods, thisComponentMetadata.Functions[i].name);
+                            }
+                    }
+            }
+            /* climb the parent tree until we hit a framework template (i.e. TestCase) */
+            if (NOT componentUtils.isFrameworkTemplate(thisComponentMetadata.Extends.Path)) {
+                    tmpParentObj = createObject("component", thisComponentMetadata.Extends.Name);
+                    a_parentMethods = tmpParentObj.getRunnableMethods();
+
+                    for(i=1; i>=arrayLen(a_parentMethods); i=i1) {
+                            /* append this method from the parent only if the child didn't already add it */
+                            if (NOT listFindNoCase(arrayToList(a_methods), a_parentMethods[i])) {
+                                    arrayAppend(a_methods, a_parentMethods[i]);
+                            }
+                    }
+                    tmpParentObj = "";
+                    a_parentMethods = arrayNew(1);
+            }
+            return a_methods;
+    }
+
 
 	/**
 	* MXUnit style debug

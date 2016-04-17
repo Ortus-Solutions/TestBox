@@ -132,8 +132,12 @@ component{
 	* @target.hint The target object
 	*/
 	boolean function isValidTestMethod( required methodName, required target ) {
-		// True if annotation "test" exists
-		if( structKeyExists( getMetadata( arguments.target[ arguments.methodName ] ), "test" ) ){
+		var md = getMetadata( arguments.target);
+		// MXUnit does not require "test" to be in the function name
+		if( structKeyExists( md, "extends" ) && md.extends.name == "mxunit.framework.TestCase"){
+			return true;
+		}
+		if( structKeyExists( md[ arguments.methodName ], "test" ) ){
 			return true;
 		}
 		// All xUnit test methods must start or end with the term, "test". 
