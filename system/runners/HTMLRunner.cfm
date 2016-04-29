@@ -44,6 +44,10 @@ total.fail=#testResult.getTotalFail()#
 total.error=#testResult.getTotalError()#
 total.skipped=#testResult.getTotalSkipped()#" );
 	}
+	
+	//ACF Compatibility - check for and expand to absolute path
+	if( !directoryExists( url.reportpath ) ) url.reportpath = expandPath( url.reportpath );
+	
 	fileWrite( url.reportpath & "/" & url.propertiesFilename, propertiesReport );
 }
 
