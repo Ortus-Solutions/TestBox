@@ -644,7 +644,7 @@ component{
 			try{
 				return getMetadata( arguments.obj ).name;
 			}catch( any e ){
-				return "Uknown Object";
+				return "Unknown Object";
 			}
 		}
 		return arguments.obj.toString();
