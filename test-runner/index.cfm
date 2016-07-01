@@ -87,8 +87,9 @@ if( url.opt_run ){
 	.box{ border:1px solid gray; margin: 10px 0px; padding: 10px; background-color: #f5f5f5}
 	.pull-right{ float: right;}
 	.pull-left{ float: left;}
+	.clear { clear: both; }
 	#tb-runner{ min-height: 135px}
-	#tb-runner #tb-left{ width: 17%; margin-right: 10px; margin-top: 15px; height: 135px; float:left;}
+	#tb-runner #tb-left{ width: 17%; margin-right: 10px; margin-top: 15px; float:left;}
 	#tb-runner #tb-right{ width: 80%; }
 	#tb-runner fieldset{ padding: 10px; margin: 10px 0px; border: 1px dotted gray;}
 	#tb-runner input{ padding: 5px; margin: 2px 0px;}
@@ -167,7 +168,7 @@ if( url.opt_run ){
 			<button class="btn-red" type="button" onclick="clearResults()">Clear</button>
 			<button class="btn-red" type="button" id="btn-run" title="Run all the tests" onclick="runTests()">Run</button>
 	</div>
-
+	<div class="clear"></div>
 </form>
 </div>
 
