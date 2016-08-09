@@ -34,7 +34,7 @@ component extends="tests.utils.ExampleParentTestCase"{
             describe( "Lifecycle Annotation Hooks with normal Lifecycle Methods", function() {
                 beforeEach(function() {
                     variables.counter++;
-                })
+                });
 
                 it("runs both types of methods", function() {
                     expect( variables.counter ).toBe( 8 );
