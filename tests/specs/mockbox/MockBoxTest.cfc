@@ -335,11 +335,11 @@
 				);
 
 			$assert.notThrows(
-				target = function() { mocked.dontPassThrowToMe() }
+				target = function() { mocked.dontPassThrowToMe(); }
 			);
 
 			$assert.throws(
-				target = function() { mocked.dontPassThrowToMe( "throw" ) },
+				target = function() { mocked.dontPassThrowToMe( "throw" ); },
 				type = "MyCustomException",
 				message = "My Custom Exception Message"
 			);
