@@ -41,7 +41,7 @@ component accessors="true"{
 	){
 
 		// TestBox version
-		variables.version 	= "@version.number@+@build.number@";
+		variables.version 	= "2.3.0+00044";
 		variables.codename 	= "";
 		// init util
 		variables.utility = new testbox.system.util.Util();
@@ -325,6 +325,7 @@ component accessors="true"{
 			case "antjunit" : { return new "testbox.system.reports.ANTJUnitReporter"(); }
 			case "console" : { return new "testbox.system.reports.ConsoleReporter"(); }
 			case "min" : { return new "testbox.system.reports.MinReporter"(); }
+			case "mintext" : { return new "testbox.system.reports.MinTextReporter"(); }
 			case "tap" : { return new "testbox.system.reports.TapReporter"(); }
 			case "doc" : { return new "testbox.system.reports.DocReporter"(); }
 			case "codexwiki" : { return new "testbox.system.reports.CodexWikiReporter"(); }
