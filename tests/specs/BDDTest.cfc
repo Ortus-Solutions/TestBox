@@ -55,6 +55,12 @@ component extends="testbox.system.BaseSpec"{
 				expect( coldbox ).toBe( 1 );
 			},labels="luis");
 
+			it( "can validate json", function(){
+				var data = serializeJSON( { name = "luis", when = now() } );
+				expect( "luis" ).notToBeJSON();
+				expect(	data ).toBeJSON();
+			});
+
 			// more than 1 expectation
 			it("can have more than one expectation test", function(){
 				coldbox = coldbox * 8;

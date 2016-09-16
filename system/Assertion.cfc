@@ -650,6 +650,19 @@ component{
 		return arguments.obj.toString();
 	}
 
+	/**
+	* Assert something is JSON
+	* @actual.hint The actual data to test
+	* @message.hint The message to send in the failure
+	*/
+	function isJSON( required any actual, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be json" );
+		if( !isJSON( arguments.actual ) ){
+			fail( arguments.message );
+		}
+		return this;
+	}
+
 /*********************************** PRIVATE Methods ***********************************/
 
 	private function equalize( required expected, required actual ){
