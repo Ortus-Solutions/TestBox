@@ -132,20 +132,6 @@ component accessors="true"{
 		arguments.testSuites 	= ( isSimpleValue( arguments.testSuites ) ? listToArray( arguments.testSuites ) : arguments.testSuites );
 		arguments.testSpecs 	= ( isSimpleValue( arguments.testSpecs ) ? listToArray( arguments.testSpecs ) : arguments.testSpecs );
 
-		// Verify URL conventions for bundle, suites and specs exclusions.
-		if( !isNull( url.testBundles) ){
-			testBundles.addAll( listToArray( url.testBundles ) );
-		}
-		if( !isNull( url.testSuites) ){
-			arguments.testSuites.addAll( listToArray( url.testSuites ) );
-		}
-		if( !isNull( url.testSpecs) ){
-			arguments.testSpecs.addAll( listToArray( url.testSpecs ) );
-		}
-		if( !isNull( url.testMethod) ){
-			arguments.testSpecs.addAll( listToArray( url.testMethod ) );
-		}
-
 		// Using a directory runner?
 		if( !isNull( arguments.directory ) && !structIsEmpty( arguments.directory ) ){
 			arguments.bundles = getSpecPaths( arguments.directory );
