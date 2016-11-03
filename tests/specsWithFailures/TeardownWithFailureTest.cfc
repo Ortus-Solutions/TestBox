@@ -10,7 +10,7 @@
 		<cfdump var="tearDown :#arguments.toString()#" output="console">
 	</cffunction>
 
-        <!--- this will run once after initialization and before setUp() --->
+	<!--- this will run once after initialization and before setUp() --->
 	<cffunction name="beforeTests" returntype="void" access="public" hint="put things here that you want to run before all tests">
 		<cfdump var="beforeTests" output="console">
 	</cffunction>

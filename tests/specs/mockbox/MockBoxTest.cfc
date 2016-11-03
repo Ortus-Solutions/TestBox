@@ -7,9 +7,9 @@
 		}
 
 		function testStubInheritedInterfaces(){
- 			// If this can be created, then our test has passed.
- 			var canBeMockedOne = getMockBox().createStub( implements = "tests.resources.NestedInterface" );
- 		}
+			// If this can be created, then our test has passed.
+			var canBeMockedOne = getMockBox().createStub( implements = "tests.resources.NestedInterface" );
+		}
 
 		function testMockRealMethods(){
 			Test = getMockBox().createMock( "testbox.tests.resources.Test" );

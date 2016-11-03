@@ -44,10 +44,10 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 	<!-- Init -->
 	<target name="init" description="Init the tests">
 		<!-- Default environment check, if not passed via -Denvironment -->
-    	<condition property="environment" value="local">
-    		<not><isset property="environment" /></not>
-    	</condition>
-    	<echo>Loading from environment: ${environment}</echo>
+		<condition property="environment" value="local">
+			<not><isset property="environment" /></not>
+		</condition>
+		<echo>Loading from environment: ${environment}</echo>
 		<!-- Load env properties -->
 		<loadproperties srcFile="test-${environment}.properties"/>
 		<!-- Start Init -->
@@ -77,7 +77,7 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=${test.reporter}&amp;labels=${test.labels}&amp;propertiesSummary=true" 
 			 verbose="true" 
 			 ignoreerrors="true"
-		     maxtime="0"
+			 maxtime="0"
 			 retries="0"/>
 		
 		<!-- Bundles Runner
@@ -93,12 +93,12 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			 verbose="true"/>
 		 -->
 		
-        <!-- Read Result Properties -->
-        <property file="${report.dir}/TEST.properties"/>
-        <!-- Echo them out -->
-        <echoproperties regex="^(test|total).*"/>
-        <!-- Fail build if they failed -->
-        <fail if="test.failed"/>
+		<!-- Read Result Properties -->
+		<property file="${report.dir}/TEST.properties"/>
+		<!-- Echo them out -->
+		<echoproperties regex="^(test|total).*"/>
+		<!-- Fail build if they failed -->
+		<fail if="test.failed"/>
 	</target>
 
 	<target name="run-junit" depends="init" description="Run our tests and produce ANT JUnit reports">  
@@ -118,7 +118,7 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			 src="${url.runner}&amp;directory=${test.directory}&amp;recurse=${test.recurse}&amp;reporter=ANTJunit&amp;labels=${test.labels}&amp;reportPath=${report.dir}&amp;propertiesSummary=true" 
 			 verbose="true" 
 			 ignoreerrors="true"
-		     maxtime="0"
+			 maxtime="0"
 			 retries="0"/>
 		
 		<!-- Check if file was created -->
@@ -142,13 +142,13 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 		</junitreport> 
 		<!-- Rename report -->
 		<move file="${junitreport.dir}/junit-noframes.html" tofile="${junitreport.dir}/index.html" />
-		        
-        <!-- Read Result Properties -->
-        <property file="${report.dir}/TEST.properties"/>
-        <!-- Echo them out -->
-        <echoproperties regex="^(test|total).*"/>
-        <!-- Fail build if they failed -->
-        <fail if="test.failed"/>
+				
+		<!-- Read Result Properties -->
+		<property file="${report.dir}/TEST.properties"/>
+		<!-- Echo them out -->
+		<echoproperties regex="^(test|total).*"/>
+		<!-- Fail build if they failed -->
+		<fail if="test.failed"/>
 	</target>
 
 </project>

@@ -6,20 +6,20 @@ component extends="tests.utils.ExampleParentTestCase"{
 /*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
-        variables.counter = 0;
+		variables.counter = 0;
 	}
 
 	function afterAll(){
 		structClear( variables );
 	}
 
-    /**
-     * @aroundEach
-     */
-    function testAroundEach( spec, suite ){
-        variables.counter++;
-        arguments.spec.body();
-    }
+	/**
+	 * @aroundEach
+	 */
+	function testAroundEach( spec, suite ){
+		variables.counter++;
+		arguments.spec.body();
+	}
 
 /*********************************** BDD SUITES ***********************************/
 
@@ -31,15 +31,15 @@ component extends="tests.utils.ExampleParentTestCase"{
 				expect( variables.counter ).toBe( 4 );
 			});
 
-            describe( "Lifecycle Annotation Hooks with normal Lifecycle Methods", function() {
-                beforeEach(function() {
-                    variables.counter++;
-                });
+			describe( "Lifecycle Annotation Hooks with normal Lifecycle Methods", function() {
+				beforeEach(function() {
+					variables.counter++;
+				});
 
-                it("runs both types of methods", function() {
-                    expect( variables.counter ).toBe( 8 );
-                });
-            });
+				it("runs both types of methods", function() {
+					expect( variables.counter ).toBe( 8 );
+				});
+			});
 
 		});
 

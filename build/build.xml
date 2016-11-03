@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0"?>
 <!-- ====================================================================== 
-     TestBox Build (www.ortussolutions.com/products/testbox)                                                     
-     ====================================================================== -->
+	 TestBox Build (www.ortussolutions.com/products/testbox)                                                     
+	 ====================================================================== -->
 <project name="testbox-build" default="build.all" basedir="../">
 	<description>
-    	Build a new distribution of TestBox
-    </description>
+		Build a new distribution of TestBox
+	</description>
 	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
 	<property name="groupID"			value="ortussolutions" />
 	<property name="testbox.version"	value="2.4.0"/>
@@ -46,9 +46,9 @@
 		<propertyfile file="build/build.number" comment="Build Number for ANT. Edit not!">
 			<entry key="build.number" 
 					type="int" 
-			     	operation="+"
+					operation="+"
 					pattern="00000"
-			     	default="1" />
+					default="1" />
 		</propertyfile>
 		<property file="build/build.number"/>
 		
@@ -90,15 +90,15 @@
 	</target>
 	
 	<!-- Build test reports -->
-    <target name="run-tests" depends="init">
-    	<!-- Execute tests -->
-        <subant target="run-junit">
-          	<fileset dir="tests" includes="test.xml"/>
-    		<property name="environment" value="${environment}" />
-        </subant>
-    </target>
-    	
-    <!-- Build All Releases -->
+	<target name="run-tests" depends="init">
+		<!-- Execute tests -->
+		<subant target="run-junit">
+			<fileset dir="tests" includes="test.xml"/>
+			<property name="environment" value="${environment}" />
+		</subant>
+	</target>
+		
+	<!-- Build All Releases -->
 	<target name="build.all" description="Builds TestBox" depends="run-tests,build.testbox">
 		<exec executable="box" dir="${basedir}">
 			<arg line="server stop" />
@@ -117,29 +117,29 @@
 		<concat destfile="${dir.build}/testbox/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy SRC to TestBox namespace -->	
-      	<copy todir="${dir.build}/testbox/" encoding="UTF-8">
-        	<fileset dir=".">
-        		<exclude name="build/**" />
-        		<exclude name="apidocs/**" />
-        		<exclude name="tests/**" />
-        		<exclude name="cpu.json" />
-        		<exclude name="box.json" />
-        		<exclude name="box-mockbox.json" />
-        		<exclude name=".*/**" />
-        		<exclude name="settings.xml" />
-        		<exclude name="build-testbox/**" />
-        	</fileset>
-        </copy>
+		<copy todir="${dir.build}/testbox/" encoding="UTF-8">
+			<fileset dir=".">
+				<exclude name="build/**" />
+				<exclude name="apidocs/**" />
+				<exclude name="tests/**" />
+				<exclude name="cpu.json" />
+				<exclude name="box.json" />
+				<exclude name="box-mockbox.json" />
+				<exclude name=".*/**" />
+				<exclude name="settings.xml" />
+				<exclude name="build-testbox/**" />
+			</fileset>
+		</copy>
 
-        <!-- Copy box.json -->	
-      	<copy file="box.json" toFile="${dir.build}/box.json" encoding="UTF-8"/>
-        
-        <!-- Copy Samples -->
+		<!-- Copy box.json -->	
+		<copy file="box.json" toFile="${dir.build}/box.json" encoding="UTF-8"/>
+		
+		<!-- Copy Samples -->
 		<copy todir="${dir.build}/testbox/tests" encoding="UTF-8">
-        	<fileset dir="tests/">
-        		<exclude name="results/**" />
-        	</fileset>
-        </copy>
+			<fileset dir="tests/">
+				<exclude name="results/**" />
+			</fileset>
+		</copy>
 		
 		<!-- Replace Version + Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
@@ -198,13 +198,13 @@
 
 		<!-- Cleanup -->
 		<delete dir="${dir.build}" />
-    </target>
+	</target>
 
-    <!-- Build API Docs -->
- 	<target name="build.apidocs" description="Builds the api docs" depends="init">
- 		<!-- Create API apidocs dir -->
- 		<mkdir dir="${dir.build}/testbox/apidocs"/>
- 		<!-- Install dependencies for docs -->
+	<!-- Build API Docs -->
+	<target name="build.apidocs" description="Builds the api docs" depends="init">
+		<!-- Create API apidocs dir -->
+		<mkdir dir="${dir.build}/testbox/apidocs"/>
+		<!-- Install dependencies for docs -->
 		<exec executable="box" dir="${dir.apidocs}">
 			<arg line="install --force" />
 		</exec>
@@ -216,6 +216,6 @@
 		<delete file="${dir.build}/docbox.html"/>
 		<!-- Zip API Docs -->
 		<zip destfile="${dir.testbox.exports}/${testbox.slug}-apidocs-${testbox.version}.zip" basedir="${dir.build}/testbox/apidocs"></zip>
- 	</target>
+	</target>
 
 </project>
