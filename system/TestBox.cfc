@@ -21,8 +21,8 @@ component accessors="true"{
 	property name="reporter";
 	// The configuration options attached to this runner
 	property name="options";
-    // Last TestResult in case runner wants to inspect it
-    property name="result";
+	// Last TestResult in case runner wants to inspect it
+	property name="result";
 
 	/**
 	* Constructor
@@ -96,8 +96,8 @@ component accessors="true"{
 		// run it and get results
 		var results = runRaw( argumentCollection=arguments );
 		// store latest results
-        variables.result = results;
-        // return report
+		variables.result = results;
+		// return report
 		return produceReport( results );
 	}
 

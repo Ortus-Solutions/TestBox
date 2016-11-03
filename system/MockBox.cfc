@@ -257,8 +257,8 @@ Description		:
 		</cfif>
 
 		<cfthrow type="MockFactory.IllegalStateException"
-			     message="No current method name set"
-			     detail="This method was probably called without chaining it to a $() call. Ex: obj.$().$results(), or obj.$('method').$args().$results()">
+				 message="No current method name set"
+				 detail="This method was probably called without chaining it to a $() call. Ex: obj.$().$results(), or obj.$('method').$args().$results()">
 	</cffunction>
 
 	<!--- $callback --->
@@ -286,8 +286,8 @@ Description		:
 		</cfif>
 
 		<cfthrow type="MockFactory.IllegalStateException"
-			     message="No current method name set"
-			     detail="This method was probably called without chaining it to a $() call. Ex: obj.$().$callback(), or obj.$('method').$args().$callback()">
+				 message="No current method name set"
+				 detail="This method was probably called without chaining it to a $() call. Ex: obj.$().$callback(), or obj.$('method').$args().$callback()">
 	</cffunction>
 
 	<!--- $throws --->
@@ -307,8 +307,8 @@ Description		:
 
 			throw( 
 				type 	= "MockFactory.IllegalStateException",
-			    message = "No current method name set",
-			    detail 	= "This method was probably called without chaining it to a $() call. Ex: obj.$().$throws(), or obj.$('method').$args().$throws()"
+				message = "No current method name set",
+				detail 	= "This method was probably called without chaining it to a $() call. Ex: obj.$().$throws(), or obj.$('method').$args().$throws()"
 			);
 
 		</cfscript>
@@ -441,15 +441,15 @@ Description		:
 	</cffunction>
 
 	<!--- $reset --->
-    <cffunction name="$reset" output="false" access="public" returntype="any" hint="Reset all mock counters and logs on the targeted mock. Injected as $reset">
-    	<cfscript>
+	<cffunction name="$reset" output="false" access="public" returntype="any" hint="Reset all mock counters and logs on the targeted mock. Injected as $reset">
+		<cfscript>
 			for( var item in this._mockMethodCallCounters ){
 				this._mockMethodCallCounters[ item ]	= 0;
 				this._mockCallLoggers[ item ]			= [];
-            }
+			}
 			return this;
 		</cfscript>
-    </cffunction>
+	</cffunction>
 
 <!------------------------------------------- UTILITY METHODS ------------------------------------------>
 

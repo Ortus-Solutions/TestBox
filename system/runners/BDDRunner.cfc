@@ -58,18 +58,18 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					arguments.target.beforeAll();
 				}
 
-                // find any methods annotated 'beforeAll' and execute them
-                var beforeAllAnnotationMethods = variables.testbox.getUtility().getAnnotatedMethods(
-                    annotation = "beforeAll",
-                    metadata   = getMetadata( arguments.target )
-                );
+				// find any methods annotated 'beforeAll' and execute them
+				var beforeAllAnnotationMethods = variables.testbox.getUtility().getAnnotatedMethods(
+					annotation = "beforeAll",
+					metadata   = getMetadata( arguments.target )
+				);
 
-                for ( var beforeAllMethod in beforeAllAnnotationMethods ){
-                    // We use evalute here for two reasons:
-                    // 1. We want the scopes to be the target class, not this one.
-                    // 2. We want this code to be cross-platform ( hence no cfinvoke() )
-                    Evaluate( "arguments.target.#beforeAllMethod.name#()" );
-                }
+				for ( var beforeAllMethod in beforeAllAnnotationMethods ){
+					// We use evalute here for two reasons:
+					// 1. We want the scopes to be the target class, not this one.
+					// 2. We want this code to be cross-platform ( hence no cfinvoke() )
+					Evaluate( "arguments.target.#beforeAllMethod.name#()" );
+				}
 
 				// Iterate over found test suites and test them, if nested suites, then this will recurse as well.
 				for( var thisSuite in testSuites ){
@@ -98,18 +98,18 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					arguments.target.afterAll();
 				}
 
-                // find any methods annotated 'afterAll' and execute them
-                var afterAllAnnotationMethods = variables.testbox.getUtility().getAnnotatedMethods(
-                    annotation = "afterAll",
-                    metadata   = getMetadata( arguments.target )
-                );
+				// find any methods annotated 'afterAll' and execute them
+				var afterAllAnnotationMethods = variables.testbox.getUtility().getAnnotatedMethods(
+					annotation = "afterAll",
+					metadata   = getMetadata( arguments.target )
+				);
 
-                for ( var afterAllMethod in afterAllAnnotationMethods ){
-                    // We use evalute here for two reasons:
-                    // 1. We want the scopes to be the target class, not this one.
-                    // 2. We want this code to be cross-platform ( hence no cfinvoke() )
-                    Evaluate( "arguments.target.#afterAllMethod.name#()" );
-                }
+				for ( var afterAllMethod in afterAllAnnotationMethods ){
+					// We use evalute here for two reasons:
+					// 1. We want the scopes to be the target class, not this one.
+					// 2. We want this code to be cross-platform ( hence no cfinvoke() )
+					Evaluate( "arguments.target.#afterAllMethod.name#()" );
+				}
 
 			} catch(Any e) {
 				bundleStats.globalException = e;
