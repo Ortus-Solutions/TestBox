@@ -6,6 +6,9 @@
 */
 component{
 
+	// Param default URL method runner.
+	param name="url.method" default="runRemote";
+
 	// MockBox mocking framework
 	variables.$mockBox = this.$mockBox 	= new testbox.system.MockBox();
 	// Assertions object
