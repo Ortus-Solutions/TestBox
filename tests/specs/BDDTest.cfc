@@ -55,6 +55,11 @@ component extends="testbox.system.BaseSpec"{
 				expect( coldbox ).toBe( 1 );
 			},labels="luis");
 
+			it( "can satisfy truth tests", function(){
+				expect(	1 ).toSatisfy( function( num ){ return arguments.num > 0; } );
+				expect(	0 ).notToSatisfy( function( num ){ return arguments.num > 0; } );
+			});
+
 			it( "can validate json", function(){
 				var data = serializeJSON( { name = "luis", when = now() } );
 				expect( "luis" ).notToBeJSON();

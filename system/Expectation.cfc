@@ -474,4 +474,23 @@ component accessors="true"{
 		return this;
 	}
 
+	/**
+	* Assert that the actual value passes a given truth test (function/closure)
+	* @target The target truth test function/closure
+	* @message The message to send in the failure
+	*/
+	function toSatisfy( required any target, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#this.actual#] does not pass the truth test" );
+		
+		var isPassed = arguments.target( this.actual );
+		if( this.isNot ){ 
+			isPassed = !isPassed;
+		}
+		if( !isPassed ){
+			fail( arguments.message );
+		}
+
+		return this;
+	}
+
 }
