@@ -16,16 +16,16 @@ component extends="testbox.system.BaseSpec"{
 /*********************************** BDD SUITES ***********************************/
 
 	function run(){
-        var counter = 0;
+		var counter = 0;
 		describe( "Outer describe", function(){
-            aroundEach(function(spec, suite) {
-                counter++;
-                spec.body();
-            });
+			aroundEach(function(spec, suite) {
+				counter++;
+				spec.body();
+			});
 
-            it( "the aroundEach should be executed as normal", function() {
-                expect( counter ).toBe( 1 );
-            });
+			it( "the aroundEach should be executed as normal", function() {
+				expect( counter ).toBe( 1 );
+			});
 
 			describe( "Inner describe", function(){
 				it( "the aroundEach from the parent context should be ran", function(){

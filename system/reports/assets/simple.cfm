@@ -193,7 +193,7 @@
 							  <button onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">+</button><br>
 							  
 							  <cfif !isNull( local.thisSpec.failOrigin[ 1 ] )>
-							  	<div class="">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
+								<div class="">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
 								<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
 									<div class="">#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</div>								  
 								</cfif>
