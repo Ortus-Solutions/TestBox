@@ -41,7 +41,7 @@ component{
 			include "assets/mintext.cfm";
 		}
 		
-		return reReplace( trim( local.report ), '[\r\n]+', chr(10), 'all' );
+		return reReplace( local.report, '[\r\n]+', chr(10), 'all' );
 	}
 	
 }
