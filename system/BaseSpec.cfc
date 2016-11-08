@@ -429,6 +429,16 @@ component{
 		return oExpectation;
 	}
 
+    /**
+    * Start a collection expectation expression. This returns an instance of CollectionExpection
+    * so you can work with its collection-unrolling matches (delegating to Expection).
+    * @actual The actual value, it should be an array or a struct.
+    */
+    CollectionExpectation function expectAll( required any actual ){
+        var cExpectation = new CollectionExpectation( spec=this, assertions=this.$assert, collection=arguments.actual );
+        return cExpectation;
+    }
+
 	/**
 	* Add custom matchers to your expectations
 	* @matchers The structure of custom matcher functions to register or a path or instance of a CFC containing all the matcher functions to register
