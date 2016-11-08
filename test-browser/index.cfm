@@ -13,7 +13,6 @@
 <cfparam name="url.path" default="/">
 
 <!--- Decodes & Path Defaults --->
-<cfset url.path = urlDecode( url.path )>
 <cfif !len( url.path )>
 	<cfset url.path = "/">
 </cfif>
