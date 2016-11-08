@@ -1,19 +1,19 @@
 {
 	"name" 				: "TestBox",
-	"version"			: "@version.number@+@build.number@",
+	"version"			: "@build.version@+@build.number@",
+	"location"			: "http://downloads.ortussolutions.com/ortussolutions/testbox/@build.version@/testbox-@build.version@.zip",
 	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
 	"slug"				: "testbox",
 	"type"				: "testing",
-	"packageDirectory"	: "testbox",
 	"keywords"			: "testing,xunit,bdd,testbox,mxunit,tdd",
-	"homepage"			: "http://www.coldbox.org",
-	"documentation"		: "http://testbox.ortusbooks.com",
+	"homepage"			: "https://www.ortussolutions.com/products/testbox",
+	"documentation"		: "https://testbox.ortusbooks.com",
 	"repository"		: { "type" : "git", "url" : "https://github.com/Ortus-Solutions/TestBox" },
 	"bugs"				: "https://ortussolutions.atlassian.net/browse/TESTBOX",
 	"shortDescription"	: "A BDD and xUnit testing framework with Mocking Goodness",
 	"engines"			: [
 		{ "type" : "lucee", "version" : ">4.5" },
-		{ "type" : "adobe", "version" : ">9" }
+		{ "type" : "adobe", "version" : ">10" }
 	],
 	"license"			: [ 
 		{ "type" : "Apache2", "url" : "http://www.apache.org/licenses/LICENSE-2.0.html" } 
@@ -21,12 +21,7 @@
 	"contributors"		: [
 		"Brad Wood <bdw429s@gmail.com>", "Curt Gratz <gratz@computerknowhow.com>"
 	],
-	"ignore"			: [],
-	"testbox"			: {
-		"runner" : [
-			{ "cf10" 	: "http://cf10cboxdev.jfetmac/testbox/tests/runner.cfm" },
-			{ "cf11" 	: "http://cf11cboxdev.jfetmac/testbox/tests/runner.cfm" },
-			{ "lucee" 	: "http://localhost:49616/tests/runner.cfm" }
-		]
-	}
+	"ignore":[
+        "**/.*"
+    ]
 }
