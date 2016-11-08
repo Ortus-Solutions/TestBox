@@ -41,7 +41,7 @@ component accessors="true"{
 	){
 
 		// TestBox version
-		variables.version 	= "2.3.0+00044";
+		variables.version 	= "@build.version@+@build.number@";
 		variables.codename 	= "";
 		// init util
 		variables.utility = new testbox.system.util.Util();
