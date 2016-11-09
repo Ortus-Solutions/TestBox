@@ -22,12 +22,12 @@ component accessors="true"{
 
     function onMissingMethod( string missingMethodName, any missingMethodArguments ){
         if( isArray( variables.actual ) ){
-            for ( var e in variables.actual ){
+            for( var e in variables.actual ){
                 evaluate( "variables.spec.expect( e ).#missingMethodName#( argumentCollection=missingMethodArguments )" );
             }
         } else if( isStruct( variables.actual ) ){
-            for ( var k in variables.actual ){
-                var e = variables.actual[k];
+            for( var k in variables.actual ){
+                var e = variables.actual[ k ];
                 evaluate( "variables.spec.expect( e ).#missingMethodName#( argumentCollection=missingMethodArguments )" );
             }
         } else {
