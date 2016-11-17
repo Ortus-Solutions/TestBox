@@ -16,6 +16,7 @@
       <isset property="isTravis"/>
     </condition>
 
+
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	<!-- Load Contrib Tasks -->
@@ -79,7 +80,7 @@
 		</exec>
 		<!-- Startup the testing server, wait for a few seconds for server to start -->
 		<exec executable="box" dir="${basedir}">
-			<arg line="server start" />
+			<arg line="server start name=${cfengine} cfengine=${cfengine}" />
 		</exec>
 	</target>
 	
