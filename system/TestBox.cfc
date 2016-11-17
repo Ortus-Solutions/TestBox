@@ -338,14 +338,12 @@ component accessors="true"{
 		if( isSimpleValue( variables.reporter ) ){
 			iData = { type=buildReporter( variables.reporter ), options={} };
 		}
-
 		// If the incoming reporter is an object.
-		if( isObject( variables.reporter ) ){
+		else if ( isObject( variables.reporter ) ){
 			iData = { type=variables.reporter, options={} };
 		}
-
 		// Do we have reporter type and options
-		if( isStruct( variables.reporter ) ){
+		else if ( isStruct( variables.reporter ) ){
 			iData.type = buildReporter( variables.reporter.type );
 			if( structKeyExists( variables.reporter, "options" ) ){
 				iData.options = variables.reporter.options;
