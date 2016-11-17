@@ -8,9 +8,9 @@ env:
   matrix:
     - ENGINE=lucee@4.5
     - ENGINE=lucee@5
-    - ENGINE=adobe@10
-    - ENGINE=adobe@11
-    - ENGINE=adobe@2016
+    #- ENGINE=adobe@10
+    #- ENGINE=adobe@11
+    #- ENGINE=adobe@2016
 
 branches:
   only:
@@ -24,7 +24,7 @@ sudo: required
 before_install:
   # CommandBox Keys
   - sudo apt-key adv --keyserver keys.gnupg.net --recv 6DA70622
-  - sudo echo "deb https://integration.stg.ortussolutions.com/artifacts/debs/noarch /" | sudo tee -a
+  - sudo echo "deb http://downloads.ortussolutions.com/debs/noarch /" | sudo tee -a
     /etc/apt/sources.list.d/commandbox.list
 
 install:
