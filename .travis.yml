@@ -39,7 +39,7 @@ script:
   # Execute build via ANT
   - ant -DisTravis=true -Dcfengine=$ENGINE -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml
   # Spit out log just in case we need to debug
-  - box server log
+  - box server log name=$ENGINE
 
 deploy:
   on:
