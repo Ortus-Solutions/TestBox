@@ -78,12 +78,12 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			 verbose="true"/>
 		 -->
 		
-        <!-- Read Result Properties -->
-        <property file="${report.dir}/TEST.properties"/>
-        <!-- Echo them out -->
-        <echoproperties regex="^(test|total).*"/>
-        <!-- Fail build if they failed -->
-        <fail if="test.failed"/>
+		<!-- Read Result Properties -->
+		<property file="${report.dir}/TEST.properties"/>
+		<!-- Echo them out -->
+		<echoproperties regex="^(test|total).*"/>
+		<!-- Fail build if they failed -->
+		<fail if="test.failed"/>
 	</target>
 
 	<target name="run-junit" depends="init" description="Run our tests and produce ANT JUnit reports">  
@@ -126,12 +126,12 @@ PLEASE NOTE THAT YOU MUST ALTER THE RUNNER'S URL ACCORDING TO YOUR ENVIRONMENT.
 			</report>
 		</junitreport> 
 		
-        <!-- Read Result Properties -->
-        <property file="${report.dir}/TEST.properties"/>
-        <!-- Echo them out -->
-        <echoproperties regex="^(test|total).*"/>
-        <!-- Fail build if they failed -->
-        <fail if="test.failed"/>
+		<!-- Read Result Properties -->
+		<property file="${report.dir}/TEST.properties"/>
+		<!-- Echo them out -->
+		<echoproperties regex="^(test|total).*"/>
+		<!-- Fail build if they failed -->
+		<fail if="test.failed"/>
 	</target>
 
 </project>

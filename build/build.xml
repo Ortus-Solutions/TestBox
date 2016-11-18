@@ -1,16 +1,22 @@
 ﻿<?xml version="1.0"?>
 <!-- ====================================================================== 
-     TestBox Build (www.ortussolutions.com/products/testbox)                                                     
-     ====================================================================== -->
+	 TestBox Build (www.ortussolutions.com/products/testbox)                                                     
+	 ====================================================================== -->
 <project name="testbox-build" default="build.all" basedir="../">
 	<description>
-    	Build a new distribution of TestBox
-    </description>
+		Build a new distribution of TestBox
+	</description>
+
 	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
 	<property name="groupID"			value="ortussolutions" />
-	<property name="testbox.version"	value="2.3.0"/>
+	<property name="testbox.version"	value="2.4.0"/>
 	<property name="testbox.slug"		value="testbox"/>
-		
+	
+	<condition property="isTravis" else="false">
+      <isset property="isTravis"/>
+    </condition>
+
+
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
 	<!-- Load Contrib Tasks -->
@@ -43,14 +49,20 @@
 		<loadproperties srcFile="build/build.properties"/>
 
 		<!-- Build Number -->
-		<propertyfile file="build/build.number" comment="Build Number for ANT. Edit not!">
-			<entry key="build.number" 
-					type="int" 
-			     	operation="+"
-					pattern="00000"
-			     	default="1" />
-		</propertyfile>
-		<property file="build/build.number"/>
+		<if>
+			<not><isset property="build.number" /></not>
+			<then>
+				<propertyfile file="build/build.number" comment="Build Number for ANT. Edit not!">
+					<entry key="build.number" 
+							type="int" 
+					     	operation="+"
+							pattern="00000"
+					     	default="1" />
+				</propertyfile>
+
+				<property file="build/build.number"/>
+			</then>
+		</if>
 		
 		<!-- Build Label -->
 		<property name="build.label" value="testbox-${testbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
@@ -68,9 +80,8 @@
 		</exec>
 		<!-- Startup the testing server, wait for a few seconds for server to start -->
 		<exec executable="box" dir="${basedir}">
-			<arg line="server start" />
+			<arg line="server start name=${cfengine} cfengine=${cfengine}" />
 		</exec>
-		<sleep seconds="5"/>
 	</target>
 	
 	<!-- update permissions on reports -->
@@ -90,15 +101,15 @@
 	</target>
 	
 	<!-- Build test reports -->
-    <target name="run-tests" depends="init">
-    	<!-- Execute tests -->
-        <subant target="run-junit">
-          	<fileset dir="tests" includes="test.xml"/>
-    		<property name="environment" value="${environment}" />
-        </subant>
-    </target>
-    	
-    <!-- Build All Releases -->
+	<target name="run-tests" depends="init">
+		<!-- Execute tests -->
+		<subant target="run-junit">
+			<fileset dir="tests" includes="test.xml"/>
+			<property name="environment" value="${environment}" />
+		</subant>
+	</target>
+		
+	<!-- Build All Releases -->
 	<target name="build.all" description="Builds TestBox" depends="run-tests,build.testbox">
 		<exec executable="box" dir="${basedir}">
 			<arg line="server stop" />
@@ -117,35 +128,35 @@
 		<concat destfile="${dir.build}/testbox/${build.label}">Built on ${start.TODAY}</concat>
 		
 		<!-- Copy SRC to TestBox namespace -->	
-      	<copy todir="${dir.build}/testbox/" encoding="UTF-8">
-        	<fileset dir=".">
-        		<exclude name="build/**" />
-        		<exclude name="apidocs/**" />
-        		<exclude name="tests/**" />
-        		<exclude name="cpu.json" />
-        		<exclude name="box.json" />
-        		<exclude name="box-mockbox.json" />
-        		<exclude name=".*/**" />
-        		<exclude name="settings.xml" />
-        		<exclude name="build-testbox/**" />
-        	</fileset>
-        </copy>
+		<copy todir="${dir.build}/testbox/" encoding="UTF-8">
+			<fileset dir=".">
+				<exclude name="build/**" />
+				<exclude name="apidocs/**" />
+				<exclude name="tests/**" />
+				<exclude name="cpu.json" />
+				<exclude name="box.json" />
+				<exclude name="box-mockbox.json" />
+				<exclude name=".*/**" />
+				<exclude name="settings.xml" />
+				<exclude name="build-testbox/**" />
+			</fileset>
+		</copy>
 
-        <!-- Copy box.json -->	
-      	<copy file="box.json" toFile="${dir.build}/box.json" encoding="UTF-8"/>
-        
-        <!-- Copy Samples -->
+		<!-- Copy box.json -->	
+		<copy file="box.json" toFile="${dir.build}/box.json" encoding="UTF-8"/>
+		
+		<!-- Copy Samples -->
 		<copy todir="${dir.build}/testbox/tests" encoding="UTF-8">
-        	<fileset dir="tests/">
-        		<exclude name="results/**" />
-        	</fileset>
-        </copy>
+			<fileset dir="tests/">
+				<exclude name="results/**" />
+			</fileset>
+		</copy>
 		
 		<!-- Replace Version + Build Numbers -->
 		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
-		<replaceregexp match='@version.number@' replace="${testbox.version}" flags="ig" byline="true" encoding="UTF-8">
+		<replaceregexp match='@build.version@' replace="${testbox.version}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
 						
@@ -196,15 +207,20 @@
 				  latest="${testbox.version}"
 				  classifiers="apidocs"/>
 
-		<!-- Cleanup -->
-		<delete dir="${dir.build}" />
-    </target>
+		<!-- Cleanup -->	
+		<if>
+			<equals arg1="$isTravis" arg2="false" />
+			<then>
+				<delete dir="${dir.build}" />
+			</then>
+		</if>
+	</target>
 
-    <!-- Build API Docs -->
- 	<target name="build.apidocs" description="Builds the api docs" depends="init">
- 		<!-- Create API apidocs dir -->
- 		<mkdir dir="${dir.build}/testbox/apidocs"/>
- 		<!-- Install dependencies for docs -->
+	<!-- Build API Docs -->
+	<target name="build.apidocs" description="Builds the api docs" depends="init">
+		<!-- Create API apidocs dir -->
+		<mkdir dir="${dir.build}/testbox/apidocs"/>
+		<!-- Install dependencies for docs -->
 		<exec executable="box" dir="${dir.apidocs}">
 			<arg line="install --force" />
 		</exec>
@@ -216,6 +232,6 @@
 		<delete file="${dir.build}/docbox.html"/>
 		<!-- Zip API Docs -->
 		<zip destfile="${dir.testbox.exports}/${testbox.slug}-apidocs-${testbox.version}.zip" basedir="${dir.build}/testbox/apidocs"></zip>
- 	</target>
+	</target>
 
 </project>

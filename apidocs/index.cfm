@@ -2,12 +2,12 @@
 <cfparam name="url.path" 	default="#expandPath( "./testbox-APIDocs" )#">
 <cfscript>
 	docName = "testbox-APIDocs";
-	base 	= expandPath( "/testbox" );
+	base 	= expandPath( "/testbox/system" );
 	docbox 	= new docbox.DocBox( properties = {
 		projectTitle 	= "TestBox v#url.version#",
 		outputDir 		= url.path
 	} );
-	docbox.generate( source=base, mapping="testbox" );
+	docbox.generate( source=base, mapping="testbox.system" );
 </cfscript>
 
 <!---

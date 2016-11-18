@@ -10,18 +10,13 @@
 <cfparam name="url.propertiesFilename" 	default="TEST.properties">
 <cfparam name="url.propertiesSummary" 	default="false" type="boolean">
 <cfscript>
-// decode paths
-url.bundles 			= URLDecode( url.bundles );
-url.directory 			= URLDecode( url.directory );
-url.reportPath 			= URLDecode( url.reportPath );
-url.propertiesFilename 	= URLDecode( url.propertiesFilename );
-
 // prepare for tests for bundles or directories
+testbox = new testbox.system.TestBox( labels=url.labels );
 if( len( url.bundles ) ){
-	testbox = new testbox.system.TestBox( bundles=url.bundles, labels=url.labels );
+	testbox.addBundles( url.bundles );
 }
-else{
-	testbox = new testbox.system.TestBox( directory={ mapping=url.directory, recurse=url.recurse}, labels=url.labels );
+if( len( url.directory ) ){
+	testbox.addDirectories( url.directory );
 }
 
 // Run Tests using correct reporter
@@ -44,6 +39,10 @@ total.fail=#testResult.getTotalFail()#
 total.error=#testResult.getTotalError()#
 total.skipped=#testResult.getTotalSkipped()#" );
 	}
+	
+	//ACF Compatibility - check for and expand to absolute path
+	if( !directoryExists( url.reportpath ) ) url.reportpath = expandPath( url.reportpath );
+	
 	fileWrite( url.reportpath & "/" & url.propertiesFilename, propertiesReport );
 }
 

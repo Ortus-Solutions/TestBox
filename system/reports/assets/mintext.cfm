@@ -63,10 +63,15 @@ Legend:
 	<cfargument name="bundleStats">
 	<cfargument name="level" default=0>
 
+<cfif !listFindNocase( "failed,error", arguments.suiteStats.status )>
+	<cfreturn>
+</cfif>
+
 <cfset var tabs = repeatString( "    ", arguments.level )>
 
 <cfsavecontent variable="local.report">
 <cfoutput>
+
 #tabs#(#getStatusBit( arguments.suiteStats.status )#)#arguments.suiteStats.name# #chr(13)#
 <cfset arguments.level++>
 <cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">

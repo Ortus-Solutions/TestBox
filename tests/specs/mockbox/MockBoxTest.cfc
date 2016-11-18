@@ -7,9 +7,9 @@
 		}
 
 		function testStubInheritedInterfaces(){
- 			// If this can be created, then our test has passed.
- 			var canBeMockedOne = getMockBox().createStub( implements = "tests.resources.NestedInterface" );
- 		}
+			// If this can be created, then our test has passed.
+			var canBeMockedOne = getMockBox().createStub( implements = "tests.resources.NestedInterface" );
+		}
 
 		function testMockRealMethods(){
 			Test = getMockBox().createMock( "testbox.tests.resources.Test" );
@@ -335,11 +335,11 @@
 				);
 
 			$assert.notThrows(
-				target = function() { mocked.dontPassThrowToMe() }
+				target = function() { mocked.dontPassThrowToMe(); }
 			);
 
 			$assert.throws(
-				target = function() { mocked.dontPassThrowToMe( "throw" ) },
+				target = function() { mocked.dontPassThrowToMe( "throw" ); },
 				type = "MyCustomException",
 				message = "My Custom Exception Message"
 			);

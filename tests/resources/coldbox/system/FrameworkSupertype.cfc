@@ -141,8 +141,8 @@ component serializable="false" accessors="true"{
 	}
 
 	/**
-    * Renders an external view anywhere that cfinclude works.
-    * @view.hint The the view to render
+	* Renders an external view anywhere that cfinclude works.
+	* @view.hint The the view to render
 	* @args.hint A struct of arguments to pass into the view for rendering, will be available as 'args' in the view.
 	* @cache.hint Cached the view output or not, defaults to false
 	* @cacheTimeout.hint The time in minutes to cache the view
@@ -150,15 +150,15 @@ component serializable="false" accessors="true"{
 	* @cacheSuffix.hint The suffix to add into the cache entry for this view rendering
 	* @cacheProvider.hint The provider to cache this view in, defaults to 'template'
 	*/
-    function renderExternalView(
-    	required view,
-    	struct args={},
-    	boolean cache=false,
-    	cacheTimeout="",
-    	cacheLastAccessTimeout="",
-    	cacheSuffix="",
-    	cacheProvider="template"
-    ){
+	function renderExternalView(
+		required view,
+		struct args={},
+		boolean cache=false,
+		cacheTimeout="",
+		cacheLastAccessTimeout="",
+		cacheSuffix="",
+		cacheProvider="template"
+	){
 		return controller.getRenderer().renderExternalView( argumentCollection=arguments );
 	}
 

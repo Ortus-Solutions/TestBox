@@ -458,4 +458,39 @@ component accessors="true"{
 		return this;
 	}
 
+	/**
+	* Assert that the actual value is JSON
+	* @message The message to send in the failure
+	*/
+	function toBeJSON( message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not valid JSON" );
+		if( this.isNot ){
+			if( isJSON( this.actual ) ){
+				fail( arguments.message );
+			}
+		} else {	
+			variables.assert.isJSON( this.actual, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	* Assert that the actual value passes a given truth test (function/closure)
+	* @target The target truth test function/closure
+	* @message The message to send in the failure
+	*/
+	function toSatisfy( required any target, message="" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#this.actual#] does not pass the truth test" );
+		
+		var isPassed = arguments.target( this.actual );
+		if( this.isNot ){ 
+			isPassed = !isPassed;
+		}
+		if( !isPassed ){
+			fail( arguments.message );
+		}
+
+		return this;
+	}
+
 }

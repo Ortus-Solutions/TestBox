@@ -202,10 +202,10 @@ Description		:
 	</cffunction>
 
 	<!--- generateCFC --->
-    <cffunction name="generateCFC" output="false" access="public" returntype="any" hint="Generate CFC's according to specs">
+	<cffunction name="generateCFC" output="false" access="public" returntype="any" hint="Generate CFC's according to specs">
 		<cfargument name="extends" 		type="string" required="false" default="" hint="The class the CFC should extend"/>
 		<cfargument name="implements" 	type="string" required="false" default="" hint="The class(es) the CFC should implement"/>
-    	<cfscript>
+		<cfscript>
 			var udfOut 	= createObject("java","java.lang.StringBuilder").init('');
 			var genPath = expandPath( instance.mockBox.getGenerationPath() );
 			var tmpFile = createUUID() & ".cfc";
@@ -253,14 +253,14 @@ Description		:
 				removeStub( genPath & tmpFile );
 				rethrow;
 			}
-    	</cfscript>
-    </cffunction>
+		</cfscript>
+	</cffunction>
 
-    <!--- generateMethodsFromMD --->
-    <cffunction name="generateMethodsFromMD" output="false" access="private" returntype="any" hint="Generates methods from functions metadata">
-    	<cfargument name="buffer" 	type="any" required="true" hint="The string buffer to append stuff to"/>
+	<!--- generateMethodsFromMD --->
+	<cffunction name="generateMethodsFromMD" output="false" access="private" returntype="any" hint="Generates methods from functions metadata">
+		<cfargument name="buffer" 	type="any" required="true" hint="The string buffer to append stuff to"/>
 		<cfargument name="md" 		type="any" required="true" hint="The metadata to generate"/>
-    	<cfscript>
+		<cfscript>
 			var local 	= {};
 			var udfOut  = arguments.buffer;
 
@@ -307,8 +307,8 @@ Description		:
 					generateMethodsFromMD( udfOut, arguments.md.extends[ thisKey ] );
 				}
 			}
-    	</cfscript>
-    </cffunction>
+		</cfscript>
+	</cffunction>
 
 <!------------------------------------------- PRIVATE ------------------------------------------>
 

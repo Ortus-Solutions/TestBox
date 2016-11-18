@@ -145,8 +145,8 @@ component extends="BaseTest" {
 		assertTrue( makePublic( t, "aPrivateMethod", "funkyMethod" ).funkyMethod() );
 
 		var obj1 = new testbox.tests.resources.CallPrivate();
-        var obj2 = makePublic( obj1, "callPrivate" );
-        assertEquals( "called", obj2.callIt() ); // will fail because variables.callPrivate no longer exists
+		var obj2 = makePublic( obj1, "callPrivate" );
+		assertEquals( "called", obj2.callIt() ); // will fail because variables.callPrivate no longer exists
 	}
 
 	function testMakePublicWithPackage(){

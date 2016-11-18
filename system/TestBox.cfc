@@ -21,13 +21,14 @@ component accessors="true"{
 	property name="reporter";
 	// The configuration options attached to this runner
 	property name="options";
-    // Last TestResult in case runner wants to inspect it
-    property name="result";
+	// Last TestResult in case runner wants to inspect it
+	property name="result";
 
 	/**
 	* Constructor
 	* @bundles The path, list of paths or array of paths of the spec bundle CFCs to run and test
 	* @directory The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	* @directories  Same as @directory, but accepts an array or list
 	* @reporter The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a testbox.system.reports.IReporter
 	* @labels The list or array of labels that a suite or spec must have in order to execute.
 	* @options A structure of configuration options that are optionally used to configure a runner.
@@ -35,13 +36,14 @@ component accessors="true"{
 	any function init(
 		any bundles=[],
 		any directory={},
+		any directories={},
 		any reporter="simple",
 		any labels=[],
 		struct options={}
 	){
 
 		// TestBox version
-		variables.version 	= "@version.number@+@build.number@";
+		variables.version 	= "@build.version@+@build.number@";
 		variables.codename 	= "";
 		// init util
 		variables.utility = new testbox.system.util.Util();
@@ -50,19 +52,64 @@ component accessors="true"{
 		variables.reporter = arguments.reporter;
 		// options
 		variables.options = arguments.options;
-
-		// inflate directory?
-		if( isSimpleValue( arguments.directory ) ){ arguments.directory = { mapping=arguments.directory, recurse=true }; }
-		// directory passed?
-		if( !structIsEmpty( arguments.directory ) ){
-			arguments.bundles = getSpecPaths( arguments.directory );
-		}
+		// Empty bundles to start
+		variables.bundles = [];
 
 		// inflate labels
 		inflateLabels( arguments.labels );
-		// inflate bundles to array
-		inflateBundles( arguments.bundles );
+		// add bundles
+		addBundles( arguments.bundles );
+		// Add directory given (if any)
+		addDirectory( arguments.directory );
+		// Add directory given (if any)
+		addDirectories( arguments.directories );
 
+		return this;
+	}
+
+	/**
+	* Constructor
+	* @directory A directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	*/
+	any function addDirectory( required any directory, boolean recurse=true ) {
+		// inflate directory?
+		if( isSimpleValue( arguments.directory ) ) { 
+			arguments.directory = { mapping=arguments.directory, recurse=arguments.recurse }; 
+		}
+		// directory passed?
+		if( !structIsEmpty( arguments.directory ) ){
+			for( var bundle in getSpecPaths( arguments.directory ) ){
+				arrayAppend( variables.bundles, bundle );
+			}
+		}
+		return this;
+	}
+
+	/**
+	* Constructor
+	* @directories A set of directories to test which can be a list of simple mapping paths or an array of structs with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	*/
+	any function addDirectories( required any directories, boolean recurse=true ){
+		if( isSimpleValue( arguments.directories ) ){ 
+			arguments.directories = listToArray( arguments.directories ); 
+		}
+		for( var dir in arguments.directories ) {
+			addDirectory( dir, arguments.recurse );
+		}
+		return this;
+	}
+
+	/**
+	* Constructor
+	* @directory A directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	*/
+	any function addBundles(required any bundles) {
+		if( isSimpleValue( arguments.bundles ) ){ 
+			arguments.bundles = listToArray( arguments.bundles ); 
+		}
+		for( var bundle in arguments.bundles ){
+			arrayAppend( variables.bundles, bundle );
+		}
 		return this;
 	}
 
@@ -96,8 +143,8 @@ component accessors="true"{
 		// run it and get results
 		var results = runRaw( argumentCollection=arguments );
 		// store latest results
-        variables.result = results;
-        // return report
+		variables.result = results;
+		// return report
 		return produceReport( results );
 	}
 
@@ -291,14 +338,12 @@ component accessors="true"{
 		if( isSimpleValue( variables.reporter ) ){
 			iData = { type=buildReporter( variables.reporter ), options={} };
 		}
-
 		// If the incoming reporter is an object.
-		if( isObject( variables.reporter ) ){
+		else if ( isObject( variables.reporter ) ){
 			iData = { type=variables.reporter, options={} };
 		}
-
 		// Do we have reporter type and options
-		if( isStruct( variables.reporter ) ){
+		else if ( isStruct( variables.reporter ) ){
 			iData.type = buildReporter( variables.reporter.type );
 			if( structKeyExists( variables.reporter, "options" ) ){
 				iData.options = variables.reporter.options;
@@ -325,6 +370,7 @@ component accessors="true"{
 			case "antjunit" : { return new "testbox.system.reports.ANTJUnitReporter"(); }
 			case "console" : { return new "testbox.system.reports.ConsoleReporter"(); }
 			case "min" : { return new "testbox.system.reports.MinReporter"(); }
+			case "mintext" : { return new "testbox.system.reports.MinTextReporter"(); }
 			case "tap" : { return new "testbox.system.reports.TapReporter"(); }
 			case "doc" : { return new "testbox.system.reports.DocReporter"(); }
 			case "codexwiki" : { return new "testbox.system.reports.CodexWikiReporter"(); }

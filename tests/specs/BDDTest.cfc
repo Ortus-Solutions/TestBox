@@ -55,6 +55,17 @@ component extends="testbox.system.BaseSpec"{
 				expect( coldbox ).toBe( 1 );
 			},labels="luis");
 
+			it( "can satisfy truth tests", function(){
+				expect(	1 ).toSatisfy( function( num ){ return arguments.num > 0; } );
+				expect(	0 ).notToSatisfy( function( num ){ return arguments.num > 0; } );
+			});
+
+			it( "can validate json", function(){
+				var data = serializeJSON( { name = "luis", when = now() } );
+				expect( "luis" ).notToBeJSON();
+				expect(	data ).toBeJSON();
+			});
+
 			// more than 1 expectation
 			it("can have more than one expectation test", function(){
 				coldbox = coldbox * 8;
@@ -120,6 +131,25 @@ component extends="testbox.system.BaseSpec"{
 				expect( 1 ).toBeLT( 10 );
 				expect( 10 ).toBeLTE( 10 );
 			});
+
+            it( "can test a collection", function(){
+                expectAll( [ 2, 4, 6, 8] ).toSatisfy( function(x){ return 0 == x%2; });
+                expectAll( { a:2, b:4, c:6} ).toSatisfy( function(x){ return 0 == x%2; });
+                // and we can chain matchers
+                expectAll( [ 2, 4, 6, 8 ] )
+                    .toBeGTE( 2 )
+                    .toBeLTE( 8 );
+            });
+
+            it( "can fail any element of a collection", function() {
+                try{
+                    // we need to verify the expectation fails
+                    expectAll( [2,4,10,8] ).toBeLT( 10 );
+                    fail( "expectAll() failed to detect a bad element" );
+                }catch( any e ){
+                    expect( e.message ).toBe( "The actual [10] is not less than [10]" );
+                }
+            });
 
 		});
 

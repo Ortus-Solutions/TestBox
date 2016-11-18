@@ -11,7 +11,7 @@ component{
 	// any mappings go here, we create one that points to the root called test.
 	this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() );
 	// Map back to its root
-	rootPath = REReplaceNoCase( this.mappings[ "/tests" ], "tests(\\|/)", "" );
+	rootPath = REReplaceNoCase( this.mappings[ "/tests" ], "tests(\\|/)$", "" );
 	this.mappings[ "/testbox" ] = rootPath;
 	// Map resources
 	this.mappings[ "/coldbox" ] = this.mappings[ "/tests" ] & "resources/coldbox";

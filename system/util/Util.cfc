@@ -117,32 +117,32 @@ component{
 	* @annotation The annotation name to look for on methods
 	* @metadata The metadata to search (recursively) for the provided annotation
 	*/
-    public array function getAnnotatedMethods(
+	public array function getAnnotatedMethods(
 		required string annotation,
 		required struct metadata
 	) {
-        var lifecycleMethods = [];
+		var lifecycleMethods = [];
 
-        if( StructKeyExists( arguments.metadata, "functions" ) ){
-            var funcs = arguments.metadata.functions;
-            for ( var func in funcs ){
-                if ( StructKeyExists( func, annotation ) ){
-                    ArrayAppend( lifecycleMethods, func );
-                }
-            }
-        }
+		if( StructKeyExists( arguments.metadata, "functions" ) ){
+			var funcs = arguments.metadata.functions;
+			for ( var func in funcs ){
+				if ( StructKeyExists( func, annotation ) ){
+					ArrayAppend( lifecycleMethods, func );
+				}
+			}
+		}
 
-        if( StructKeyExists( arguments.metadata, "extends" ) ){
-            // recursively call up the inheritance chain
-            lifecycleMethods.addAll(
-                getAnnotatedMethods(
-                    arguments.annotation,
-                    arguments.metadata.extends
-                )
-            );
-        }
+		if( StructKeyExists( arguments.metadata, "extends" ) ){
+			// recursively call up the inheritance chain
+			lifecycleMethods.addAll(
+				getAnnotatedMethods(
+					arguments.annotation,
+					arguments.metadata.extends
+				)
+			);
+		}
 
-        return lifecycleMethods;
+		return lifecycleMethods;
 	}
 
 }

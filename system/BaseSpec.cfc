@@ -6,6 +6,9 @@
 */
 component{
 
+	// Param default URL method runner.
+	param name="url.method" default="runRemote";
+
 	// MockBox mocking framework
 	variables.$mockBox = this.$mockBox 	= new testbox.system.MockBox();
 	// Assertions object
@@ -426,6 +429,16 @@ component{
 		return oExpectation;
 	}
 
+    /**
+    * Start a collection expectation expression. This returns an instance of CollectionExpection
+    * so you can work with its collection-unrolling matches (delegating to Expection).
+    * @actual The actual value, it should be an array or a struct.
+    */
+    CollectionExpectation function expectAll( required any actual ){
+        var cExpectation = new CollectionExpectation( spec=this, assertions=this.$assert, collection=arguments.actual );
+        return cExpectation;
+    }
+
 	/**
 	* Add custom matchers to your expectations
 	* @matchers The structure of custom matcher functions to register or a path or instance of a CFC containing all the matcher functions to register
@@ -507,12 +520,14 @@ component{
 		string reporter="simple",
 		string labels=""
 	) output=true{
+		// content type defaulted, to avoid dreaded wddx default
+		getPageContext().getResponse().setContentType( "text/html" );
+		// run tests
 		var runner = new testbox.system.TestBox(
 			bundles		= "#getMetadata(this).name#",
 			labels		= arguments.labels,
 			reporter	= arguments.reporter
 		);
-
 		// Produce report
 		writeOutput( runner.run( testSuites=arguments.testSuites, testSpecs=arguments.testSpecs ) );
 	}
@@ -618,14 +633,14 @@ component{
 			parentSuite = parentSuite.parentRef;
 		}
 
-        var annotationMethods = this.$utility.getAnnotatedMethods(
-            annotation = "beforeEach",
-            metadata   = getMetadata( this )
-        );
+		var annotationMethods = this.$utility.getAnnotatedMethods(
+			annotation = "beforeEach",
+			metadata   = getMetadata( this )
+		);
 
-        for( var method in annotationMethods ){
-            arrayAppend( reverseTree, this[ method.name ] );
-        }
+		for( var method in annotationMethods ){
+			arrayAppend( reverseTree, this[ method.name ] );
+		}
 
 		// Execute reverse tree
 		var treeLen = arrayLen( reverseTree );
@@ -648,116 +663,116 @@ component{
 	* @spec The spec definition
 	*/
 	BaseSpec function runAroundEachClosures( required suite, required spec ){
-        var reverseTree = [
-            {
-                name 	= arguments.suite.name,
-                body 	= arguments.suite.aroundEach,
-                data 	= {},
-                labels 	= arguments.suite.labels,
-                order 	= 0,
-                skip 	= arguments.suite.skip
-            }
-        ];
+		var reverseTree = [
+			{
+				name 	= arguments.suite.name,
+				body 	= arguments.suite.aroundEach,
+				data 	= {},
+				labels 	= arguments.suite.labels,
+				order 	= 0,
+				skip 	= arguments.suite.skip
+			}
+		];
 
-        // do we have nested suites? If so, traverse the tree to build reverse execution map
-        var parentSuite = arguments.suite.parentRef;
-        while( !isSimpleValue( parentSuite ) ){
-            arrayAppend( reverseTree, {
-                name 	= parentSuite.name,
-                body 	= parentSuite.aroundEach,
-                data 	= {},
-                labels 	= parentSuite.labels,
-                order 	= 0,
-                skip 	= parentSuite.skip
-            } );
-            // go deep
-            parentSuite = parentSuite.parentRef;
-        }
+		// do we have nested suites? If so, traverse the tree to build reverse execution map
+		var parentSuite = arguments.suite.parentRef;
+		while( !isSimpleValue( parentSuite ) ){
+			arrayAppend( reverseTree, {
+				name 	= parentSuite.name,
+				body 	= parentSuite.aroundEach,
+				data 	= {},
+				labels 	= parentSuite.labels,
+				order 	= 0,
+				skip 	= parentSuite.skip
+			} );
+			// go deep
+			parentSuite = parentSuite.parentRef;
+		}
 
-        var annotationMethods = this.$utility.getAnnotatedMethods(
-            annotation = "aroundEach",
-            metadata   = getMetadata( this )
-        );
+		var annotationMethods = this.$utility.getAnnotatedMethods(
+			annotation = "aroundEach",
+			metadata   = getMetadata( this )
+		);
 
-        for( var method in annotationMethods ){
-            arrayAppend( reverseTree, {
-                name 	= method.name,
-                body 	= this[method.name],
-                data 	= {},
-                labels 	= {},
-                order 	= 0,
-                skip 	= false
-            } );
-        }
+		for( var method in annotationMethods ){
+			arrayAppend( reverseTree, {
+				name 	= method.name,
+				body 	= this[method.name],
+				data 	= {},
+				labels 	= {},
+				order 	= 0,
+				skip 	= false
+			} );
+		}
 
-        // Sort the closures from the oldest parent down to the current spec
-        var correctOrderTree = [];
-        var treeLen = arrayLen( reverseTree );
+		// Sort the closures from the oldest parent down to the current spec
+		var correctOrderTree = [];
+		var treeLen = arrayLen( reverseTree );
 		if( treeLen gt 0 ){
 			for( var x = treeLen; x gte 1; x-- ){
-                arrayAppend( correctOrderTree, reverseTree[ x ] );
+				arrayAppend( correctOrderTree, reverseTree[ x ] );
 			}
 		}
 
-        // Build a function that will execute down the tree
-        var specStack = generateAroundEachClosuresStack(
-            closures 	= correctOrderTree,
-            suite 		= arguments.suite,
-            spec 		= arguments.spec
-        );
+		// Build a function that will execute down the tree
+		var specStack = generateAroundEachClosuresStack(
+			closures 	= correctOrderTree,
+			suite 		= arguments.suite,
+			spec 		= arguments.spec
+		);
 
-        // Run the specs
-        specStack();
+		// Run the specs
+		specStack();
 
 		return this;
 	}
 
-    /**
-    * Generates a specs stack for executions
-    * @closures The array of closures data to build
-    * @suite The target suite
-    * @spec The target spec
-    */
-    function generateAroundEachClosuresStack( array closures, required suite, required spec ) {
+	/**
+	* Generates a specs stack for executions
+	* @closures The array of closures data to build
+	* @suite The target suite
+	* @spec The target spec
+	*/
+	function generateAroundEachClosuresStack( array closures, required suite, required spec ) {
 
-        thread.closures = arguments.closures;
-        thread.suite 	= arguments.suite;
-        thread.spec 	= arguments.spec;
+		thread.closures = arguments.closures;
+		thread.suite 	= arguments.suite;
+		thread.spec 	= arguments.spec;
 
-        // Get closure data from stack and pop it
-        var nextClosure = thread.closures[ 1 ];
-        arrayDeleteAt( thread.closures, 1 );
+		// Get closure data from stack and pop it
+		var nextClosure = thread.closures[ 1 ];
+		arrayDeleteAt( thread.closures, 1 );
 
-        // Check if we have more in the stack or empty
-        if( arrayLen( thread.closures ) == 0 ){
-        	// Return the closure of execution for a single spec ONLY
-            return function(){
-            	// Execute the body of the spec
-                nextClosure.body( spec = thread.spec, suite = thread.suite );
-            };
-        }
+		// Check if we have more in the stack or empty
+		if( arrayLen( thread.closures ) == 0 ){
+			// Return the closure of execution for a single spec ONLY
+			return function(){
+				// Execute the body of the spec
+				nextClosure.body( spec = thread.spec, suite = thread.suite );
+			};
+		}
 
-        // Get next Spec in stack
-        var nextSpecInfo = thread.closures[ 1 ];
-        // Return generated closure
-        return function() {
-            nextClosure.body(
-                {
-                    name = nextSpecInfo.name,
-                    body = generateAroundEachClosuresStack(
-                        thread.closures,
-                        thread.suite,
-                        thread.spec
-                    ),
-                    data = nextSpecInfo.data,
-                    labels = nextSpecInfo.labels,
-                    order = nextSpecInfo.order,
-                    skip = nextSpecInfo.skip
-                },
-                thread.suite
-            );
-        };
-    }
+		// Get next Spec in stack
+		var nextSpecInfo = thread.closures[ 1 ];
+		// Return generated closure
+		return function() {
+			nextClosure.body(
+				{
+					name = nextSpecInfo.name,
+					body = generateAroundEachClosuresStack(
+						thread.closures,
+						thread.suite,
+						thread.spec
+					),
+					data = nextSpecInfo.data,
+					labels = nextSpecInfo.labels,
+					order = nextSpecInfo.order,
+					skip = nextSpecInfo.skip
+				},
+				thread.suite
+			);
+		};
+	}
 
 	/**
 	* Execute the after each closures in order for a suite and spec
@@ -775,15 +790,15 @@ component{
 			parentSuite = parentSuite.parentRef;
 		}
 
-        var annotationMethods = this.$utility.getAnnotatedMethods(
-            annotation = "afterEach",
-            metadata = getMetadata( this )
-        );
+		var annotationMethods = this.$utility.getAnnotatedMethods(
+			annotation = "afterEach",
+			metadata = getMetadata( this )
+		);
 
-        for( var method in annotationMethods ){
-            var afterEachMethod = this[ method.name ];
-            afterEachMethod( currentSpec = arguments.spec.name );
-        }
+		for( var method in annotationMethods ){
+			var afterEachMethod = this[ method.name ];
+			afterEachMethod( currentSpec = arguments.spec.name );
+		}
 
 		return this;
 	}
@@ -1068,8 +1083,8 @@ component{
 	// Closure Stub
 	function closureStub(){}
 
-    // Around Stub
-    function aroundStub(spec) { spec.body(spec.data); }
+	// Around Stub
+	function aroundStub(spec) { spec.body(spec.data); }
 
 	/**
 	* Check if an expected exception is defined
