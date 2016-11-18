@@ -8,7 +8,7 @@ env:
   matrix:
     - ENGINE=lucee@4.5
     - ENGINE=lucee@5
-    #- ENGINE=adobe@10
+    - ENGINE=adobe@10
     #- ENGINE=adobe@11
     #- ENGINE=adobe@2016
 
