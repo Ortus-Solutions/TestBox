@@ -29,7 +29,7 @@ before_install:
 
 install:
   # Install Commandbox
-  - sudo apt-get update && sudo apt-get --assume-yes install commandbox
+  - sudo apt-get update && sudo apt-get --assume-yes install haveged commandbox
   # Install dependencies
   - box version && box install
   # Store the Ortus API Key for forgebox publishing in `master`
