@@ -80,7 +80,7 @@
 		</exec>
 		<!-- Startup the testing server, wait for a few seconds for server to start -->
 		<exec executable="box" dir="${basedir}">
-			<arg line="server start name=${cfengine} cfengine=${cfengine} heapSize=1024 debug=true" />
+			<arg line="server start name=${cfengine} cfengine=${cfengine} heapSize=1024" />
 		</exec>
 	</target>
 	
