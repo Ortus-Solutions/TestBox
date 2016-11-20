@@ -40,7 +40,7 @@ script:
   - ant -DisTravis=true -Dcfengine=$ENGINE -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml
   # Spit out log just in case we need to debug
   - box server log name=$ENGINE
-  - cat `box system-log`
+  # - cat `box system-log`
 
 deploy:
   on:
