@@ -23,5 +23,8 @@
 	],
 	"ignore":[
         "**/.*"
-    ]
+	],
+	"testbox":{
+		"runner":"http://localhost:49616/tests/runner.cfm"
+ 	}
 }
