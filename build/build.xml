@@ -103,6 +103,9 @@
 	<!-- Build test reports -->
 	<target name="run-tests" depends="init">
 		<!-- Execute tests -->
+		<exec executable="box" dir="${basedir}">
+			<arg line="testbox run" />
+		</exec>
 		<subant target="run-junit">
 			<fileset dir="tests" includes="test.xml"/>
 			<property name="environment" value="${environment}" />
