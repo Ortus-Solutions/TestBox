@@ -919,7 +919,8 @@ component{
 		any var,
 		string label="",
 		boolean deepCopy=false,
-		numeric top="999"
+		numeric top="999",
+		string format="html"
 	){
 		// null check
 		if( isNull( arguments.var ) ){ arrayAppend( this.$debugBuffer, "null" ); return; }
@@ -935,7 +936,8 @@ component{
 				label=arguments.label,
 				timestamp=now(),
 				thread=( isNull( cfthread ) ? structNew() : cfthread ),
-				top=arguments.top
+				top=arguments.top,
+				format=arguments.format
 			} );
 		}
 		return this;
