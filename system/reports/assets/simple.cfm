@@ -192,7 +192,7 @@
 							- <strong>#htmlEditFormat( local.thisSpec.failMessage )#</strong>
 							  <button onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">+</button><br>
 							  
-							  <cfif !isNull( local.thisSpec.failOrigin[ 1 ] )>
+							  <cfif arrayLen( local.thisSpec.failOrigin )>
 								<div class="">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
 								<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
 									<div class="">#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</div>								  
@@ -208,7 +208,7 @@
 							- <strong>#htmlEditFormat( local.thisSpec.error.message )#</strong>
 							  <button onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">+</button><br>
 							  
-							  <cfif !isNull( local.thisSpec.failOrigin[ 1 ] )>
+							  <cfif arrayLen( local.thisSpec.failOrigin )>
 								  <div class="">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
 								  <cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
 									<div class="">#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</div>								  
