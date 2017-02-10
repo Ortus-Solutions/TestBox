@@ -177,7 +177,9 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					thread  name="#thisThreadName#"
 							thisSpec="#thisSpec#"
 							suite="#arguments.suite#"
-							threadName="#thisThreadName#"{
+							threadName="#thisThreadName#"
+							callbacks="#arguments.callbacks#"
+					{
 
 						// verify call backs
 						if( structKeyExists( attributes.callbacks, "onSpecStart" ) ){
