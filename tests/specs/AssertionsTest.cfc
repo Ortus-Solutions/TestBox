@@ -31,6 +31,24 @@ component displayName="TestBox xUnit suite for cf10 and above" labels="lucee,cf"
 		});
 	}
 
+	function testThrowsDoesNotIgnoreTypeWhenRegexMatches(){
+		var message = "exception_message";
+
+		var target = function() {
+			throw(type="actual_type", message=message);
+		};
+
+		var assertionFailed = false;
+
+		try {
+			$assert.throws(target=target, type="expected_type", regex=message); // regex matches the exception message, but type does not
+		} catch (any e) {
+			assertionFailed = true;
+		}
+
+		$assert.isTrue(assertionFailed, "$assert.throws() was expected to fail because the expected type ('excpected_type') did not match the actual type ('actual_type')");
+	}
+
 	function testAwesomeCustomAssertion(){
 		$assert.isAwesome( "Luis Majano" );
 	}
