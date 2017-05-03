@@ -6,7 +6,7 @@ component extends="testbox.system.BaseSpec"{
 /*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
-		coldbox = 0;
+		application.coldbox = 0;
 	}
 
 	function afterAll(){
@@ -21,13 +21,13 @@ component extends="testbox.system.BaseSpec"{
 
 			// before each spec in THIS suite group
 			beforeEach(function( currentSpec ){
-				coldbox++;
-				debug( "beforeEach #arguments.currentSpec#: coldbox = #coldbox#" );
+				application.coldbox++;
+				debug( "beforeEach #arguments.currentSpec#: application.coldbox = #application.coldbox#" );
 			});
 
 			// after each spec in THIS suite group
 			afterEach(function( currentSpec ){
-				debug( "afterEach #arguments.currentSpec#: coldbox = #coldbox#" );
+				debug( "afterEach #arguments.currentSpec#: application.coldbox = #application.coldbox#" );
 			});
 
 			// around each spec in THIS suite group
@@ -37,15 +37,15 @@ component extends="testbox.system.BaseSpec"{
 			});
 
 			it("before should be 1", function(){
-				expect( coldbox ).toBe( 1 );
+				expect( application.coldbox ).toBe( 1 );
 			});
 
 			describe( "A nested suite", function(){
 
 				// before each spec in THIS suite group
 				beforeEach(function( currentSpec ){
-					coldbox = coldbox * 2;
-					debug( "beforeEach #arguments.currentSpec#: coldbox = #coldbox#" );
+					application.coldbox *= 2;
+					debug( "beforeEach #arguments.currentSpec#: application.coldbox = #application.coldbox#" );
 				});
 
 				// around each spec in THIS suite group
@@ -55,18 +55,18 @@ component extends="testbox.system.BaseSpec"{
 				});
 
 				it( "before should be 4", function(){
-					expect(	coldbox ).toBe( 4 );
+					expect(	application.coldbox ).toBe( 4 );
 				});
 
 				describe( "Another nested suite", function(){
 					// before each spec in THIS suite group
 					beforeEach(function( currentSpec ){
-						coldbox++;
-						debug( "beforeEach #arguments.currentSpec#: coldbox = #coldbox#" );
+						application.coldbox++;
+						debug( "beforeEach #arguments.currentSpec#: application.coldbox = #application.coldbox#" );
 					});
 
 					it( "before should be 11", function(){
-						expect(	coldbox ).toBe( 11 );
+						expect(	application.coldbox ).toBe( 11 );
 					});
 				});
 

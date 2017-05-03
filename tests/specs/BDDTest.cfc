@@ -8,7 +8,7 @@ component extends="testbox.system.BaseSpec"{
 	function beforeAll(){
 		// print( "<h1>BDD Testing is Awesome!</h1>" );
 		console( "Executed beforeAll() at #now()# " );
-		application.salvador = 1;
+		application.coldbox = 0;
 	}
 
 	function afterAll(){
@@ -33,9 +33,9 @@ component extends="testbox.system.BaseSpec"{
 
 			// before each spec in THIS suite group
 			beforeEach(function(){
-				coldbox = 0;
-				coldbox++;
-				debug( "beforeEach suite: coldbox = #coldbox#" );
+				application.coldbox = 0;
+				application.coldbox++;
+				debug( "beforeEach suite: coldbox = #application.coldbox#" );
 			});
 
 			// after each spec in THIS suite group
@@ -52,7 +52,7 @@ component extends="testbox.system.BaseSpec"{
 			* @skip A flag that tells TestBox to skip this spec from testing if true
 			*/
 			it(title="is just a closure so it can contain code", body=function(){
-				expect( coldbox ).toBe( 1 );
+				expect( application.coldbox ).toBe( 1 );
 			},labels="luis");
 
 			it( "can satisfy truth tests", function(){
@@ -68,27 +68,27 @@ component extends="testbox.system.BaseSpec"{
 
 			// more than 1 expectation
 			it("can have more than one expectation test", function(){
-				coldbox = coldbox * 8;
+				application.coldbox = application.coldbox * 8;
 				// type checks
-				expect( coldbox )
+				expect( application.coldbox )
 					.toBeTypeOf( 'numeric' )
 					.toBeNumeric();
 				// delta ranges
-				expect( coldbox ).toBeCloseTo( expected=10, delta=2 );
+				expect( application.coldbox ).toBeCloseTo( expected=10, delta=2 );
 				// negations
-				expect( coldbox ).notToBe( 4 );
-				debug( " >1 expectation tests: coldbox = #coldbox#" );
+				expect( application.coldbox ).notToBe( 4 );
+				debug( " >1 expectation tests: coldbox = #application.coldbox#" );
 			});
 
 			// negations
 			it("can have negative expectations", function(){
-				coldbox = coldbox * 8;
+				application.coldbox = application.coldbox * 8;
 				// type checks
-				expect( coldbox ).notToBeTypeOf( 'usdate' );
+				expect( application.coldbox ).notToBeTypeOf( 'usdate' );
 				// dynamic type methods
-				expect( coldbox ).notToBeArray();
+				expect( application.coldbox ).notToBeArray();
 				// delta ranges
-				expect( coldbox ).notToBeCloseTo( expected=10, delta=2 );
+				expect( application.coldbox ).notToBeCloseTo( expected=10, delta=2 );
 			});
 
 			it( "can get private properties", function(){
@@ -160,29 +160,29 @@ component extends="testbox.system.BaseSpec"{
 				// add custom matchers
 				addMatchers({
 					toBeReallyFalse : function( expectation, args={} ){
-						expectation.message = ( structKeyExists( args, "message" ) ? args.message : "[#expectation.actual#] is not really false" );
-						if( expectation.isNot )
-							return ( expectation.actual eq true );
+						arguments.expectation.message = ( structKeyExists( args, "message" ) ? args.message : "[#arguments.expectation.actual#] is not really false" );
+						if( arguments.expectation.isNot )
+							return ( arguments.expectation.actual eq true );
 						else
-							return ( expectation.actual eq false );
+							return ( arguments.expectation.actual eq false );
 					},
 					toBeReallyTrue = function( expectation, args={} ){
-						expectation.message = ( structKeyExists( args, "message" ) ? args.message : "[#expectation.actual#] is not really true" );
-						if( expectation.isNot )
-							return ( expectation.actual eq false );
+						arguments.expectation.message = ( structKeyExists( args, "message" ) ? args.message : "[#arguments.expectation.actual#] is not really true" );
+						if( arguments.expectation.isNot )
+							return ( arguments.expectation.actual eq false );
 						else
-							return ( expectation.actual eq true );
+							return ( arguments.expectation.actual eq true );
 					}
 				});
-				foo = false;
+				variables.foo = false;
 			});
 
 			it("are cool and foo should be really false", function(){
-				expect( foo ).toBeReallyFalse();
+				expect( variables.foo ).toBeReallyFalse();
 			});
 
 			it("are still cool and the negation of foo should be really true", function(){
-				expect( foo ).notToBeReallyTrue();
+				expect( variables.foo ).notToBeReallyTrue();
 			});
 
 			// Custom Matchers
@@ -191,12 +191,12 @@ component extends="testbox.system.BaseSpec"{
 				beforeEach(function(){
 					// add custom matcher via CFC
 					addMatchers( new testbox.tests.resources.CustomMatcher() );
-					foofoo = false;
+					variables.foofoo = false;
 				});
 
 				it("should be awesome", function(){
-					expect( foofoo ).toBeAwesome();
-					debug( " foofoo should be awesome #foofoo#" );
+					expect( variables.foofoo ).toBeAwesome();
+					debug( " foofoo should be awesome #variables.foofoo#" );
 				});
 
 				it("should know its maker", function(){
@@ -295,7 +295,7 @@ component extends="testbox.system.BaseSpec"{
 
 			it("can use a mocked stub", function(){
 				c = createStub().$("getData", 4);
-				r = calc.add( 4, c.getData() );
+				r = request.calc.add( 4, c.getData() );
 				expect( r ).toBe( 8 );
 				expect( c.$once( "getData") ).toBeTrue();
 			});
