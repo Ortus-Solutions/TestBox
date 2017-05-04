@@ -16,6 +16,54 @@ component extends="testbox.system.BaseSpec" {
 
 		});
 
+		describe( "Ability to bind data to life-cycle methods", function(){
+			
+			var data = [
+				"spec1",
+				"spec2"
+			];
+
+			for( var thisData in data ){
+				describe( "Trying #thisData#", function(){
+					
+					beforeEach( data={ myData = thisData }, body=function( currentSpec, data ){
+						targetData = arguments.data.myData;
+					});
+					
+					it( title="should account for life-cycle data binding", 
+						data={ myData = thisData},
+						body=function( data ){
+							expect(	targetData ).toBe( data.mydata );
+						}
+					);
+
+					afterEach( data={ myData = thisData }, body=function( currentSpec, data ){
+						targetData = arguments.data.myData;
+					});
+				});
+			}
+
+			for( var thisData in data ){
+
+				describe( "Trying around life-cycles with #thisData#", function(){
+					
+					aroundEach( data={ myData = thisData }, body = function( spec, suite, data ){
+						targetData = arguments.data.myData;
+						arguments.spec.body( data=arguments.spec.data );
+					});
+
+					it( title="should account for life-cycle data binding", 
+						data={ myData = thisData },
+						body=function( data ){
+							expect(	targetData ).toBe( data.mydata );
+						}
+					);
+				
+				});
+
+			}
+		});
+
 	}
 
 	private function myFakeClosure(){	
