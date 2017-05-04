@@ -922,20 +922,25 @@ component{
 		numeric top="999"
 	){
 		// null check
-		if( isNull( arguments.var ) ){ arrayAppend( this.$debugBuffer, "null" ); return; }
+		if( isNull( arguments.var ) ){ 
+			arrayAppend( this.$debugBuffer, "null" ); 
+			return; 
+		}
+
 		// lock and add
 		lock name="tb-debug-#this.$testID#" type="exclusive" timeout="10"{
 			// duplication control
 			var newVar = ( arguments.deepCopy ? duplicate( arguments.var ) : arguments.var );
 			// compute label?
-			if( !len( trim( arguments.label ) ) ){ arguments.label = this.$currentExecutingSpec; }
+			if( !len( trim( arguments.label ) ) ){ 
+				arguments.label = this.$currentExecutingSpec; 
+			}
 			// add to debug output
 			arrayAppend( this.$debugBuffer, {
-				data=newVar,
-				label=arguments.label,
-				timestamp=now(),
-				thread=( isNull( cfthread ) ? structNew() : cfthread ),
-				top=arguments.top
+				data		= newVar,
+				label		= arguments.label,
+				timestamp	= now(),
+				top			= arguments.top
 			} );
 		}
 		return this;
