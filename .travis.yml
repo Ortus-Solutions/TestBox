@@ -41,7 +41,8 @@ script:
   # Execute build via ANT
   - ant -DisTravis=true -Dcfengine=$ENGINE -Dbuild.number=$TRAVIS_BUILD_NUMBER -Dbuild.branch=$TRAVIS_BRANCH -f build/build.xml
   # Set Current Version
-  - set VERSION=`cat $TRAVIS_BUILD_DIR/artifacts/testbox/box.json | jq '.version' -r`
+  - BUILD_VERSION=`cat $TRAVIS_BUILD_DIR/artifacts/testbox/box.json | jq '.version' -r`
+  - echo "TestBox v$BUILD_VERSION"
 
 after_failure:
   - cd $TRAVIS_BUILD_DIR
@@ -80,7 +81,7 @@ deploy:
     secret_access_key: $AWS_ACCESS_SECRET
     bucket: "apidocs.ortussolutions.com"
     local-dir: $TRAVIS_BUILD_DIR/build-testbox/testbox/apidocs
-    upload-dir: testbox/$VERSION
+    upload-dir: testbox/$BUILD_VERSION
     acl: public_read
 
 after_deploy:
