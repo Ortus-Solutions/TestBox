@@ -61,7 +61,7 @@ deploy:
     access_key_id: $AWS_ACCESS_KEY
     secret_access_key: $AWS_ACCESS_SECRET
     bucket: "downloads.ortussolutions.com"
-    local-dir: artifacts/testbox
+    local-dir: $TRAVIS_BUILD_DIR/artifacts/testbox
     upload-dir: ortussolutions/testbox
     acl: public_read
   
@@ -77,7 +77,7 @@ deploy:
     access_key_id: $AWS_ACCESS_KEY
     secret_access_key: $AWS_ACCESS_SECRET
     bucket: "apidocs.ortussolutions.com"
-    local-dir: build-testbox/testbox/apidocs
+    local-dir: $TRAVIS_BUILD_DIR/build-testbox/testbox/apidocs
     upload-dir: testbox
     acl: public_read
 
