@@ -47,6 +47,8 @@ component accessors="true"{
 
 		// internal id
 		variables.resultsID 	= createUUID();
+		// TestBox version
+		variables.version 		= "@build.version@+@build.number@";
 		// Global test durations
 		variables.startTime 	= getTickCount();	
 		variables.endTime 		= 0;
@@ -346,7 +348,6 @@ component accessors="true"{
 		required string type,
 		required struct stats
 	){
-
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10"{
 			// increment suite stat
 			variables.suiteReverseLookup[ arguments.stats.suiteID ][ "total#arguments.type#" ]++;
@@ -363,15 +364,14 @@ component accessors="true"{
 	* Get a flat representation of this result
 	*/
 	struct function getMemento(){
-		var pList = listToArray( "labels,startTime,endTime,totalDuration,totalBundles,totalSuites,totalSpecs,totalPass,totalFail,totalError,totalSkipped,bundleStats" );
-		var result = {};
+		var pList 	= listToArray( "resultID,version,labels,startTime,endTime,totalDuration,totalBundles,totalSuites,totalSpecs,totalPass,totalFail,totalError,totalSkipped,bundleStats" );
+		var result 	= {};
 		
 		// Do simple properties only
-		for(var x=1; x lte arrayLen( pList ); x++ ){
+		for( var x=1; x lte arrayLen( pList ); x++ ){
 			if( structKeyExists( variables, pList[ x ] ) ){
 				result[ pList[ x ] ] = variables[ pList[ x ] ];
-			}
-			else{
+			} else {
 				result[ pList[ x ] ] = "";
 			}
 		}
