@@ -9,13 +9,18 @@
 
 	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
 	<property name="groupID"			value="ortussolutions" />
-	<property name="testbox.version"	value="2.5.0-snapshot"/>
+	<property name="testbox.version"	value="2.5.0"/>
 	<property name="testbox.slug"		value="testbox"/>
 	
 	<condition property="isTravis" else="false">
       <isset property="isTravis"/>
     </condition>
-
+	<condition property="cfengine" else="lucee@4.5">
+      <isset property="cfengine"/>
+    </condition>
+    <condition property="build.branch" else="development">
+      <isset property="build.branch"/>
+    </condition>
 
 	<!-- Build Labels -->
 	<tstamp prefix="start"/>
@@ -130,15 +135,17 @@
 		<!-- Copy SRC to TestBox namespace -->	
 		<copy todir="${dir.build}/testbox/" encoding="UTF-8">
 			<fileset dir=".">
-				<exclude name="build/**" />
 				<exclude name="apidocs/**" />
+				<exclude name="artifacts/**" />
+				<exclude name="build/**" />
+				<exclude name="build-testbox/**" />
 				<exclude name="tests/**" />
 				<exclude name="cpu.json" />
 				<exclude name="box.json" />
-				<exclude name="box-mockbox.json" />
+				<exclude name="server.json" />
+				<exclude name="server-*.json" />
 				<exclude name=".*/**" />
 				<exclude name="settings.xml" />
-				<exclude name="build-testbox/**" />
 			</fileset>
 		</copy>
 
@@ -152,14 +159,26 @@
 			</fileset>
 		</copy>
 		
-		<!-- Replace Version + Build Numbers -->
-		<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
-		  <fileset dir="${dir.build}" />
-		</replaceregexp>
+		<!-- Replace Version Number -->
 		<replaceregexp match='@build.version@' replace="${testbox.version}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
 		</replaceregexp>
-						
+
+		<!-- Determine snapshot vs master artifact -->
+		<if>
+			<equals arg1="${build.branch}" arg2="development" />
+			<then>
+				<replaceregexp match='\+@build.number@' replace="-snapshot" flags="ig" byline="true" encoding="UTF-8">
+				  <fileset dir="${dir.build}" />
+				</replaceregexp>
+			</then>
+			<else>
+				<replaceregexp match='@build.number@' replace="${build.number}" flags="ig" byline="true" encoding="UTF-8">
+				  <fileset dir="${dir.build}" />
+				</replaceregexp>
+			</else>
+		</if>
+
 		<!-- Api Docs -->
 		<antcall target="build.apidocs" />
 		
@@ -207,13 +226,6 @@
 				  latest="${testbox.version}"
 				  classifiers="apidocs"/>
 
-		<!-- Cleanup -->	
-		<if>
-			<equals arg1="$isTravis" arg2="false" />
-			<then>
-				<delete dir="${dir.build}" />
-			</then>
-		</if>
 	</target>
 
 	<!-- Build API Docs -->

@@ -11,10 +11,6 @@
 	"repository"		: { "type" : "git", "url" : "https://github.com/Ortus-Solutions/TestBox" },
 	"bugs"				: "https://ortussolutions.atlassian.net/browse/TESTBOX",
 	"shortDescription"	: "A BDD and xUnit testing framework with Mocking Goodness",
-	"engines"			: [
-		{ "type" : "lucee", "version" : ">4.5" },
-		{ "type" : "adobe", "version" : ">10" }
-	],
 	"license"			: [ 
 		{ "type" : "Apache2", "url" : "http://www.apache.org/licenses/LICENSE-2.0.html" } 
 	],
