@@ -256,6 +256,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 				suiteStats.totalError = suiteStats.totalError + nestedStats.totalError;
 				suiteStats.totalFail = suiteStats.totalFail + nestedStats.totalFail;
 				suiteStats.totalSkipped = suiteStats.totalSkipped + nestedStats.totalSkipped;
+				suiteStats.totalPass = suiteStats.totalPass + nestedStats.totalPass;
 
 			}
 
