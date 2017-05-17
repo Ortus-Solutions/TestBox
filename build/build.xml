@@ -9,7 +9,7 @@
 
 	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
 	<property name="groupID"			value="ortussolutions" />
-	<property name="testbox.version"	value="2.5.0"/>
+	<property name="testbox.version"	value="2.6.0"/>
 	<property name="testbox.slug"		value="testbox"/>
 	
 	<condition property="isTravis" else="false">
