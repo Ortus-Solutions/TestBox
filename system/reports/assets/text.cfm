@@ -68,9 +68,8 @@ Legend:
 <cfsavecontent variable="local.report">
 <cfoutput>
 #tabs#(#getStatusBit( arguments.suiteStats.status )#)#arguments.suiteStats.name# #chr(13)#
-<cfset arguments.level++>
 <cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
-#repeatString( "    ", arguments.level )#(#getStatusBit( local.thisSpec.status )#)#local.thisSpec.name# (#local.thisSpec.totalDuration# ms) #chr(13)#
+#repeatString( "    ", arguments.level+1 )#(#getStatusBit( local.thisSpec.status )#)#local.thisSpec.name# (#local.thisSpec.totalDuration# ms) #chr(13)#
 <cfif local.thisSpec.status eq "failed">
 	-> Failure: #local.thisSpec.failMessage##chr(13)#
 	<!--- -> Failure Origin: #local.thisSpec.failorigin.toString()# #chr(13)##chr(13)# --->
@@ -82,8 +81,9 @@ Legend:
 </cfif>
 </cfloop>
 
+<!--- Do we have nested suites --->
 <cfif arrayLen( arguments.suiteStats.suiteStats )>
-<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">#genSuiteReport( local.nestedSuite, arguments.bundleStats, arguments.level++ )#</cfloop>
+<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">#genSuiteReport( local.nestedSuite, arguments.bundleStats, arguments.level+1 )#</cfloop>
 </cfif>	
 
 </cfoutput>

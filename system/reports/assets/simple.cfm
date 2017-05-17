@@ -121,7 +121,7 @@
 	<div class="box bundle" id="bundleStats_#thisBundle.path#" data-bundle="#thisBundle.path#">
 
 		<!--- bundle stats --->
-		<h2><a href="#variables.baseURL#&testBundles=#URLEncodedFormat( thisBundle.path )#" title="Run only this bundle">#thisBundle.path#</a> (#thisBundle.totalDuration# ms)</h2>
+		<h2><a href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#" title="Run only this bundle">#thisBundle.path#</a> (#thisBundle.totalDuration# ms)</h2>
 		[ Suites/Specs: #thisBundle.totalSuites#/#thisBundle.totalSpecs# ]
 		[ <span class="specStatus passed" 	data-status="passed" data-bundleid="#thisBundle.id#">Pass: #thisBundle.totalPass#</span> ]
 		[ <span class="specStatus failed" 	data-status="failed" data-bundleid="#thisBundle.id#">Failures: #thisBundle.totalFail#</span> ]
@@ -152,8 +152,7 @@
 				<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
 				<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
 					<h1>#thisDebug.label#</h1>
-					<cfdump var="#thisDebug.data#" 		label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, "short" )# at #timeFormat( thisDebug.timestamp, "full")#" top="#thisDebug.top#" format="#thisDebug.format#"/>
-					<cfdump var="#thisDebug.thread#" 	label="Thread data">
+					<cfdump var="#thisDebug.data#" 		label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, "short" )# at #timeFormat( thisDebug.timestamp, "full")#" top="#thisDebug.top#"/>
 					<p>&nbsp;</p>
 				</cfloop>
 			</div>
@@ -189,10 +188,10 @@
 						<a href="#variables.baseURL#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#" class="#lcase( local.thisSpec.status )#">#local.thisSpec.name# (#local.thisSpec.totalDuration# ms)</a>
 
 						<cfif local.thisSpec.status eq "failed">
-							- <strong>#htmlEditFormat( local.thisSpec.failMessage )#</strong>
+							- <strong class="preserve-whitespace">#htmlEditFormat( local.thisSpec.failMessage )#</strong>
 							  <button onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">+</button><br>
 							  
-							  <cfif !isNull( local.thisSpec.failOrigin[ 1 ] )>
+							  <cfif arrayLen( local.thisSpec.failOrigin )>
 								<div class="">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
 								<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
 									<div class="">#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</div>								  
@@ -208,7 +207,7 @@
 							- <strong>#htmlEditFormat( local.thisSpec.error.message )#</strong>
 							  <button onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">+</button><br>
 							  
-							  <cfif !isNull( local.thisSpec.failOrigin[ 1 ] )>
+							  <cfif arrayLen( local.thisSpec.failOrigin )>
 								  <div class="">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
 								  <cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
 									<div class="">#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</div>								  

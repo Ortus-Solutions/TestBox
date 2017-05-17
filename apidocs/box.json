@@ -9,6 +9,6 @@
         
     },
     "installPaths":{
-        "docbox":"docbox"
+        "docbox":"docbox/"
     }
 }

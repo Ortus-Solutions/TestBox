@@ -8,9 +8,9 @@ env:
   matrix:
     - ENGINE=lucee@4.5
     - ENGINE=lucee@5
-    #- ENGINE=adobe@10
-    #- ENGINE=adobe@11
-    #- ENGINE=adobe@2016
+    - ENGINE=adobe@10
+    - ENGINE=adobe@11
+    - ENGINE=adobe@2016
 
 branches:
   only:
@@ -29,31 +29,60 @@ before_install:
 
 install:
   # Install Commandbox
-  - sudo apt-get update && sudo apt-get --assume-yes install commandbox
-  # Install dependencies
-  - box version && box install
-  # Store the Ortus API Key for forgebox publishing in `master`
+  - sudo apt-get update && sudo apt-get --assume-yes install jq commandbox
+  # Test that the box binary is available and ready for our tests
+  - box version
+  # If using auto-publish, you will need to provide your API token with this line:
   - box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN > /dev/null
 
 script:
+  # run our dependency install to ensure the workbench is in place
+  - box install
   # Execute build via ANT
-  - ant -DisTravis=true -Dcfengine=$ENGINE -Dbuild.number=$TRAVIS_BUILD_NUMBER -f build/build.xml
-  # Spit out log just in case we need to debug
-  - box server log
+  - ant -DisTravis=true -Dcfengine=$ENGINE -Dbuild.number=$TRAVIS_BUILD_NUMBER -Dbuild.branch=$TRAVIS_BRANCH -f build/build.xml
+  # Set Current Version
+  - BUILD_VERSION=`cat $TRAVIS_BUILD_DIR/artifacts/testbox/box.json | jq '.version' -r`
+  - echo "TestBox v$BUILD_VERSION"
+
+after_failure:
+  - cd $TRAVIS_BUILD_DIR
+  # Display the contents of our root directory
+  # Spit out our Commandbox log in case we need to debug
+  - box server log name=$ENGINE
+  - cat `box system-log`
 
 deploy:
-  on:
-    branch: 
-      - master
-  skip_cleanup: true
-  provider: s3
-  #AWS Credentials need to be set in Travis
-  access_key_id: $AWS_ACCESS_KEY
-  secret_access_key: $AWS_ACCESS_SECRET
-  bucket: "downloads.ortussolutions.com"
-  local-dir: artifacts/testbox
-  upload-dir: ortussolutions/testbox
-  acl: public_read
+  # Binary Deployments
+  - provider: s3
+    on:
+      branch: 
+        - master
+        - development
+      condition: "$ENGINE = lucee@4.5"
+    skip_cleanup: true
+    #AWS Credentials need to be set in Travis
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_ACCESS_SECRET
+    bucket: "downloads.ortussolutions.com"
+    local-dir: $TRAVIS_BUILD_DIR/artifacts/testbox
+    upload-dir: ortussolutions/testbox
+    acl: public_read
+  
+  #API Docs Deployment
+  - provider: s3
+    on:
+      branch: 
+        - master
+        - development
+      condition: "$ENGINE = lucee@4.5"
+    skip_cleanup: true
+    #AWS Credentials need to be set in Travis
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_ACCESS_SECRET
+    bucket: "apidocs.ortussolutions.com"
+    local-dir: $TRAVIS_BUILD_DIR/build-testbox/testbox/apidocs
+    upload-dir: testbox/$BUILD_VERSION
+    acl: public_read
 
 after_deploy:
   - cd $TRAVIS_BUILD_DIR/build-testbox && box forgebox publish

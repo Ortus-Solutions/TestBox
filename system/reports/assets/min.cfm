@@ -66,8 +66,7 @@
 			<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
 			<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
 				<h1>#thisDebug.label#</h1>
-				<cfdump var="#thisDebug.data#" 		label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, "short" )# at #timeFormat( thisDebug.timestamp, "full")#" top="#thisDebug.top#" format="#thisDebug.format#" />
-				<cfdump var="#thisDebug.thread#" 	label="Thread data">
+				<cfdump var="#thisDebug.data#" 		label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, "short" )# at #timeFormat( thisDebug.timestamp, "full")#" top="#thisDebug.top#"/>
 				<p>&nbsp;</p>
 			</cfloop>
 		</div>

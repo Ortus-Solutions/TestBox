@@ -9,7 +9,7 @@ component extends="testbox.system.compat.framework.TestCase"{
 	}
 
 	public function testInjectedPrivateMethod(){
-		var sut = New tests.resources.sut();
+		var sut = New tests.resources.Sut();
 		//replace privateMethod in the SUT with an injected mock method
 		injectMethod( sut, this, "injectedPrivateMethod", "privateMethod" );
 		//The SUT should use the injected method instead of its original version
@@ -17,7 +17,7 @@ component extends="testbox.system.compat.framework.TestCase"{
 	}
 
 	public function testInjectedPublicMethod(){
-		var sut = New tests.resources.sut();
+		var sut = New tests.resources.Sut();
 		//replace publicMethod in the SUT with an injected mock method
 		injectMethod( sut, this, "injectedPublicMethod", "publicMethod" );
 		//The SUT should use the injected method instead of its original version

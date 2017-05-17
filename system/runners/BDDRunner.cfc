@@ -238,16 +238,11 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 			// join threads if async
 			if( arguments.suite.asyncAll ){ thread action="join" name="#arrayToList( threadNames )#"{}; }
 
-			// All specs finalized, set suite status according to spec data
-			if( suiteStats.totalError GT 0 ){ suiteStats.status = "Error"; }
-			else if( suiteStats.totalFail GT 0 ){ suiteStats.status = "Failed"; }
-			else{ suiteStats.status = "Passed"; }
-
 			// Do we have any internal suites? If we do, test them recursively, go down the rabbit hole
 			for( var thisInternalSuite in arguments.suite.suites ){
 
 				// run the suite specs recursively
-				testSuite(
+				var nestedStats = testSuite(
 					target=arguments.target,
 					suite=thisInternalSuite,
 					testResults=arguments.testResults,
@@ -255,8 +250,21 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					parentStats=suiteStats,
 					callbacks=arguments.callbacks
 				);
+				
+				// Add in nested stats to parent suite
+				// These numbers will aggregate as we unroll the recursive calls
+				suiteStats.totalError = suiteStats.totalError + nestedStats.totalError;
+				suiteStats.totalFail = suiteStats.totalFail + nestedStats.totalFail;
+				suiteStats.totalSkipped = suiteStats.totalSkipped + nestedStats.totalSkipped;
+				suiteStats.totalPass = suiteStats.totalPass + nestedStats.totalPass;
 
 			}
+
+			// All specs finalized, set suite status according to spec data
+			if( suiteStats.totalError GT 0 ){ suiteStats.status = "Error"; }
+			else if( suiteStats.totalFail GT 0 ){ suiteStats.status = "Failed"; }
+			else{ suiteStats.status = "Passed"; }
+			
 
 			// Suite Skipped Status?
 			if( suiteStats.totalSpecs neq 0 && suiteStats.totalSpecs == suiteStats.totalSkipped ){
@@ -283,6 +291,8 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 
 		// Finalize the suite stats
 		arguments.testResults.endStats( suiteStats );
+		
+		return suiteStats;
 	}
 
 	/************************************** DISCOVERY METHODS *********************************************/
