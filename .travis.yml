@@ -29,7 +29,7 @@ before_install:
 
 install:
   # Install Commandbox
-  - sudo apt-get update && sudo apt-get --assume-yes install jq commandbox
+  - sudo apt-get update && sudo apt-get --assume-yes install jq commandbox ant-optional
   # Test that the box binary is available and ready for our tests
   - box version
   # If using auto-publish, you will need to provide your API token with this line:

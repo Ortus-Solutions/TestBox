@@ -21,6 +21,11 @@
         "**/.*"
 	],
 	"testbox":{
-		"runner":"http://localhost:49616/tests/runner.cfm"
+		"runner":"http://localhost:49616/tests/runner.cfm",
+		"watchers" : [ 
+			"system/**.cfc",
+			"tests/**.cfc"
+		],
+		"watchDelay" : "250"
  	}
 }
