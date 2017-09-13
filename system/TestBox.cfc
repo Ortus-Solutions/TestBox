@@ -402,17 +402,23 @@ component accessors="true"{
 			arguments.callbacks.onBundleStart( target, testResults );
 		}
 
-		// Discover type?
-		if( structKeyExists( target, "run" ) ){
-			// Run via BDD Style
-			new testbox.system.runners.BDDRunner( options=variables.options, testbox=this )
-				.run( target, arguments.testResults, arguments.callbacks );
+		try {		
+		
+			// Discover type?
+			if( structKeyExists( target, "run" ) ){
+				// Run via BDD Style
+				new testbox.system.runners.BDDRunner( options=variables.options, testbox=this )
+					.run( target, arguments.testResults, arguments.callbacks );
+			}
+			else{
+				// Run via xUnit Style
+				new testbox.system.runners.UnitRunner( options=variables.options,testbox=this )
+					.run( target, arguments.testResults, arguments.callbacks );
+			}	
 		}
-		else{
-			// Run via xUnit Style
-			new testbox.system.runners.UnitRunner( options=variables.options,testbox=this )
-				.run( target, arguments.testResults, arguments.callbacks );
-		}
+		catch (any ex) {
+			throw(message = "Error executing bundle - #arguments.bundlePath#  message: #ex.message#", detail = ex.stackTrace);
+		}			
 
 		// Store debug buffer for this bundle
 		arguments.testResults.storeDebugBuffer( target.getDebugBuffer() );
