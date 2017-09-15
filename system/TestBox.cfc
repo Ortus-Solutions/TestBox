@@ -402,7 +402,7 @@ component accessors="true"{
 			arguments.callbacks.onBundleStart( target, testResults );
 		}
 
-		try {		
+		try{
 		
 			// Discover type?
 			if( structKeyExists( target, "run" ) ){
@@ -415,10 +415,9 @@ component accessors="true"{
 				new testbox.system.runners.UnitRunner( options=variables.options,testbox=this )
 					.run( target, arguments.testResults, arguments.callbacks );
 			}	
+		} catch( Any e ){
+			throw( message="Error executing bundle - #arguments.bundlePath#  message: #e.message# #e.detail#", detail=e.stackTrace );
 		}
-		catch (any ex) {
-			throw(message = "Error executing bundle - #arguments.bundlePath#  message: #ex.message#", detail = ex.stackTrace);
-		}			
 
 		// Store debug buffer for this bundle
 		arguments.testResults.storeDebugBuffer( target.getDebugBuffer() );
