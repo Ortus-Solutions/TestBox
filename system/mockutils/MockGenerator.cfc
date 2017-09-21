@@ -46,10 +46,11 @@ Description		:
 		<cfscript>
 			var udfOut  		= createObject( "java", "java.lang.StringBuilder" ).init( '' );
 			var genPath 		= expandPath( instance.mockBox.getGenerationPath() );
-			var tmpFile 		= createUUID() & ".cfm";
+			var tmpFile 		= "";
 			var fncMD 			= arguments.metadata;
 			var isReservedName 	= false;
 			var safeMethodName	= arguments.method;
+			var stubCode 		= "";
 
 			// Check reserved list and if so, rename it so we can include it, stupid CF
 			if( structKeyExists( getFunctionList(), arguments.method ) ){
@@ -155,7 +156,11 @@ Description		:
 			udfOut.append('</cffunction>');
 
 			// Write it out
-			writeStub(genPath & tmpFile, udfOUt.toString());
+			stubCode = udfOUt.toString();
+			tmpFile = hash(stubCode) & ".cfm";
+			if( !FileExists(genPath & tmpFile) ) {
+				writeStub(genPath & tmpFile, stubCode);
+			}
 
 			// Mix In Stub
 			try{
@@ -208,10 +213,11 @@ Description		:
 		<cfscript>
 			var udfOut 	= createObject("java","java.lang.StringBuilder").init('');
 			var genPath = expandPath( instance.mockBox.getGenerationPath() );
-			var tmpFile = createUUID() & ".cfc";
-			var cfcPath = replace( instance.mockBox.getGenerationPath(), "/", ".", "all" ) & listFirst( tmpFile, "." );
+			var tmpFile = "";
+			var cfcPath = "";
 			var oStub	= "";
 			var local 	= {};
+			var stubCode = "";
 
 			// Create CFC Signature
 			udfOut.append('<cfcomponent output="false" hint="A MockBox awesome Component"');
@@ -237,10 +243,15 @@ Description		:
 			udfOut.append('</cfcomponent>');
 
 			// Write it out
-			writeStub( genPath & tmpFile, udfOUt.toString() );
+			stubCode = udfOUt.toString();
+			tmpFile = hash(stubCode) & ".cfc";
+			if( !FileExists(genPath & tmpFile) ) {
+				writeStub(genPath & tmpFile, stubCode);
+			}
 
 			try{
 				// create stub + clean first . if found.
+				cfcPath = replace( instance.mockBox.getGenerationPath(), "/", ".", "all" ) & listFirst( tmpFile, "." );
 				cfcPath = reReplace( cfcPath, "^\.", "" );
 				oStub = createObject( "component", cfcPath );
 				// Remove Stub
