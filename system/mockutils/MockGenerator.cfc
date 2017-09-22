@@ -60,8 +60,13 @@ Description		:
 
 			// Create Method Signature
 			udfOut.append('<cfsc' & 'ript>
-			this[ "#safeMethodName#" ] = variables[ "#safeMethodName#" ];
-			#fncMD.access# #fncMD.returntype# function #safeMethodName#( #instance.lb#');
+			variables[ "#safeMethodName#" ] = variables[ "@@tmpMethodName@@" ];
+			this[ "#safeMethodName#" ] = variables[ "@@tmpMethodName@@" ];
+			// Clean up
+			structDelete( variables, "@@tmpMethodName@@" );
+			structDelete( this, "@@tmpMethodName@@" );
+			
+			#fncMD.access# #fncMD.returntype# function @@tmpMethodName@@( #instance.lb#');
 
 			// Create Arguments Signature
 			if( structKeyExists( fncMD, "parameters" ) AND arguments.preserveArguments ){
@@ -184,6 +189,11 @@ Description		:
 			// Write it out
 			stubCode = trim( udfOUt.toString() );
 			tmpFile = hash( stubCode ) & ".cfm";
+			
+			// This is neccessary for methods named after CF keywords like "contains"
+			var tmpMethodName = 'tmp' & hash( stubCode );
+			stubCode = replaceNoCase( stubCode, '@@tmpMethodName@@', tmpMethodName, 'all' ); 
+			
 			if( !FileExists( genPath & tmpFile ) ) {
 				writeStub( genPath & tmpFile, stubCode );
 			}
