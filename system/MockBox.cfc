@@ -371,7 +371,7 @@ Description		:
 				fncMD["access"] = "public";
 			}
 			if( not structKeyExists(fncMD,"output") ){
-				fncMD["output"] = false;
+				fncMD["output"] = true;
 			}
 			// Preserve Return Type?
 			if( NOT arguments.preserveReturnType ){
