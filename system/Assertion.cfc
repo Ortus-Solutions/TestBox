@@ -637,7 +637,8 @@ component{
 	/**
 	* Get a string name representation of an incoming object.
 	*/
-	function getStringName( required obj ){
+	function getStringName( obj ){
+		if( isNull( arguments.obj ) ) { return 'null'; }
 		if( isSimpleValue( arguments.obj ) ){ return arguments.obj; }
 		if( isObject( arguments.obj ) ){
 			try{
