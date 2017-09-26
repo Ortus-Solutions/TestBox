@@ -13,10 +13,10 @@ component extends="testbox.system.BaseSpec"{
 	// executes after all suites+specs in the run() method
 	function afterAll(){
 		if ( listContains( url.labels, "luis" ) ) {
-			expect( testsRan ).toBe( 4 );
+			expect( testsRan ).toBe( 5 );
 		}
 		else {
-			expect( testsRan ).toBe( 7 );
+			expect( testsRan ).toBe( 8 );
 		}
 	}
 
@@ -34,6 +34,12 @@ component extends="testbox.system.BaseSpec"{
 				it( "should execute as well, as nested suite is inside a label suite", function(){
 					testsRan++;
 				});
+
+				describe( "Double Nested Suite", function() {
+					it( "should execute this spec as well, because a parent suite has the correct label", function() {
+					    testsRan++;
+					} );
+				} );
 			});
 		});
 
