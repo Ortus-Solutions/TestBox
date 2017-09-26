@@ -562,7 +562,7 @@ component{
 			// init spec tests
 			var specStats = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
 			// init consolidated spec labels
-			var consolidatedLabels = [];
+			var consolidatedLabels = arguments.spec.labels;
 			// Build labels from nested suites, so suites inherit from parent suite labels
 			var parentSuite = arguments.suite;
 			while( !isSimpleValue( parentSuite ) ){
@@ -662,17 +662,17 @@ component{
 		if( treeLen gt 0 ){
 			for( var x=treeLen; x gte 1; x-- ){
 				var thisContext = reverseTree[ x ];
-				thisContext.beforeEach( 
-					currentSpec = arguments.spec.name, 
+				thisContext.beforeEach(
+					currentSpec = arguments.spec.name,
 					data   		= thisContext.beforeEachData
 				);
 			}
 		}
 
 		// execute beforeEach()
-		arguments.suite.beforeEach( 
-			currentSpec = arguments.spec.name, 
-			data 		= arguments.suite.beforeEachData 
+		arguments.suite.beforeEach(
+			currentSpec = arguments.spec.name,
+			data 		= arguments.suite.beforeEachData
 		);
 
 		return this;
@@ -802,7 +802,7 @@ component{
 	*/
 	BaseSpec function runAfterEachClosures( required suite, required spec ){
 		// execute nearest afterEach()
-		arguments.suite.afterEach( 
+		arguments.suite.afterEach(
 			currentSpec = arguments.spec.name,
 			data 		= arguments.suite.afterEachData
 		);
@@ -810,7 +810,7 @@ component{
 		// do we have nested suites? If so, traverse and execute life-cycle methods up the tree backwards
 		var parentSuite = arguments.suite.parentRef;
 		while( !isSimpleValue( parentSuite ) ){
-			parentSuite.afterEach( 
+			parentSuite.afterEach(
 				currentSpec = arguments.spec.name,
 				data 		= parentSuite.afterEachData
 			);
@@ -949,9 +949,9 @@ component{
 		numeric top="999"
 	){
 		// null check
-		if( isNull( arguments.var ) ){ 
-			arrayAppend( this.$debugBuffer, "null" ); 
-			return; 
+		if( isNull( arguments.var ) ){
+			arrayAppend( this.$debugBuffer, "null" );
+			return;
 		}
 
 		// lock and add
@@ -959,8 +959,8 @@ component{
 			// duplication control
 			var newVar = ( arguments.deepCopy ? duplicate( arguments.var ) : arguments.var );
 			// compute label?
-			if( !len( trim( arguments.label ) ) ){ 
-				arguments.label = this.$currentExecutingSpec; 
+			if( !len( trim( arguments.label ) ) ){
+				arguments.label = this.$currentExecutingSpec;
 			}
 			// add to debug output
 			arrayAppend( this.$debugBuffer, {
@@ -1192,7 +1192,7 @@ component{
 				arrayAppend( result, arguments.tagContext[ ix++ ] );
 			}
 		}
-		
+
 		return result;
 	}
 
