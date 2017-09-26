@@ -45,10 +45,10 @@ component extends="testbox.system.BaseSpec"{
 
 		describe( "Suites with no labels", function(){
 			it( "should not execute", function(){
-				testsRan++
+				testsRan++;
 			});
 			it( "should not execute", function(){
-				testsRan++
+				testsRan++;
 			});
 		});
 
@@ -57,7 +57,7 @@ component extends="testbox.system.BaseSpec"{
 				testsRan++;
 			} );
 			it( "should not execute", function() {
-				testsRan++
+				testsRan++;
 			} );
 		} );
 	}
