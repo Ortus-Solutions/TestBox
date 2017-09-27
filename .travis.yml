@@ -10,6 +10,7 @@ env:
     - ENGINE=lucee@5
     - ENGINE=adobe@11
     - ENGINE=adobe@2016
+    - ENGINE=@ortus/adobe-aether
 
 branches:
   only:
