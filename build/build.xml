@@ -108,7 +108,7 @@
 	<!-- Build test reports -->
 	<target name="run-tests" depends="init">
 		<!-- Execute tests -->
-		<exec executable="box" dir="${basedir}">
+		<exec executable="box" dir="${basedir}" failonerror="true">
 			<arg line="testbox run --noVerbose" />
 		</exec>
 	</target>
