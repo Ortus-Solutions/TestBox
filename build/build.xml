@@ -14,7 +14,7 @@
 	
 	<condition property="isTravis" else="false">
       <isset property="isTravis"/>
-    </condition>
+    </condition>	
 	<condition property="cfengine" else="lucee@4.5">
       <isset property="cfengine"/>
     </condition>
@@ -85,7 +85,7 @@
 		</exec>
 		<!-- Startup the testing server, wait for a few seconds for server to start -->
 		<exec executable="box" dir="${basedir}">
-			<arg line="server start name=${cfengine} cfengine=${cfengine} heapSize=1024 debug=true" />
+			<arg line="server start name=${enginename} cfengine=${cfengine} heapSize=1024" />
 		</exec>
 	</target>
 	
@@ -107,8 +107,6 @@
 	
 	<!-- Build test reports -->
 	<target name="run-tests" depends="init">
-		<!-- Some CF engines take a bit to be ready... -->
-		<sleep seconds="60"/>
 		<!-- Execute tests -->
 		<exec executable="box" dir="${basedir}">
 			<arg line="testbox run --noVerbose" />
