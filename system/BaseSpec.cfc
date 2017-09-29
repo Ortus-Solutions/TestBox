@@ -77,6 +77,7 @@ component{
 	function beforeEach( required any body, struct data={} ){
 		this.$suitesReverseLookup[ this.$suiteContext ].beforeEach 		= arguments.body;
 		this.$suitesReverseLookup[ this.$suiteContext ].beforeEachData 	= arguments.data;
+		return this;
 	}
 
 	/**
@@ -87,6 +88,7 @@ component{
 	function afterEach( required any body, struct data={} ){
 		this.$suitesReverseLookup[ this.$suiteContext ].afterEach 		= arguments.body;
 		this.$suitesReverseLookup[ this.$suiteContext ].afterEachData 	= arguments.data;
+		return this;
 	}
 
 	/**
@@ -97,6 +99,7 @@ component{
 	function aroundEach( required any body, struct data={} ){
 		this.$suitesReverseLookup[ this.$suiteContext ].aroundEach 		= arguments.body;
 		this.$suitesReverseLookup[ this.$suiteContext ].aroundEachData 	= arguments.data;
+		return this;
 	}
 
 	/**
