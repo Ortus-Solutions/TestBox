@@ -264,7 +264,7 @@ component{
 	* @message.hint The message to send in the failure
 	*/
 	function notKey( required any target, required string key, message=""){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "The key [#arguments.key#] exists in the target object. Found keys are [#structKeyArray( arguments.target ).toString()#]" );
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The key [#arguments.key#] does not exist in the target object. Found keys are [#structKeyArray( arguments.target ).toString()#]" );
 		if( !structKeyExists( arguments.target, arguments.key ) ){ return this; }
 		fail( arguments.message );
 	}
