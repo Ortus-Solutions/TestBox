@@ -14,7 +14,7 @@ a{ text-decoration: none;}
 a:hover{ text-decoration: underline;}
 /** status **/
 .passed { color: #009c08; }
-.failed { color: #d7d500; }
+.failed { color: #d7af00; }
 .error { color: #c30000; }
 .skipped{ color: blue;}
 div.skipped{ display: none;}
