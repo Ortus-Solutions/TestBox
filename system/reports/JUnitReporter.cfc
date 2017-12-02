@@ -121,7 +121,7 @@ component{
 
 		switch( stats.status ){
 			case "failed" : {
-				out.append('<failure message="#xmlformat( stats.failMessage )#"><![CDATA[
+				out.append('<failure message="#xmlformat( stats.failMessage, true )#"><![CDATA[
 					#stats.failorigin.toString()#
 					]]></failure>');
 				break;
@@ -131,7 +131,7 @@ component{
 				break;
 			}
 			case "error" : {
-				out.append('<error type="#xmlFormat( stats.error.type )#" message="#xmlformat( stats.error.message )#"><![CDATA[
+				out.append('<error type="#xmlFormat( stats.error.type )#" message="#xmlformat( stats.error.message, true )#"><![CDATA[
 					#stats.error.stackTrace.toString()#
 					]]></error>');
 				break;
