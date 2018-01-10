@@ -114,6 +114,9 @@ Description		:
 		<cfargument name="callLogging" 	type="boolean" 	required="false" default="true" hint="Add method call logging for all mocked methods"/>
 		<!--- ************************************************************* --->
 		<cfscript>
+			if ( structKeyExists( arguments.object, "mockbox" ) ) {
+				return arguments.object;
+			}
 			return createMock(object=arguments.object);
 		</cfscript>
 	</cffunction>
