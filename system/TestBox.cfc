@@ -220,6 +220,10 @@ component accessors="true"{
 
 		// iterate and run the test bundles
 		for( var thisBundlePath in variables.bundles ){
+			// Skip interfaces, they are not testable
+			if( getComponentMetadata( thisBundlePath ).type eq "interface" ){
+				continue;
+			}
 			// Execute Bundle
 			testBundle(
 				bundlePath  = thisBundlePath,
