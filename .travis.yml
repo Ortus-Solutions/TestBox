@@ -54,7 +54,7 @@ deploy:
   # Binary Deployments
   - provider: s3
     on:
-      branch: 
+      branch:
         - master
         - development
       condition: "$ENGINE = lucee@4.5"
@@ -66,11 +66,11 @@ deploy:
     local-dir: $TRAVIS_BUILD_DIR/artifacts/testbox
     upload-dir: ortussolutions/testbox
     acl: public_read
-  
+
   #API Docs Deployment
   - provider: s3
     on:
-      branch: 
+      branch:
         - master
         - development
       condition: "$ENGINE = lucee@4.5"
@@ -84,4 +84,4 @@ deploy:
     acl: public_read
 
 after_deploy:
-  - cd $TRAVIS_BUILD_DIR/build-testbox && box forgebox publish
+  - cd $TRAVIS_BUILD_DIR/build-testbox/testbox && box forgebox publish

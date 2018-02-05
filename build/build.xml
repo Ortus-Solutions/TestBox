@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0"?>
-<!-- ====================================================================== 
-	 TestBox Build (www.ortussolutions.com/products/testbox)                                                     
+<!-- ======================================================================
+	 TestBox Build (www.ortussolutions.com/products/testbox)
 	 ====================================================================== -->
 <project name="testbox-build" default="build.all" basedir="../">
 	<description>
@@ -11,7 +11,7 @@
 	<property name="groupID"			value="ortussolutions" />
 	<property name="testbox.version"	value="2.6.0"/>
 	<property name="testbox.slug"		value="testbox"/>
-	
+
 	<condition property="isTravis" else="false">
       <isset property="isTravis"/>
     </condition>
@@ -34,7 +34,7 @@
 	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
 	<!-- Import Box-Repo Tasks -->
 	<import><url url="https://raw.githubusercontent.com/Ortus-Solutions/box-tasks/master/box-repo.xml"/></import>
-		
+
 	<!-- Init -->
 	<target name="init" description="Init the build" unless="src.isInit">
 		<!-- Default environment check, if not passed via -Denvironment -->
@@ -58,8 +58,8 @@
 			<not><isset property="build.number" /></not>
 			<then>
 				<propertyfile file="build/build.number" comment="Build Number for ANT. Edit not!">
-					<entry key="build.number" 
-							type="int" 
+					<entry key="build.number"
+							type="int"
 					     	operation="+"
 							pattern="00000"
 					     	default="1" />
@@ -68,10 +68,10 @@
 				<property file="build/build.number"/>
 			</then>
 		</if>
-		
+
 		<!-- Build Label -->
 		<property name="build.label" value="testbox-${testbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
-		
+
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />
 		<mkdir dir="${dir.build}"/>
@@ -88,7 +88,7 @@
 			<arg line="server start name=${cfengine} cfengine=${cfengine} heapSize=1024" />
 		</exec>
 	</target>
-	
+
 	<!-- update permissions on reports -->
 	<target name="update.permissions" description="Update staging server permissions">
 		<!-- Integration permissions -->
@@ -104,7 +104,7 @@
 			</else>
 		</if>
 	</target>
-	
+
 	<!-- Build test reports -->
 	<target name="run-tests" depends="init">
 		<!-- Execute tests -->
@@ -112,14 +112,14 @@
 			<arg line="testbox run --noVerbose" />
 		</exec>
 	</target>
-		
+
 	<!-- Build All Releases -->
 	<target name="build.all" description="Builds TestBox" depends="run-tests,build.testbox">
 		<exec executable="box" dir="${basedir}">
 			<arg line="server stop" />
 		</exec>
 	</target>
-	
+
 	<!-- Build TestBox-->
 	<target name="build.testbox" description="Build a new TestBox Distribution" depends="init">
 		<!-- prepare dirs -->
@@ -127,11 +127,11 @@
 		<property name="be.testbox.exports" 	value="${be.exports}/${testbox.slug}" />
 		<!-- Update Permissions -->
 		<antcall target="update.permissions" />
-							
+
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/testbox/${build.label}">Built on ${start.TODAY}</concat>
-		
-		<!-- Copy SRC to TestBox namespace -->	
+
+		<!-- Copy SRC to TestBox namespace -->
 		<copy todir="${dir.build}/testbox/" encoding="UTF-8">
 			<fileset dir=".">
 				<exclude name="apidocs/**" />
@@ -148,16 +148,16 @@
 			</fileset>
 		</copy>
 
-		<!-- Copy box.json -->	
-		<copy file="box.json" toFile="${dir.build}/box.json" encoding="UTF-8"/>
-		
+		<!-- Copy box.json -->
+		<copy file="box.json" toFile="${dir.build}/testbox/box.json" encoding="UTF-8"/>
+
 		<!-- Copy Samples -->
 		<copy todir="${dir.build}/testbox/tests" encoding="UTF-8">
 			<fileset dir="tests/">
 				<exclude name="results/**" />
 			</fileset>
 		</copy>
-		
+
 		<!-- Replace Version Number -->
 		<replaceregexp match='@build.version@' replace="${testbox.version}" flags="ig" byline="true" encoding="UTF-8">
 		  <fileset dir="${dir.build}" />
@@ -180,7 +180,7 @@
 
 		<!-- Api Docs -->
 		<antcall target="build.apidocs" />
-		
+
 		<!-- Zip Bundle -->
 		<zip destfile="${dir.testbox.exports}/testbox-${testbox.version}.zip" basedir="${dir.build}" />
 
@@ -197,29 +197,29 @@
 		</checksum>
 
 		<!-- Copy box.json to exports -->
-		<copy file="${dir.build}/box.json" toFile="${dir.testbox.exports}/box.json" encoding="UTF-8"/>
-		
+		<copy file="${dir.build}/testbox/box.json" toFile="${dir.testbox.exports}/box.json" encoding="UTF-8"/>
+
 		<!-- Move Bleeding Edge to Root -->
-		<copy file="${dir.testbox.exports}/box.json" 							
-			  toFile="${be.testbox.exports}/box.json" 
-			  overwrite="true" 
+		<copy file="${dir.testbox.exports}/box.json"
+			  toFile="${be.testbox.exports}/box.json"
+			  overwrite="true"
 			  encoding="UTF-8"/>
-		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip" 		
-			  tofile="${be.testbox.exports}/${testbox.slug}-be.zip" 
-			  overwrite="true" 
+		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip"
+			  tofile="${be.testbox.exports}/${testbox.slug}-be.zip"
+			  overwrite="true"
 			  encoding="UTF-8"/>
-		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip.md5" 
-			  tofile="${be.testbox.exports}/${testbox.slug}-be.zip.md5" 
-			  overwrite="true" 
+		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip.md5"
+			  tofile="${be.testbox.exports}/${testbox.slug}-be.zip.md5"
+			  overwrite="true"
 			  encoding="UTF-8"/>
-		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip.sha512" 
-			  tofile="${be.testbox.exports}/${testbox.slug}-be.zip.sha512" 
-			  overwrite="true" 
+		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip.sha512"
+			  tofile="${be.testbox.exports}/${testbox.slug}-be.zip.sha512"
+			  overwrite="true"
 			  encoding="UTF-8"/>
 
 		<!-- Create Box Repo From macrodef -->
-		<box-repo location="${dir.exports}/${testbox.slug}" 
-				  artifactID="${testbox.slug}" 
+		<box-repo location="${dir.exports}/${testbox.slug}"
+				  artifactID="${testbox.slug}"
 				  groupID="${groupID}"
 				  buildID="${build.number}"
 				  latest="${testbox.version}"
@@ -236,8 +236,8 @@
 			<arg line="install --force" />
 		</exec>
 		<!-- Get the apidocs now -->
-		<get dest="${dir.build}/docbox.html" 
-			 src="${url.apidocs}?version=${testbox.version}&amp;path=${dir.build}/testbox/apidocs" 
+		<get dest="${dir.build}/docbox.html"
+			 src="${url.apidocs}?version=${testbox.version}&amp;path=${dir.build}/testbox/apidocs"
 			 verbose="true"
 			 retries="5"/>
 		<delete file="${dir.build}/docbox.html"/>
