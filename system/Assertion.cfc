@@ -56,9 +56,9 @@ component{
 	* @actual.hint The actual data to test
 	* @message.hint The message to send in the failure
 	*/
-	function isEqual( required any expected, required any actual, message="" ){
+	function isEqual( any expected, any actual, message="" ){
 		// validate equality
-		if( equalize( arguments.expected, arguments.actual ) ){ return this; }
+		if( equalize( argumentCollection=arguments ) ){ return this; }
 		arguments.message = ( len( arguments.message ) ?
 			arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" :
 			"Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]" );
@@ -72,12 +72,12 @@ component{
 	* @actual.hint The actual data to test
 	* @message.hint The message to send in the failure
 	*/
-	function isNotEqual( required any expected, required any actual, message="" ){
+	function isNotEqual( any expected, any actual, message="" ){
 		arguments.message = ( len( arguments.message ) ?
 			arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" :
 			"Expected [#getStringName( arguments.expected )#] to not be [#getStringName( arguments.actual )#]" );
 		// validate equality
-		if( !equalize( arguments.expected, arguments.actual ) ){ return this; }
+		if( !equalize( argumentCollection=arguments ) ){ return this; }
 		// if we reach here, they are equal!
 		fail( arguments.message );
 	}
@@ -122,8 +122,11 @@ component{
 	* @actual.hint The actual data to test
 	* @message.hint The message to send in the failure
 	*/
-	function isEqualWithCase( required string expected, required string actual, message="" ){
+	function isEqualWithCase( string expected, string actual, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]" );
+		// null check
+		if ( isNull( arguments.expected ) && isNull( arguments.actual ) ){ return this; }
+		if ( isNull( arguments.expected ) || isNull( arguments.actual ) ){ fail( arguments.message ); }
 		// equalize with case
 		if( compare( arguments.expected, arguments.actual ) eq 0 ){ return this; }
 		// if we reach here, nothing is equal man!
@@ -634,7 +637,8 @@ component{
 	/**
 	* Get a string name representation of an incoming object.
 	*/
-	function getStringName( required obj ){
+	function getStringName( obj ){
+		if( isNull( arguments.obj ) ) { return 'null'; }
 		if( isSimpleValue( arguments.obj ) ){ return arguments.obj; }
 		if( isObject( arguments.obj ) ){
 			try{
@@ -661,7 +665,16 @@ component{
 
 /*********************************** PRIVATE Methods ***********************************/
 
-	private function equalize( required expected, required actual ){
+	private boolean function equalize( any expected, any actual ){
+
+		// Null values
+		if( isNull( arguments.expected ) && isNull( arguments.actual ) ){
+			return true;
+		}
+
+		if( isNull( arguments.expected ) || isNull( arguments.actual ) ){
+			return false;
+		}
 
 		// Numerics
 		if( isNumeric( arguments.actual ) && isNumeric( arguments.expected ) && toString( arguments.actual ) eq toString( arguments.expected ) ){

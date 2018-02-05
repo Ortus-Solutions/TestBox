@@ -11,15 +11,18 @@
 
 TestBox is a Behavior Driven Development (BDD) and Test Driven Development (TDD) framework for ColdFusion (CFML). It also includes mocking and stubbing capabilities via its internal MockBox library.
 
-##LICENSE
+## LICENSE
 Apache License, Version 2.0.
 
-##IMPORTANT LINKS
+## IMPORTANT LINKS
 Source
 - https://github.com/Ortus-Solutions/TestBox
 
 Bug Tracking
 - https://ortussolutions.atlassian.net/browse/TESTBOX
+
+Support Forum
+- https://groups.google.com/a/ortussolutions.com/forum/#!forum/testbox
 
 Documentation
 - https://testbox.ortusbooks.com
@@ -29,11 +32,11 @@ Documentation
 Official Site
 - https://www.ortussolutions.com/products/testbox
 
-##SYSTEM REQUIREMENTS
+## SYSTEM REQUIREMENTS
 - Lucee 4.5+ (xUnit + BDD)
 - ColdFusion 10+ (xUnit + BDD)
 
-##TESTBOX INSTALLATION
+## TESTBOX INSTALLATION
 You can visit the TestBox documentation page to view all of its features and 
 capabilities.  To install TestBox just drop it in your web root as `/testbox` or
 create a mapping in your CFML administrator or `Application.cfc` that points to the
@@ -54,7 +57,7 @@ Copyright Since 2005 by Luis Majano and Ortus Solutions, Corp
 
 www.ortussolutions.com
 ********************************************************************************
-####HONOR GOES TO GOD ABOVE ALL
+#### HONOR GOES TO GOD ABOVE ALL
 Because of His grace, this project exists. If you don't like this, then don't read it, its not for you.
 
 >"Therefore being justified by faith, we have peace with God through our Lord Jesus Christ:
@@ -64,5 +67,5 @@ And patience, experience; and experience, hope:
 And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the 
 Holy Ghost which is given unto us. ." Romans 5:5
 
-###THE DAILY BREAD
+### THE DAILY BREAD
  > "I am the way, and the truth, and the life; no one comes to the Father, but by me (JESUS)" Jn 14:1-12

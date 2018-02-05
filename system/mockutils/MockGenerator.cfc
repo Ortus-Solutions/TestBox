@@ -46,10 +46,11 @@ Description		:
 		<cfscript>
 			var udfOut  		= createObject( "java", "java.lang.StringBuilder" ).init( '' );
 			var genPath 		= expandPath( instance.mockBox.getGenerationPath() );
-			var tmpFile 		= createUUID() & ".cfm";
+			var tmpFile 		= "";
 			var fncMD 			= arguments.metadata;
 			var isReservedName 	= false;
 			var safeMethodName	= arguments.method;
+			var stubCode 		= "";
 
 			// Check reserved list and if so, rename it so we can include it, stupid CF
 			if( structKeyExists( getFunctionList(), arguments.method ) ){
@@ -58,104 +59,144 @@ Description		:
 			}
 
 			// Create Method Signature
-			udfOut.append('
-			<cfset this[ "#safeMethodName#" ] = variables[ "#safeMethodName#" ]>
-			<cffunction name="#safeMethodName#" access="#fncMD.access#" output="#fncMD.output#" returntype="#fncMD.returntype#">#instance.lb#');
+			udfOut.append('<cfsc' & 'ript>
+			variables[ "#safeMethodName#" ] = variables[ "@@tmpMethodName@@" ];
+			this[ "#safeMethodName#" ] = variables[ "@@tmpMethodName@@" ];
+			// Clean up
+			structDelete( variables, "@@tmpMethodName@@" );
+			structDelete( this, "@@tmpMethodName@@" );
+			
+			#fncMD.access# #fncMD.returntype# function @@tmpMethodName@@( #instance.lb#');
 
 			// Create Arguments Signature
 			if( structKeyExists( fncMD, "parameters" ) AND arguments.preserveArguments ){
-			for( var x=1; x lte arrayLen( fncMD.parameters ); x++ ){
-				udfOut.append( '<cfargument');
-				for( var argKey in fncMD.parameters[ x ] ){
-					udfOut.append( ' #lcase( argKey )#="#fncMD.parameters[ x ][ argKey ]#"');
+				for( var x=1; x lte arrayLen( fncMD.parameters ); x++ ){
+					var thisParam = fncMD.parameters[ x ];
+					udfOut.append('						');
+					if( !isNull( thisParam.required )  && thisParam.required ) {
+						udfOut.append( 'required ' );
+					}					
+					if( !isNull( thisParam.type )  && len( thisParam.required ) ) {
+						udfOut.append( thisParam.type & ' '  );
+					}
+					udfOut.append( thisParam.name & ' ' );					
+					if( !isNull( thisParam.default ) && thisParam.default != '[runtime expression]' ) {
+						udfOut.append( '= ' & outputQuotedValue( thisParam.default ) & ' '  );
+					}
+					// Remove these standard keys
+					structDelete( thisParam, 'required' );
+					structDelete( thisParam, 'type' );
+					structDelete( thisParam, 'name' );
+					structDelete( thisParam, 'default' );
+					// Just loop over the rest and output them
+					for( var thisParamProp in thisParam ) {
+						udfOut.append( thisParamProp & ' = ' & outputQuotedValue( thisParam[ thisParamProp ] ) & ' '  );
+					}
+					if( x < arrayLen( fncMD.parameters ) ) {
+						udfOut.append(',');
+					}
+					udfOut.append('#instance.lb#');
 				}
-				udfOut.append('>#instance.lb#');
 			}
-			}
+			
+			udfOut.append('
+			) output=#fncMD.output# {#instance.lb# ');
 
 			// Continue Method Generation
 			udfOut.append('
-			<cfset var results = this._mockResults>
-			<cfset var resultsKey = "#arguments.method#">
-			<cfset var resultsCounter = 0>
-			<cfset var internalCounter = 0>
-			<cfset var resultsLen = 0>
-			<cfset var callbackLen = 0>
-			<cfset var argsHashKey = resultsKey & "|" & this.mockBox.normalizeArguments( arguments )>
-			<cfset var fCallBack = "">
+			var results = this._mockResults;
+			var resultsKey = "#arguments.method#";
+			var resultsCounter = 0;
+			var internalCounter = 0;
+			var resultsLen = 0;
+			var callbackLen = 0;
+			var argsHashKey = resultsKey & "|" & this.mockBox.normalizeArguments( arguments );
+			var fCallBack = "";
 
-			<!--- If Method & argument Hash Results, switch the results struct --->
-			<cfif structKeyExists( this._mockArgResults, argsHashKey )>
-				<!--- Check if it is a callback --->
-				<cfif isStruct( this._mockArgResults[ argsHashKey ] ) and
-					  structKeyExists( this._mockArgResults[ argsHashKey ], "type" ) and
-					  structKeyExists( this._mockArgResults[ argsHashKey ], "target" )>
-					<cfset fCallBack = this._mockArgResults[ argsHashKey ].target>
-				<cfelse>
-					<!--- switch context and key --->
-					<cfset results = this._mockArgResults>
-					<cfset resultsKey = argsHashKey>
-				</cfif>
-			</cfif>
+			// If Method & argument Hash Results, switch the results struct
+			if( structKeyExists( this._mockArgResults, argsHashKey ) ) {
+				// Check if it is a callback
+				if( isStruct( this._mockArgResults[ argsHashKey ] ) &&
+					  structKeyExists( this._mockArgResults[ argsHashKey ], "type" ) &&
+					  structKeyExists( this._mockArgResults[ argsHashKey ], "target" ) ) {
+					fCallBack = this._mockArgResults[ argsHashKey ].target;
+				} else {
+					// switch context and key
+					results = this._mockArgResults;
+					resultsKey = argsHashKey;
+				}
+			}
 
-			<!--- Get the statemachine counter --->
-			<cfif isSimpleValue( fCallBack )>
-				<cfset resultsLen = arrayLen( results[ resultsKey ] )>
-			</cfif>
+			// Get the statemachine counter
+			if( isSimpleValue( fCallBack ) ) {
+				resultsLen = arrayLen( results[ resultsKey ] );
+			}
 
-			<!--- Get the callback counter, if it exists --->
-			<cfif structKeyExists( this._mockCallbacks, resultsKey )>
-				<cfset callbackLen = arrayLen( this._mockCallbacks[ resultsKey ] )>
-			</cfif>
+			// Get the callback counter, if it exists
+			if( structKeyExists( this._mockCallbacks, resultsKey ) ) {
+				callbackLen = arrayLen( this._mockCallbacks[ resultsKey ] );
+			}
 
-			<!--- Log the Method Call --->
-			<cfset this._mockMethodCallCounters[ listFirst( resultsKey, "|" ) ] = this._mockMethodCallCounters[ listFirst( resultsKey, "|" ) ] + 1>
+			// Log the Method Call
+			this._mockMethodCallCounters[ listFirst( resultsKey, "|" ) ] = this._mockMethodCallCounters[ listFirst( resultsKey, "|" ) ] + 1;
 
-			<!--- Get the CallCounter Reference --->
-			<cfset internalCounter = this._mockMethodCallCounters[listFirst(resultsKey,"|")]>
+			// Get the CallCounter Reference
+			internalCounter = this._mockMethodCallCounters[listFirst(resultsKey,"|")];
 			');
 
 			// Call Logging argument or Global Flag
 			if( arguments.callLogging OR arguments.targetObject._mockCallLoggingActive  ){
-				udfOut.append('<cfset arrayAppend(this._mockCallLoggers["#arguments.method#"], arguments)>#instance.lb#');
+				udfOut.append('arrayAppend(this._mockCallLoggers["#arguments.method#"], arguments);#instance.lb#');
 			}
 
 			// Exceptions? To Throw
 			if( arguments.throwException ){
-				udfOut.append('<cfthrow type="#arguments.throwType#" message="#arguments.throwMessage#" detail="#arguments.throwDetail#" errorCode="#arguments.throwErrorCode#" />#instance.lb#');
+				udfOut.append('
+				
+				throw( #outputQuotedValue( arguments.throwMessage )#, #outputQuotedValue( arguments.throwType )#, #outputQuotedValue( arguments.throwDetail )#, #outputQuotedValue( arguments.throwErrorCode )# );#instance.lb#');
 			}
 
 			// Returns Something according to metadata?
 			if ( fncMD["returntype"] neq "void" ){
 				/* Results Recyling Code, basically, state machine code */
 				udfOut.append('
-				<cfif resultsLen neq 0>
-					<cfif internalCounter gt resultsLen>
-						<cfset resultsCounter = internalCounter - ( resultsLen*fix( (internalCounter-1)/resultsLen ) )>
-						<cfreturn results[resultsKey][resultsCounter]>
-					<cfelse>
-						<cfreturn results[resultsKey][internalCounter]>
-					</cfif>
-				</cfif>
+				if( resultsLen neq 0 ) {
+					if( internalCounter gt resultsLen ) {
+						resultsCounter = internalCounter - ( resultsLen*fix( (internalCounter-1)/resultsLen ) );
+						return results[resultsKey][resultsCounter];
+					} else {
+						return results[resultsKey][internalCounter];
+					}
+				}
 				');
 				// Callback Single
 				udfOut.append('
-				<cfif callbackLen neq 0>
-					<cfset fCallBack = this._mockCallbacks[ resultsKey ][ 1 ]>
-					<cfreturn fCallBack( argumentCollection = arguments )>
-				</cfif>
+				if( callbackLen neq 0 ) {
+					fCallBack = this._mockCallbacks[ resultsKey ][ 1 ];
+					return fCallBack( argumentCollection = arguments );
+				}
 				');
 				// Callback Args
 				udfOut.append('
-				<cfif not isSimpleValue( fCallBack )>
-					<cfreturn fCallBack( argumentCollection = arguments )>
-				</cfif>
+				if( not isSimpleValue( fCallBack ) ){
+					return fCallBack( argumentCollection = arguments );
+				}
 				');
 			}
-			udfOut.append('</cffunction>');
+			udfOut.append('}#instance.lb#');
+			udfOut.append('</cfsc' & 'ript>');
 
 			// Write it out
-			writeStub(genPath & tmpFile, udfOUt.toString());
+			stubCode = trim( udfOUt.toString() );
+			tmpFile = hash( stubCode ) & ".cfm";
+			
+			// This is neccessary for methods named after CF keywords like "contains"
+			var tmpMethodName = 'tmp' & hash( stubCode );
+			stubCode = replaceNoCase( stubCode, '@@tmpMethodName@@', tmpMethodName, 'all' ); 
+			
+			if( !FileExists( genPath & tmpFile ) ) {
+				writeStub( genPath & tmpFile, stubCode );
+			}
 
 			// Mix In Stub
 			try{
@@ -174,10 +215,15 @@ Description		:
 			}
 			catch(Any e){
 				// Remove Stub
-				removeStub(genPath & tmpFile);
+				removeStub( genPath & tmpFile);
 				rethrow;
 			}
 		</cfscript>
+	</cffunction>
+	
+	<cffunction name="outputQuotedValue" output="false">
+		<cfargument name="value">
+		<cfreturn '"#replaceNoCase( value, '"', '""', 'all' )#"'>		
 	</cffunction>
 
 	<!--- writeStub --->
@@ -185,7 +231,7 @@ Description		:
 		<cfargument name="genPath" 	type="string" required="true"/>
 		<cfargument name="code" 	type="string" required="true"/>
 
-		<cffile action="write" file="#arguments.genPath#" output="#arguments.code#">
+		<cffile action="write" file="#arguments.genPath#" output="#arguments.code#" addnewline="false">
 
 	</cffunction>
 
@@ -208,10 +254,11 @@ Description		:
 		<cfscript>
 			var udfOut 	= createObject("java","java.lang.StringBuilder").init('');
 			var genPath = expandPath( instance.mockBox.getGenerationPath() );
-			var tmpFile = createUUID() & ".cfc";
-			var cfcPath = replace( instance.mockBox.getGenerationPath(), "/", ".", "all" ) & listFirst( tmpFile, "." );
+			var tmpFile = "";
+			var cfcPath = "";
 			var oStub	= "";
 			var local 	= {};
+			var stubCode = "";
 
 			// Create CFC Signature
 			udfOut.append('<cfcomponent output="false" hint="A MockBox awesome Component"');
@@ -237,10 +284,15 @@ Description		:
 			udfOut.append('</cfcomponent>');
 
 			// Write it out
-			writeStub( genPath & tmpFile, udfOUt.toString() );
+			stubCode = udfOUt.toString();
+			tmpFile = hash(stubCode) & ".cfc";
+			if( !FileExists(genPath & tmpFile) ) {
+				writeStub(genPath & tmpFile, stubCode);
+			}
 
 			try{
 				// create stub + clean first . if found.
+				cfcPath = replace( instance.mockBox.getGenerationPath(), "/", ".", "all" ) & listFirst( tmpFile, "." );
 				cfcPath = reReplace( cfcPath, "^\.", "" );
 				oStub = createObject( "component", cfcPath );
 				// Remove Stub

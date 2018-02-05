@@ -73,8 +73,8 @@ component accessors="true"{
 	*/
 	any function addDirectory( required any directory, boolean recurse=true ) {
 		// inflate directory?
-		if( isSimpleValue( arguments.directory ) ) { 
-			arguments.directory = { mapping=arguments.directory, recurse=arguments.recurse }; 
+		if( isSimpleValue( arguments.directory ) ) {
+			arguments.directory = { mapping=arguments.directory, recurse=arguments.recurse };
 		}
 		// directory passed?
 		if( !structIsEmpty( arguments.directory ) ){
@@ -90,8 +90,8 @@ component accessors="true"{
 	* @directories A set of directories to test which can be a list of simple mapping paths or an array of structs with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	*/
 	any function addDirectories( required any directories, boolean recurse=true ){
-		if( isSimpleValue( arguments.directories ) ){ 
-			arguments.directories = listToArray( arguments.directories ); 
+		if( isSimpleValue( arguments.directories ) ){
+			arguments.directories = listToArray( arguments.directories );
 		}
 		for( var dir in arguments.directories ) {
 			addDirectory( dir, arguments.recurse );
@@ -104,8 +104,8 @@ component accessors="true"{
 	* @directory A directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	*/
 	any function addBundles(required any bundles) {
-		if( isSimpleValue( arguments.bundles ) ){ 
-			arguments.bundles = listToArray( arguments.bundles ); 
+		if( isSimpleValue( arguments.bundles ) ){
+			arguments.bundles = listToArray( arguments.bundles );
 		}
 		for( var bundle in arguments.bundles ){
 			arrayAppend( variables.bundles, bundle );
@@ -114,18 +114,20 @@ component accessors="true"{
 	}
 
 	/**
-	* Run me some testing goodness, this can use the constructed object variables or the ones
-	* you can send right here.
-	* @bundles The path, list of paths or array of paths of the spec bundle CFCs to run and test
-	* @directory The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
-	* @reporter The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a testbox.system.reports.IReporter. You can also pass a struct if the reporter requires options: {type="", options={}}
-	* @labels The list or array of labels that a suite or spec must have in order to execute.
-	* @options A structure of configuration options that are optionally used to configure a runner.
-	* @testBundles A list or array of bundle names that are the ones that will be executed ONLY!
-	* @testSuites A list or array of suite names that are the ones that will be executed ONLY!
-	* @testSpecs A list or array of test names that are the ones that will be executed ONLY!
-	* @callbacks A struct of listener callbacks or a CFC with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
-	*/
+	 * Run me some testing goodness, this can use the constructed object variables or the ones
+	 * you can send right here.
+	 *
+	 * @bundles The path, list of paths or array of paths of the spec bundle CFCs to run and test
+	 * @directory The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	 * @reporter The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a testbox.system.reports.IReporter. You can also pass a struct if the reporter requires options: {type="", options={}}
+	 * @labels The list or array of labels that a suite or spec must have in order to execute.
+	 * @options A structure of configuration options that are optionally used to configure a runner.
+	 * @testBundles A list or array of bundle names that are the ones that will be executed ONLY!
+	 * @testSuites A list or array of suite names that are the ones that will be executed ONLY!
+	 * @testSpecs A list or array of test names that are the ones that will be executed ONLY!
+	 * @callbacks A struct of listener callbacks or a CFC with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
+	 * @eagerFailure If this boolean is set to true, then execution of more bundle tests will stop once the first failure/error is detected. By default this is false.
+	 */
 	any function run(
 		any bundles,
 		any directory,
@@ -135,7 +137,8 @@ component accessors="true"{
 		any testBundles=[],
 		any testSuites=[],
 		any testSpecs=[],
-		any callbacks={}
+		any callbacks={},
+		boolean eagerFailure=false
 	){
 
 		// reporter passed?
@@ -149,16 +152,18 @@ component accessors="true"{
 	}
 
 	/**
-	* Run me some testing goodness but give you back the raw TestResults object instead of a report
-	* @bundles The path, list of paths or array of paths of the spec bundle CFCs to run and test
-	* @directory The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
-	* @labels The list or array of labels that a suite or spec must have in order to execute.
-	* @options A structure of configuration options that are optionally used to configure a runner.
-	* @testBundles A list or array of bundle names that are the ones that will be executed ONLY!
-	* @testSuites A list or array of suite names that are the ones that will be executed ONLY!
-	* @testSpecs A list or array of test names that are the ones that will be executed ONLY!
-	* @callbacks A struct of listener callbacks or a CFC with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
-	*/
+	 * Run me some testing goodness but give you back the raw TestResults object instead of a report
+	 *
+	 * @bundles The path, list of paths or array of paths of the spec bundle CFCs to run and test
+	 * @directory The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	 * @labels The list or array of labels that a suite or spec must have in order to execute.
+	 * @options A structure of configuration options that are optionally used to configure a runner.
+	 * @testBundles A list or array of bundle names that are the ones that will be executed ONLY!
+	 * @testSuites A list or array of suite names that are the ones that will be executed ONLY!
+	 * @testSpecs A list or array of test names that are the ones that will be executed ONLY!
+	 * @callbacks A struct of listener callbacks or a CFC with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
+	 * @eagerFailure If this boolean is set to true, then execution of more bundle tests will stop once the first failure/error is detected. By default this is false.
+	 */
 	testbox.system.TestResult function runRaw(
 		any bundles,
 		any directory,
@@ -167,7 +172,8 @@ component accessors="true"{
 		any testBundles=[],
 		any testSuites=[],
 		any testSpecs=[],
-		any callbacks={}
+		any callbacks={},
+		boolean eagerFailure=false
 	){
 
 		// inflate options if passed
@@ -204,16 +210,43 @@ component accessors="true"{
 		if( !isNull( arguments.bundles ) ){ inflateBundles( arguments.bundles ); }
 
 		// create results object
-		var results = new testbox.system.TestResult( bundleCount=arrayLen( variables.bundles ),
-															 labels=variables.labels,
-															 testBundles=arguments.testBundles,
-															 testSuites=arguments.testSuites,
-															 testSpecs=arguments.testSpecs );
+		var results = new testbox.system.TestResult(
+			bundleCount = arrayLen( variables.bundles ),
+			labels      = variables.labels,
+			testBundles = arguments.testBundles,
+			testSuites  = arguments.testSuites,
+			testSpecs   = arguments.testSpecs
+		);
 
 		// iterate and run the test bundles
 		for( var thisBundlePath in variables.bundles ){
+			// Skip interfaces, they are not testable
+			if( getComponentMetadata( thisBundlePath ).type eq "interface" ){
+				continue;
+			}
 			// Execute Bundle
-			testBundle( bundlePath=thisBundlePath, testResults=results, callbacks=arguments.callbacks );
+			testBundle(
+				bundlePath  = thisBundlePath,
+				testResults = results,
+				callbacks   = arguments.callbacks
+			);
+
+			// Eager Failures on Bundle?
+			if( arguments.eagerFailure ){
+				var failuresDetected = results.getBundleStats()
+					// Get stats for running bundle
+					.filter( function( item ){
+						return ( item.path == thisBundlePath ? true : false );
+					} )
+					.reduce( function( result, item ){
+						return ( item.totalError + item.totalFail ) > 0;
+					}, false );
+
+				if( failuresDetected ){
+					// Hard skip iterations
+					break;
+				}
+			}
 		}
 
 		// mark end of testing bundles
@@ -225,17 +258,19 @@ component accessors="true"{
 	}
 
 	/**
-	* Run me some testing goodness, remotely via SOAP, Flex, REST, URL
-	* @bundles The path or list of paths of the spec bundle CFCs to run and test
-	* @directory The directory mapping to test: directory = the path to the directory using dot notation (myapp.testing.specs)
-	* @recurse Recurse the directory mapping or not, by default it does
-	* @reporter The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or a class path to the reporter to use.
-	* @reporterOptions A JSON struct literal of options to pass into the reporter
-	* @labels The list of labels that a suite or spec must have in order to execute.
-	* @options A JSON struct literal of configuration options that are optionally used to configure a runner.
-	* @testBundles A list or array of bundle names that are the ones that will be executed ONLY!
-	* @testSuites A list of suite names that are the ones that will be executed ONLY!
-	* @testSpecs A list of test names that are the ones that will be executed ONLY!
+	 * Run me some testing goodness, remotely via SOAP, Flex, REST, URL
+	 *
+	 * @bundles The path or list of paths of the spec bundle CFCs to run and test
+	 * @directory The directory mapping to test: directory = the path to the directory using dot notation (myapp.testing.specs)
+	 * @recurse Recurse the directory mapping or not, by default it does
+	 * @reporter The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or a class path to the reporter to use.
+	 * @reporterOptions A JSON struct literal of options to pass into the reporter
+	 * @labels The list of labels that a suite or spec must have in order to execute.
+	 * @options A JSON struct literal of configuration options that are optionally used to configure a runner.
+	 * @testBundles A list or array of bundle names that are the ones that will be executed ONLY!
+	 * @testSuites A list of suite names that are the ones that will be executed ONLY!
+	 * @testSpecs A list of test names that are the ones that will be executed ONLY!
+	 * @eagerFailure If this boolean is set to true, then execution of more bundle tests will stop once the first failure/error is detected. By default this is false.
 	*/
 	remote function runRemote(
 		string bundles,
@@ -247,7 +282,8 @@ component accessors="true"{
 		string options,
 		string testBundles="",
 		string testSuites="",
-		string testSpecs=""
+		string testSpecs="",
+		boolean eagerFailure=false
 	) output=true {
 		// local init
 		init();
@@ -380,14 +416,15 @@ component accessors="true"{
 		}
 	}
 
-	/***************************************** PRIVATE ************************************************************ //
+	/***************************************** PRIVATE ************************************************************/
 
 	/**
-	* This method executes the tests in a bundle CFC according to type
-	* @bundlePath The path of the Bundle CFC to test.
-	* @testResults The testing results object to keep track of results
-	* @callbacks The callbacks struct or CFC
-	*/
+	 * This method executes the tests in a bundle CFC according to type. If the testing was ok a true is returned.
+	 *
+	 * @bundlePath The path of the Bundle CFC to test.
+	 * @testResults The testing results object to keep track of results
+	 * @callbacks The callbacks struct or CFC
+	 */
 	private function testBundle(
 		required bundlePath,
 		required testResults,
@@ -402,16 +439,24 @@ component accessors="true"{
 			arguments.callbacks.onBundleStart( target, testResults );
 		}
 
-		// Discover type?
-		if( structKeyExists( target, "run" ) ){
-			// Run via BDD Style
-			new testbox.system.runners.BDDRunner( options=variables.options, testbox=this )
-				.run( target, arguments.testResults, arguments.callbacks );
-		}
-		else{
-			// Run via xUnit Style
-			new testbox.system.runners.UnitRunner( options=variables.options,testbox=this )
-				.run( target, arguments.testResults, arguments.callbacks );
+		try{
+			// Discover type?
+			if( structKeyExists( target, "run" ) ){
+				// Run via BDD Style
+				new testbox.system.runners.BDDRunner( options=variables.options, testbox=this )
+					.run( target, arguments.testResults, arguments.callbacks );
+			}
+			else{
+				// Run via xUnit Style
+				new testbox.system.runners.UnitRunner( options=variables.options,testbox=this )
+					.run( target, arguments.testResults, arguments.callbacks );
+			}
+		} catch( Any e ){
+			throw(
+				message = "Error executing bundle - #arguments.bundlePath#  message: #e.message# #e.detail#",
+				detail  = e.stackTrace,
+				type 	= "BundleRunnerMajorException"
+			);
 		}
 
 		// Store debug buffer for this bundle

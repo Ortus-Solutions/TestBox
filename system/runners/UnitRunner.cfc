@@ -153,7 +153,6 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 
 		// Verify we can execute the incoming suite via skipping or labels
 		if( !arguments.suite.skip &&
-			canRunLabel( arguments.suite.labels, arguments.testResults ) &&
 			canRunSuite( arguments.suite, arguments.testResults )
 		){
 

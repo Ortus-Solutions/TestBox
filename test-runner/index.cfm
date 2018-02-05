@@ -1,11 +1,11 @@
 <cfparam name="url.target" 		default="">
 <cfparam name="url.reporter" 	default="simple">
-<cfparam name="url.opt_recurse" default="true">
+<cfparam name="url.opt_recurse" default="false">
 <cfparam name="url.labels"		default="">
 <cfparam name="url.opt_run"		default="false">
 <cfscript>
 // create testbox
-testBox = new testbox.system.TestBox();		
+testBox = new testbox.system.TestBox();
 // create reporters
 reporters = [ "ANTJunit", "Console", "Codexwiki", "Doc", "Dot", "JSON", "JUnit", "Min", "Raw", "Simple", "Tap", "Text", "XML" ];
 
@@ -47,7 +47,7 @@ if( url.opt_run ){
 	<script><cfinclude template="/testbox/system/reports/assets/js/jquery.js"></script>
 	<script>
 	$(document).ready(function() {
-		
+
 	});
 	function runTests(){
 		$("#tb-results").html( "" );

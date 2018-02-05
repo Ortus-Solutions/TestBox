@@ -13,8 +13,8 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 
 	/**
 	* Constructor
-	* @options.hint The options for this runner
-	* @testbox.hint The TestBox class reference
+	* @options The options for this runner
+	* @testbox The TestBox class reference
 	*/
 	function init( required struct options, required testBox ){
 
@@ -25,11 +25,11 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 	}
 
 	/**
-	* Execute a BDD test on the incoming target and store the results in the incoming test results
-	* @target.hint The target bundle CFC to test
-	* @testResults.hint The test results object to keep track of results for this test case
-	* @callbacks A struct of listener callbacks or a CFC with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
-	*/
+	 * Execute a BDD test on the incoming target and store the results in the incoming test results
+	 * @target The target bundle CFC to test
+	 * @testResults The test results object to keep track of results for this test case
+	 * @callbacks A struct of listener callbacks or a CFC with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
+	 */
 	any function run(
 		required any target,
 		required testbox.system.TestResult testResults,
@@ -111,7 +111,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					Evaluate( "arguments.target.#afterAllMethod.name#()" );
 				}
 
-			} catch(Any e) {
+			} catch( Any e ) {
 				bundleStats.globalException = e;
 				// For a righteous man falls seven times, and rises (tests) again :)
 				// The amount doesn't matter, nothing can run at this point, failure with before/after aspects that need fixing
@@ -131,11 +131,11 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 
 	/**
 	* Test the incoming suite definition
-	* @target.hint The target bundle CFC
-	* @method.hint The method definition to test
-	* @testResults.hint The testing results object
-	* @bundleStats.hint The bundle stats this suite belongs to
-	* @parentStats.hint If this is a nested test suite, then it will have some parentStats goodness
+	* @target The target bundle CFC
+	* @method The method definition to test
+	* @testResults The testing results object
+	* @bundleStats The bundle stats this suite belongs to
+	* @parentStats If this is a nested test suite, then it will have some parentStats goodness
 	* @callbacks The CFC or struct of callback listener methods
 	*/
 	private function testSuite(
@@ -167,7 +167,6 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 
 		// Verify we can execute the incoming suite via skipping or labels
 		if( !arguments.suite.skip &&
-			canRunLabel( consolidatedLabels, arguments.testResults ) &&
 			canRunSuite( arguments.suite, arguments.testResults )
 		){
 
@@ -250,7 +249,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					parentStats=suiteStats,
 					callbacks=arguments.callbacks
 				);
-				
+
 				// Add in nested stats to parent suite
 				// These numbers will aggregate as we unroll the recursive calls
 				suiteStats.totalError = suiteStats.totalError + nestedStats.totalError;
@@ -264,7 +263,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 			if( suiteStats.totalError GT 0 ){ suiteStats.status = "Error"; }
 			else if( suiteStats.totalFail GT 0 ){ suiteStats.status = "Failed"; }
 			else{ suiteStats.status = "Passed"; }
-			
+
 
 			// Suite Skipped Status?
 			if( suiteStats.totalSpecs neq 0 && suiteStats.totalSpecs == suiteStats.totalSkipped ){
@@ -291,7 +290,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 
 		// Finalize the suite stats
 		arguments.testResults.endStats( suiteStats );
-		
+
 		return suiteStats;
 	}
 
@@ -299,8 +298,8 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 
 	/**
 	* Get all the test suites in the passed in bundle
-	* @target.hint The target to get the suites from
-	* @targetMD.hint The metdata of the target
+	* @target The target to get the suites from
+	* @targetMD The metdata of the target
 	*/
 	private array function getTestSuites(
 		required target,
