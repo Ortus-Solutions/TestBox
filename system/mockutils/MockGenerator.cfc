@@ -330,7 +330,7 @@ Description		:
 				// iterate over the values of the function
 				for( local.fncKey in local.oMD[ x ] ){
 					// Do Simple values only
-					if( NOT local.fncKey eq "parameters" ){
+					if( isSimpleValue(local.oMD[ x ][ local.fncKey ]) ){
 						udfOut.append(' #lcase( local.fncKey )#="#local.oMD[ x ][ local.fncKey ]#"');
 					}
 				}
