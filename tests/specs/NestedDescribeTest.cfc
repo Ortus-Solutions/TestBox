@@ -40,7 +40,7 @@ component extends="testbox.system.BaseSpec"{
 
 							sleep( randRange( 500, 2000 ) );
 
-                            debug( "==>Finalized process #data.name#" );
+                            debug( "==> Finalized process #data.name#" );
 
                         });
                     });
