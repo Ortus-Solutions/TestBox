@@ -226,11 +226,10 @@ component accessors="true"{
 
 	/**
 	* Assert that the actual data matches the incoming regular expression with case sensitivity
-	* @actual The actual data to check
 	* @regex The regex to check with
 	* @message The message to send in the failure
 	*/
-	function toMatchWithCase( required string actual, required string regex, message=""){
+	function toMatchWithCase( required string regex, message=""){
 		arguments.actual = this.actual;
 		if( this.isNot ){
 			variables.assert.notMatch( argumentCollection=arguments );
