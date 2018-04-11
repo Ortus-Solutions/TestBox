@@ -28,7 +28,7 @@ component{
 	// Expected Exception holder, only use on synchronous testing.
 	this.$expectedException		= {};
 	// Internal testing ID
-	this.$testID 				= createUUID();
+	this.$testID 				= hash( getTickCount() + randRange( 1, 10000000 ) );
 	// Debug buffer
 	this.$debugBuffer			= [];
 	// Current Executing Spec
