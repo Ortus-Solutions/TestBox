@@ -8,7 +8,7 @@ component{
 
 	/**
 	* Fail assertion
-	* @message.hint The message to send in the failure
+	* @message The message to send in the failure
 	*/
 	function fail( message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "A test failure occurred" );
@@ -17,8 +17,8 @@ component{
 
 	/**
 	* Assert that the passed expression is true
-	* @expression.hint The expression to test
-	* @message.hint The message to send in the failure
+	* @expression The expression to test
+	* @message The message to send in the failure
 	*/
 	function assert( required boolean expression, message="" ){
 		return isTrue( arguments.expression, arguments.message );
@@ -26,8 +26,8 @@ component{
 
 	/**
 	* Assert something is true
-	* @actual.hint The actual data to test
-	* @message.hint The message to send in the failure
+	* @actual The actual data to test
+	* @message The message to send in the failure
 	*/
 	function isTrue( required boolean actual, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be true" );
@@ -39,8 +39,8 @@ component{
 
 	/**
 	* Assert something is false
-	* @actual.hint The actual data to test
-	* @message.hint The message to send in the failure
+	* @actual The actual data to test
+	* @message The message to send in the failure
 	*/
 	function isFalse( required boolean actual, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be false" );
@@ -52,9 +52,9 @@ component{
 
 	/**
 	* Assert something is equal to each other, no case is required
-	* @expected.hint The expected data
-	* @actual.hint The actual data to test
-	* @message.hint The message to send in the failure
+	* @expected The expected data
+	* @actual The actual data to test
+	* @message The message to send in the failure
 	*/
 	function isEqual( any expected, any actual, message="" ){
 		// validate equality
@@ -68,9 +68,9 @@ component{
 
 	/**
 	* Assert something is not equal to each other, no case is required
-	* @expected.hint The expected data
-	* @actual.hint The actual data to test
-	* @message.hint The message to send in the failure
+	* @expected The expected data
+	* @actual The actual data to test
+	* @message The message to send in the failure
 	*/
 	function isNotEqual( any expected, any actual, message="" ){
 		arguments.message = ( len( arguments.message ) ?
@@ -84,9 +84,9 @@ component{
 
 	/**
 	* Assert an object is the same instance as another object
-	* @expected.hint The expected data
-	* @actual.hint The actual data to test
-	* @message.hint The message to send in the failure
+	* @expected The expected data
+	* @actual The actual data to test
+	* @message The message to send in the failure
 	*/
 	function isSameInstance( required any expected, required any actual, message="" ){
 		var expectedIdentityHashCode = getIdentityHashCode( arguments.expected );
@@ -101,9 +101,9 @@ component{
 
 	/**
 	* Assert an object is not the same instance as another object
-	* @expected.hint The expected data
-	* @actual.hint The actual data to test
-	* @message.hint The message to send in the failure
+	* @expected The expected data
+	* @actual The actual data to test
+	* @message The message to send in the failure
 	*/
 	function isNotSameInstance( required any expected, required any actual, message="" ){
 		var expectedIdentityHashCode = getIdentityHashCode( arguments.expected );
@@ -118,9 +118,9 @@ component{
 
 	/**
 	* Assert strings are equal to each other with case.
-	* @expected.hint The expected data
-	* @actual.hint The actual data to test
-	* @message.hint The message to send in the failure
+	* @expected The expected data
+	* @actual The actual data to test
+	* @message The message to send in the failure
 	*/
 	function isEqualWithCase( string expected, string actual, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]" );
@@ -135,8 +135,8 @@ component{
 
 	/**
 	* Assert something is null
-	* @actual.hint The actual data to test
-	* @message.hint The message to send in the failure
+	* @actual The actual data to test
+	* @message The message to send in the failure
 	*/
 	function null( any actual, message="" ){
 		// equalize with case
@@ -150,8 +150,8 @@ component{
 
 	/**
 	* Assert something is not null
-	* @actual.hint The actual data to test
-	* @message.hint The message to send in the failure
+	* @actual The actual data to test
+	* @message The message to send in the failure
 	*/
 	function notNull( any actual, message="" ){
 		// equalize with case
@@ -163,9 +163,9 @@ component{
 
 	/**
 	* Assert the type of the incoming actual data, it uses the internal ColdFusion isValid() function behind the scenes
-	* @type.hint The type to check, valid types are: array, binary, boolean, component, date, time, float, numeric, integer, query, string, struct, url, uuid
-	* @actual.hint The actual data to check
-	* @message.hint The message to send in the failure
+	* @type The type to check, valid types are: array, binary, boolean, component, date, time, float, numeric, integer, query, string, struct, url, uuid
+	* @actual The actual data to check
+	* @message The message to send in the failure
 	*/
 	function typeOf( required string type, required any actual, message=""){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "Actual data [#getStringName( arguments.actual )#] is not of this type: [#arguments.type#]" );
@@ -175,9 +175,9 @@ component{
 
 	/**
 	* Assert that is NOT a type of the incoming actual data, it uses the internal ColdFusion isValid() function behind the scenes
-	* @type.hint The type to check, valid types are: array, binary, boolean, component, date, time, float, numeric, integer, query, string, struct, url, uuid
-	* @actual.hint The actual data to check
-	* @message.hint The message to send in the failure
+	* @type The type to check, valid types are: array, binary, boolean, component, date, time, float, numeric, integer, query, string, struct, url, uuid
+	* @actual The actual data to check
+	* @message The message to send in the failure
 	*/
 	function notTypeOf( required string type, required any actual, message=""){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "Actual data [#getStringName( arguments.actual )#] is actually of this type: [#arguments.type#]" );
@@ -187,9 +187,9 @@ component{
 
 	/**
 	* Assert that the actual object is of the expected instance type
-	* @actual.hint The actual data to check
-	* @typeName.hint The typename to check
-	* @message.hint The message to send in the failure
+	* @actual The actual data to check
+	* @typeName The typename to check
+	* @message The message to send in the failure
 	*/
 	function instanceOf( required any actual, required string typeName, message=""){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual data is not of type [#arguments.typeName#]" );
@@ -199,9 +199,9 @@ component{
 
 	/**
 	* Assert that the actual object is NOT of the expected instance type
-	* @actual.hint The actual data to check
-	* @typeName.hint The typename to check
-	* @message.hint The message to send in the failure
+	* @actual The actual data to check
+	* @typeName The typename to check
+	* @message The message to send in the failure
 	*/
 	function notInstanceOf( required any actual, required string typeName, message=""){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual data is actually of type [#arguments.typeName#]" );
@@ -211,9 +211,9 @@ component{
 
 	/**
 	* Assert that the actual data matches the incoming regular expression with no case sensitivity
-	* @actual.hint The actual data to check
-	* @regex.hint The regex to check with
-	* @message.hint The message to send in the failure
+	* @actual The actual data to check
+	* @regex The regex to check with
+	* @message The message to send in the failure
 	*/
 	function match( required string actual, required string regex, message=""){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual.toString()#] does not match [#arguments.regex#]" );
@@ -223,9 +223,9 @@ component{
 
 	/**
 	* Assert that the actual data matches the incoming regular expression with case sensitivity
-	* @actual.hint The actual data to check
-	* @regex.hint The regex to check with
-	* @message.hint The message to send in the failure
+	* @actual The actual data to check
+	* @regex The regex to check with
+	* @message The message to send in the failure
 	*/
 	function matchWithCase( required string actual, required string regex, message=""){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual.toString()#] does not match [#arguments.regex#]" );
@@ -235,9 +235,9 @@ component{
 
 	/**
 	* Assert that the actual data does NOT match the incoming regular expression with no case sensitivity
-	* @actual.hint The actual data to check
-	* @regex.hint The regex to check with
-	* @message.hint The message to send in the failure
+	* @actual The actual data to check
+	* @regex The regex to check with
+	* @message The message to send in the failure
 	*/
 	function notMatch( required string actual, required string regex, message=""){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual.toString()#] actually matches [#arguments.regex#]" );
@@ -247,9 +247,9 @@ component{
 
 	/**
 	* Assert that a given key exists in the passed in struct/object
-	* @target.hint The target object/struct
-	* @key.hint The key to check for existence
-	* @message.hint The message to send in the failure
+	* @target The target object/struct
+	* @key The key to check for existence
+	* @message The message to send in the failure
 	*/
 	function key( required any target, required string key, message=""){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The key [#arguments.key#] does not exist in the target object. Found keys are [#structKeyArray( arguments.target ).toString()#]" );
@@ -259,9 +259,9 @@ component{
 
 	/**
 	* Assert that a given key DOES NOT exist in the passed in struct/object
-	* @target.hint The target object/struct
-	* @key.hint The key to check for existence
-	* @message.hint The message to send in the failure
+	* @target The target object/struct
+	* @key The key to check for existence
+	* @message The message to send in the failure
 	*/
 	function notKey( required any target, required string key, message=""){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The key [#arguments.key#] exists in the target object. Found keys are [#structKeyArray( arguments.target ).toString()#]" );
@@ -271,9 +271,9 @@ component{
 
 	/**
 	* Assert that a given key exists in the passed in struct by searching the entire nested structure
-	* @target.hint The target object/struct
-	* @key.hint The key to check for existence anywhere in the nested structure
-	* @message.hint The message to send in the failure
+	* @target The target object/struct
+	* @key The key to check for existence anywhere in the nested structure
+	* @message The message to send in the failure
 	*/
 	function deepKey( required struct target, required string key, message=""){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The key [#arguments.key#] does not exist anywhere in the target object." );
@@ -283,9 +283,9 @@ component{
 
 	/**
 	* Assert that a given key DOES NOT exists in the passed in struct by searching the entire nested structure
-	* @target.hint The target object/struct
-	* @key.hint The key to check for existence anywhere in the nested structure
-	* @message.hint The message to send in the failure
+	* @target The target object/struct
+	* @key The key to check for existence anywhere in the nested structure
+	* @message The message to send in the failure
 	*/
 	function notDeepKey( required struct target, required string key, message=""){
 		var results = structFindKey( arguments.target, arguments.key );
@@ -298,9 +298,9 @@ component{
 
 	/**
 	* Assert the size of a given string, array, structure or query
-	* @target.hint The target object to check the length for, this can be a string, array, structure or query
-	* @length.hint The length to check
-	* @message.hint The message to send in the failure
+	* @target The target object to check the length for, this can be a string, array, structure or query
+	* @length The length to check
+	* @message The message to send in the failure
 	*/
 	function lengthOf( required any target, required string length, message=""){
 		var aLength = getTargetLength( arguments.target );
@@ -314,9 +314,9 @@ component{
 
 	/**
 	* Assert the size of a given string, array, structure or query
-	* @target.hint The target object to check the length for, this can be a string, array, structure or query
-	* @length.hint The length to check
-	* @message.hint The message to send in the failure
+	* @target The target object to check the length for, this can be a string, array, structure or query
+	* @length The length to check
+	* @message The message to send in the failure
 	*/
 	function notLengthOf( required any target, required string length, message=""){
 		var aLength = getTargetLength( arguments.target );
@@ -330,8 +330,8 @@ component{
 
 	/**
 	* Assert that a a given string, array, structure or query is empty
-	* @target.hint The target object to check the length for, this can be a string, array, structure or query
-	* @message.hint The message to send in the failure
+	* @target The target object to check the length for, this can be a string, array, structure or query
+	* @message The message to send in the failure
 	*/
 	function isEmpty( required any target, message=""){
 		var aLength = getTargetLength( arguments.target );
@@ -345,8 +345,8 @@ component{
 
 	/**
 	* Assert that a a given string, array, structure or query is not empty
-	* @target.hint The target object to check the length for, this can be a string, array, structure or query
-	* @message.hint The message to send in the failure
+	* @target The target object to check the length for, this can be a string, array, structure or query
+	* @message The message to send in the failure
 	*/
 	function isNotEmpty( required any target, message=""){
 		var aLength = getTargetLength( arguments.target );
@@ -360,10 +360,10 @@ component{
 
 	/**
 	* Assert that the passed in function will throw an exception
-	* @target.hint The target function to execute and check for exceptions
-	* @type.hint Match this type with the exception thrown
-	* @regex.hint Match this regex against the message + detail of the exception
-	* @message.hint The message to send in the failure
+	* @target The target function to execute and check for exceptions
+	* @type Match this type with the exception thrown
+	* @regex Match this regex against the message + detail of the exception
+	* @message The message to send in the failure
 	*/
 	function throws( required any target, type="", regex=".*", message="" ){
 
@@ -396,10 +396,10 @@ component{
 
 	/**
 	* Assert that the passed in function will NOT throw an exception, an exception of a specified type or exception message regex
-	* @target.hint The target function to execute and check for exceptions
-	* @type.hint Match this type with the exception thrown
-	* @regex.hint Match this regex against the message+detail of the exception
-	* @message.hint The message to send in the failure
+	* @target The target function to execute and check for exceptions
+	* @type Match this type with the exception thrown
+	* @regex Match this regex against the message+detail of the exception
+	* @message The message to send in the failure
 	*/
 	function notThrows( required any target, type="", regex="", message="" ){
 		try{
@@ -428,11 +428,11 @@ component{
 
 	/**
 	* Assert that the passed in actual number or date is expected to be close to it within +/- a passed delta and optional datepart
-	* @expected.hint The expected number or date
-	* @actual.hint The actual number or date
-	* @delta.hint The +/- delta to range it
-	* @datepart.hint If passed in values are dates, then you can use the datepart to evaluate it
-	* @message.hint The message to send in the failure
+	* @expected The expected number or date
+	* @actual The actual number or date
+	* @delta The +/- delta to range it
+	* @datepart If passed in values are dates, then you can use the datepart to evaluate it
+	* @message The message to send in the failure
 	*/
 	function closeTo( required any expected, required any actual, required any delta, datePart="", message=""){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not in range of [#arguments.expected#] by +/- [#arguments.delta#]" );
@@ -454,10 +454,10 @@ component{
 
 	/**
 	* Assert that the passed in actual number or date is between the passed in min and max values
-	* @actual.hint The actual number or date to evaluate
-	* @min.hint The expected min number or date
-	* @max.hint The expected max number or date
-	* @message.hint The message to send in the failure
+	* @actual The actual number or date to evaluate
+	* @min The expected min number or date
+	* @max The expected max number or date
+	* @message The message to send in the failure
 	*/
 	function between( required any actual, required any min, required any max, message=""){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not between [#arguments.min#] and [#arguments.max#]" );
@@ -487,9 +487,9 @@ component{
 
 	/**
 	* Assert that the given "needle" argument exists in the incoming string or array with no case-sensitivity
-	* @target.hint The target object to check if the incoming needle exists in. This can be a string or array
-	* @needle.hint The substring to find in a string or the value to find in an array
-	* @message.hint The message to send in the failure
+	* @target The target object to check if the incoming needle exists in. This can be a string or array
+	* @needle The substring to find in a string or the value to find in an array
+	* @message The message to send in the failure
 	*/
 	function includes( required any target, required any needle, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was not found in [#arguments.target.toString()#]" );
@@ -508,9 +508,9 @@ component{
 
 	/**
 	* Assert that the given "needle" argument exists in the incoming string or array with case-sensitivity
-	* @target.hint The target object to check if the incoming needle exists in. This can be a string or array
-	* @needle.hint The substring to find in a string or the value to find in an array
-	* @message.hint The message to send in the failure
+	* @target The target object to check if the incoming needle exists in. This can be a string or array
+	* @needle The substring to find in a string or the value to find in an array
+	* @message The message to send in the failure
 	*/
 	function includesWithCase( required any target, required any needle, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was not found in [#arguments.target.toString()#]" );
@@ -529,9 +529,9 @@ component{
 
 	/**
 	* Assert that the given "needle" argument does not exist in the incoming string or array with case-sensitivity
-	* @target.hint The target object to check if the incoming needle exists in. This can be a string or array
-	* @needle.hint The substring to find in a string or the value to find in an array
-	* @message.hint The message to send in the failure
+	* @target The target object to check if the incoming needle exists in. This can be a string or array
+	* @needle The substring to find in a string or the value to find in an array
+	* @message The message to send in the failure
 	*/
 	function notIncludesWithCase( required any target, required any needle, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was found in [#arguments.target.toString()#]" );
@@ -550,9 +550,9 @@ component{
 
 	/**
 	* Assert that the given "needle" argument exists in the incoming string or array with no case-sensitivity
-	* @target.hint The target object to check if the incoming needle exists in. This can be a string or array
-	* @needle.hint The substring to find in a string or the value to find in an array
-	* @message.hint The message to send in the failure
+	* @target The target object to check if the incoming needle exists in. This can be a string or array
+	* @needle The substring to find in a string or the value to find in an array
+	* @message The message to send in the failure
 	*/
 	function notIncludes( required any target, required any needle, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was found in [#arguments.target.toString()#]" );
@@ -571,9 +571,9 @@ component{
 
 	/**
 	* Assert that the actual value is greater than the target value
-	* @actual.hint The actual value
-	* @target.hint The target value
-	* @message.hint The message to send in the failure
+	* @actual The actual value
+	* @target The target value
+	* @message The message to send in the failure
 	*/
 	function isGT( required any actual, required any target, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not greater than [#arguments.target#]" );
@@ -587,9 +587,9 @@ component{
 
 	/**
 	* Assert that the actual value is greater than or equal the target value
-	* @actual.hint The actual value
-	* @target.hint The target value
-	* @message.hint The message to send in the failure
+	* @actual The actual value
+	* @target The target value
+	* @message The message to send in the failure
 	*/
 	function isGTE( required any actual, required any target, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not greater than or equal to [#arguments.target#]" );
@@ -603,9 +603,9 @@ component{
 
 	/**
 	* Assert that the actual value is less than the target value
-	* @actual.hint The actual value
-	* @target.hint The target value
-	* @message.hint The message to send in the failure
+	* @actual The actual value
+	* @target The target value
+	* @message The message to send in the failure
 	*/
 	function isLT( required any actual, required any target, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not less than [#arguments.target#]" );
@@ -619,9 +619,9 @@ component{
 
 	/**
 	* Assert that the actual value is less than or equal the target value
-	* @actual.hint The actual value
-	* @target.hint The target value
-	* @message.hint The message to send in the failure
+	* @actual The actual value
+	* @target The target value
+	* @message The message to send in the failure
 	*/
 	function isLTE( required any actual, required any target, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not less than or equal to [#arguments.target#]" );
@@ -652,8 +652,8 @@ component{
 
 	/**
 	* Assert something is JSON
-	* @actual.hint The actual data to test
-	* @message.hint The message to send in the failure
+	* @actual The actual data to test
+	* @message The message to send in the failure
 	*/
 	function isJSON( required any actual, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be json" );

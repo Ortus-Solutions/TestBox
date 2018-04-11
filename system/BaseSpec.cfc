@@ -559,8 +559,7 @@ component{
     * @actual The actual value, it should be an array or a struct.
     */
     CollectionExpectation function expectAll( required any actual ){
-        var cExpectation = new CollectionExpectation( spec=this, assertions=this.$assert, collection=arguments.actual );
-        return cExpectation;
+        return new CollectionExpectation( spec=this, assertions=this.$assert, collection=arguments.actual );
     }
 
 	/**
@@ -980,7 +979,7 @@ component{
 
 				// Execute Spec
 				try{
-					evaluate( "this.#arguments.spec.name#()" );
+					invoke( this, arguments.spec.name );
 
 					// Where we expecting an exception and it did not throw?
 					if( hasExpectedException( arguments.spec.name, arguments.runner ) ){

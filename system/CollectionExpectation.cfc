@@ -14,21 +14,31 @@ component accessors="true"{
     // The assertions reference
     property name="assert";
 
+	/**
+	 * Constructor
+	 *
+	 * @spec The target spec
+	 * @assertions The assertions library
+	 * @collection The collection target
+	 */
     function init( required spec, required any assertions, required collection ){
         variables.actual = arguments.collection;
         variables.spec   = arguments.spec;
-        variables.assert = arguments.assertions;
+		variables.assert = arguments.assertions;
+
+		return this;
     }
 
     function onMissingMethod( string missingMethodName, any missingMethodArguments ){
         if( isArray( variables.actual ) ){
             for( var e in variables.actual ){
-                evaluate( "variables.spec.expect( e ).#missingMethodName#( argumentCollection=missingMethodArguments )" );
+				// Using evaluate since invoke looses track of positiona argument collections
+				evaluate( "variables.spec.expect( e ).#arguments.missingMethodName#( argumentCollection=arguments.missingMethodArguments )" );
             }
         } else if( isStruct( variables.actual ) ){
             for( var k in variables.actual ){
                 var e = variables.actual[ k ];
-                evaluate( "variables.spec.expect( e ).#missingMethodName#( argumentCollection=missingMethodArguments )" );
+				evaluate( "variables.spec.expect( e ).#arguments.missingMethodName#( argumentCollection=arguments.missingMethodArguments )" );
             }
         } else {
             variables.assert.fail( "expectAll() actual is neither array nor struct" );

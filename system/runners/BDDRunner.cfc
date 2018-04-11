@@ -65,13 +65,11 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 				);
 
 				for ( var beforeAllMethod in beforeAllAnnotationMethods ){
-					// We use evalute here for two reasons:
-					// 1. We want the scopes to be the target class, not this one.
-					// 2. We want this code to be cross-platform ( hence no cfinvoke() )
-					Evaluate( "arguments.target.#beforeAllMethod.name#()" );
+					invoke( arguments.target, "#beforeAllMethod.name#" );
 				}
 
 				// Iterate over found test suites and test them, if nested suites, then this will recurse as well.
+				//writeDump( var=testSuites );abort;
 				for( var thisSuite in testSuites ){
 					// verify call backs
 					if( structKeyExists( arguments.callbacks, "onSuiteStart" ) ){
@@ -105,10 +103,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 				);
 
 				for ( var afterAllMethod in afterAllAnnotationMethods ){
-					// We use evalute here for two reasons:
-					// 1. We want the scopes to be the target class, not this one.
-					// 2. We want this code to be cross-platform ( hence no cfinvoke() )
-					Evaluate( "arguments.target.#afterAllMethod.name#()" );
+					invoke( arguments.target, "#afterAllMethod.name#" );
 				}
 
 			} catch( Any e ) {

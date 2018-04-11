@@ -133,8 +133,8 @@ component extends="testbox.system.BaseSpec"{
 			});
 
             it( "can test a collection", function(){
-                expectAll( [ 2, 4, 6, 8] ).toSatisfy( function(x){ return 0 == x%2; });
-                expectAll( { a:2, b:4, c:6} ).toSatisfy( function(x){ return 0 == x%2; });
+                expectAll( [ 2, 4, 6, 8] ).toSatisfy( function(x){ return 0 == x%2; } );
+                expectAll( { a:2, b:4, c:6} ).toSatisfy( function(x){ return 0 == x%2; } );
                 // and we can chain matchers
                 expectAll( [ 2, 4, 6, 8 ] )
                     .toBeGTE( 2 )
