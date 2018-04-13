@@ -123,23 +123,23 @@ component{
 	) {
 		var lifecycleMethods = [];
 
-		if( StructKeyExists( arguments.metadata, "functions" ) ){
-			var funcs = arguments.metadata.functions;
-			for ( var func in funcs ){
-				if ( StructKeyExists( func, annotation ) ){
-					ArrayAppend( lifecycleMethods, func );
+		if( structKeyExists( arguments.metadata, "functions" ) ){
+
+			for( var thisFunction in arguments.metadata.functions ){
+				if( structKeyExists( thisFunction, annotation ) ){
+					lifecycleMethods.append( thisFunction );
 				}
 			}
+
 		}
 
-		if( StructKeyExists( arguments.metadata, "extends" ) ){
-			// recursively call up the inheritance chain
-			lifecycleMethods.addAll(
-				getAnnotatedMethods(
-					arguments.annotation,
-					arguments.metadata.extends
-				)
-			);
+		if( structKeyExists( arguments.metadata, "extends" ) ){
+			getAnnotatedMethods(
+				arguments.annotation,
+				arguments.metadata.extends
+			).each( function( item ){
+				lifecycleMethods.append( arguments.item );
+			} );
 		}
 
 		return lifecycleMethods;

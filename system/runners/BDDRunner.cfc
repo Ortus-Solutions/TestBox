@@ -69,13 +69,11 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 				}
 
 				// Iterate over found test suites and test them, if nested suites, then this will recurse as well.
-				//writeDump( var=testSuites );abort;
 				for( var thisSuite in testSuites ){
 					// verify call backs
 					if( structKeyExists( arguments.callbacks, "onSuiteStart" ) ){
 						arguments.callbacks.onSuiteStart( arguments.target, arguments.testResults, thisSuite );
 					}
-
 					// Test Suite
 					testSuite(
 						target=arguments.target,
@@ -171,6 +169,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 			thread.testResults 	= arguments.testResults;
 			thread.suiteStats  	= suiteStats;
 			thread.target 		= arguments.target;
+
 			// iterate over suite specs and test them
 			for( var thisSpec in arguments.suite.specs ){
 
