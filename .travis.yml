@@ -29,14 +29,12 @@ before_install:
 install:
   # Install Commandbox
   - sudo apt-get update && sudo apt-get --assume-yes install jq commandbox ant-optional
-  # Test that the box binary is available and ready for our tests
-  - box version
+  # Install dependencies
+  - box install && box install commandbox-cfconfig,commandbox-dotenv
   # If using auto-publish, you will need to provide your API token with this line:
   - box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN > /dev/null
 
 script:
-  # run our dependency install to ensure the workbench is in place
-  - box install
   # Execute build via ANT
   - ant -DisTravis=true -Dcfengine=$ENGINE -Dbuild.number=$TRAVIS_BUILD_NUMBER -Dbuild.branch=$TRAVIS_BRANCH -f build/build.xml
   # Set Current Version
@@ -45,10 +43,13 @@ script:
 
 after_failure:
   - cd $TRAVIS_BUILD_DIR
+  # Get response from test server to see what went wrong
+  - curl http://localhost:49616/tests/runner.cfm?reporter=text
   # Display the contents of our root directory
   # Spit out our Commandbox log in case we need to debug
   - box server log name=$ENGINE
   - cat `box system-log`
+  - ls -l $TRAVIS_BUILD_DIR/apidocs
 
 deploy:
   # Binary Deployments
@@ -84,4 +85,5 @@ deploy:
     acl: public_read
 
 after_deploy:
-  - cd $TRAVIS_BUILD_DIR/build-testbox/testbox && box forgebox publish
+  - cd $TRAVIS_BUILD_DIR/build-testbox/testbox
+  - if [ ${ENGINE} = 'lucee@4.5' ]; then box forgebox publish; fi
