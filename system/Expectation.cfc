@@ -28,7 +28,7 @@ component accessors="true"{
 	* @assertions The TestBox assertions object: testbox.system.Assertion
 	* @mockbox A reference to MockBox
 	*/
-	function init( 
+	function init(
 		required any spec,
 		required any assertions,
 		required any mockBox
@@ -56,7 +56,7 @@ component accessors="true"{
 			return( !results ? variables.assert.fail( this.message ) : this );
 		};
 	}
-	
+
 	/**
 	* Fail an assertion
 	* @message The message to fail with.
@@ -69,7 +69,7 @@ component accessors="true"{
 	* Process dynamic expectations like any matcher starting with the word "not" is negated
 	*/
 	function onMissingMethod( required missingMethodName, required missingMethodArguments ){
-		
+
 		// detect negation
 		if( left( arguments.missingMethodName, 3 ) eq "not" ){
 			// remove NOT
@@ -90,8 +90,10 @@ component accessors="true"{
 		}
 
 		// execute the dynamic method
-		var results = evaluate( "#arguments.missingMethodName#( argumentCollection=arguments.missingMethodArguments )" );
-		if( !isNull( results ) ){ return results; }
+		var results = invoke( this, arguments.missingMethodName, arguments.missingMethodArguments );
+		if( !isNull( results ) ){
+			return results;
+		}
 
 		// throw exception
 		//throw(type="InvalidMethod", message="The dynamic/static method: #arguments.missingMethodName# does not exist in this CFC", detail="Available methods are #structKeyArray( this ).toString()#");
@@ -104,7 +106,7 @@ component accessors="true"{
 		this.isNot = true;
 		return this;
 	}
-	
+
 	/**
 	* Assert something is true
 	* @actual The actual data to test
@@ -135,7 +137,7 @@ component accessors="true"{
 		}
 		return this;
 	}
-	
+
 	/**
 	* Assert something is equal to each other, no case is required
 	* @expected The expected data
@@ -157,9 +159,9 @@ component accessors="true"{
 		return this;
 	}
 
-	
+
 	/**
-	* Assert strings are equal to each other with case. 
+	* Assert strings are equal to each other with case.
 	* @expected The expected data
 	* @message The message to send in the failure
 	*/
@@ -180,13 +182,13 @@ component accessors="true"{
 	function toBeNull( message="" ){
 		if( this.isNot ){
 			if( !isNull( this.actual ) ){ return this; }
-			arguments.message = ( len( arguments.message ) ? 
+			arguments.message = ( len( arguments.message ) ?
 				arguments.message : "Expected the actual value to be NOT null but it was null" );
 		} else {
 			if( isNull( this.actual ) ){ return this; }
-			arguments.message = ( len( arguments.message ) ? 
+			arguments.message = ( len( arguments.message ) ?
 				arguments.message : "Expected a null value but got [#variables.assert.getStringName( this.actual )#] instead" );
-			
+
 		}
 		variables.assert.fail( arguments.message );
 	}
@@ -443,7 +445,7 @@ component accessors="true"{
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not less than [#arguments.target#]" );
 		if( this.isNot ){
 			variables.assert.isGTE( this.actual, arguments.target, arguments.message );
-		} else {	
+		} else {
 			variables.assert.isLT( this.actual, arguments.target, arguments.message );
 		}
 		return this;
@@ -474,7 +476,7 @@ component accessors="true"{
 			if( isJSON( this.actual ) ){
 				fail( arguments.message );
 			}
-		} else {	
+		} else {
 			variables.assert.isJSON( this.actual, arguments.message );
 		}
 		return this;
@@ -487,9 +489,9 @@ component accessors="true"{
 	*/
 	function toSatisfy( required any target, message="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#this.actual#] does not pass the truth test" );
-		
+
 		var isPassed = arguments.target( this.actual );
-		if( this.isNot ){ 
+		if( this.isNot ){
 			isPassed = !isPassed;
 		}
 		if( !isPassed ){

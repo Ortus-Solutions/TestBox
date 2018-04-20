@@ -150,7 +150,7 @@ component accessors="true"{
 			// setup stats data for incoming bundle
 			var stats = {
 				// bundle id
-				"id" 			= createUUID(),
+				"id" 			= hash( getTickCount() + randRange( 1, 10000000 ) ),
 				// The bundle name
 				"name"		= arguments.name,
 				// Path of the bundle
@@ -241,7 +241,7 @@ component accessors="true"{
 			// setup stats data for incoming suite
 			var stats = {
 				// suite id
-				"id" 			= createUUID(),
+				"id" 			= hash( getTickCount() + randRange( 1, 10000000 ) ),
 				// parent suite id
 				"parentID" 	= "",
 				// bundle id
@@ -313,7 +313,7 @@ component accessors="true"{
 			// spec stats
 			var stats = {
 				// suite id
-				"id" 				= createUUID(),
+				"id" 				= hash( getTickCount() + randRange( 1, 10000000 ) ),
 				// suite id
 				"suiteID"			= arguments.suiteStats.id,
 				// name of the spec

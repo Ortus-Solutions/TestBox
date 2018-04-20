@@ -28,7 +28,7 @@ component{
 	// Expected Exception holder, only use on synchronous testing.
 	this.$expectedException		= {};
 	// Internal testing ID
-	this.$testID 				= createUUID();
+	this.$testID 				= hash( getTickCount() + randRange( 1, 10000000 ) );
 	// Debug buffer
 	this.$debugBuffer			= [];
 	// Current Executing Spec
@@ -559,8 +559,7 @@ component{
     * @actual The actual value, it should be an array or a struct.
     */
     CollectionExpectation function expectAll( required any actual ){
-        var cExpectation = new CollectionExpectation( spec=this, assertions=this.$assert, collection=arguments.actual );
-        return cExpectation;
+        return new CollectionExpectation( spec=this, assertions=this.$assert, collection=arguments.actual );
     }
 
 	/**
@@ -760,29 +759,29 @@ component{
 			parentSuite = parentSuite.parentRef;
 		}
 
-		var annotationMethods = this.$utility.getAnnotatedMethods(
+		// Incorporate annotated methods
+		this.$utility.getAnnotatedMethods(
 			annotation = "beforeEach",
 			metadata   = getMetadata( this )
-		);
-
-		for( var method in annotationMethods ){
-			arrayAppend( reverseTree, {
-				beforeEach 		= this[ method.name ],
+		).each( function( item ){
+			reverseTree.append( {
+				beforeEach 		= this[ arguments.item.name ],
 				beforeEachData 	= {}
 			} );
-		}
+		} );
 
-		// Execute reverse tree
-		var treeLen = arrayLen( reverseTree );
-		if( treeLen gt 0 ){
-			for( var x=treeLen; x gte 1; x-- ){
-				var thisContext = reverseTree[ x ];
-				thisContext.beforeEach(
-					currentSpec = arguments.spec.name,
-					data   		= thisContext.beforeEachData
-				);
-			}
-		}
+		// sort tree backwards
+		reverseTree.sort( function( a, b ){
+			return -1;
+		} );
+
+		// Execute it
+		reverseTree.each( function( item ){
+			item.beforeEach(
+				currentSpec = spec.name,
+				data   		= item.beforeEachData
+			);
+		});
 
 		// execute beforeEach()
 		arguments.suite.beforeEach(
@@ -813,50 +812,49 @@ component{
 		// do we have nested suites? If so, traverse the tree to build reverse execution map
 		var parentSuite = arguments.suite.parentRef;
 		while( !isSimpleValue( parentSuite ) ){
-			arrayAppend( reverseTree, {
+			reverseTree.append( {
 				name 	= parentSuite.name,
 				body 	= parentSuite.aroundEach,
 				data 	= parentSuite.aroundEachData,
 				labels 	= parentSuite.labels,
 				order 	= 0,
 				skip 	= parentSuite.skip
-			} );
+			 } );
 			// go deep
 			parentSuite = parentSuite.parentRef;
 		}
 
-		var annotationMethods = this.$utility.getAnnotatedMethods(
+		annotatedMethods = this.$utility.getAnnotatedMethods(
 			annotation = "aroundEach",
 			metadata   = getMetadata( this )
 		);
 
-		for( var method in annotationMethods ){
-			arrayAppend( reverseTree, {
-				name 	= method.name,
-				body 	= this[ method.name ],
+		// Discover annotated methods and add to reverseTree
+		this.$utility.getAnnotatedMethods(
+			annotation = "aroundEach",
+			metadata   = getMetadata( this )
+		).each( function( item ){
+			reverseTree.append( {
+				name 	= arguments.item.name,
+				body 	= this[ arguments.item.name ],
 				data 	= {},
 				labels 	= {},
 				order 	= 0,
 				skip 	= false
 			} );
-		}
+		} );
 
 		// Sort the closures from the oldest parent down to the current spec
-		var correctOrderTree = [];
-		var treeLen = arrayLen( reverseTree );
-		if( treeLen gt 0 ){
-			for( var x = treeLen; x gte 1; x-- ){
-				arrayAppend( correctOrderTree, reverseTree[ x ] );
-			}
-		}
+		reverseTree.sort( function( a, b ){
+			return -1;
+		} );
 
 		// Build a function that will execute down the tree
 		var specStack = generateAroundEachClosuresStack(
-			closures 	= correctOrderTree,
+			closures 	= reverseTree,
 			suite 		= arguments.suite,
 			spec 		= arguments.spec
 		);
-
 		// Run the specs
 		specStack();
 
@@ -869,18 +867,17 @@ component{
 	* @suite The target suite
 	* @spec The target spec
 	*/
-	function generateAroundEachClosuresStack( array closures, required suite, required spec ) {
+	function generateAroundEachClosuresStack( array closures, required suite, required spec, closureIndex=1 ) {
 
-		thread.closures = arguments.closures;
-		thread.suite 	= arguments.suite;
-		thread.spec 	= arguments.spec;
+		thread.closures 		= arguments.closures;
+		thread.suite 			= arguments.suite;
+		thread.spec 			= arguments.spec;
 
 		// Get closure data from stack and pop it
-		var nextClosure = thread.closures[ 1 ];
-		arrayDeleteAt( thread.closures, 1 );
+		var nextClosure = thread.closures[ closureIndex ];
 
 		// Check if we have more in the stack or empty
-		if( arrayLen( thread.closures ) == 0 ){
+		if( thread.closures.len() == closureIndex ){
 			// Return the closure of execution for a single spec ONLY
 			return function(){
 				// Execute the body of the spec
@@ -889,23 +886,25 @@ component{
 		}
 
 		// Get next Spec in stack
-		var nextSpecInfo = thread.closures[ 1 ];
+		var nextSpecInfo = thread.closures[ ++closureIndex ];
 		// Return generated closure
 		return function() {
 			nextClosure.body(
-				{
-					name = nextSpecInfo.name,
-					body = generateAroundEachClosuresStack(
+				spec = {
+					name   = nextSpecInfo.name,
+					body   = generateAroundEachClosuresStack(
 						thread.closures,
 						thread.suite,
-						thread.spec
+						thread.spec,
+						closureIndex
 					),
-					data = nextSpecInfo.data,
+					data   = nextSpecInfo.data,
 					labels = nextSpecInfo.labels,
-					order = nextSpecInfo.order,
-					skip = nextSpecInfo.skip
+					order  = nextSpecInfo.order,
+					skip   = nextSpecInfo.skip
 				},
-				thread.suite
+				suite 	= thread.suite,
+				data 	= nextClosure.data
 			);
 		};
 	}
@@ -935,12 +934,16 @@ component{
 		var annotationMethods = this.$utility.getAnnotatedMethods(
 			annotation 	= "afterEach",
 			metadata 	= getMetadata( this )
-		);
-
-		for( var method in annotationMethods ){
-			var afterEachMethod = this[ method.name ];
-			afterEachMethod( currentSpec = arguments.spec.name, data = {} );
-		}
+		).each( function( item ){
+			invoke(
+				this,
+				item.name,
+				{
+					currentSpec = spec.name,
+					data = {}
+				}
+			);
+		} );
 
 		return this;
 	}
@@ -980,7 +983,7 @@ component{
 
 				// Execute Spec
 				try{
-					evaluate( "this.#arguments.spec.name#()" );
+					invoke( this, arguments.spec.name );
 
 					// Where we expecting an exception and it did not throw?
 					if( hasExpectedException( arguments.spec.name, arguments.runner ) ){

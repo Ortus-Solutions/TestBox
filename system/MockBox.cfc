@@ -298,17 +298,17 @@ Description		:
 		<cfscript>
 			if( len( this._mockCurrentMethod ) ){
 				var args = arguments;
-				return this.$callback( function(){ 
+				return this.$callback( function(){
 					throw(
 						type  		= structKeyExists( args, "type" ) ? args.type : "",
 						message  	= structKeyExists( args, "message" ) ? args.message : "",
 						detail  	= structKeyExists( args, "detail" ) ? args.detail : "",
 						errorCode 	= structKeyExists( args, "errorCode" ) ? args.errorCode : "0"
-					); 
+					);
 				} );
 			}
 
-			throw( 
+			throw(
 				type 	= "MockFactory.IllegalStateException",
 				message = "No current method name set",
 				detail 	= "This method was probably called without chaining it to a $() call. Ex: obj.$().$throws(), or obj.$('method').$args().$throws()"
@@ -535,8 +535,8 @@ Description		:
 					serializedArgs &= toString( argOrderedTree[ arg ] );
 				}
 				else if( isObject( argOrderedTree[ arg ] ) and isInstanceOf( argOrderedTree[ arg ], "Component" ) ){
-					// If an object and CFC, get its unique identity hash code
-					serializedArgs &= getIdentityHashCode( argOrderedTree[ arg ] );
+					// If an object and CFC, just use serializeJSON
+					serializedArgs &= serializeJSON( getMetadata( argOrderedTree[ arg ] ) );
 				}
 				else{
 					// Get obj rep
@@ -602,14 +602,6 @@ Description		:
 			obj.$reset				= variables.$reset;
 			// Mock Box
 			obj.mockBox 			= this;
-		</cfscript>
-	</cffunction>
-
-	<cffunction name="getIdentityHashCode" access="private" returntype="string" output="false">
-		<cfargument name="target" type="any" required="true" />
-		<cfscript>
-			var system = createObject("java", "java.lang.System");
-			return system.identityHashCode(arguments.target);
 		</cfscript>
 	</cffunction>
 

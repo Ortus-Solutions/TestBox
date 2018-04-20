@@ -7,6 +7,7 @@ component extends="tests.utils.ExampleParentTestCase"{
 
 	function beforeAll(){
 		variables.counter = 0;
+		// After annotated class this should be 1
 	}
 
 	function afterAll(){

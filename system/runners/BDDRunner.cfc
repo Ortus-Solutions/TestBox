@@ -65,10 +65,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 				);
 
 				for ( var beforeAllMethod in beforeAllAnnotationMethods ){
-					// We use evalute here for two reasons:
-					// 1. We want the scopes to be the target class, not this one.
-					// 2. We want this code to be cross-platform ( hence no cfinvoke() )
-					Evaluate( "arguments.target.#beforeAllMethod.name#()" );
+					invoke( arguments.target, "#beforeAllMethod.name#" );
 				}
 
 				// Iterate over found test suites and test them, if nested suites, then this will recurse as well.
@@ -77,7 +74,6 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 					if( structKeyExists( arguments.callbacks, "onSuiteStart" ) ){
 						arguments.callbacks.onSuiteStart( arguments.target, arguments.testResults, thisSuite );
 					}
-
 					// Test Suite
 					testSuite(
 						target=arguments.target,
@@ -105,10 +101,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 				);
 
 				for ( var afterAllMethod in afterAllAnnotationMethods ){
-					// We use evalute here for two reasons:
-					// 1. We want the scopes to be the target class, not this one.
-					// 2. We want this code to be cross-platform ( hence no cfinvoke() )
-					Evaluate( "arguments.target.#afterAllMethod.name#()" );
+					invoke( arguments.target, "#afterAllMethod.name#" );
 				}
 
 			} catch( Any e ) {
@@ -176,13 +169,14 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 			thread.testResults 	= arguments.testResults;
 			thread.suiteStats  	= suiteStats;
 			thread.target 		= arguments.target;
+
 			// iterate over suite specs and test them
 			for( var thisSpec in arguments.suite.specs ){
 
 				// is this async or not?
 				if( arguments.suite.asyncAll ){
 					// prepare thread name
-					var thisThreadName = variables.testBox.getUtility().slugify( "tb-" & thisSpec.name & "-#createUUID()#" );
+					var thisThreadName = variables.testBox.getUtility().slugify( "tb-" & thisSpec.name & "-#hash( getTickCount() + randRange( 1, 10000000 ) )#" );
 					// append to used thread names
 					arrayAppend( threadNames, thisThreadName );
 					// thread it
