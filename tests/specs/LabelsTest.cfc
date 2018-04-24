@@ -14,7 +14,10 @@ component extends="testbox.system.BaseSpec"{
 	function afterAll(){
 		if ( listContains( url.labels, "luis" ) ) {
 			expect( testsRan ).toBe( 5 );
-		}
+        }
+        else if ( listContains( url.excludes, "luis" ) ) {
+            expect( testsRan ).toBe( 3 );
+        }
 		else {
 			expect( testsRan ).toBe( 8 );
 		}

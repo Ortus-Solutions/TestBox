@@ -16,7 +16,9 @@ component accessors="true"{
 	// The CFC bundles to test
 	property name="bundles";
 	// The labels used for the testing
-	property name="labels";
+    property name="labels";
+    // The labels excluded from testing
+	property name="excludes";
 	// The reporter attached to this runner
 	property name="reporter";
 	// The configuration options attached to this runner
@@ -38,7 +40,8 @@ component accessors="true"{
 		any directory={},
 		any directories={},
 		any reporter="simple",
-		any labels=[],
+        any labels=[],
+        any excludes=[],
 		struct options={}
 	){
 
@@ -56,7 +59,9 @@ component accessors="true"{
 		variables.bundles = [];
 
 		// inflate labels
-		inflateLabels( arguments.labels );
+        inflateLabels( arguments.labels );
+        // inflate excludes
+		inflateExcludes( arguments.excludes );
 		// add bundles
 		addBundles( arguments.bundles );
 		// Add directory given (if any)
@@ -121,6 +126,7 @@ component accessors="true"{
 	 * @directory The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	 * @reporter The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a testbox.system.reports.IReporter. You can also pass a struct if the reporter requires options: {type="", options={}}
 	 * @labels The list or array of labels that a suite or spec must have in order to execute.
+     * @excludes The list or array of labels that a suite or spec must not have in order to execute.
 	 * @options A structure of configuration options that are optionally used to configure a runner.
 	 * @testBundles A list or array of bundle names that are the ones that will be executed ONLY!
 	 * @testSuites A list or array of suite names that are the ones that will be executed ONLY!
@@ -132,7 +138,8 @@ component accessors="true"{
 		any bundles,
 		any directory,
 		any reporter,
-		any labels,
+        any labels,
+        any excludes,
 		struct options,
 		any testBundles=[],
 		any testSuites=[],
@@ -157,6 +164,7 @@ component accessors="true"{
 	 * @bundles The path, list of paths or array of paths of the spec bundle CFCs to run and test
 	 * @directory The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	 * @labels The list or array of labels that a suite or spec must have in order to execute.
+	 * @excludes The list or array of labels that a suite or spec must not have in order to execute.
 	 * @options A structure of configuration options that are optionally used to configure a runner.
 	 * @testBundles A list or array of bundle names that are the ones that will be executed ONLY!
 	 * @testSuites A list or array of suite names that are the ones that will be executed ONLY!
@@ -168,6 +176,7 @@ component accessors="true"{
 		any bundles,
 		any directory,
 		any labels,
+		any excludes,
 		struct options,
 		any testBundles=[],
 		any testSuites=[],
@@ -205,14 +214,17 @@ component accessors="true"{
 		}
 
 		// Inflate labels if passed
-		if( !isNull( arguments.labels ) ){ inflateLabels( arguments.labels ); }
+        if( !isNull( arguments.labels ) ){ inflateLabels( arguments.labels ); }
+        // Inflate excludes if passed
+		if( !isNull( arguments.excludes ) ){ inflateExcludes( arguments.excludes ); }
 		// If bundles passed, inflate those as the target
 		if( !isNull( arguments.bundles ) ){ inflateBundles( arguments.bundles ); }
 
-		// create results object
+        // create results object
 		var results = new testbox.system.TestResult(
 			bundleCount = arrayLen( variables.bundles ),
-			labels      = variables.labels,
+            labels      = variables.labels,
+            excludes    = variables.excludes,
 			testBundles = arguments.testBundles,
 			testSuites  = arguments.testSuites,
 			testSpecs   = arguments.testSpecs
@@ -278,7 +290,8 @@ component accessors="true"{
 		boolean recurse=true,
 		string reporter="simple",
 		string reporterOptions="{}",
-		string labels="",
+        string labels="",
+        string excludes="",
 		string options,
 		string testBundles="",
 		string testSuites="",
@@ -290,6 +303,7 @@ component accessors="true"{
 
 		// simple to complex
 		arguments.labels 		= listToArray( arguments.labels );
+		arguments.excludes 		= listToArray( arguments.excludes );
 		arguments.testBundles	= listToArray( arguments.testBundles );
 		arguments.testSuites 	= listToArray( arguments.testSuites );
 		arguments.testSpecs 	= listToArray( arguments.testSpecs );
@@ -545,6 +559,13 @@ component accessors="true"{
 	*/
 	private function inflateLabels(required any labels){
 		variables.labels = ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels );
+    }
+
+    /**
+	* Inflate incoming excludes from a simple string as a standard array
+	*/
+	private function inflateExcludes(required any excludes){
+		variables.excludes = ( isSimpleValue( arguments.excludes ) ? listToArray( arguments.excludes ) : arguments.excludes );
 	}
 
 	/**
