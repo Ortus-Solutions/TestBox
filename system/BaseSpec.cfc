@@ -676,7 +676,10 @@ component{
 			// init spec tests
 			var specStats = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
 			// init consolidated spec labels
-			var consolidatedLabels = arguments.spec.labels;
+            var consolidatedLabels = arguments.spec.labels;
+            var md = getMetadata( this );
+            param md.labels = "";
+            consolidatedLabels.addAll( listToArray( md.labels ) )
 			// Build labels from nested suites, so suites inherit from parent suite labels
 			var parentSuite = arguments.suite;
 			while( !isSimpleValue( parentSuite ) ){

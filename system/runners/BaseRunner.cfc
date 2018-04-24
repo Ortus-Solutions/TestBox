@@ -14,12 +14,12 @@ component{
 	* @testResults.hint The testing results object
 	*/
 	boolean function canRunLabel(
-		required incomingLabels,
+		required array incomingLabels,
 		required testResults
 	){
 
 		var labels = arguments.testResults.getLabels();
-		var excludes = arguments.testResults.getExcludes();
+        var excludes = arguments.testResults.getExcludes();
 
         // do we have labels applied?
         var canRun = true;
@@ -118,9 +118,9 @@ component{
 	*/
 	boolean function canRunBundle(
 		required bundlePath,
-		required testResults
+        required testResults,
+        required targetMD,
 	){
-
 		var testBundles = arguments.testResults.getTestBundles();
 
 		// verify we have some?
