@@ -119,7 +119,7 @@ component{
 	boolean function canRunBundle(
 		required bundlePath,
         required testResults,
-        required targetMD,
+        required targetMD
 	){
 		var testBundles = arguments.testResults.getTestBundles();
 
