@@ -14,7 +14,7 @@ component{
 	* Get the name of the reporter
 	*/
 	function getName(){
-		return "Simple";
+		return "SimpleReporter";
 	}
 
 	/**
