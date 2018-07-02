@@ -223,11 +223,15 @@ component displayName="TestBox xUnit suite for CF9" labels="lucee,cf" extends="t
 	}
 
 	function testMatchWithCase(){
-		$assert.match( "This testing is my test", "(test)$" );
+		$assert.matchWithCase( "This testing is my TEST", "(TEST)$" );
 	}
 
 	function testNotMatch(){
 		$assert.notMatch( "This testing is my test", "(hello)$" );
+	}
+
+	function testNotMatchWithCase(){
+		$assert.notMatchWithCase( "This testing is my TEST", "(test)$" );
 	}
 
 	function testKey(){

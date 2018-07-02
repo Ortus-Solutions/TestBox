@@ -60,6 +60,16 @@ component extends="testbox.system.BaseSpec"{
 				expect(	0 ).notToSatisfy( function( num ){ return arguments.num > 0; } );
 			});
 
+			it( "can match using regular expressions with no case sensitivity", function(){
+				expect(	"Matches End" ).toMatch( "end$" );
+				expect(	"Matches End" ).notToMatch( "^end" );
+			});
+
+			it( "can match using regular expressions and case sensitivity", function(){
+				expect(	"Matches End" ).toMatchWithCase( "End$" );
+				expect(	"Matches End" ).notToMatchWithCase( "^End" );
+			});
+
 			it( "can validate json", function(){
 				var data = serializeJSON( { name = "luis", when = now() } );
 				expect( "luis" ).notToBeJSON();

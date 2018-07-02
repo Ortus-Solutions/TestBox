@@ -246,6 +246,18 @@ component{
 	}
 
 	/**
+	* Assert that the actual data does NOT match the incoming regular expression with case sensitivity
+	* @actual The actual data to check
+	* @regex The regex to check with
+	* @message The message to send in the failure
+	*/
+	function notMatchWithCase( required string actual, required string regex, message=""){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The actual [#arguments.actual.toString()#] actually matches [#arguments.regex#]" );
+		if( arrayLen( reMatch( arguments.regex, arguments.actual ) ) eq 0 ){ return this; }
+		fail( arguments.message );
+	}
+
+	/**
 	* Assert that a given key exists in the passed in struct/object
 	* @target The target object/struct
 	* @key The key to check for existence
