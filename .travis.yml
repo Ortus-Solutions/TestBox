@@ -6,10 +6,11 @@ notifications:
 
 env:
   matrix:
-    - ENGINE=lucee@4.5
-    - ENGINE=lucee@5
-    - ENGINE=adobe@11
-    - ENGINE=adobe@2016
+    - ENGINE=lucee@4.5				ENGINENAME=lucee@4.5
+    - ENGINE=lucee@5				ENGINENAME=lucee@5
+    - ENGINE=adobe@11				ENGINENAME=adobe@11
+    - ENGINE=adobe@2016				ENGINENAME=adobe@2016
+    - ENGINE=@ortus/adobe-aether	ENGINENAME=adobe-aether
 
 branches:
   only:
@@ -36,7 +37,7 @@ install:
 
 script:
   # Execute build via ANT
-  - ant -DisTravis=true -Dcfengine=$ENGINE -Dbuild.number=$TRAVIS_BUILD_NUMBER -Dbuild.branch=$TRAVIS_BRANCH -f build/build.xml
+  - ant -DisTravis=true -Dcfengine=$ENGINE -Denginename=$ENGINENAME -Dbuild.number=$TRAVIS_BUILD_NUMBER -Dbuild.branch=$TRAVIS_BRANCH -f build/build.xml
   # Set Current Version
   - BUILD_VERSION=`cat $TRAVIS_BUILD_DIR/artifacts/testbox/box.json | jq '.version' -r`
   - echo "TestBox v$BUILD_VERSION"
@@ -47,7 +48,7 @@ after_failure:
   - curl http://localhost:49616/tests/runner.cfm?reporter=text
   # Display the contents of our root directory
   # Spit out our Commandbox log in case we need to debug
-  - box server log name=$ENGINE
+  - box server log name=$ENGINENAME
   - cat `box system-log`
   - ls -l $TRAVIS_BUILD_DIR/apidocs
 

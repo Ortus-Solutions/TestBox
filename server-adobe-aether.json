@@ -1,0 +1,12 @@
+{
+    "app":{
+        "cfengine":"@ortus/adobe-aether"
+    },
+    "name":"adobe-aether",
+    "openbrowser":"false",
+    "web":{
+        "http":{
+            "port":"49616"
+        }
+    }
+}
