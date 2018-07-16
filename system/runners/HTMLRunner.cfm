@@ -16,7 +16,7 @@ if( len( url.bundles ) ){
 	testbox.addBundles( url.bundles );
 }
 if( len( url.directory ) ){
-	testbox.addDirectories( url.directory );
+	testbox.addDirectories( url.directory, url.recurse );
 }
 
 // Run Tests using correct reporter
