@@ -878,7 +878,7 @@ component{
 		var nextClosure = thread.closures[ closureIndex ];
 
 		// Check if we have more in the stack or empty
-		if( thread.closures.len() == closureIndex ){
+		if( arrayLen( thread.closures ) == closureIndex ){
 			// Return the closure of execution for a single spec ONLY
 			return function(){
 				// Execute the body of the spec
