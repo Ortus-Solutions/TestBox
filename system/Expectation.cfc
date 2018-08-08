@@ -226,7 +226,6 @@ component accessors="true"{
 
 	/**
 	* Assert that the actual data matches the incoming regular expression with case sensitivity
-	* @actual The actual data to check
 	* @regex The regex to check with
 	* @message The message to send in the failure
 	*/
