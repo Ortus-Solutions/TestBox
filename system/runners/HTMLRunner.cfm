@@ -6,12 +6,13 @@
 <cfparam name="url.recurse" 			default="true" type="boolean">
 <cfparam name="url.bundles" 			default="">
 <cfparam name="url.labels" 				default="">
+<cfparam name="url.excludes" 			default="">
 <cfparam name="url.reportpath" 			default="">
 <cfparam name="url.propertiesFilename" 	default="TEST.properties">
 <cfparam name="url.propertiesSummary" 	default="false" type="boolean">
 <cfscript>
 // prepare for tests for bundles or directories
-testbox = new testbox.system.TestBox( labels=url.labels );
+testbox = new testbox.system.TestBox( labels=url.labels, excludes=url.excludes );
 if( len( url.bundles ) ){
 	testbox.addBundles( url.bundles );
 }
@@ -39,10 +40,10 @@ total.fail=#testResult.getTotalFail()#
 total.error=#testResult.getTotalError()#
 total.skipped=#testResult.getTotalSkipped()#" );
 	}
-	
+
 	//ACF Compatibility - check for and expand to absolute path
 	if( !directoryExists( url.reportpath ) ) url.reportpath = expandPath( url.reportpath );
-	
+
 	fileWrite( url.reportpath & "/" & url.propertiesFilename, propertiesReport );
 }
 

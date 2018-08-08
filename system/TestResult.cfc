@@ -20,6 +20,7 @@ component accessors="true"{
 	property name="totalError" 		type="numeric";
 	property name="totalSkipped"	type="numeric";
 	property name="labels"			type="array";
+	property name="excludes"		type="array";
 
 	// bundle stats
 	property name="bundleStats"		type="struct";
@@ -40,6 +41,7 @@ component accessors="true"{
 	TestResult function init(
 		numeric bundleCount=0,
 		array labels=[],
+		array excludes=[],
 		array testBundles=[],
 		array testSuites=[],
 		array testSpecs=[]
@@ -63,6 +65,7 @@ component accessors="true"{
 		variables.totalError	= 0;
 		variables.totalSkipped 	= 0;
 		variables.labels 		= arguments.labels;
+		variables.excludes 		= arguments.excludes;
 
 		// Run only
 		variables.testBundles	= arguments.testBundles;
@@ -369,7 +372,8 @@ component accessors="true"{
 		var pList 	= [
 			"resultID",
 			"version",
-			"labels",
+            "labels",
+            "excludes",
 			"startTime",
 			"endTime",
 			"totalDuration",
