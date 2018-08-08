@@ -1,7 +1,7 @@
 /**
 * My BDD Test
 */
-component extends="testbox.system.BaseSpec"{
+component extends="testbox.system.BaseSpec" labels="luis" {
 
 /*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -13,10 +13,10 @@ component extends="testbox.system.BaseSpec"{
 	// executes after all suites+specs in the run() method
 	function afterAll(){
 		if ( listContains( url.labels, "luis" ) ) {
-			expect( testsRan ).toBe( 5 );
+			expect( testsRan ).toBe( 8 );
         }
         else if ( listContains( url.excludes, "luis" ) ) {
-            expect( testsRan ).toBe( 3 );
+            expect( testsRan ).toBe( 0 );
         }
 		else {
 			expect( testsRan ).toBe( 8 );
@@ -26,7 +26,7 @@ component extends="testbox.system.BaseSpec"{
 /*********************************** BDD SUITES ***********************************/
 
 	function run(){
-		describe( title="Suite with a label", labels="luis", body=function(){
+		describe( "Suite with a label", function(){
 			it( "should execute", function(){
 				testsRan++;
 			});
@@ -47,19 +47,19 @@ component extends="testbox.system.BaseSpec"{
 		});
 
 		describe( "Suites with no labels", function(){
-			it( "should not execute", function(){
+			it( "should execute", function(){
 				testsRan++;
 			});
-			it( "should not execute", function(){
+			it( "should execute", function(){
 				testsRan++;
 			});
 		});
 
 		describe( "Suite without a label but containing a spec with a label", function() {
-			it( title="spec with a label", labels="luis", body=function() {
+			it( "spec with a label", function() {
 				testsRan++;
 			} );
-			it( "should not execute", function() {
+			it( "should execute", function() {
 				testsRan++;
 			} );
 		} );

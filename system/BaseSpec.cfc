@@ -676,7 +676,10 @@ component{
 			// init spec tests
 			var specStats = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
 			// init consolidated spec labels
-			var consolidatedLabels = arguments.spec.labels;
+            var consolidatedLabels = arguments.spec.labels;
+            var md = getMetadata( this );
+            param md.labels = "";
+            consolidatedLabels.addAll( listToArray( md.labels ) );
 			// Build labels from nested suites, so suites inherit from parent suite labels
 			var parentSuite = arguments.suite;
 			while( !isSimpleValue( parentSuite ) ){
@@ -759,24 +762,27 @@ component{
 			parentSuite = parentSuite.parentRef;
 		}
 
-		// Incorporate annotated methods
-		this.$utility.getAnnotatedMethods(
-			annotation = "beforeEach",
-			metadata   = getMetadata( this )
-		).each( function( item ){
-			reverseTree.append( {
-				beforeEach 		= this[ arguments.item.name ],
-				beforeEachData 	= {}
-			} );
-		} );
+        // Incorporate annotated methods
+        arrayEach(
+            this.$utility.getAnnotatedMethods(
+                annotation = "beforeEach",
+                metadata   = getMetadata( this )
+            ),
+            function( item ){
+                arrayAppend( reverseTree, {
+                    beforeEach 		= this[ arguments.item.name ],
+                    beforeEachData 	= {}
+                } );
+            }
+        );
 
 		// sort tree backwards
-		reverseTree.sort( function( a, b ){
+		arraySort( reverseTree, function( a, b ){
 			return -1;
 		} );
 
 		// Execute it
-		reverseTree.each( function( item ){
+		arrayEach( reverseTree, function( item ){
 			item.beforeEach(
 				currentSpec = spec.name,
 				data   		= item.beforeEachData
@@ -812,7 +818,7 @@ component{
 		// do we have nested suites? If so, traverse the tree to build reverse execution map
 		var parentSuite = arguments.suite.parentRef;
 		while( !isSimpleValue( parentSuite ) ){
-			reverseTree.append( {
+			arrayAppend( reverseTree, {
 				name 	= parentSuite.name,
 				body 	= parentSuite.aroundEach,
 				data 	= parentSuite.aroundEachData,
@@ -824,28 +830,26 @@ component{
 			parentSuite = parentSuite.parentRef;
 		}
 
-		annotatedMethods = this.$utility.getAnnotatedMethods(
-			annotation = "aroundEach",
-			metadata   = getMetadata( this )
-		);
-
-		// Discover annotated methods and add to reverseTree
-		this.$utility.getAnnotatedMethods(
-			annotation = "aroundEach",
-			metadata   = getMetadata( this )
-		).each( function( item ){
-			reverseTree.append( {
-				name 	= arguments.item.name,
-				body 	= this[ arguments.item.name ],
-				data 	= {},
-				labels 	= {},
-				order 	= 0,
-				skip 	= false
-			} );
-		} );
+        // Discover annotated methods and add to reverseTree
+        arrayEach(
+            this.$utility.getAnnotatedMethods(
+                annotation = "aroundEach",
+                metadata   = getMetadata( this )
+            ),
+            function( item ){
+                arrayAppend( reverseTree, {
+                    name 	= arguments.item.name,
+                    body 	= this[ arguments.item.name ],
+                    data 	= {},
+                    labels 	= {},
+                    order 	= 0,
+                    skip 	= false
+                } );
+            }
+        );
 
 		// Sort the closures from the oldest parent down to the current spec
-		reverseTree.sort( function( a, b ){
+		arraySort( reverseTree, function( a, b ){
 			return -1;
 		} );
 
@@ -877,7 +881,7 @@ component{
 		var nextClosure = thread.closures[ closureIndex ];
 
 		// Check if we have more in the stack or empty
-		if( thread.closures.len() == closureIndex ){
+		if( arrayLen( thread.closures ) == closureIndex ){
 			// Return the closure of execution for a single spec ONLY
 			return function(){
 				// Execute the body of the spec
@@ -931,19 +935,22 @@ component{
 			parentSuite = parentSuite.parentRef;
 		}
 
-		var annotationMethods = this.$utility.getAnnotatedMethods(
-			annotation 	= "afterEach",
-			metadata 	= getMetadata( this )
-		).each( function( item ){
-			invoke(
-				this,
-				item.name,
-				{
-					currentSpec = spec.name,
-					data = {}
-				}
-			);
-		} );
+        arrayEach(
+            this.$utility.getAnnotatedMethods(
+			    annotation 	= "afterEach",
+			    metadata 	= getMetadata( this )
+            ),
+            function( item ){
+                invoke(
+                    this,
+                    item.name,
+                    {
+                        currentSpec = spec.name,
+                        data = {}
+                    }
+                );
+            }
+		);
 
 		return this;
 	}

@@ -47,10 +47,10 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 		var testSuitesCount = arrayLen( testSuites );
 
 		// Start recording stats for this bundle
-		var bundleStats = arguments.testResults.startBundleStats( bundlePath=targetMD.name, name=bundleName );
+        var bundleStats = arguments.testResults.startBundleStats( bundlePath=targetMD.name, name=bundleName );
 
 		// Verify we can run this bundle
-		if( canRunBundle( bundlePath=targetMD.name, testResults=arguments.testResults ) ){
+		if( canRunBundle( bundlePath=targetMD.name, testResults=arguments.testResults, targetMD=targetMD ) ){
 
 			try{
 				// execute beforeAll() for this bundle, no matter how many suites they have.
@@ -139,7 +139,6 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 		required parentStats={},
 		required callbacks={}
 	){
-
 		// Start suite stats
 		var suiteStats = arguments.testResults.startSuiteStats( arguments.suite.name, arguments.bundleStats, arguments.parentStats );
 		// init consolidated spec labels

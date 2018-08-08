@@ -33,7 +33,7 @@ component extends="testbox.system.BaseSpec"{
                     { name="Celebrity", Cruise_ID="708821", CrzCode="CB", API_Sail_ID="SL01190117SL14K095", API_Length=14, API_Port_Count=9, API_Sail_Date="01/17/2019" }
 				];
 
-				sailingsData.each( function( item ){
+				arrayEach( sailingsData, function( item ){
 
                     given( "[#item.name#] valid incoming arguments for a #item.name# sailing", function(){
                         then( then="[#item.name#] I get a response with inErrorStatus=false", data=item, body=function( data ){

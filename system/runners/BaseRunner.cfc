@@ -3,9 +3,9 @@
 * www.ortussolutions.com
 * ---
 * The TestBox main base runner which has all the common methods needed for runner implementations.
-*/ 
+*/
 component{
-		
+
 	/************************************** UTILITY METHODS *********************************************/
 
 	/**
@@ -13,30 +13,36 @@ component{
 	* @incomingLabels.hint The incoming labels to test against this runner's labels.
 	* @testResults.hint The testing results object
 	*/
-	boolean function canRunLabel( 
-		required incomingLabels,
+	boolean function canRunLabel(
+		required array incomingLabels,
 		required testResults
 	){
 
 		var labels = arguments.testResults.getLabels();
+        var excludes = arguments.testResults.getExcludes();
 
-		// do we have labels applied?
+        // do we have labels applied?
+        var canRun = true;
 		if( arrayLen( labels ) ){
+            canRun = false;
 			for( var thisLabel in labels ){
 				// verify that a label exists, if it does, break, it matches the criteria, if no matches, then skip it.
 				if( arrayFindNoCase( incomingLabels, thisLabel ) ){
 					// match, so we can run it.
-					return true;
+                    canRun = true;
 				}
 			}
-			
-			// TODO: check if the incoming label exists in a parent suite.
+        }
 
-			// if we get here, we have labels, but none matched.
-			return false;
-		}
-		// we can run it.
-		return true;
+        if ( ! arrayIsEmpty( excludes ) ) {
+            for ( var thisExclude in excludes ) {
+                if ( arrayFindNoCase( incomingLabels, thisExclude ) ) {
+                    canRun = false;
+                }
+            }
+        }
+
+        return canRun;
 	}
 
 	/**
@@ -44,7 +50,7 @@ component{
 	* @name.hint The spec name
 	* @testResults.hint The testing results object
 	*/
-	boolean function canRunSpec( 
+	boolean function canRunSpec(
 		required name,
 		required testResults
 	){
@@ -65,7 +71,7 @@ component{
 	* @suite.hint The suite definition
 	* @testResults.hint The testing results object
 	*/
-	boolean function canRunSuite( 
+	boolean function canRunSuite(
 		required suite,
 		required testResults
 	){
@@ -97,7 +103,7 @@ component{
 				}
 				return false;
 			}
-			
+
 			return results;
 		}
 
@@ -110,11 +116,11 @@ component{
 	* @suite.hint The suite definition
 	* @testResults.hint The testing results object
 	*/
-	boolean function canRunBundle( 
+	boolean function canRunBundle(
 		required bundlePath,
-		required testResults
+        required testResults,
+        required targetMD
 	){
-
 		var testBundles = arguments.testResults.getTestBundles();
 
 		// verify we have some?
@@ -136,7 +142,7 @@ component{
 		if( structKeyExists( getMetadata( arguments.target[ arguments.methodName ] ), "test" ) ){
 			return true;
 		}
-		// All xUnit test methods must start or end with the term, "test". 
+		// All xUnit test methods must start or end with the term, "test".
 		return( !! reFindNoCase( "(^test|test$)", methodName ) );
 	}
 
@@ -156,5 +162,5 @@ component{
 			return arguments.defaultValue;
 		}
 	}
-	
+
 }
