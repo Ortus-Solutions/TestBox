@@ -133,7 +133,7 @@ component displayName="TestBox xUnit suite for CF9" labels="lucee,cf" extends="t
 		$assert.isEqual( [], [] );
 		$assert.isEqual( [1,2,3, {name="hello", test="this"} ], [1,2,3, {test="this", name="hello"} ] );
 	}
-	
+
 	function testIsEqualQuery() {
 
 		var a = '';
@@ -142,21 +142,21 @@ component displayName="TestBox xUnit suite for CF9" labels="lucee,cf" extends="t
 		queryAddRow(testQuery);
 		querySetCell(testQuery,'column_a','1');
 		querySetCell(testQuery,'column_b','2');
-		
+
 		a = new Query(
 				sql = "SELECT column_a ,column_b
 						FROM testQuery",
 				dbtype = "query",
 				testQuery = testQuery
 			).execute().getResult();
-		
+
 		b = new Query(
 				sql = "SELECT column_b ,column_a
 						FROM testQuery",
 				dbtype = "query",
 				testQuery = testQuery
-			).execute().getResult(); 
-		
+			).execute().getResult();
+
 		$assert.isEqual(a, b);
 	}
 
@@ -223,7 +223,11 @@ component displayName="TestBox xUnit suite for CF9" labels="lucee,cf" extends="t
 	}
 
 	function testMatchWithCase(){
-		$assert.match( "This testing is my test", "(test)$" );
+		$assert.matchWithCase( "This testing is my TEST", "(TEST)$" );
+	}
+
+	function testNotMatchWithCase(){
+		$assert.notMatchWithCase( "This testing is my TEST", "(test)$" );
 	}
 
 	function testNotMatch(){
