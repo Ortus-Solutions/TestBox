@@ -129,7 +129,7 @@
 		[ <span class="specStatus skipped" 	data-status="skipped" data-bundleid="#thisBundle.id#">Skipped: #thisBundle.totalSkipped#</span> ]
 		[ <span class="reset" title="Clear status filters">Reset</span> ]
 
-		<!-- Globa Error --->
+		<!--- Global Error --->
 		<cfif !isSimpleValue( thisBundle.globalException )>
 			<h2>Global Bundle Exception<h2>
 			<cfdump var="#thisBundle.globalException#" />
