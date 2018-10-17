@@ -48,7 +48,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 		var bundleStats = arguments.testResults.startBundleStats( bundlePath=targetMD.name, name=bundleName );
 
 		// Verify we can run this bundle
-		if( canRunBundle( bundlePath=targetMD.name, testResults=arguments.testResults ) ){
+		if( canRunBundle( bundlePath=targetMD.name, testResults=arguments.testResults, targetMD=targetMD ) ){
 			try{
 				// execute beforeAll(), beforeTests() for this bundle, no matter how many suites they have.
 				if( structKeyExists( arguments.target, "beforeAll" ) ){ arguments.target.beforeAll(); }
@@ -264,7 +264,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 			specs 		= getTestMethods( arguments.target, arguments.testResults ),
 			// the recursive suites
 			suites 		= []
-		};
+        };
 
 		// skip constraint for suite?
 		if( !isBoolean( suite.skip ) && isCustomFunction( arguments.target[ suite.skip ] ) ){

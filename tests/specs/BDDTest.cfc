@@ -43,6 +43,15 @@ component extends="testbox.system.BaseSpec"{
 				foo = 0;
 			});
 
+
+			it( "can match strings with no case sensitivity", function(){
+				expect(	"Luis" ).toMatch( "^luis" );
+			});
+			it( "can match strings with case sensitivity", function(){
+				expect(	"Luis" ).notToMatchWithCase( "^luis" );
+				expect(	"luis" ).ToMatchWithCase( "^luis" );
+			});
+
 			/**
 			* it() describes a spec to test. Usually the title is prefixed with the suite name to create an expression.
 			* Arguments:

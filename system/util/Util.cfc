@@ -127,19 +127,22 @@ component{
 
 			for( var thisFunction in arguments.metadata.functions ){
 				if( structKeyExists( thisFunction, annotation ) ){
-					lifecycleMethods.append( thisFunction );
+					arrayAppend( lifecycleMethods, thisFunction );
 				}
 			}
 
 		}
 
 		if( structKeyExists( arguments.metadata, "extends" ) ){
-			getAnnotatedMethods(
-				arguments.annotation,
-				arguments.metadata.extends
-			).each( function( item ){
-				lifecycleMethods.append( arguments.item );
-			} );
+            arrayEach(
+                getAnnotatedMethods(
+                    arguments.annotation,
+                    arguments.metadata.extends
+                ),
+                function( item ){
+				    arrayAppend( lifecycleMethods, arguments.item );
+			    }
+            );
 		}
 
 		return lifecycleMethods;

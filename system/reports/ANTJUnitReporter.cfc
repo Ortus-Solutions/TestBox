@@ -162,7 +162,14 @@ component{
 				continue;
 			}
 			if( isSimpleValue( arguments.collection[ thisProp ] ) ){
-				arguments.buffer.append( '<property name="#xmlFormat( lcase( thisProp ) )#" value="#xmlFormat( arguments.collection[ thisProp ] )#" />' );
+				// This is for a nasty Lucee regression where server.os.MacAddress is null, yet isNull() checks say it isn't. 
+				// Try/catch is the only way to detect this right now :/
+				// Regression known to exist in Lucee 5.2.8.50
+				try {
+					arguments.buffer.append( '<property name="#xmlFormat( lcase( thisProp ) )#" value="#xmlFormat( arguments.collection[ thisProp ] )#" />' );
+				} catch( any e ) {
+					arguments.buffer.append( '<property name="#xmlFormat( lcase( thisProp ) )#" value="" />' );					
+				}
 			}
 			else if( isArray( arguments.collection[ thisProp ] ) OR
 					 isStruct( arguments.collection[ thisProp ] ) OR
