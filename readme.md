@@ -60,6 +60,8 @@ You can also use [CommandBox](https://www.ortussolutions.com/products/commandbox
 
 `box install testbox@be`
 
+Bleeding edge builds are updated automatically as code is committed.
+
 ********************************************************************************
 Copyright Since 2005 by Luis Majano and Ortus Solutions, Corp
 
