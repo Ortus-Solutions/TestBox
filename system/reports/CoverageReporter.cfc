@@ -154,7 +154,7 @@ component {
 	*/
 	private function renderStats( required struct stats ) {
 		savecontent variable="local.statsHTML" {
-			include "stats/CoverageStats.cfm";
+			include "/testbox/system/reports/codeCoverage/stats/CoverageStats.cfm";
 		}
 		return local.statsHTML;
 	}
@@ -212,7 +212,7 @@ component {
 	private function renderWrapperReport( sonarQubeResults, statsHTML, nestedReporterResult, testbox, results, opts ) {
 		getPageContext().getResponse().setContentType( "text/html" );
 		savecontent variable="local.report" {
-			include "CoverageReportWrapper.cfm";
+			include "/testbox/system/reports/codeCoverage/CoverageReportWrapper.cfm";
 		}
 		return local.report;
 	}

@@ -18,18 +18,22 @@ testbox = new testbox.system.TestBox(
 	reporter={
 	    type = "CoverageReporter",
 	    options = {
+	    	// This should point to the root of your site being tested
 		  	pathToCapture = expandPath( '/root' ),
-			whitelist = '',
+		  	// File globbing patterns for files to include in the report
+			whitelist = '/models,/handlers',
+		  	// File globbing patterns for files to exclude in the report
 			blacklist = '/testbox,/tests',
+			// Reporter you want to show after the output from the CodeCoverage report
 	    	passThroughReporter={
 	    		type='simple',
 	    		option={}
 	    	},
-	    	/*
-	    	Uncomment to use the SonarQube integation
-	    	sonarQube = {
-				XMLOutputPath = expandpath( '/tests/sonarqube-codeCoverage.xml' )
-	    	},*/
+	    	// Path to generate XML coverage data for a SonarQube integation
+	    	// sonarQube = {
+			// 	XMLOutputPath = expandpath( '/tests/sonarqube-codeCoverage.xml' )
+	    	// },
+	    	// Path to generate the standalone HTML pages showing code coverage
 	    	browser = {
 	    		OutputDir = expandPath( '/tests/CoverageBrowser' )
 	    	}

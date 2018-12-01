@@ -1,7 +1,6 @@
 <cfscript>
-local.lineData=javaProxy.toCFML(filedata.lineData);
-local.lineNumbersBGColors = local.lineData.map(function(key,value,strct){
-    return (value > 0) ? "LINENUMBERBGSUCCESS" : "LINENUMBERBGDANGER";
+local.lineNumbersBGColors = structMap( filedata.lineData, function( key, value,strct ){
+    return ( value > 0 ) ? "LINENUMBERBGSUCCESS" : "LINENUMBERBGDANGER";
 });
 </cfscript>
 <cfoutput>

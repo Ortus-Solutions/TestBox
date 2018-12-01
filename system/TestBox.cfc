@@ -424,6 +424,7 @@ component accessors="true"{
 			case "tap" : { return new "testbox.system.reports.TapReporter"(); }
 			case "doc" : { return new "testbox.system.reports.DocReporter"(); }
 			case "codexwiki" : { return new "testbox.system.reports.CodexWikiReporter"(); }
+			case "CoverageReporter" : { return new "testbox.system.reports.CoverageReporter"(); }
 			default: {
 				return new "#arguments.reporter#"();
 			}

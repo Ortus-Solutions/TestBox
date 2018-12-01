@@ -11,7 +11,6 @@ component accessors=true {
 
 		// Classes needed to work.
 		variables.coldFish = new ColdFish();
-		variables.javaProxy = createObject( "java", "lucee.runtime.java.JavaProxy" ).init()
 		
 		variables.CR = chr( 13 );
 		variables.LF = chr( 10 );
