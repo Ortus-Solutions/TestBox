@@ -89,6 +89,12 @@
 <!--- Header --->
 <p>TestBox v#testbox.getVersion()#</p>
 
+<cfif results.getCoverageEnabled() >
+
+	#testbox.getCoverageService().renderStats( results.getCoverageData() )#
+	
+</cfif>
+
 <!--- Global Stats --->
 <div class="box" id="globalStats">
 

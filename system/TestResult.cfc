@@ -29,6 +29,11 @@ component accessors="true"{
 	property name="testBundles" 	type="array";
 	property name="testSuites" 		type="array";
 	property name="testSpecs" 		type="array";
+	
+	// Code Coverage
+	property name="coverageEnabled" type="boolean";
+	property name="coverageData"	type="struct";
+	
 
 	/**
 	* Constructor
@@ -78,6 +83,10 @@ component accessors="true"{
 		// Reverse Lookups
 		variables.bundleReverseLookup 	= {};
 		variables.suiteReverseLookup 	= {};
+		
+		// Coverage Data
+		variables.coverageEnabled	= false;
+		variables.coverageData		= {};
 
 		return this;
 	}
@@ -386,7 +395,9 @@ component accessors="true"{
 			"totalSkipped",
 			"bundleStats"
 		];
-		var result 	= {};
+		var result 	= {
+			'coverage' : {}
+		};
 
 		// Do simple properties only
 		for( var thisProp in pList ){
@@ -403,6 +414,25 @@ component accessors="true"{
 			} else {
 				result[ thisProp ] = "";
 			}
+		}
+		
+		result.coverage = {
+			'enabled' = coverageEnabled,
+			'data' = {}			
+		};
+		
+		if( coverageEnabled ) {
+			result.coverage.data = {
+				'stats' : {},
+		  		'sonarQubeResults' : coverageData.sonarQubeResults,
+		  		'browserResults' : coverageData.browserResults
+			};
+			result.coverage.data.stats = {
+				'numFiles' : coverageData.stats.numFiles, 
+				'percTotalCoverage' : coverageData.stats.percTotalCoverage,
+				'totalExecutableLines' : coverageData.stats.totalExecutableLines,
+				'totalCoveredLines' : coverageData.stats.totalCoveredLines
+			};
 		}
 
 		return result;

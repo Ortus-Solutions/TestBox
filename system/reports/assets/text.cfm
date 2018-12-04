@@ -12,7 +12,9 @@ Global Stats (#results.getTotalDuration()# ms)
 ->[Failures: #results.getTotalFail()#]
 ->[Errors: #results.getTotalError()#]
 ->[Skipped: #results.getTotalSkipped()#]
-->[Labels Applied: #arrayToList( results.getLabels() )#]
+->[Labels Applied: #arrayToList( results.getLabels() )#] <cfif results.getCoverageEnabled()>
+->[Coverage: #round( results.getCoverageData().stats.percTotalCoverage*100 )#%]
+</cfif>
 <cfloop array="#variables.bundleStats#" index="thisBundle">
 =============================================================
 #thisBundle.path# (#thisBundle.totalDuration# ms)

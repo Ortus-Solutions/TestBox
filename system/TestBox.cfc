@@ -25,6 +25,8 @@ component accessors="true"{
 	property name="options";
 	// Last TestResult in case runner wants to inspect it
 	property name="result";
+	// Code Coverage Service
+	property name="coverageService";
 
 	/**
 	* Constructor
@@ -50,6 +52,7 @@ component accessors="true"{
 		variables.codename 	= "";
 		// init util
 		variables.utility = new testbox.system.util.Util();
+		variables.coverageService = new testbox.system.coverage.CoverageService( arguments.options.coverage ?: {} );
 
 		// reporter
 		variables.reporter = arguments.reporter;
@@ -230,6 +233,8 @@ component accessors="true"{
 			testSpecs   = arguments.testSpecs
 		);
 
+		coverageService.beginCapture();
+
 		// iterate and run the test bundles
 		for( var thisBundlePath in variables.bundles ){
 			// Skip interfaces, they are not testable
@@ -264,6 +269,11 @@ component accessors="true"{
 		// mark end of testing bundles
 		results.end();
 
+		coverageService.processCoverage( results, this );
+		
+		coverageService.endCapture( true );
+		
+		
 		sendStatusHeaders( results );
 
 		return results;
@@ -424,7 +434,6 @@ component accessors="true"{
 			case "tap" : { return new "testbox.system.reports.TapReporter"(); }
 			case "doc" : { return new "testbox.system.reports.DocReporter"(); }
 			case "codexwiki" : { return new "testbox.system.reports.CodexWikiReporter"(); }
-			case "CoverageReporter" : { return new "testbox.system.reports.CoverageReporter"(); }
 			default: {
 				return new "#arguments.reporter#"();
 			}

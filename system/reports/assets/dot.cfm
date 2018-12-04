@@ -55,7 +55,10 @@
 			<cfset totalClass = "pass">
 		</cfif>
 		<p>
-		<span class="#totalClass#">#results.getTotalSpecs()# test(s) in #results.getTotalSuites()# suite(s) from #results.getTotalBundles()# bundle(s) completed </span> (#results.getTotalDuration()# ms)
+		<span class="#totalClass#">#results.getTotalSpecs()# test(s) in #results.getTotalSuites()# suite(s) from #results.getTotalBundles()# bundle(s) completed </span> (#results.getTotalDuration()# ms)		
+		<cfif results.getCoverageEnabled()>
+			Coverage: #round( results.getCoverageData().stats.percTotalCoverage*100 )#%
+		</cfif>
 		</p>
 		[ <span class="passed" 	data-status="passed">Pass: #results.getTotalPass()#</span> ]
 		[ <span class="failed" 	data-status="failed">Failures: #results.getTotalFail()#</span> ]

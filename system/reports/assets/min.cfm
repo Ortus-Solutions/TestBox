@@ -45,7 +45,10 @@
 	[ <span class="specStatus skipped" data-status="skipped">Skipped: #results.getTotalSkipped()#</span> ]
 	<br>
 	<cfif arrayLen( results.getLabels() )>
-	[ Labels Applied: #arrayToList( results.getLabels() )# ]
+	[ Labels Applied: #arrayToList( results.getLabels() )# ]<br>
+	</cfif>
+	<cfif results.getCoverageEnabled()>
+	[ Coverage: #round( results.getCoverageData().stats.percTotalCoverage*100 )#% ]
 	</cfif>
 
 </div>

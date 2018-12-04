@@ -9,6 +9,9 @@
 <cfif !arrayLen( results.getLabels() )>
 * '''Labels Applied:''' #arrayToList( results.getLabels() )#
 </cfif>
+<cfif results.getCoverageEnabled()>
+* '''Coverage:''' #round( results.getCoverageData().stats.percTotalCoverage*100 )#%
+</cfif>
 
 #chr(10)#
 

@@ -9,7 +9,32 @@
 component accessors=true {
 	
 	function init() {
-		// Classes needed to work.
+		variables.CR = chr( 13 );
+		variables.LF = chr( 10 );
+		variables.CRLF = CR & LF;
+
+		return this;
+	}
+	
+	/**
+	* Configure the main data collection class.
+	*  
+	* @returns true if enabled, false if disabled
+	*/
+	function configure() {
+		try {
+			variables.fragentClass = createObject( 'java', 'com.intergral.fusionreactor.agent.Agent' );
+			// Do a quick test to ensure the line performance instrumentation is loaded.  This will return null for non-supported versions of FR
+			var instrumentation = fragentClass.getAgentInstrumentation().get("cflpi");
+		} catch( Any e ) {
+			return false;
+		}
+		
+		if( isNull( instrumentation ) ) {
+			return false;
+		}
+		
+		// for file globbing
 		variables.pathPatternMatcher = new PathPatternMatcher();
 		
 		// Detect server
@@ -19,26 +44,7 @@ component accessors=true {
 			variables.templateCompiler = new TemplateCompiler_Adobe();
 		}
 		
-		try {
-			variables.fragentClass = createObject( 'java', 'com.intergral.fusionreactor.agent.Agent' );
-			// Do a quick test to ensure the line performance instrumentation is loaded.  This will return null for non-supported versions of FR
-			var instrumentation = fragentClass.getAgentInstrumentation().get("cflpi");
-		} catch( Any e ) {
-			throw( message='Error loading the FusionReactor agent class.  Please ensure FusionReactor is installed', detail=e.message );
-		}
-		
-		if( isNull( instrumentation ) ) {
-			throw( message='FusionReactor''s instrumentation returned null for [cflpi].', detail='Please ensure you''re using a supported version of FusionReactor.' );
-		}
-	
-		//writeDump( fragentClass.getAgentInstrumentation().get("cflpi").getSourceFiles() ); //abort;
-		//writeDump( fragentClass.getAgentInstrumentation().get("cflpi") ); abort;
-						
-		variables.CR = chr( 13 );
-		variables.LF = chr( 10 );
-		variables.CRLF = CR & LF;
-
-		return this;
+		return true;
 	}
 	
 	/**
@@ -81,7 +87,7 @@ component accessors=true {
 		if( isSimpleValue( arguments.blacklist ) ) { arguments.blacklist = arguments.blacklist.listToArray(); }
 		
 		// Get a recursive list of all CFM and CFC files in  project root.
-		var fileList = directoryList( arguments.pathToCapture, true, "path", "*.cf*");
+		var fileList = directoryList( arguments.pathToCapture, true, "path", "*.cf?");
 		
 		// start data structure
 		var qryData = queryNew( "filePath,relativeFilePath,filePathHash,numLines,numCoveredLines,numExecutableLines,percCoverage,lineData",
@@ -127,10 +133,12 @@ component accessors=true {
 			if( !structCount( lineMetricMap ) ) {
 				// Force the engine to compile and load the file even though it was never run. 
 				templateCompiler.compileAndLoad( theFile );
+				systemOutput( 'Forcing refresh on #theFile#', 1 );
 				// Check for metrics again 
 				lineMetricMap = fragentClass.getAgentInstrumentation().get("cflpi").getLineMetrics( theFile );
 				
 				if( isNull( lineMetricMap ) ) {
+					systemOutput( 'Still no data for #theFile#', 1 );
 					lineMetricMap = structNew(); 
 					var noDataForFile = true;
 				}
@@ -185,12 +193,15 @@ component accessors=true {
 			
 			if( strFiledata.numExecutableLines ) {
 				strFiledata.percCoverage = strFiledata.numCoveredLines/strFiledata.numExecutableLines;				
+			} else {
+				// If there's no executable lines in the file, show it as 100% even thoguh we can't divide by zero
+				strFiledata.percCoverage = 1;
 			}
 			queryAddRow( qryData, strFiledata );
 			qryData[ 'lineData' ][ qryData.recordCount ] = lineData;
 		
 		}
-		
+				
 		// Return the data
 		return qryData;
 
