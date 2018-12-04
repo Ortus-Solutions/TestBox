@@ -127,7 +127,10 @@ component accessors=true {
 			var lineData = createObject( 'java', 'java.util.LinkedHashMap' ).init();
 			
 			var jFile = createObject( 'java', 'java.io.File' ).init( theFile );			
-			var lineMetricMap = fragentClass.getAgentInstrumentation().get("cflpi").getLineMetrics( jFile.getCanonicalPath() ) ?: structNew();
+			var lineMetricMap = fragentClass.getAgentInstrumentation().get("cflpi").getLineMetrics( jFile.getCanonicalPath() );
+			if( isNull( lineMetricMap ) ) {
+				lineMetricMap = {};
+			}
 			var noDataForFile = false;
 			// If we don't have any metrics for this file, and we're on Railo or Lucee, attempt to force the file to load.
 			if( !structCount( lineMetricMap ) ) {
