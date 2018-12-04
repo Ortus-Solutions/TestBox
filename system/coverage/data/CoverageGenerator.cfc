@@ -156,6 +156,17 @@ component accessors=true {
 					
 					// Overrides for bugginess ************************************************************************
 					
+					
+					// On Adobe, the first line of CFCs seems to always report as being executable but not running whether it's a comment or a component declaration
+					if( theFile.right( 4 ) == '.cfc' && currentLineNum == 1 && !covered && line.startsWith( '/' & '*' ) ) {
+						continue;
+					}
+					
+					// On Adobe, the first line of CFCs seems to always report as being executable but not running whether it's a comment or a component declaration
+					if( theFile.right( 4 ) == '.cfc' && currentLineNum == 1 && !covered && line.startsWith( 'component' ) ) {
+						covered=1;
+					}
+					
 					// Ignore any tag based comments.  Some are reporting as covered, others aren't.  They really all should be ignored.
 					if( reFindNoCase( '^<!---.*--->$', trim( line) ) ) {
 						continue;

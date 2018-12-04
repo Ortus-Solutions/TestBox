@@ -150,7 +150,7 @@ component accessors="true" {
 	  			opts.pathToCapture = expandPath( '/' );
 	  		}  
 	  		
-	  	} else {
+	  	} else if( !directoryExists( opts.pathToCapture ) && directoryExists( expandPath( opts.pathToCapture ) ) ) {
 	  		opts.pathToCapture = expandPath( opts.pathToCapture );
 	  	}
 	  	
