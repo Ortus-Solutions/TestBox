@@ -52,7 +52,10 @@ component accessors="true"{
 		variables.codename 	= "";
 		// init util
 		variables.utility = new testbox.system.util.Util();
-		variables.coverageService = new testbox.system.coverage.CoverageService( arguments.options.coverage ?: {} );
+		if( !structKeyExists( arguments.options, 'coverage' ) ) {
+			arguments.options.coverage = {};
+		}
+		variables.coverageService = new testbox.system.coverage.CoverageService( arguments.options.coverage );
 
 		// reporter
 		variables.reporter = arguments.reporter;
