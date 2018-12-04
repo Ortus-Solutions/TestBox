@@ -141,7 +141,7 @@ component accessors="true" {
 	  	if( !len( opts.pathToCapture ) ) {
 	  		
 	  		// Look for a /root mapping
-	  		if( directoryExists( '/root' ) ) {
+	  		if( directoryExists( expandPath( '/root' ) ) ) {
 	  			opts.pathToCapture = expandPath( '/root' );
 	  		// And default to entire web root
 	  		} else {
