@@ -125,17 +125,19 @@ component accessors="true" {
 	*/
 	private function setDefaultOptions( struct opts={} ) {
 		
-		opts.enabled = opts.enabled ?: true;
+		if( isNull( opts.enabled ) ) { opts.enabled = true; }
 			  	
-	  	opts.sonarQube = opts.sonarQube ?: {};
-		opts.sonarQube.XMLOutputPath = opts.sonarQube.XMLOutputPath ?: '';
+			  	
+		if( isNull( opts.sonarQube ) ) { opts.sonarQube = {}; }
+		if( isNull( opts.sonarQube.XMLOutputPath ) ) { opts.sonarQube.XMLOutputPath = ''; }
 		
-		opts.browser = opts.browser ?: {};
-		opts.browser.outputDir = opts.browser.outputDir ?: '';
+		if( isNull( opts.browser ) ) { opts.browser = {}; }
+		if( isNull( opts.browser.outputDir ) ) { opts.browser.outputDir = ''; }
 				
-	  	opts.pathToCapture = opts.pathToCapture ?: '';
-		opts.whitelist = opts.whitelist ?: '';
-		opts.blacklist = opts.blacklist ?: '';
+				
+		if( isNull( opts.pathToCapture ) ) { opts.pathToCapture = ''; }
+		if( isNull( opts.whitelist ) ) { opts.whitelist = ''; }
+		if( isNull( opts.blacklist ) ) { opts.blacklist = ''; }
 	  	
 	  	// If no path provided to capture
 	  	if( !len( opts.pathToCapture ) ) {
