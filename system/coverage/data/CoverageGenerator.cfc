@@ -136,12 +136,10 @@ component accessors=true {
 			if( !structCount( lineMetricMap ) ) {
 				// Force the engine to compile and load the file even though it was never run. 
 				templateCompiler.compileAndLoad( theFile );
-				systemOutput( 'Forcing refresh on #theFile#', 1 );
 				// Check for metrics again 
 				lineMetricMap = fragentClass.getAgentInstrumentation().get("cflpi").getLineMetrics( theFile );
 				
 				if( isNull( lineMetricMap ) ) {
-					systemOutput( 'Still no data for #theFile#', 1 );
 					lineMetricMap = structNew(); 
 					var noDataForFile = true;
 				}
