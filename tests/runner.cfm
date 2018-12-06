@@ -9,5 +9,12 @@
 <cfparam name="url.propertiesFilename" 	default="TEST.properties">
 <cfparam name="url.propertiesSummary" 	default="false" type="boolean">
 
+
+<cfparam name="url.coveragePathToCapture"			default="#expandPath( '/testbox/system' )#">
+<cfparam name="url.coverageWhitelist"				default="">
+<cfparam name="url.coverageBlacklist"				default="/stubs/**">
+<cfparam name="url.coverageBrowserOutputDir"		default="#expandPath( '/tests/results/coverageReport' )#">
+
+
 <!--- Include the TestBox HTML Runner --->
 <cfinclude template="/testbox/system/runners/HTMLRunner.cfm" >
