@@ -56,12 +56,12 @@
 <p>#local.thisSpec.name# (#local.thisSpec.totalDuration# ms)</p>
 	
 <cfif local.thisSpec.status eq "failed">
-* '''#htmlEditFormat( local.thisSpec.failMessage )#'''
+* '''#encodeForHTML( local.thisSpec.failMessage )#'''
 <pre>#local.thisSpec.failOrigin.toString()#</pre>
 </cfif>
 
 <cfif local.thisSpec.status eq "error">
-* '''#htmlEditFormat( local.thisSpec.error.message )#'''
+* '''#encodeForHTML( local.thisSpec.error.message )#'''
 <pre>#local.thisSpec.error.stacktrace#</pre>
 </cfif>
 </cfloop>
