@@ -194,7 +194,7 @@
 						<a href="#variables.baseURL#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#" class="#lcase( local.thisSpec.status )#">#local.thisSpec.name# (#local.thisSpec.totalDuration# ms)</a>
 
 						<cfif local.thisSpec.status eq "failed">
-							- <strong class="preserve-whitespace">#htmlEditFormat( local.thisSpec.failMessage )#</strong>
+							- <strong class="preserve-whitespace">#encodeForHTML( local.thisSpec.failMessage )#</strong>
 							  <button onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">+</button><br>
 							  
 							  <cfif arrayLen( local.thisSpec.failOrigin )>
@@ -210,7 +210,7 @@
 						</cfif>
 
 						<cfif local.thisSpec.status eq "error">
-							- <strong>#htmlEditFormat( local.thisSpec.error.message )#</strong>
+							- <strong>#encodeForHTML( local.thisSpec.error.message )#</strong>
 							  <button onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">+</button><br>
 							  
 							  <cfif arrayLen( local.thisSpec.failOrigin )>

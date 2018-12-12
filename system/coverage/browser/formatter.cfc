@@ -140,7 +140,7 @@
 				<a href='javascript:show_about_#arguments.codesig#()' style='#getStyle("TOOLBARLINK")#'>about</a>
 				<span id='about_#arguments.codesig#' style=';display:none;font-style:italic;'><a href='http://coldfish.riaforge.org/' style='#getStyle("TOOLBARLINK")#;margin:0 0 0 0;' target='_blank'>ColdFISH</a> is developed by <a href='http://www.cfinsider.com/' style='#getStyle("TOOLBARLINK")#;margin:0 0 0 0;' target='_blank'>Jason Delmore</a>.  Source code and license information available at <a href='http://coldfish.riaforge.org/' style='#getStyle("TOOLBARLINK")#;margin:0 0 0 0;' target='_blank'>coldfish.riaforge.org</a>.  Version 3.1.1</span>
 			</div>	
-			<pre id='htmlencoded_plain_#arguments.codesig#' style='display:none;#getStyle("TEXT")#;margin:0 0 0 0;'>#htmleditformat(arguments.code)#</pre>
+			<pre id='htmlencoded_plain_#arguments.codesig#' style='display:none;#getStyle("TEXT")#;margin:0 0 0 0;'>#encodeForHTML(arguments.code)#</pre>
 		")/>
 	</cffunction>
 	
