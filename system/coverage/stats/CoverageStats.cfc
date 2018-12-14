@@ -41,9 +41,11 @@ component accessors=true {
 					sum( numExecutableLines ) as sumExecutableLines
 			FROM qryData
 			', {}, { dbtype='query' } );
-			
-		stats.totalExecutableLines += qryPerc.sumExecutableLines;
-		stats.totalCoveredLines += qryPerc.sumCoveredLines;
+		
+		if( qryPerc.recordCount ) {
+			stats.totalExecutableLines += qryPerc.sumExecutableLines;
+			stats.totalCoveredLines += qryPerc.sumCoveredLines;
+		}
 		
 		// Avoid divide-by-zero errors on the % calculation
 		if( stats.totalExecutableLines ) {
