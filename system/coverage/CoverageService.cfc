@@ -4,34 +4,15 @@
 * www.ortussolutions.com
 * ********************************************************************************
 *
-* I am a custom TestBox repoter that captures line coverage data.  Use me like so:
-*
-* testbox = new testbox.system.TestBox(
-*	directory={
-*		mapping = url.directory,
-*		recurse = url.recurse
-*	},
-*	reporter={
-*	    type = "CoverageReporter",
-*	    options = {
-*		  	pathToCapture = expandPath( '/root' ),
-*			whitelist = '/models,/handlers,/modules_app',
-*			blacklist = '/tests,/temp',
-*	    	passThroughReporter={
-*	    		type='simple',
-*	    		option={},
-*	    		// This closure will be run against the results from the passthroguh reporter.
-*	    		resultsUDF=function( reporterData ) {
-*	    			fileWrite( 'myResults.xml', reporterData.results );
-*				    reporterData.results = '<pre>' & encodeForHTML( reporterData.results ) & '<pre>';
-*	    		}
-*	    	},
-*	    	sonarQube = {
-*				XMLOutputPath = expandpath( '/tests/sonarqube-codeCoverage.xml' )
-*	    	}
-*	    }
-*	} );
-*
+* I handle capturing line coverage data. I can accept the following options:
+* 
+* enabled - Boolean to turn coverage on or off
+* sonarQube.XMLOutputPath Absolute XML file path to write XML sunarQube file
+* browser.outputDir Absolute directory path to create html code coverage browser
+* pathToCapture Absolute path to root folder to capture coverage. Typically your web root
+* whitelist A comma-delimited list of file globbing paths relative to your pathToCapture of the ONLY files to match.  When emtpy, everything is matched by default
+* blacklist A comma-delimited list of file globbing paths relative to your pathToCapture of files to ignore
+* 
 */
 component accessors="true" {
 	property name="coverageEnabled" type="boolean";
@@ -115,7 +96,7 @@ component accessors="true" {
 	function renderStats( required struct coverageData ) {
 		var stats = coverageData.stats;
 		savecontent variable="local.statsHTML" {
-			include "/testbox/system/coverage/stats/CoverageStats.cfm";
+			include "/testbox/system/coverage/stats/coverageStats.cfm";
 		}
 		return local.statsHTML;
 	}
