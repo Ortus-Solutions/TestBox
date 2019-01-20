@@ -6,11 +6,10 @@
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
-	<style>#fileRead( '#cDir#/css/simple.css' )#</style>
+
 	<script>#fileRead( '#cDir#/js/jquery.js' )#</script>
 	<style>
-	.dots{ font-size: 60px; clear: both; margin-bottom: 20px; }
-	.dots span{ float: left; margin: -6px;}
+	.dots{ font-size: 60px; }
 	</style>
 	<script>
 	function showInfo( failMessage, specID, isError ){
@@ -41,29 +40,28 @@
 	<p>TestBox v#testbox.getVersion()#</p>
 
 	<!-- Stats --->
-	<div class="box" id="globalStats">
-
+	<div class="border my-1 p-1"id="globalStats">
 		<div class="buttonBar">
-			<a href="#variables.baseURL#"><button title="Run all the tests">Run All</button></a>
+			<a class="btn btn-primary btn-sm m-1 float-right" href="#variables.baseURL#" title="Run all the tests">Run All</a>
 		</div>
 
 		<cfif results.getTotalFail() gt 0>
-			<cfset totalClass = "fail">
+			<cfset totalClass = "text-warning">
 		<cfelseif results.getTotalError() gt 0>
-			<cfset totalClass = "error">
+			<cfset totalClass = "text-danger">
 		<cfelse>
-			<cfset totalClass = "pass">
+			<cfset totalClass = "text-success">
 		</cfif>
 		<p>
-		<span class="#totalClass#">#results.getTotalSpecs()# test(s) in #results.getTotalSuites()# suite(s) from #results.getTotalBundles()# bundle(s) completed </span> (#results.getTotalDuration()# ms)		
+		<span class="#totalClass#">#results.getTotalSpecs()# test(s) in #results.getTotalSuites()# suite(s) from #results.getTotalBundles()# bundle(s) completed </span> (#results.getTotalDuration()# ms)
 		<cfif results.getCoverageEnabled()>
 			Coverage: #round( results.getCoverageData().stats.percTotalCoverage*100 )#%
 		</cfif>
 		</p>
-		[ <span class="passed" 	data-status="passed">Pass: #results.getTotalPass()#</span> ]
-		[ <span class="failed" 	data-status="failed">Failures: #results.getTotalFail()#</span> ]
-		[ <span class="error" 	data-status="error">Errors: #results.getTotalError()#</span> ]
-		[ <span class="skipped" data-status="skipped">Skipped: #results.getTotalSkipped()#</span> ]
+		<span class="badge badge-success"	data-status="passed">Pass: #results.getTotalPass()#</span>
+		<span class="badge badge-warning"	data-status="failed">Failures: #results.getTotalFail()#</span>
+		<span class="badge badge-danger" 	data-status="error">Errors: #results.getTotalError()#</span>
+		<span class="badge badge-info"      data-status="skipped">Skipped: #results.getTotalSkipped()#</span>
 	</div>
 
 	<!--- Dots --->
@@ -90,8 +88,8 @@
 
 		<!--- Debug Panel --->
 		<cfif arrayLen( thisBundle.debugBuffer )>
-			<h2>Debug Stream: #thisBundle.path# <button onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">+</button></h2>
-			<div class="debugdata" data-specid="#thisBundle.id#">
+			<h2>Debug Stream: #thisBundle.path# <button class="btn btn-sm btn-primary" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream"><i class="fas fa-plus-square"></i></button></h2>
+			<div class="debugdata" style="display:none:" data-specid="#thisBundle.id#">
 				<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
 				<cfdump var="#thisBundle.debugBuffer#" />
 			</div>

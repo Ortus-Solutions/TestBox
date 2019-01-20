@@ -12,10 +12,10 @@ component extends="testbox.system.BaseSpec" labels="luis" {
 
 	// executes after all suites+specs in the run() method
 	function afterAll(){
-		if ( listContains( url.labels, "luis" ) ) {
+		if ( StructKeyExists(url, "labels") && listContains( url.labels, "luis" ) ) {
 			expect( testsRan ).toBe( 8 );
         }
-        else if ( listContains( url.excludes, "luis" ) ) {
+        else if ( StructKeyExists(url, "excludes") && listContains( url.excludes, "luis" ) ) {
             expect( testsRan ).toBe( 0 );
         }
 		else {

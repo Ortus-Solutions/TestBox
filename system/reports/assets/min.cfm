@@ -7,7 +7,7 @@
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
 	<script>#fileRead( '#cDir#/js/jquery.js' )#</script>
-	<style>#fileRead( '#cDir#/css/simple.css' )#</style>
+
 	<script>
 	$(document).ready(function() {
 	});
@@ -32,17 +32,17 @@
 <p>TestBox v#testbox.getVersion()#</p>
 
 <!-- Global Stats --->
-<div class="box" id="globalStats">
+<div class="border my-1 p-1" id="globalStats">
 	<div class="buttonBar">
-		<a href="#variables.baseURL#"><button title="Run all the tests">Run All</button></a>
+		<a class="btn btn-primary btn-sm m-1 float-right" href="#variables.baseURL#" title="Run all the tests">Run All</a>
 	</div>
 
 	<h3>Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#  (#results.getTotalDuration()# ms)</h3>
 
-	[ <span class="specStatus passed" data-status="passed">Pass: #results.getTotalPass()#</span> ]
-	[ <span class="specStatus failed" data-status="failed">Failures: #results.getTotalFail()#</span> ]
-	[ <span class="specStatus error" data-status="error">Errors: #results.getTotalError()#</span> ]
-	[ <span class="specStatus skipped" data-status="skipped">Skipped: #results.getTotalSkipped()#</span> ]
+	<span class="badge badge-success" data-status="passed">Pass: #results.getTotalPass()#</span>
+	<span class="badge badge-warning" data-status="failed">Failures: #results.getTotalFail()#</span>
+	<span class="badge badge-danger" data-status="error">Errors: #results.getTotalError()#</span>
+	<span class="badge badge-info" data-status="skipped">Skipped: #results.getTotalSkipped()#</span>
 	<br>
 	<cfif arrayLen( results.getLabels() )>
 	[ Labels Applied: #arrayToList( results.getLabels() )# ]<br>
@@ -64,8 +64,8 @@
 
 	<!--- Debug Panel --->
 	<cfif arrayLen( thisBundle.debugBuffer )>
-		<h2>Debug Stream: #thisBundle.path# <button onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">+</button></h2>
-		<div class="debugdata" data-specid="#thisBundle.id#">
+		<h2>Debug Stream: #thisBundle.path# <button class="btn btn-sm btn-primary" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream"><i class="fas fa-plus-square"></i></button></h2>
+		<div class="debugdata" style="display:none:" data-specid="#thisBundle.id#">
 			<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
 			<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
 				<h1>#thisDebug.label#</h1>
