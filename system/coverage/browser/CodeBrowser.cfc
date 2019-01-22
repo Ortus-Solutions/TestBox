@@ -6,19 +6,22 @@
 * I generate a code browser to see file-level coverage statistics
 */
 component accessors=true {
-	
-	function init() {
 
+	function init(
+		required struct coverageTresholds
+	) {
+
+		variables.coverageTresholds = arguments.coverageTresholds;
 		// Classes needed to work.
 		variables.coldFish = new ColdFish();
-		
+
 		variables.CR = chr( 13 );
 		variables.LF = chr( 10 );
 		variables.CRLF = CR & LF;
-							
+
 		return this;
 	}
-	
+
 	/**
 	* @qryCoverageData A query object containing coverage data
 	* @stats A struct of overview stats
@@ -29,7 +32,7 @@ component accessors=true {
 		required struct stats,
 		required string browserOutputDir
 	) {
-		
+
 		// wipe old files
 		if( directoryExists( browserOutputDir ) ) {
 			try {
@@ -39,18 +42,18 @@ component accessors=true {
 				rethrow;
 			}
 		}
-		
+
 		// Create it fresh
 		if( !directoryExists( browserOutputDir ) ) {
-			directoryCreate( browserOutputDir );	
+			directoryCreate( browserOutputDir );
 		}
-		
+
 		// Create index
 		savecontent variable="local.index" {
 			include "templates/index.cfm";
 		}
 		fileWrite( browserOutputDir & '/index.html', local.index );
-		
+
 		// Created individual files
 		for( var fileData in qryCoverageData ) {
 			// Coverage files are named after "real" files
@@ -58,29 +61,29 @@ component accessors=true {
 			if (!directoryExists(getDirectoryFromPath( theFile ))){
 				directoryCreate( getDirectoryFromPath( theFile ));
 			}
-			
+
 			savecontent variable="local.fileTemplate" {
 				include "templates/file.cfm";
 			}
-			
+
 			fileWrite( theFile, local.fileTemplate );
-			
+
 		}
-		
+
 	}
 
 	/**
 	* visually reward or shame the user
 	* TODO: add more variations of color
 	*/
-	function percentToColor( required percentage ) {
-		percentage = round( percentage*100 );
-		if( percentage >=85 ) {
-			return 'green';
-		} else if( percentage >=50 ) {
-			return 'orange';
-		} else {
-			return 'red';
+	function percentToContextualClass( required percentage ) {
+		percentage = percentage;
+		if( percentage > coverageTresholds.bad && percentage < coverageTresholds.good ) {
+			return 'warning';
+		} else if( percentage >= coverageTresholds.good ) {
+			return 'success';
+		} else if( percentage <= coverageTresholds.bad ) {
+			return 'danger';
 		}
-	}	
+	}
 }

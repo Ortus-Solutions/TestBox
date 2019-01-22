@@ -25,7 +25,7 @@
 	<cfif directoryExists( expandPath( rootMapping & url.path ) )>
 		<cfoutput>#testbox.init( directory=rootMapping & url.path ).run()#</cfoutput>
 	<cfelse>
-		<cfoutput><h1>Invalid incoming directory: #rootMapping & url.path#</h1></cfoutput>
+		<cfoutput><h2>Invalid incoming directory: #rootMapping & url.path#</h2></cfoutput>
 	</cfif>
 	<cfabort>
 
@@ -48,7 +48,12 @@
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>TestBox Global Runner</title>
-	<script><cfinclude template="/testbox/system/reports/assets/js/jquery.js"></script>
+	<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 </head>
@@ -56,7 +61,7 @@
 <body>
 
 <!--- Title --->
-<div id="tb-runner" class="container bg-light">
+<div id="tb-runner" class="container">
 	<div class="row">
 		<div class="col-md-4 text-center mx-auto">
 			<img class="mt-3" src="http://www.ortussolutions.com/__media/testbox-185.png" alt="TestBox" id="tb-logo"/>
@@ -70,7 +75,7 @@
 		<div class="col-md-12">
 			<form name="runnerForm" id="runnerForm">
 				<input type="hidden" name="opt_run" id="opt_run" value="true">
-				<h1>TestBox Test Browser: </h1>
+				<h2>TestBox Test Browser: </h2>
 				<p>
 					Below is a listing of the files and folders starting from your root <code>#rootPath#</code>.  You can click on individual tests in order to execute them
 					or click on the <strong>Run All</strong> button on your left and it will execute a directory runner from the visible folder.

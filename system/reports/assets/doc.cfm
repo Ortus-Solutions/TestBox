@@ -3,11 +3,12 @@
 
 
 <!-- Global Stats --->
-<section class="border my-1 p-1" id="globalStats">
+<section class="border border-info my-1 p-1 bg-light clearfix" id="globalStats">
 
-	<h1>Global Stats (#results.getTotalDuration()# ms)</h1>
+	<h2>Global Stats (#results.getTotalDuration()# ms)</h2>
 	<p>
 		Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#
+		<br>
 		<span class="badge badge-success" data-status="passed">Pass: #results.getTotalPass()#</span>
 		<span class="badge badge-warning" data-status="failed">Failures: #results.getTotalFail()#</span>
 		<span class="badge badge-danger" data-status="error">Errors: #results.getTotalError()#</span>
@@ -27,9 +28,10 @@
 	<section class="bundle" id="bundle-#thisBundle.path#">
 
 		<!--- bundle stats --->
-		<h1>#thisBundle.path# (#thisBundle.totalDuration# ms)</h1>
+		<h2>#thisBundle.path# (#thisBundle.totalDuration# ms)</h2>
 		<p>
 			Suites/Specs: #thisBundle.totalSuites#/#thisBundle.totalSpecs#
+			<br>
 			<span class="badge badge-success" 	data-status="passed" data-bundleid="#thisBundle.id#">Pass: #thisBundle.totalPass#</span>
 			<span class="badge badge-warning" 	data-status="failed" data-bundleid="#thisBundle.id#">Failures: #thisBundle.totalFail#</span>
 			<span class="badge badge-danger" 	data-status="error" data-bundleid="#thisBundle.id#">Errors: #thisBundle.totalError#</span>
@@ -44,7 +46,9 @@
 
 		<!-- Iterate over bundle suites -->
 		<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
-			<section class="suite #lcase( suiteStats.status)#" data-suiteid="#suiteStats.id#">
+			<cfdump var="#suiteStats#">
+
+			<section class="suite #statusToBootstrapClass( suiteStats.status )#" data-suiteid="#suiteStats.id#">
 			<dl>
 				#genSuiteReport( suiteStats, thisBundle )#
 			</dl>
@@ -75,12 +79,10 @@
 	<cfargument name="suiteStats">
 	<cfargument name="bundleStats">
 
-	<cfset suiteStatsStatusClass = statusToBootstrapClass(arguments.suiteStats.status)>
-
 	<cfsavecontent variable="local.report">
 		<cfoutput>
 		<!--- Suite Results --->
-		<h1>+#arguments.suiteStats.name# (#arguments.suiteStats.totalDuration# ms)</h1>
+		<h2>+#arguments.suiteStats.name# (#arguments.suiteStats.totalDuration# ms)</h2>
 		<dl>
 			<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
 				<!--- Spec Results --->
@@ -104,7 +106,7 @@
 			<!--- Do we have nested suites --->
 			<cfif arrayLen( arguments.suiteStats.suiteStats )>
 				<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
-					<section class="suite #suiteStatsStatusClass#" data-bundleid="#arguments.bundleStats.id#">
+					<section class="suite #statusToBootstrapClass(arguments.suiteStats.status)#" data-bundleid="#arguments.bundleStats.id#">
 					<dl>
 						#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
 					</dl>

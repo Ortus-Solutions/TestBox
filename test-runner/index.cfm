@@ -44,7 +44,12 @@ if( url.opt_run ){
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>TestBox Global Runner</title>
-	<script><cfinclude template="/testbox/system/reports/assets/js/jquery.js"></script>
+	<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 	<script>
 	$(document).ready(function() {
 
@@ -70,7 +75,7 @@ if( url.opt_run ){
 <body>
 
 <!--- Title --->
-<div id="tb-runner" class="container bg-light">
+<div id="tb-runner" class="container">
 	<div class="row">
 		<div class="col-md-4 text-center mx-auto">
 			<img class="mt-3" src="http://www.ortussolutions.com/__media/testbox-185.png" alt="TestBox" id="tb-logo"/>
@@ -83,7 +88,7 @@ if( url.opt_run ){
 			<form name="runnerForm" id="runnerForm">
 				<input type="hidden" name="opt_run" id="opt_run" value="true"/>
 
-				<h1>TestBox Global Runner</h1>
+				<h2>TestBox Global Runner</h2>
 				<p>Please use the form below to run test bundle(s), directories and more.</p>
 				<div class="form-group">
 					<label for="target">Bundle(s) or Directory Mapping</label>
@@ -116,7 +121,7 @@ if( url.opt_run ){
 </div>
 
 <!--- Results --->
-<div id="tb-results" class="container bg-light"></div>
+<div id="tb-results" class="container"></div>
 
 </body>
 </html>

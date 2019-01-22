@@ -5,7 +5,7 @@
 
 <cfoutput>
 <!--- MOCKING REAL METHODS --->
-<h1>Mocking Methods</h1>
+<h2>Mocking Methods</h2>
 Normal Test.getData() = #test.getData()#<br />
 NOT MOCKED: Method called #test.$count("getData")# times<br />
 <cfset test.$(method="getData",returns=1000,callLogging=true)>
@@ -26,7 +26,7 @@ Mock Call Logger Dump: <cfdump var="#test.$callLog()#">
 
 <hr />
 <!--- MOCKING VIRUTAL METHODS --->
-<h1>Mocking Virtual Methods</h1>
+<h2>Mocking Virtual Methods</h2>
 We will add a virtual method called <strong>virtualReturn</strong>
 <cfset test.$("virtualReturn").$results('Virtual Called Baby!!')>
 Virtual Method called #test.$count("virtualReturn")# times<br />
@@ -36,21 +36,21 @@ Mock Call Logger Dump: <cfdump var="#test.$callLog()#">
 
 <hr />
 <!--- MOCKING PROPERTIES --->
-<h1>Mocking Properties</h1>
+<h2>Mocking Properties</h2>
 Original Reload property value: #test.getReload()#<br />
 <cfset test.$property(propertyName="reload",mock=true,scope="variables")>
 Mocked Reload Property value:  #test.getReload()#<br />
 
 <hr />
 <!--- MOCKING PRIVATE METHODS --->
-<h1>Mocking Private Methods</h1>
+<h2>Mocking Private Methods</h2>
 Normal Test.getFullName() = #test.getFullName()#<br />
 <cfset test.$("getName","My Mock Name")>
 Mocked Test.getFullName() = #test.getFullName()#<br />
 
 <hr />
 <!--- STATE MACHINE MOCKING RESULTS --->
-<h1>Mocking State Machine of Results</h1>
+<h2>Mocking State Machine of Results</h2>
 <p>Three results will be mocked, and they will be called 11 times. The results should recycle every 3 calls</p>
 <cfset test.$("getSetting").$results("S1","S2","S3")>
 
@@ -60,7 +60,7 @@ Mocked Test.getFullName() = #test.getFullName()#<br />
 
 <hr/>
 <!--- STUB OBJECTS OR PLACEHOLDERS OF FUNCTIONALITY --->
-<h1>Mocking Stubs</h1>
+<h2>Mocking Stubs</h2>
 <p>Create a stub object and add behavior:</p>
 <cfset stub = mockBox.createStub()>
 <cfset stub.$("getName","Luis Majano")>
@@ -69,7 +69,7 @@ Mocked Test.getFullName() = #test.getFullName()#<br />
 <!--- PREPARE A MOCK FOR SPYING --->
 <cfset Test = createObject("component","testbox.tests.resources.Test")>
 <cfset mockBox.prepareMock(test)>
-<h1>Mocking Spy Methods</h1>
+<h2>Mocking Spy Methods</h2>
 UnMocked Spy -> Test.getData() = #test.getData()#<br />
 UnMocked Spy Call -> Test.spyTest() = #test.spyTest()# <br />
 <cfset test.$("getData").$results(1000)>
@@ -79,7 +79,7 @@ Mocked Spy Call -> Test.spyTest() = #test.spyTest()# <br />
 <hr />
 <!--- MOCKING WITH ARGUMENTS --->
 <cfset Test = mockBox.createMock("testbox.tests.resources.Test")>
-<h1>Mocking With Specific ARguments</h1>
+<h2>Mocking With Specific ARguments</h2>
 <p>
 	Unmocked <strong>getSetting() method</strong>:<br />
 	AppMapping = #test.getSetting("AppMapping")#<br />
