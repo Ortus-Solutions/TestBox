@@ -46,8 +46,6 @@
 
 		<!-- Iterate over bundle suites -->
 		<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
-			<cfdump var="#suiteStats#">
-
 			<section class="suite #statusToBootstrapClass( suiteStats.status )#" data-suiteid="#suiteStats.id#">
 			<dl>
 				#genSuiteReport( suiteStats, thisBundle )#
