@@ -107,17 +107,45 @@
 
 <body>
 	<div class="container my-3">
-		<!--- Filter --->
-		<div class="float-right">
-			<input class="form-control" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
+		<!--- Filter and Coverage Modal--->
+		<div class="row mb-3 clearfix">
+			<div class="col-5">
+				<!--- Header --->
+				<p>TestBox v#testbox.getVersion()#</p>
+			</div>
+			<div class="col-7">
+
+				<input class="d-inline col-7 ml-2 form-control float-right" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
+
+				<cfif results.getCoverageEnabled() >
+					<!-- Button trigger modal -->
+					<button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="##coverageStatsModal">
+						View coverage statistics
+					</button>
+
+					<!-- Modal -->
+					<div class="modal fade" id="coverageStatsModal" tabindex="-1" role="dialog" aria-labelledby="coverageStatsModalLabel" aria-hidden="true">
+						<div class="modal-dialog modal-xl" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+								<h5 class="modal-title" id="coverageStatsModalLabel">Modal title</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+								</div>
+								<div class="modal-body">
+									#testbox.getCoverageService().renderStats( results.getCoverageData() )#
+								</div>
+								<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</cfif>
+			</div>
+
 		</div>
-
-		<!--- Header --->
-		<p>TestBox v#testbox.getVersion()#</p>
-
-		<cfif results.getCoverageEnabled() >
-			#testbox.getCoverageService().renderStats( results.getCoverageData() )#
-		</cfif>
 
 		<!--- Global Stats --->
 		<div class="list-group">
