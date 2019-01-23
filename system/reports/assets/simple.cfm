@@ -152,7 +152,9 @@
 			<div class="list-group-item list-group-item-info" id="globalStats">
 
 				<div class="buttonBar">
-					<a class=" m-1 btn btn-sm btn-primary float-right" href="#variables.baseURL#&opt_run=true&target=#URL.target#" title="Run the tests">Rerun Tests</a>
+					<cfif structKeyExists(URL ,"target")>
+						<a class=" m-1 btn btn-sm btn-primary float-right" href="#variables.baseURL#&opt_run=true&target=#URL.target#" title="Run the tests">Rerun Tests</a>
+					</cfif>
 					<span class=" m-1 btn btn-sm btn-primary float-right" onclick="toggleDebug()" title="Toggle the test debug information">Toggle All Debug Information</button>
 				</div>
 

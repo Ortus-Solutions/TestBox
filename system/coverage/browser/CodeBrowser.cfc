@@ -7,18 +7,8 @@
 */
 component accessors=true {
 
-	function init(
-		required struct coverageTresholds
-	) {
-
+	function init( required struct coverageTresholds ) {
 		variables.coverageTresholds = arguments.coverageTresholds;
-		// Classes needed to work.
-		variables.coldFish = new ColdFish();
-
-		variables.CR = chr( 13 );
-		variables.LF = chr( 10 );
-		variables.CRLF = CR & LF;
-
 		return this;
 	}
 
@@ -46,6 +36,8 @@ component accessors=true {
 		// Create it fresh
 		if( !directoryExists( browserOutputDir ) ) {
 			directoryCreate( browserOutputDir );
+			fileCopy("templates/syntaxhighlighter/syntaxhighlighter.js", browserOutputDir);
+			fileCopy("templates/syntaxhighlighter/theme.css", browserOutputDir);
 		}
 
 		// Create index
@@ -58,14 +50,25 @@ component accessors=true {
 		for( var fileData in qryCoverageData ) {
 			// Coverage files are named after "real" files
 			var theFile = "#browserOutputDir & fileData.relativeFilePath#.html";
-			if (!directoryExists(getDirectoryFromPath( theFile ))){
-				directoryCreate( getDirectoryFromPath( theFile ));
+			var fileDir = getDirectoryFromPath( theFile );
+			if (!directoryExists(fileDir)){
+				directoryCreate(fileDir);
+				fileCopy("templates/syntaxhighlighter/syntaxhighlighter.js", fileDir);
+				fileCopy("templates/syntaxhighlighter/theme.css", fileDir);
 			}
+
+			var lineNumbersBGColors = structMap( filedata.lineData, function( key, value,strct ){
+				return ( value > 0 ) ? "success" : "danger";
+			});
+			var percentage = round( fileData.percCoverage*100 )
+
+			var lineNumbersBGColorsJSON = SerializeJSON(lineNumbersBGColors);
+			var fileContents = fileRead( fileData.filePath );
+			fileContents = replaceNoCase(fileContents, "</script>", "&lt;/script&gt;", "ALL");
 
 			savecontent variable="local.fileTemplate" {
 				include "templates/file.cfm";
 			}
-
 			fileWrite( theFile, local.fileTemplate );
 
 		}
