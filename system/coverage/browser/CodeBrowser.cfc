@@ -23,6 +23,7 @@ component accessors=true {
 		required string browserOutputDir
 	) {
 
+		var assetDir = "/testbox/system/reports/assets";
 		// wipe old files
 		if( directoryExists( browserOutputDir ) ) {
 			try {
@@ -36,8 +37,13 @@ component accessors=true {
 		// Create it fresh
 		if( !directoryExists( browserOutputDir ) ) {
 			directoryCreate( browserOutputDir );
-			fileCopy("templates/syntaxhighlighter/syntaxhighlighter.js", browserOutputDir);
-			fileCopy("templates/syntaxhighlighter/theme.css", browserOutputDir);
+			fileCopy("#assetDir#/js/syntaxhighlighter.js", browserOutputDir);
+			fileCopy("#assetDir#/js/bootstrap.min.js", browserOutputDir);
+			fileCopy("#assetDir#/js/jquery-3.3.1.min.js", browserOutputDir);
+			fileCopy("#assetDir#/js/popper.min.js", browserOutputDir);
+			fileCopy("#assetDir#/css/syntaxhighlighter.css", browserOutputDir);
+			fileCopy("#assetDir#/css/bootstrap.min.css", browserOutputDir);
+			fileCopy("#assetDir#/css/fontawesome.css", browserOutputDir);
 		}
 
 		// Create index
@@ -53,8 +59,13 @@ component accessors=true {
 			var fileDir = getDirectoryFromPath( theFile );
 			if (!directoryExists(fileDir)){
 				directoryCreate(fileDir);
-				fileCopy("templates/syntaxhighlighter/syntaxhighlighter.js", fileDir);
-				fileCopy("templates/syntaxhighlighter/theme.css", fileDir);
+				fileCopy("#assetDir#/js/syntaxhighlighter.js", fileDir);
+				fileCopy("#assetDir#/js/bootstrap.min.js", fileDir);
+				fileCopy("#assetDir#/js/jquery-3.3.1.min.js", fileDir);
+				fileCopy("#assetDir#/js/popper.min.js", fileDir);
+				fileCopy("#assetDir#/css/syntaxhighlighter.css", fileDir);
+				fileCopy("#assetDir#/css/bootstrap.min.css", fileDir);
+				fileCopy("#assetDir#/css/fontawesome.css", fileDir);
 			}
 
 			var lineNumbersBGColors = structMap( filedata.lineData, function( key, value,strct ){
