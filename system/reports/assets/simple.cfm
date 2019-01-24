@@ -39,11 +39,7 @@
 		$( "##bundleFilter" ).focus();
 
 		// Bootstrap Collapse
-		$('.collapse').collapse("hide");
-
-		$('##myCollapsible').on('hidden.bs.collapse', function () {
-			console.log($(this).attr('id'));
-		});
+		//$('.collapse').collapse("toggle");
 	});
 
 
@@ -190,7 +186,7 @@
 					<a href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&target=#URLEncodedFormat( thisBundle.path )#&opt_run=true" title="Run only this bundle">
 						#thisBundle.path#
 					</a> (#thisBundle.totalDuration# ms)
-					<button class="btn btn-link float-right collapsed" type="button" data-toggle="collapse" data-target="##details_#thisBundle.id#" aria-expanded="false" aria-controls="details_#thisBundle.id#">
+					<button class="btn btn-link float-right" type="button" data-toggle="collapse" data-target="##details_#thisBundle.id#" aria-expanded="true" aria-controls="details_#thisBundle.id#">
 						<i class="fa" aria-hidden="true"></i>
 					</button>
 				</h4>
@@ -203,7 +199,7 @@
 					<span class="reset m-1 btn btn-sm btn-dark" title="Clear status filters">Reset</span>
 				</div>
 			  </div>
-			  <div id="details_#thisBundle.id#" class="collapse" aria-labelledby="header_#thisBundle.id#" data-bundle="#thisBundle.path#" data-parent="##bundles">
+			  <div id="details_#thisBundle.id#" class="collapse show" aria-labelledby="header_#thisBundle.id#" data-bundle="#thisBundle.path#" data-parent="##bundles">
 				<div class="card-body">
 					<!--- Global Error --->
 					<cfif !isSimpleValue( thisBundle.globalException )>
@@ -292,14 +288,12 @@
 								<i class="fa" aria-hidden="true"></i>
 							</button><br>
 
-							<!---
 							<cfif arrayLen( local.thisSpec.failOrigin )>
 								<div class="">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
 								<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
 									<div class="">#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</div>
 								</cfif>
 							</cfif>
-							--->
 
 							<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
 								<cfdump var="#local.thisSpec.failorigin#" label="Failure Origin">
@@ -312,14 +306,12 @@
 								<i class="fa" aria-hidden="true"></i>
 							</button><br>
 
-							<!---
 							<cfif arrayLen( local.thisSpec.failOrigin )>
 								<div class="">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
 								<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
 									<div class="">#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</div>
 								</cfif>
 							</cfif>
-							--->
 
 							<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
 								<cfdump var="#local.thisSpec.error#" label="Exception Structure">

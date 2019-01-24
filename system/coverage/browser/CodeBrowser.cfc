@@ -38,12 +38,9 @@ component accessors=true {
 		if( !directoryExists( browserOutputDir ) ) {
 			directoryCreate( browserOutputDir );
 			fileCopy("#assetDir#/js/syntaxhighlighter.js", browserOutputDir);
-			fileCopy("#assetDir#/js/bootstrap.min.js", browserOutputDir);
 			fileCopy("#assetDir#/js/jquery-3.3.1.min.js", browserOutputDir);
-			fileCopy("#assetDir#/js/popper.min.js", browserOutputDir);
 			fileCopy("#assetDir#/css/syntaxhighlighter.css", browserOutputDir);
 			fileCopy("#assetDir#/css/bootstrap.min.css", browserOutputDir);
-			fileCopy("#assetDir#/css/fontawesome.css", browserOutputDir);
 		}
 
 		// Create index

@@ -13,7 +13,7 @@
 
 	</head>
 	<body>
-		<div class="container my-3">
+		<div class="container-fluid my-3">
 			<h2>Code Coverage Browser</h2>
 
 			<h4>Total Files Processed: #stats.numFiles#</h4>
@@ -42,10 +42,10 @@
 						<cfset link = right( link, len( link )-1 )>
 						<td><a href="#link#">#relativeFilePath#</a></td>
 						<td>
-							<div class="progress position-relative">
+							<div class="progress position-relative" style="height: 1.4rem;">
 								<div class="progress-bar bg-#percentToContextualClass( local.percentage )#" role="progressbar" style="width: #percentage#%" aria-valuenow="#percentage#" aria-valuemin="0" aria-valuemax="100"></div>
 								<div class="progress-bar bg-danger" role="progressbar" style="width: #100-percentage#%" aria-valuenow="#100-percentage#" aria-valuemin="0" aria-valuemax="100"></div>
-								<span class="justify-content-center text-light d-flex position-absolute w-100">#percentage#% coverage</span>
+								<span class="justify-content-center text-light d-flex position-absolute w-100" style="line-height: 1.25rem; font-size: 1.2rem;"">#percentage#% coverage</span>
 							</div>
 						</td>
 					</tr>
