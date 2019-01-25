@@ -3,10 +3,10 @@
     "force":true,
     "openbrowser":"false",
     "web":{
+		"directoryBrowsing": true,
         "http":{
             "port":"49616"
-        },
-        "host":"127.0.0.1"
+        }
     },
     "app":{
 		"cfengine":"lucee@5",
