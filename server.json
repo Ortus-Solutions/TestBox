@@ -4,9 +4,10 @@
     "web":{
         "http":{
             "port":"49616"
-        }
+        },
+        "host":"127.0.0.1"
     },
     "app":{
-        "cfengine":"adobe@10"
+        "cfengine":"lucee@5"
     }
 }

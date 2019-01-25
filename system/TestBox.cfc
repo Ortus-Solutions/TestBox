@@ -273,10 +273,10 @@ component accessors="true"{
 		results.end();
 
 		coverageService.processCoverage( results, this );
-		
+
 		coverageService.endCapture( true );
-		
-		
+
+
 		sendStatusHeaders( results );
 
 		return results;

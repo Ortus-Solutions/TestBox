@@ -44,12 +44,18 @@ if( url.opt_run ){
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>TestBox Global Runner</title>
-	<script><cfinclude template="/testbox/system/reports/assets/js/jquery.js"></script>
+	<script
+  src="https://code.jquery.com/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 	<script>
 	$(document).ready(function() {
 
 	});
 	function runTests(){
+		console.log($("#runnerForm").serialize());
 		$("#tb-results").html( "" );
 		$("#btn-run").html( 'Running...' ).css( "opacity", "0.5" );
 		$("#tb-results").load( "index.cfm", $("#runnerForm").serialize(), function( data ){
@@ -62,118 +68,60 @@ if( url.opt_run ){
 		$("#labels").html( '' );
 	}
 	</script>
-	<style>
-	body{
-		font-family:  Monaco, "Lucida Console", monospace;
-		font-size: 10.5px;
-		line-height: 14px;
-	}
-	h1,h2,h3,h4{ margin-top: 3px;}
-	h1{ font-size: 14px;}
-	h2{ font-size: 13px;}
-	h3{ font-size: 12px;}
-	h4{ font-size: 11px; font-style: italic;}
-	ul{ margin-left: -10px;}
-	li{ margin-left: -10px; list-style: none;}
-	a{ text-decoration: none;}
-	a:hover{ text-decoration: underline;}
-	/** utility **/
-	.centered { text-align: center !important; }
-	.inline{ display: inline !important; }
-	.margin10{ margin: 10px; }
-	.padding10{ padding: 10px; }
-	.margin0{ margin: 0px; }
-	.padding0{ padding: 0px; }
-	.box{ border:1px solid gray; margin: 10px 0px; padding: 10px; background-color: #f5f5f5}
-	.pull-right{ float: right;}
-	.pull-left{ float: left;}
-	.clear { clear: both; }
-	#tb-runner{ min-height: 135px}
-	#tb-runner #tb-left{ width: 17%; margin-right: 10px; margin-top: 15px; float:left;}
-	#tb-runner #tb-right{ width: 80%; }
-	#tb-runner fieldset{ padding: 10px; margin: 10px 0px; border: 1px dotted gray;}
-	#tb-runner input{ padding: 5px; margin: 2px 0px;}
-	#tb-runner .btn-red {
-		background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #f24537), color-stop(1, #c62d1f) );
-		background:-moz-linear-gradient( center top, #f24537 5%, #c62d1f 100% );
-		filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f24537', endColorstr='#c62d1f');
-		background-color:#f24537;
-		-webkit-border-top-left-radius:5px;
-		-moz-border-radius-topleft:5px;
-		border-top-left-radius:5px;
-		-webkit-border-top-right-radius:5px;
-		-moz-border-radius-topright:5px;
-		border-top-right-radius:5px;
-		-webkit-border-bottom-right-radius:5px;
-		-moz-border-radius-bottomright:5px;
-		border-bottom-right-radius:5px;
-		-webkit-border-bottom-left-radius:5px;
-		-moz-border-radius-bottomleft:5px;
-		border-bottom-left-radius:5px;
-		text-indent:1.31px;
-		border:1px solid #d02718;
-		display:inline-block;
-		color:#ffffff;
-		font-weight:bold;
-		font-style:normal;
-		height:25px;
-		width:71px;
-		text-decoration:none;
-		text-align:center;
-		cursor: pointer;
-	}
-	#tb-runner .btn-red:hover {
-		background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #c62d1f), color-stop(1, #f24537) );
-		background:-moz-linear-gradient( center top, #c62d1f 5%, #f24537 100% );
-		filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#c62d1f', endColorstr='#f24537');
-		background-color:#c62d1f;
-	}
-	#tb-runner .btn-red:active {
-		position:relative;
-		top:1px;
-	}
-	#tb-results{ padding: 10px;}
-	</style>
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 </head>
 <cfoutput>
 <body>
 
 <!--- Title --->
-<div id="tb-runner" class="box" style="min-height:220px">
-<form name="runnerForm" id="runnerForm">
-<input type="hidden" name="opt_run" id="opt_run" value="true">
-
-	<div id="tb-left" class="centered">
-		<img src="http://www.ortussolutions.com/__media/testbox-185.png" alt="TestBox" id="tb-logo"/><br>v#testbox.getVersion()#
-	</div>
-
-	<div id="tb-right">
-		<h1>TestBox Global Runner</h1>
-		<p>Please use the form below to run test bundle(s), directories and more.</p>
-
-			<input type="text" name="target" value="#trim( url.target )#" size="50" placeholder="Bundle(s) or Directory Mapping"/>
-			<label title="Enable directory recursion for directory runner">
-				<input name="opt_recurse" id="opt_recurse" type="checkbox" value="true" <cfif url.opt_recurse>checked="true"</cfif> /> Recurse Directories
-			</label>
+<div id="tb-runner" class="container">
+	<div class="row">
+		<div class="col-md-4 text-center mx-auto">
+			<img class="mt-3" src="http://www.ortussolutions.com/__media/testbox-185.png" alt="TestBox" id="tb-logo"/>
 			<br>
-			<label title="List of labels to apply to tests">
-				<input type="text" name="labels" id="labels" value="#url.labels#" size="50" placeholder="Label(s)"/>
-			</label>
-			<br>
-			<select name="reporter">
-				<cfloop array="#reporters#" index="thisReporter">
-					<option <cfif url.reporter eq thisReporter>selected="selected"</cfif> value="#thisReporter#">#thisReporter# Reporter</option>
-				</cfloop>
-			</select>
-			<button class="btn-red" type="button" onclick="clearResults()">Clear</button>
-			<button class="btn-red" type="button" id="btn-run" title="Run all the tests" onclick="runTests()">Run</button>
+			v#testbox.getVersion()#
+		</div>
 	</div>
-	<div class="clear"></div>
-</form>
+	<div class="row">
+		<div class="col-md-12">
+			<form name="runnerForm" id="runnerForm">
+				<input type="hidden" name="opt_run" id="opt_run" value="true"/>
+
+				<h2>TestBox Global Runner</h2>
+				<p>Please use the form below to run test bundle(s), directories and more.</p>
+				<div class="form-group">
+					<label for="target">Bundle(s) or Directory Mapping</label>
+					<input  class="form-control" type="text" name="target" id="target" value="#trim( url.target )#" placeholder="Bundle(s)"/>
+				</div>
+				<div class="form-group form-check">
+					<input class="form-check-input" title="Enable directory recursion for directory runner" name="opt_recurse" id="opt_recurse" type="checkbox" value="true" <cfif url.opt_recurse>checked="true"</cfif> />
+					<label class="form-check-label" for="opt_recurse"> Recurse Directories</label>
+				</div>
+				<div class="form-group">
+					<label for="labels">List of labels to apply to tests</label>
+					<input  class="form-control" title="List of labels to apply to tests" type="text" name="labels" id="labels" value="#url.labels#" placeholder="Label(s)"/>
+				</div>
+				<div class="form-group">
+					<label for="reporter">Reporter</label>
+					<select name="reporter" id="reporter" class="custom-select">
+						<cfloop array="#reporters#" index="thisReporter">
+							<option <cfif url.reporter eq thisReporter>selected="selected"</cfif> value="#thisReporter#">#thisReporter# Reporter</option>
+						</cfloop>
+					</select>
+				</div>
+				<div class="form-group">
+					<button class="btn btn-sm btn-primary" type="button" onclick="clearResults()">Clear</button>
+					<button class="btn btn-sm btn-primary" type="button" id="btn-run" title="Run all the tests" onclick="runTests()">Run</button>
+				</div>
+
+		</form>
+		</div>
+	</div>
 </div>
 
 <!--- Results --->
-<div id="tb-results"></div>
+<div id="tb-results" class="container"></div>
 
 </body>
 </html>
