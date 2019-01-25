@@ -8,7 +8,7 @@
 component accessors=true {
 
 	// Location of all assets in TestBox
-	variables.ASSETS_DIR = "/testbox/system/reports/assets";
+	variables.ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
 
 	/**
 	 * Constructor
