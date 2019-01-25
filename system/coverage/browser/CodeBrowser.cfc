@@ -7,8 +7,18 @@
 */
 component accessors=true {
 
+	// Location of all assets in TestBox
+	variables.ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
+
+	/**
+	 * Constructor
+	 *
+	 * @coverageTresholds Options for threshold
+	 */
 	function init( required struct coverageTresholds ) {
+		variables.streamBuilder = new testbox.system.modules.cbStreams.models.StreamBuilder();
 		variables.coverageTresholds = arguments.coverageTresholds;
+
 		return this;
 	}
 
@@ -23,7 +33,6 @@ component accessors=true {
 		required string browserOutputDir
 	) {
 
-		var assetDir = "/testbox/system/reports/assets";
 		// wipe old files
 		if( directoryExists( browserOutputDir ) ) {
 			try {
@@ -37,10 +46,10 @@ component accessors=true {
 		// Create it fresh
 		if( !directoryExists( browserOutputDir ) ) {
 			directoryCreate( browserOutputDir );
-			fileCopy("#assetDir#/js/syntaxhighlighter.js", browserOutputDir);
-			fileCopy("#assetDir#/js/jquery-3.3.1.min.js", browserOutputDir);
-			fileCopy("#assetDir#/css/syntaxhighlighter.css", browserOutputDir);
-			fileCopy("#assetDir#/css/bootstrap.min.css", browserOutputDir);
+			fileCopy( "#variables.ASSETS_DIR#/js/syntaxhighlighter.js", browserOutputDir );
+			fileCopy( "#variables.ASSETS_DIR#/js/jquery-3.3.1.min.js", browserOutputDir );
+			fileCopy( "#variables.ASSETS_DIR#/css/syntaxhighlighter.css", browserOutputDir );
+			fileCopy( "#variables.ASSETS_DIR#/css/bootstrap.min.css", browserOutputDir );
 		}
 
 		// Create index
@@ -49,52 +58,69 @@ component accessors=true {
 		}
 		fileWrite( browserOutputDir & '/index.html', local.index );
 
-		// Created individual files
-		for( var fileData in qryCoverageData ) {
-			// Coverage files are named after "real" files
-			var theFile = "#browserOutputDir & fileData.relativeFilePath#.html";
-			var fileDir = getDirectoryFromPath( theFile );
-			if (!directoryExists(fileDir)){
-				directoryCreate(fileDir);
-				fileCopy("#assetDir#/js/syntaxhighlighter.js", fileDir);
-				fileCopy("#assetDir#/js/bootstrap.min.js", fileDir);
-				fileCopy("#assetDir#/js/jquery-3.3.1.min.js", fileDir);
-				fileCopy("#assetDir#/js/popper.min.js", fileDir);
-				fileCopy("#assetDir#/css/syntaxhighlighter.css", fileDir);
-				fileCopy("#assetDir#/css/bootstrap.min.css", fileDir);
-				fileCopy("#assetDir#/css/fontawesome.css", fileDir);
-			}
+		// Create directory skeletons
+		var dataStream = variables.streamBuilder
+			.new()
+			.rangeClosed( 1, qryCoverageData.recordcount )
+			.map( function( index ){
+				return qryCoverageData.getRow( index );
+			} )
+			.peek( function( item ){
+				var theContainerDirectory = getDirectoryFromPath( "#browserOutputDir & item.relativeFilePath#" );
 
-			var lineNumbersBGColors = structMap( filedata.lineData, function( key, value,strct ){
-				return ( value > 0 ) ? "success" : "danger";
-			});
-			var percentage = round( fileData.percCoverage*100 )
+				if( !directoryExists( theContainerDirectory ) ){
+					directoryCreate( theContainerDirectory );
 
-			var lineNumbersBGColorsJSON = SerializeJSON(lineNumbersBGColors);
-			var fileContents = fileRead( fileData.filePath );
-			fileContents = replaceNoCase(fileContents, "</script>", "&lt;/script&gt;", "ALL");
+					// TODO: I DON'T THINK THIS IS NECESSARY, INVESTIGATE
+					fileCopy( "#variables.ASSETS_DIR#/js/syntaxhighlighter.js",   theContainerDirectory );
+					fileCopy( "#variables.ASSETS_DIR#/js/bootstrap.min.js",       theContainerDirectory );
+					fileCopy( "#variables.ASSETS_DIR#/js/jquery-3.3.1.min.js",    theContainerDirectory );
+					fileCopy( "#variables.ASSETS_DIR#/js/popper.min.js",          theContainerDirectory );
+					fileCopy( "#variables.ASSETS_DIR#/css/syntaxhighlighter.css", theContainerDirectory );
+					fileCopy( "#variables.ASSETS_DIR#/css/bootstrap.min.css",     theContainerDirectory );
+					fileCopy( "#variables.ASSETS_DIR#/css/fontawesome.css",       theContainerDirectory );
+				}
+			} )
+			.toArray();
 
-			savecontent variable="local.fileTemplate" {
-				include "templates/file.cfm";
-			}
-			fileWrite( theFile, local.fileTemplate );
+		// Created individual files now that skeleton is online
+		variables.streamBuilder
+			.new( dataStream )
+			.parallel()
+			.forEach( function( fileData ){
+				// Coverage files are named after "real" files
+				var theFile = "#browserOutputDir & fileData.relativeFilePath#.html";
 
-		}
+				var lineNumbersBGColors = fileData.lineData.map( function( key, value ){
+					return ( value > 0 ) ? "success" : "danger";
+				} );
+				var percentage              = round( fileData.percCoverage * 100 );
+				var lineNumbersBGColorsJSON = SerializeJSON( lineNumbersBGColors );
+				var fileContents            = fileRead( fileData.filePath );
 
+				savecontent variable="local.fileTemplate" {
+					include "templates/file.cfm";
+				}
+
+				fileWrite( theFile, local.fileTemplate );
+			} );
 	}
 
 	/**
-	* visually reward or shame the user
-	* TODO: add more variations of color
-	*/
+	 * visually reward or shame the user
+	 * TODO: add more variations of color
+	 *
+	 * @percentage The percentage to get a color on
+	 */
 	function percentToContextualClass( required percentage ) {
 		percentage = percentage;
-		if( percentage > coverageTresholds.bad && percentage < coverageTresholds.good ) {
+		if( percentage > variables.coverageTresholds.bad && percentage < variables.coverageTresholds.good ) {
 			return 'warning';
-		} else if( percentage >= coverageTresholds.good ) {
+		} else if( percentage >= variables.coverageTresholds.good ) {
 			return 'success';
-		} else if( percentage <= coverageTresholds.bad ) {
+		} else if( percentage <= variables.coverageTresholds.bad ) {
 			return 'danger';
 		}
 	}
+
 }

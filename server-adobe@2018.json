@@ -1,12 +1,15 @@
 {
-    "app":{
-        "cfengine":"adobe@2018"
-    },
-    "name":"adobe@2018",
+	"name":"testbox-adobe@2018",
+    "force":true,
     "openbrowser":"false",
     "web":{
+		"directoryBrowsing": true,
         "http":{
             "port":"49616"
         }
+    },
+    "app":{
+		"cfengine":"adobe@2018",
+		"serverHomeDirectory":".engine/adobe2018"
     }
 }

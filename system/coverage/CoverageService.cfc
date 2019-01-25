@@ -4,43 +4,38 @@
 * www.ortussolutions.com
 * ********************************************************************************
 *
-* I am a custom TestBox repoter that captures line coverage data.  Use me like so:
+* I handle capturing line coverage data. I can accept the following options:
 *
-* testbox = new testbox.system.TestBox(
-*	directory={
-*		mapping = url.directory,
-*		recurse = url.recurse
-*	},
-*	reporter={
-*	    type = "CoverageReporter",
-*	    options = {
-*		  	pathToCapture = expandPath( '/root' ),
-*			whitelist = '/models,/handlers,/modules_app',
-*			blacklist = '/tests,/temp',
-*	    	passThroughReporter={
-*	    		type='simple',
-*	    		option={},
-*	    		// This closure will be run against the results from the passthroguh reporter.
-*	    		resultsUDF=function( reporterData ) {
-*	    			fileWrite( 'myResults.xml', reporterData.results );
-*				    reporterData.results = '<pre>' & encodeForHTML( reporterData.results ) & '<pre>';
-*	    		}
-*	    	},
-*	    	sonarQube = {
-*				XMLOutputPath = expandpath( '/tests/sonarqube-codeCoverage.xml' )
-*	    	}
-*	    }
-*	} );
+* enabled - Boolean to turn coverage on or off
+* sonarQube.XMLOutputPath Absolute XML file path to write XML sunarQube file
+* browser.outputDir Absolute directory path to create html code coverage browser
+* pathToCapture Absolute path to root folder to capture coverage. Typically your web root
+* whitelist A comma-delimited list of file globbing paths relative to your pathToCapture of the ONLY files to match.  When emtpy, everything is matched by default
+* blacklist A comma-delimited list of file globbing paths relative to your pathToCapture of files to ignore
 *
 */
 component accessors="true" {
+
+	/**
+	 * Coverage Enabled or not
+	 */
 	property name="coverageEnabled" type="boolean";
+
+	/**
+	 * Struct of coverage options
+	 */
 	property name="coverageOptions" type="struct";
+
+	/**
+	 * The CoverageGenerator object reference
+	 */
 	property name="coverageGenerator" type="any";
 
 	/**
-	* Boostrap the Code Coverage service and decide if we'll be enabled or not
-	*/
+	 * Boostrap the Code Coverage service and decide if we'll be enabled or not
+	 *
+	 * @coverageOptions struct of options to initialize with
+	 */
 	function init( coverageOptions={} ) {
 
 	  	// Default options
@@ -51,26 +46,33 @@ component accessors="true" {
 	  	if( coverageEnabled ) {
 			variables.coverageGenerator = new data.CoverageGenerator();
 			variables.coverageEnabled = coverageGenerator.configure();
-	  	}
+		}
+
+		return this;
 	}
 
 	/**
 	* Reset system for a new test.  Turns on line coverage and resets in-memory statistics
 	*/
-	function beginCapture() {
+	CoverageService function beginCapture() {
 	  	if( coverageEnabled ) {
 			coverageGenerator.beginCapture();
-	  	}
+		}
+
+		return this;
 	}
 
 	/**
-	* End the capture of data.  Clears up memory and optionally turns off line profiling
-	* @leaveLineProfilingOn Set to true to leave line profiling enabled on the server
-	*/
-	function endCapture( leaveLineProfilingOn=false  ) {
-	  	if( coverageEnabled ) {
+	 * End the capture of data.  Clears up memory and optionally turns off line profiling
+	 *
+	 * @leaveLineProfilingOn Set to true to leave line profiling enabled on the server
+	 */
+	CoverageService function endCapture( leaveLineProfilingOn=false  ) {
+	  	if( coverageEnabled ){
 			coverageGenerator.endCapture( leaveLineProfilingOn );
-	  	}
+		}
+
+		return this;
 	}
 
 	/**
@@ -79,7 +81,7 @@ component accessors="true" {
 	* @results.hint The instance of the TestBox TestResult object to build a report on
 	* @testbox.hint The TestBox core object
 	*/
-	any function processCoverage(
+	CoverageService function processCoverage(
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox
 	){
@@ -100,13 +102,15 @@ component accessors="true" {
 
 		  	results.setCoverageEnabled( true );
 		  	results.setCoverageData( {
-		  		'qryData' : qryCoverageData,
-		  		'stats' : stats,
+		  		'qryData'          : qryCoverageData,
+		  		'stats'            : stats,
 		  		'sonarQubeResults' : sonarQubeResults,
-		  		'browserResults' : browserResults
-		  	} );
+		  		'browserResults'   : browserResults
+			} );
 
-	  	}
+		}
+
+		return this;
 	}
 
 	/**
@@ -114,21 +118,23 @@ component accessors="true" {
 	*/
 	function renderStats( required struct coverageData ) {
 		var stats = coverageData.stats;
-		var codeBrowser = new browser.CodeBrowser(getCoverageOptions().coverageTresholds);
+		var codeBrowser = new browser.CodeBrowser( getCoverageOptions().coverageTresholds );
 
 		savecontent variable="local.statsHTML" {
-			include "/testbox/system/coverage/stats/CoverageStats.cfm";
+			include "/testbox/system/coverage/stats/coverageStats.cfm";
 		}
+
 		return local.statsHTML;
 	}
 
 	/**
-	* Default user option struct and do some validation
-	*/
+	 * Default user option struct and do some validation
+	 *
+	 * @opts The options to default and check
+	 */
 	private function setDefaultOptions( struct opts={} ) {
 
 		if( isNull( opts.enabled ) ) { opts.enabled = true; }
-
 
 		if( isNull( opts.sonarQube ) ) { opts.sonarQube = {}; }
 		if( isNull( opts.sonarQube.XMLOutputPath ) ) { opts.sonarQube.XMLOutputPath = ''; }
@@ -165,20 +171,21 @@ component accessors="true" {
 		}
 
 	  	if( !directoryExists( opts.pathToCapture ) ) {
-	  		throw( message='Coverage option [pathToCapture] does not point to a real and absolute directory path.', detail=opts.pathToCapture );
-	  	}
+			throw( message='Coverage option [pathToCapture] does not point to a real and absolute directory path.', detail=opts.pathToCapture );
+		}
+
 		return opts;
 	}
 
 	/**
-	* Interface with FusionReactor to build coverage data
-	*/
+	 * Interface with FusionReactor to build coverage data
+	 */
 	private function generateCoverageData( required struct opts ) {
 		return coverageGenerator.generateData(
-				opts.pathToCapture,
-				opts.whitelist,
-				opts.blacklist
-			);
+			opts.pathToCapture,
+			opts.whitelist,
+			opts.blacklist
+		);
 	}
 
 	/**
@@ -211,10 +218,9 @@ component accessors="true" {
 	* Generate code browser
 	*/
 	private function processCodeBrowser( qryCoverageData, stats, opts ) {
-
 		// Only generate browser if there's a generation path specified
 		if( len( opts.browser.outputDir ) ) {
-		  	var codeBrowser = new browser.CodeBrowser(opts.coverageTresholds);
+		  	var codeBrowser = new browser.CodeBrowser( opts.coverageTresholds );
 		  	codeBrowser.generateBrowser( qryCoverageData, stats, opts.browser.outputDir );
 	  		return opts.browser.outputDir;
 		}

@@ -272,10 +272,9 @@ component accessors="true"{
 		// mark end of testing bundles
 		results.end();
 
-		coverageService.processCoverage( results, this );
+		coverageService.processCoverage( results=results, testbox=this );
 
 		coverageService.endCapture( true );
-
 
 		sendStatusHeaders( results );
 

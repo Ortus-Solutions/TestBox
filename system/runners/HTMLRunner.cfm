@@ -10,7 +10,7 @@
 <cfparam name="url.reportpath" 						default="">
 <cfparam name="url.propertiesFilename"			 	default="TEST.properties">
 <cfparam name="url.propertiesSummary"			 	default="false" type="boolean">
-<cfparam name="url.coverageEnabled"					default="true">
+<cfparam name="url.coverageEnabled"					default="false">
 <cfparam name="url.coverageSonarQubeXMLOutputPath"	default="">
 <cfparam name="url.coverageBrowserOutputDir"		default="">
 <cfparam name="url.coveragePathToCapture"			default="">
@@ -29,7 +29,7 @@ testbox = new testbox.system.TestBox( labels=url.labels, excludes=url.excludes, 
 			XMLOutputPath : url.coverageSonarQubeXMLOutputPath
 		},
 		browser : {
-			outputDir : url.coverageBrowserOutputDir	
+			outputDir : url.coverageBrowserOutputDir
 		}
 	}
 } );
