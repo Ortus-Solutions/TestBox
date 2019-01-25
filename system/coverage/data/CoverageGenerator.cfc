@@ -8,6 +8,9 @@
 */
 component accessors=true {
 
+	/**
+	 * Constructor
+	 */
 	function init() {
 		variables.CR = chr( 13 );
 		variables.LF = chr( 10 );
@@ -21,11 +24,11 @@ component accessors=true {
 	*
 	* @returns true if enabled, false if disabled
 	*/
-	function configure() {
+	boolean function configure() {
 		try {
 			variables.fragentClass = createObject( 'java', 'com.intergral.fusionreactor.agent.Agent' );
 			// Do a quick test to ensure the line performance instrumentation is loaded.  This will return null for non-supported versions of FR
-			var instrumentation = fragentClass.getAgentInstrumentation().get("cflpi");
+			var instrumentation = fragentClass.getAgentInstrumentation().get( "cflpi" );
 		} catch( Any e ) {
 			return false;
 		}
@@ -48,26 +51,30 @@ component accessors=true {
 	}
 
 	/**
-	* Reset system for a new test.  Turns on line coverage and resets in-memory statistics
-	*/
-	function beginCapture() {
+	 * Reset system for a new test.  Turns on line coverage and resets in-memory statistics
+	 */
+	CoverageGenerator function beginCapture() {
 		// Turn on line profiling
-		fragentClass.getAgentInstrumentation().get("cflpi").setActive( true );
+		fragentClass.getAgentInstrumentation().get( "cflpi" ).setActive( true );
 		// Clear any data in memory
-		fragentClass.getAgentInstrumentation().get("cflpi").reset();
+		fragentClass.getAgentInstrumentation().get( "cflpi" ).reset();
+
+		return this;
 	}
 
 	/**
 	* End the capture of data.  Clears up memory and optionally turns off line profiling
 	* @leaveLineProfilingOn Set to true to leave line profiling enabled on the server
 	*/
-	function endCapture( leaveLineProfilingOn=false  ) {
+	CoverageGenerator function endCapture( leaveLineProfilingOn=false  ) {
 		// Turn off line profiling
 		if( !leaveLineProfilingOn ) {
-			fragentClass.getAgentInstrumentation().get("cflpi").setActive( false );
+			fragentClass.getAgentInstrumentation().get( "cflpi" ).setActive( false );
 		}
 		// Clear any data in memory
-		fragentClass.getAgentInstrumentation().get("cflpi").reset();
+		fragentClass.getAgentInstrumentation().get( "cflpi" ).reset();
+
+		return this;
 	}
 
 	/**
@@ -211,7 +218,6 @@ component accessors=true {
 			}
 			queryAddRow( qryData, strFiledata );
 			qryData[ 'lineData' ][ qryData.recordCount ] = lineData;
-
 		}
 
 		// Return the data

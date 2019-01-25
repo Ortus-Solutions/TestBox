@@ -11,10 +11,10 @@
 			<script	src="jquery-3.3.1.min.js"></script>
 			<script src="syntaxhighlighter.js"></script>
 			<script>
-				$( document ).ready(function() {
+				$( document ).ready( function(){
 					var lineNumbersBGColorsJSON = #lineNumbersBGColorsJSON#;
 					$.each( lineNumbersBGColorsJSON, function( key, value ) {
-						$(`.line.number${key}`).addClass(`text-light bg-${value}`);
+						$( `.line.number${key}` ).addClass( `text-light bg-${value}` );
 					});
 				});
 			</script>
@@ -36,8 +36,6 @@
 				</h2>
 				<a href="javascript:history.back()"><button type="button" class="btn btn-secondary btn-sm my-1">&laquo; Back</button></a>
 				<hr width="100%">
-				<cfset lineData = fileData.lineData>
-				<cfset counter = 0>
 
 <script type="text/syntaxhighlighter" class="brush: coldfusion"><![CDATA[
 #fileContents#
