@@ -44,14 +44,16 @@
 		</style>
 	</head>
 	<body>
-		<div class="container my-3">
+		<div class="container-fluid my-3">
 			<!-- Header --->
 			<p>TestBox v#testbox.getVersion()#</p>
 
 			<!-- Stats --->
 			<div class="border my-1 p-1 bg-light clearfix"id="globalStats">
 				<div class="buttonBar">
-					<a class="btn btn-primary btn-sm m-1 float-right" href="#variables.baseURL#&opt_run=true&target=#URL.target#" title="Run the tests">Rerun Test</a>
+					<cfif structKeyExists(URL ,"target")>
+						<a class="btn btn-primary btn-sm m-1 float-right" href="#variables.baseURL#&opt_run=true&target=#URL.target#" title="Run the tests">Rerun Test</a>
+					</cfif>
 				</div>
 
 				<cfif results.getTotalFail() gt 0>

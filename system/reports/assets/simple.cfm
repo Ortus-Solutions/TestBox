@@ -102,7 +102,7 @@
 </head>
 
 <body>
-	<div class="container my-3">
+	<div class="container-fluid my-3">
 		<!--- Filter and Coverage Modal--->
 		<div class="row mb-3 clearfix">
 			<div class="col-5">
@@ -143,7 +143,7 @@
 
 		</div>
 
-		<!--- Global Stats --->
+		<!--- Stats --->
 		<div class="list-group">
 			<div class="list-group-item list-group-item-info" id="globalStats">
 
@@ -154,7 +154,7 @@
 					<span class=" m-1 btn btn-sm btn-primary float-right" onclick="toggleDebug()" title="Toggle the test debug information">Toggle All Debug Information</button>
 				</div>
 
-				<h2>Global Stats (#results.getTotalDuration()# ms)</h2>
+				<h2>Stats (#results.getTotalDuration()# ms)</h2>
 				[ Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()# ]
 				<div class="float-right">
 					<span class="specStatus m-1 btn btn-sm btn-success passed" data-status="passed">Pass: #results.getTotalPass()#</span>

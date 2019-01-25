@@ -1,5 +1,5 @@
 <cfoutput>
-= Global Stats (#results.getTotalDuration()# ms) =
+= Stats (#results.getTotalDuration()# ms) =
 
 * '''Bundles/Suites/Specs:''' #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#
 * '''Pass:''' #results.getTotalPass()#
@@ -36,7 +36,7 @@
 <cfloop array="#thisBundle.suiteStats#" index="suiteStats">
 #genSuiteReport( suiteStats, thisBundle )#
 </cfloop>
-		
+
 </cfloop>
 
 <!--- Recursive Output --->
@@ -54,7 +54,7 @@
 
 <cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
 <p>#local.thisSpec.name# (#local.thisSpec.totalDuration# ms)</p>
-	
+
 <cfif local.thisSpec.status eq "failed">
 * '''#encodeForHTML( local.thisSpec.failMessage )#'''
 <pre>#local.thisSpec.failOrigin.toString()#</pre>
@@ -71,7 +71,7 @@
 <cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
 #genSuiteReport( local.nestedSuite, arguments.bundleStats, arguments.level )#
 </cfloop>
-</cfif>	
+</cfif>
 
 </cfoutput>
 </cfsavecontent>

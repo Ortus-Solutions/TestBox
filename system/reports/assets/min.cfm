@@ -33,15 +33,17 @@
 	</head>
 
 	<body>
-		<div class="container my-3">
+		<div class="container-fluid my-3">
 			<!-- Header --->
 			<p>TestBox v#testbox.getVersion()#</p>
 
-			<!-- Global Stats --->
+			<!-- Stats --->
 			<div class="list-group">
 				<div class="list-group-item list-group-item-info" id="globalStats">
 					<div class="buttonBar">
-						<a class="btn btn-primary btn-sm m-1 float-right" href="#variables.baseURL#&opt_run=true&target=#URL.target#" title="Run the tests">Rerun Test</a>
+						<cfif structKeyExists(URL ,"target")>
+							<a class="btn btn-primary btn-sm m-1 float-right" href="#variables.baseURL#&opt_run=true&target=#URL.target#" title="Run the tests">Rerun Test</a>
+						</cfif>
 					</div>
 
 					<h4>Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#  (#results.getTotalDuration()# ms)</h4>

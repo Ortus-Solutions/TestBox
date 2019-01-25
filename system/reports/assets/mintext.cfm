@@ -5,7 +5,7 @@
    |_|\___||___/\__|____/ \___/_/\_\ v#testBox.getVersion()#
 
 =============================================================                                    
-Global Stats (#results.getTotalDuration()# ms)
+Stats (#results.getTotalDuration()# ms)
 =============================================================
 ->[Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#]
 ->[Pass: #results.getTotalPass()#]

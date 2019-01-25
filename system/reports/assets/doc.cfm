@@ -2,10 +2,10 @@
 <cfoutput>
 
 
-<!-- Global Stats --->
+<!-- Stats --->
 <section class="border border-info my-1 p-1 bg-light clearfix" id="globalStats">
 
-	<h2>Global Stats (#results.getTotalDuration()# ms)</h2>
+	<h2>Stats (#results.getTotalDuration()# ms)</h2>
 	<p>
 		Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#
 		<br>
