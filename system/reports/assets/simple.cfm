@@ -6,15 +6,20 @@
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
 	<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
-	<script>#fileRead( '#cDir#/js/jquery.js' )#</script>
-	<style>#fileRead( '#cDir#/css/simple.css' )#</style>
+
+	<style>#fileRead( '#cDir#/css/fontawesome.css' )#</style>
+	<style>#fileRead( '#cDir#/css/bootstrap.min.css' )#</style>
+
+	<script>#fileRead( '#cDir#/js/jquery-3.3.1.min.js' )#</script>
+	<script>#fileRead( '#cDir#/js/popper.min.js' )#</script>
+	<script>#fileRead( '#cDir#/js/bootstrap.min.js' )#</script>
 	<script>
 	$(document).ready(function() {
 		// spec toggler
 		$("span.specStatus").click( function(){
 			toggleSpecs( $( this ).attr( "data-status" ), $( this ).attr( "data-bundleid" ) );
 		});
-		// spec toggler
+		// spec reseter
 		$("span.reset").click( function(){
 			resetSpecs();
 		});
@@ -32,39 +37,46 @@
 			});
 		});
 		$( "##bundleFilter" ).focus();
+
+		// Bootstrap Collapse
+		//$('.collapse').collapse("toggle");
 	});
+
+
 	function resetSpecs(){
-		$("div.spec").each( function(){
+		$("li.spec").each( function(){
 			$(this).show();
 		});
-		$("div.suite").each( function(){
+		$("ul.suite").each( function(){
 			$(this).show();
 		});
 	}
 	function toggleSpecs( type, bundleID ){
-		$("div.suite").each( function(){
+		$("ul.suite").each( function(){
 			handleToggle( $( this ), bundleID, type );
 		} );
-		$("div.spec").each( function(){
+		$("li.spec").each( function(){
 			handleToggle( $( this ), bundleID, type );
 		} );
 	}
 	function handleToggle( target, bundleID, type ){
 		var $this = target;
+
 		// if bundleid passed and not the same bundle, skip
 		if( bundleID != undefined && $this.attr( "data-bundleid" ) != bundleID ){
 			return;
 		}
 		// toggle the opposite type
 		if( !$this.hasClass( type ) ){
-			$this.fadeOut();
+			$this.hide();
 		} else {
 			// show the type you sent
-			$this.parents().fadeIn();
-			$this.fadeIn();
+			$this.show();
+			$this.parents().show();
 		}
 	}
 	function toggleDebug( specid ){
+		$( `##btn_${specid}` ).toggleClass( "collapsed" );
 		$("div.debugdata").each( function(){
 			var $this = $( this );
 
@@ -77,99 +89,172 @@
 		});
 	}
 	</script>
+
+	<style>
+		[data-toggle="collapse"] .fa:before,  .expand-collapse .fa:before{
+			content: "\f139";
+		}
+
+		[data-toggle="collapse"].collapsed .fa:before, .expand-collapse.collapsed .fa:before {
+			content: "\f13a";
+		}
+	</style>
 </head>
 
 <body>
-
-<!--- Filter --->
-<div class="" style="float: right">
-	<input type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
-</div>
-
-<!--- Header --->
-<p>TestBox v#testbox.getVersion()#</p>
-
-<cfif results.getCoverageEnabled() >
-
-	#testbox.getCoverageService().renderStats( results.getCoverageData() )#
-	
-</cfif>
-
-<!--- Global Stats --->
-<div class="box" id="globalStats">
-
-<div class="buttonBar">
-	<a href="#variables.baseURL#"><button title="Run all the tests">Run All</button></a>
-	<button onclick="toggleDebug()" title="Toggle the test debug information">Debug</button>
-</div>
-
-<h2>Global Stats (#results.getTotalDuration()# ms)</h2>
-[ Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()# ]
-[ <span class="specStatus passed" data-status="passed">Pass: #results.getTotalPass()#</span> ]
-[ <span class="specStatus failed" data-status="failed">Failures: #results.getTotalFail()#</span> ]
-[ <span class="specStatus error" data-status="error">Errors: #results.getTotalError()#</span> ]
-[ <span class="specStatus skipped" data-status="skipped">Skipped: #results.getTotalSkipped()#</span> ]
-[ <span class="reset" title="Clear status filters">Reset</span> ]
-<br>
-<cfif arrayLen( results.getLabels() )>
-[ Labels Applied: #arrayToList( results.getLabels() )# ]
-</cfif>
-
-</div>
-
-<!--- Bundle Info --->
-<cfloop array="#variables.bundleStats#" index="thisBundle">
-	<!--- Skip if not in the includes list --->
-	<cfif len( url.testBundles ) and !listFindNoCase( url.testBundles, thisBundle.path )>
-		<cfcontinue>
-	</cfif>
-	<!--- Bundle div --->
-	<div class="box bundle" id="bundleStats_#thisBundle.path#" data-bundle="#thisBundle.path#">
-
-		<!--- bundle stats --->
-		<h2><a href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#" title="Run only this bundle">#thisBundle.path#</a> (#thisBundle.totalDuration# ms)</h2>
-		[ Suites/Specs: #thisBundle.totalSuites#/#thisBundle.totalSpecs# ]
-		[ <span class="specStatus passed" 	data-status="passed" data-bundleid="#thisBundle.id#">Pass: #thisBundle.totalPass#</span> ]
-		[ <span class="specStatus failed" 	data-status="failed" data-bundleid="#thisBundle.id#">Failures: #thisBundle.totalFail#</span> ]
-		[ <span class="specStatus error" 	data-status="error" data-bundleid="#thisBundle.id#">Errors: #thisBundle.totalError#</span> ]
-		[ <span class="specStatus skipped" 	data-status="skipped" data-bundleid="#thisBundle.id#">Skipped: #thisBundle.totalSkipped#</span> ]
-		[ <span class="reset" title="Clear status filters">Reset</span> ]
-
-		<!--- Global Error --->
-		<cfif !isSimpleValue( thisBundle.globalException )>
-			<h2>Global Bundle Exception<h2>
-			<cfdump var="#thisBundle.globalException#" />
-		</cfif>
-
-		<!-- Iterate over bundle suites -->
-		<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
-			<div class="suite #lcase( suiteStats.status)#" data-bundleid="#thisBundle.id#">
-			<ul>
-				#genSuiteReport( suiteStats, thisBundle )#
-			</ul>
+	<div class="container my-3">
+		<!--- Filter and Coverage Modal--->
+		<div class="row mb-3 clearfix">
+			<div class="col-5">
+				<!--- Header --->
+				<p>TestBox v#testbox.getVersion()#</p>
 			</div>
-		</cfloop>
+			<div class="col-7">
 
-		<!--- Debug Panel --->
-		<cfif arrayLen( thisBundle.debugBuffer )>
-			<hr>
-			<h2>Debug Stream <button onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">+</button></h2>
-			<div class="debugdata" data-specid="#thisBundle.id#">
-				<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
-				<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
-					<h1>#thisDebug.label#</h1>
-					<cfdump var="#thisDebug.data#" 		label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, "short" )# at #timeFormat( thisDebug.timestamp, "full")#" top="#thisDebug.top#"/>
-					<p>&nbsp;</p>
-				</cfloop>
+				<input class="d-inline col-7 ml-2 form-control float-right" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
+
+				<cfif results.getCoverageEnabled() >
+					<!-- Button trigger modal -->
+					<button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="##coverageStatsModal">
+						View coverage statistics
+					</button>
+
+					<!-- Modal -->
+					<div class="modal fade" id="coverageStatsModal" tabindex="-1" role="dialog" aria-labelledby="coverageStatsModalLabel" aria-hidden="true">
+						<div class="modal-dialog modal-xl" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+								<h5 class="modal-title" id="coverageStatsModalLabel">Modal title</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+								</div>
+								<div class="modal-body">
+									#testbox.getCoverageService().renderStats( results.getCoverageData() )#
+								</div>
+								<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</cfif>
 			</div>
-		</cfif>
 
+		</div>
+
+		<!--- Global Stats --->
+		<div class="list-group">
+			<div class="list-group-item list-group-item-info" id="globalStats">
+
+				<div class="buttonBar">
+					<cfif structKeyExists(URL ,"target")>
+						<a class=" m-1 btn btn-sm btn-primary float-right" href="#variables.baseURL#&opt_run=true&target=#URL.target#" title="Run the tests">Rerun Tests</a>
+					</cfif>
+					<span class=" m-1 btn btn-sm btn-primary float-right" onclick="toggleDebug()" title="Toggle the test debug information">Toggle All Debug Information</button>
+				</div>
+
+				<h2>Global Stats (#results.getTotalDuration()# ms)</h2>
+				[ Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()# ]
+				<div class="float-right">
+					<span class="specStatus m-1 btn btn-sm btn-success passed" data-status="passed">Pass: #results.getTotalPass()#</span>
+					<span class="specStatus m-1 btn btn-sm btn-warning failed" data-status="failed">Failures: #results.getTotalFail()#</span>
+					<span class="specStatus m-1 btn btn-sm btn-danger error" data-status="error">Errors: #results.getTotalError()#</span>
+					<span class="specStatus m-1 btn btn-sm btn-info skipped" data-status="skipped">Skipped: #results.getTotalSkipped()#</span>
+					<span class="reset m-1 btn btn-sm btn-dark" title="Clear status filters">Reset</span>
+				</div>
+				<br>
+				<cfif arrayLen( results.getLabels() )>
+				[ Labels Applied: #arrayToList( results.getLabels() )# ]
+				</cfif>
+			</div>
+		</div>
+
+		<div class="accordion" id="bundles">
+
+			<!--- Bundle Info --->
+			<cfloop array="#variables.bundleStats#" index="thisBundle">
+				<!--- Skip if not in the includes list --->
+				<cfif len( url.testBundles ) and !listFindNoCase( url.testBundles, thisBundle.path )>
+					<cfcontinue>
+				</cfif>
+				<!--- Bundle div --->
+			<div class="card bundle" id="#thisBundle.path#" data-bundle="#thisBundle.path#">
+			  <div class="card-header" id="header_#thisBundle.id#">
+				<h4 class="mb-0 clearfix">
+					<!--- bundle stats --->
+					<a href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&target=#URLEncodedFormat( thisBundle.path )#&opt_run=true" title="Run only this bundle">
+						#thisBundle.path#
+					</a> (#thisBundle.totalDuration# ms)
+					<button class="btn btn-link float-right" type="button" data-toggle="collapse" data-target="##details_#thisBundle.id#" aria-expanded="true" aria-controls="details_#thisBundle.id#">
+						<i class="fa" aria-hidden="true"></i>
+					</button>
+				</h4>
+				[ Suites/Specs: #thisBundle.totalSuites#/#thisBundle.totalSpecs# ]
+				<div class="float-right">
+					<span class="specStatus  m-1 btn btn-sm btn-success passed" 	data-status="passed" data-bundleid="#thisBundle.id#">Pass: #thisBundle.totalPass#</span>
+					<span class="specStatus  m-1 btn btn-sm btn-warning failed" 	data-status="failed" data-bundleid="#thisBundle.id#">Failures: #thisBundle.totalFail#</span>
+					<span class="specStatus  m-1 btn btn-sm btn-danger error" 	data-status="error" data-bundleid="#thisBundle.id#">Errors: #thisBundle.totalError#</span>
+					<span class="specStatus  m-1 btn btn-sm btn-info skipped" 	data-status="skipped" data-bundleid="#thisBundle.id#">Skipped: #thisBundle.totalSkipped#</span>
+					<span class="reset m-1 btn btn-sm btn-dark" title="Clear status filters">Reset</span>
+				</div>
+			  </div>
+			  <div id="details_#thisBundle.id#" class="collapse show" aria-labelledby="header_#thisBundle.id#" data-bundle="#thisBundle.path#" data-parent="##bundles">
+				<div class="card-body">
+					<!--- Global Error --->
+					<cfif !isSimpleValue( thisBundle.globalException )>
+						<h2>Global Bundle Exception<h2>
+						<cfdump var="#thisBundle.globalException#" />
+					</cfif>
+
+					<!-- Iterate over bundle suites -->
+					<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
+						<ul class="suite list-group #statusPlusBootstrapClass( suiteStats.status )#" data-bundleid="#thisBundle.id#">
+							#genSuiteReport( suiteStats, thisBundle )#
+						</ul>
+					</cfloop>
+
+					<!--- Debug Panel --->
+					<cfif arrayLen( thisBundle.debugBuffer )>
+						<hr>
+						<h2>Debug Stream&nbsp;
+							<button class="btn btn-sm btn-primary expand-collapse collapsed" id="btn_#thisBundle.id#" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">
+								<i class="fa" aria-hidden="true"></i>
+							</button>
+						</h2>
+						<div class="debugdata" style="display:none;" data-specid="#thisBundle.id#">
+							<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
+							<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
+								<h2>#thisDebug.label#</h2>
+								<cfdump var="#thisDebug.data#" 		label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, "short" )# at #timeFormat( thisDebug.timestamp, "full")#" top="#thisDebug.top#"/>
+								<p>&nbsp;</p>
+							</cfloop>
+						</div>
+					</cfif>
+				</div>
+			  </div>
+			</div>
+			</cfloop>
+		</div>
 	</div>
-</cfloop>
-
-<!--- <cfdump var="#results#"> --->
 </body>
 </html>
+
+<cffunction name="statusPlusBootstrapClass" output="false">
+	<cfargument name="status">
+
+	<cfif lcase( arguments.status ) eq "failed">
+		<cfset bootstrapClass = "list-group-item-warning failed">
+	<cfelseif lcase( arguments.status ) eq "error">
+		<cfset bootstrapClass = "list-group-item-danger error">
+	<cfelseif lcase( arguments.status ) eq "passed">
+		<cfset bootstrapClass = "list-group-item-success passed">
+	<cfelseif lcase( arguments.status ) eq "skipped">
+		<cfset bootstrapClass = "list-group-item-info skipped">
+	</cfif>
+
+	<cfreturn bootstrapClass>
+</cffunction>
 
 <!--- Recursive Output --->
 <cffunction name="genSuiteReport" output="false">
@@ -179,63 +264,69 @@
 	<cfsavecontent variable="local.report">
 		<cfoutput>
 		<!--- Suite Results --->
-		<li>
+		<li class="list-group-item #statusPlusBootstrapClass( arguments.suiteStats.status )#">
 			<a title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#"
-			   href="#variables.baseURL#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#"
-			   class="#lcase( arguments.suiteStats.status )#"><strong>+#arguments.suiteStats.name#</strong></a>
+			   href="#variables.baseURL#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&target=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
+				   <strong>+#arguments.suiteStats.name#</strong>
+			</a>
 			(#arguments.suiteStats.totalDuration# ms)
 		</li>
 			<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
-
 				<!--- Spec Results --->
-				<ul>
-				<div class="spec #lcase( local.thisSpec.status )#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
-					<li>
-						<a href="#variables.baseURL#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#" class="#lcase( local.thisSpec.status )#">#local.thisSpec.name# (#local.thisSpec.totalDuration# ms)</a>
+				<cfset thisSpecStatusClass = statusPlusBootstrapClass(local.thisSpec.status)>
+
+				<ul class="list-group">
+					<li class="list-group-item #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
+						<a href="#variables.baseURL#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&target=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true"
+							class="pl-4 #thisSpecStatusClass#">
+							#local.thisSpec.name#
+						</a> (#local.thisSpec.totalDuration# ms)
 
 						<cfif local.thisSpec.status eq "failed">
-							- <strong class="preserve-whitespace">#encodeForHTML( local.thisSpec.failMessage )#</strong>
-							  <button onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">+</button><br>
-							  
-							  <cfif arrayLen( local.thisSpec.failOrigin )>
+							- <strong>#encodeForHTML( local.thisSpec.failMessage )#</strong>
+							<button class="btn btn-link float-right expand-collapse collapsed" id="btn_#local.thisSpec.id#" onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">
+								<i class="fa" aria-hidden="true"></i>
+							</button><br>
+
+							<cfif arrayLen( local.thisSpec.failOrigin )>
 								<div class="">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
 								<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
-									<div class="">#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</div>								  
+									<div class="">#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</div>
 								</cfif>
-							  </cfif>
+							</cfif>
 
-							<div class="box debugdata" data-specid="#local.thisSpec.id#">
+							<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
 								<cfdump var="#local.thisSpec.failorigin#" label="Failure Origin">
 							</div>
 						</cfif>
 
 						<cfif local.thisSpec.status eq "error">
 							- <strong>#encodeForHTML( local.thisSpec.error.message )#</strong>
-							  <button onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">+</button><br>
-							  
-							  <cfif arrayLen( local.thisSpec.failOrigin )>
-								  <div class="">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
-								  <cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
-									<div class="">#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</div>								  
-								  </cfif>
-							  </cfif>
-							<div class="box debugdata" data-specid="#local.thisSpec.id#">
+							<button class="btn btn-link float-right expand-collapse collapsed" id="btn_#local.thisSpec.id#" onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">
+								<i class="fa" aria-hidden="true"></i>
+							</button><br>
+
+							<cfif arrayLen( local.thisSpec.failOrigin )>
+								<div class="">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
+								<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
+									<div class="">#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</div>
+								</cfif>
+							</cfif>
+
+							<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
 								<cfdump var="#local.thisSpec.error#" label="Exception Structure">
 							</div>
 						</cfif>
 					</li>
-				</div>
 				</ul>
 			</cfloop>
 
 			<!--- Do we have nested suites --->
 			<cfif arrayLen( arguments.suiteStats.suiteStats )>
 				<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
-					<div class="suite #lcase( arguments.suiteStats.status )#" data-bundleid="#arguments.bundleStats.id#">
-						<ul>
+					<ul class="suite list-group #statusPlusBootstrapClass( arguments.suiteStats.status )#" data-bundleid="#arguments.bundleStats.id#">
 						#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
 					</ul>
-					</div>
 				</cfloop>
 			</cfif>
 

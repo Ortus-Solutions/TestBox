@@ -6,19 +6,12 @@
 * I generate a code browser to see file-level coverage statistics
 */
 component accessors=true {
-	
-	function init() {
 
-		// Classes needed to work.
-		variables.coldFish = new ColdFish();
-		
-		variables.CR = chr( 13 );
-		variables.LF = chr( 10 );
-		variables.CRLF = CR & LF;
-							
+	function init( required struct coverageTresholds ) {
+		variables.coverageTresholds = arguments.coverageTresholds;
 		return this;
 	}
-	
+
 	/**
 	* @qryCoverageData A query object containing coverage data
 	* @stats A struct of overview stats
@@ -29,7 +22,8 @@ component accessors=true {
 		required struct stats,
 		required string browserOutputDir
 	) {
-		
+
+		var assetDir = "/testbox/system/reports/assets";
 		// wipe old files
 		if( directoryExists( browserOutputDir ) ) {
 			try {
@@ -39,48 +33,68 @@ component accessors=true {
 				rethrow;
 			}
 		}
-		
+
 		// Create it fresh
 		if( !directoryExists( browserOutputDir ) ) {
-			directoryCreate( browserOutputDir );	
+			directoryCreate( browserOutputDir );
+			fileCopy("#assetDir#/js/syntaxhighlighter.js", browserOutputDir);
+			fileCopy("#assetDir#/js/jquery-3.3.1.min.js", browserOutputDir);
+			fileCopy("#assetDir#/css/syntaxhighlighter.css", browserOutputDir);
+			fileCopy("#assetDir#/css/bootstrap.min.css", browserOutputDir);
 		}
-		
+
 		// Create index
 		savecontent variable="local.index" {
 			include "templates/index.cfm";
 		}
 		fileWrite( browserOutputDir & '/index.html', local.index );
-		
+
 		// Created individual files
 		for( var fileData in qryCoverageData ) {
 			// Coverage files are named after "real" files
 			var theFile = "#browserOutputDir & fileData.relativeFilePath#.html";
-			if (!directoryExists(getDirectoryFromPath( theFile ))){
-				directoryCreate( getDirectoryFromPath( theFile ));
+			var fileDir = getDirectoryFromPath( theFile );
+			if (!directoryExists(fileDir)){
+				directoryCreate(fileDir);
+				fileCopy("#assetDir#/js/syntaxhighlighter.js", fileDir);
+				fileCopy("#assetDir#/js/bootstrap.min.js", fileDir);
+				fileCopy("#assetDir#/js/jquery-3.3.1.min.js", fileDir);
+				fileCopy("#assetDir#/js/popper.min.js", fileDir);
+				fileCopy("#assetDir#/css/syntaxhighlighter.css", fileDir);
+				fileCopy("#assetDir#/css/bootstrap.min.css", fileDir);
+				fileCopy("#assetDir#/css/fontawesome.css", fileDir);
 			}
-			
+
+			var lineNumbersBGColors = structMap( filedata.lineData, function( key, value,strct ){
+				return ( value > 0 ) ? "success" : "danger";
+			});
+			var percentage = round( fileData.percCoverage*100 )
+
+			var lineNumbersBGColorsJSON = SerializeJSON(lineNumbersBGColors);
+			var fileContents = fileRead( fileData.filePath );
+			fileContents = replaceNoCase(fileContents, "</script>", "&lt;/script&gt;", "ALL");
+
 			savecontent variable="local.fileTemplate" {
 				include "templates/file.cfm";
 			}
-			
 			fileWrite( theFile, local.fileTemplate );
-			
+
 		}
-		
+
 	}
 
 	/**
 	* visually reward or shame the user
 	* TODO: add more variations of color
 	*/
-	function percentToColor( required percentage ) {
-		percentage = round( percentage*100 );
-		if( percentage >=85 ) {
-			return 'green';
-		} else if( percentage >=50 ) {
-			return 'orange';
-		} else {
-			return 'red';
+	function percentToContextualClass( required percentage ) {
+		percentage = percentage;
+		if( percentage > coverageTresholds.bad && percentage < coverageTresholds.good ) {
+			return 'warning';
+		} else if( percentage >= coverageTresholds.good ) {
+			return 'success';
+		} else if( percentage <= coverageTresholds.bad ) {
+			return 'danger';
 		}
-	}	
+	}
 }

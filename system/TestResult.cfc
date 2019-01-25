@@ -29,11 +29,11 @@ component accessors="true"{
 	property name="testBundles" 	type="array";
 	property name="testSuites" 		type="array";
 	property name="testSpecs" 		type="array";
-	
+
 	// Code Coverage
 	property name="coverageEnabled" type="boolean";
 	property name="coverageData"	type="struct";
-	
+
 
 	/**
 	* Constructor
@@ -83,7 +83,7 @@ component accessors="true"{
 		// Reverse Lookups
 		variables.bundleReverseLookup 	= {};
 		variables.suiteReverseLookup 	= {};
-		
+
 		// Coverage Data
 		variables.coverageEnabled	= false;
 		variables.coverageData		= {};
@@ -415,12 +415,12 @@ component accessors="true"{
 				result[ thisProp ] = "";
 			}
 		}
-		
+
 		result.coverage = {
 			'enabled' = coverageEnabled,
-			'data' = {}			
+			'data' = {}
 		};
-		
+
 		if( coverageEnabled ) {
 			result.coverage.data = {
 				'stats' : {},
@@ -428,7 +428,7 @@ component accessors="true"{
 		  		'browserResults' : coverageData.browserResults
 			};
 			result.coverage.data.stats = {
-				'numFiles' : coverageData.stats.numFiles, 
+				'numFiles' : coverageData.stats.numFiles,
 				'percTotalCoverage' : coverageData.stats.percTotalCoverage,
 				'totalExecutableLines' : coverageData.stats.totalExecutableLines,
 				'totalCoveredLines' : coverageData.stats.totalCoveredLines
