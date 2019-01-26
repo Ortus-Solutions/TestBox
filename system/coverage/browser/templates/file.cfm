@@ -50,10 +50,10 @@
 				</table>
 				<hr width="100%">
 
-<script type="text/syntaxhighlighter" class="brush: coldfusion"><![CDATA[
+<script type="text/syntaxhighlighter" class="brush: #brush#"><![CDATA[
 #fileContents#
 ]]></script>
-			</div>
-		</body>
-	</html>
-	</cfoutput>
+		</div>
+	</body>
+</html>
+</cfoutput>

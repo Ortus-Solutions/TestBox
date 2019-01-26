@@ -91,7 +91,8 @@ component accessors=true {
 				var fileContents            = fileRead( fileData.filePath );
 
 				var levelsFromRoot = fileData.relativeFilePath.listLen( "/" );
-				var relPathToRoot = RepeatString('../', levelsFromRoot - 1 );
+				var relPathToRoot = RepeatString("../", levelsFromRoot - 1 );
+				var brush = right(fileData.relativeFilePath,4) == ".cfm" ? "coldfusion" : "javascript";
 
 				savecontent variable="fileTemplate" {
 					include "templates/file.cfm";
