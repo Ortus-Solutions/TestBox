@@ -48,15 +48,16 @@ component accessors=true {
 			directoryCreate( browserOutputDir );
 			fileCopy( "#variables.ASSETS_DIR#/js/syntaxhighlighter.js", browserOutputDir );
 			fileCopy( "#variables.ASSETS_DIR#/js/jquery-3.3.1.min.js", browserOutputDir );
+			fileCopy( "#variables.ASSETS_DIR#/js/stupidtable.min.js", browserOutputDir );
 			fileCopy( "#variables.ASSETS_DIR#/css/syntaxhighlighter.css", browserOutputDir );
 			fileCopy( "#variables.ASSETS_DIR#/css/bootstrap.min.css", browserOutputDir );
 		}
 
 		// Create index
-		savecontent variable="local.index" {
+		savecontent variable="index" {
 			include "templates/index.cfm";
 		}
-		fileWrite( browserOutputDir & '/index.html', local.index );
+		fileWrite( browserOutputDir & '/index.html', index );
 
 		// Create directory skeletons
 		var dataStream = variables.streamBuilder
@@ -70,15 +71,6 @@ component accessors=true {
 
 				if( !directoryExists( theContainerDirectory ) ){
 					directoryCreate( theContainerDirectory );
-
-					// TODO: I DON'T THINK THIS IS NECESSARY, INVESTIGATE
-					fileCopy( "#variables.ASSETS_DIR#/js/syntaxhighlighter.js",   theContainerDirectory );
-					fileCopy( "#variables.ASSETS_DIR#/js/bootstrap.min.js",       theContainerDirectory );
-					fileCopy( "#variables.ASSETS_DIR#/js/jquery-3.3.1.min.js",    theContainerDirectory );
-					fileCopy( "#variables.ASSETS_DIR#/js/popper.min.js",          theContainerDirectory );
-					fileCopy( "#variables.ASSETS_DIR#/css/syntaxhighlighter.css", theContainerDirectory );
-					fileCopy( "#variables.ASSETS_DIR#/css/bootstrap.min.css",     theContainerDirectory );
-					fileCopy( "#variables.ASSETS_DIR#/css/fontawesome.css",       theContainerDirectory );
 				}
 			} )
 			.toArray();
@@ -98,11 +90,14 @@ component accessors=true {
 				var lineNumbersBGColorsJSON = SerializeJSON( lineNumbersBGColors );
 				var fileContents            = fileRead( fileData.filePath );
 
-				savecontent variable="local.fileTemplate" {
+				var levelsFromRoot = fileData.relativeFilePath.listLen( "/" );
+				var relPathToRoot = RepeatString('../', levelsFromRoot - 1 );
+
+				savecontent variable="fileTemplate" {
 					include "templates/file.cfm";
 				}
 
-				fileWrite( theFile, local.fileTemplate );
+				fileWrite( theFile, fileTemplate );
 			} );
 	}
 
