@@ -1,5 +1,7 @@
-<cfset cDir = getDirectoryFromPath( getCurrentTemplatePath() )>
+<cfparam name="url.full_page"		default="true">
+<cfset ASSETS_DIR = expandPath( "/testbox/system/reports/assets" )>
 <cfoutput>
+<cfif url.full_page>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -7,32 +9,15 @@
 		<meta name="generator" content="TestBox v#testbox.getVersion()#">
 		<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
 
-		<style>#fileRead( '#cDir#/css/fontawesome.css' )#</style>
-		<style>#fileRead( '#cDir#/css/bootstrap.min.css' )#</style>
-
-		<script>#fileRead( '#cDir#/js/jquery-3.3.1.min.js' )#</script>
-		<script>#fileRead( '#cDir#/js/popper.min.js' )#</script>
-		<script>#fileRead( '#cDir#/js/bootstrap.min.js' )#</script>
-		<script>
-		$(document).ready(function() {
-		});
-		function toggleDebug( specid ){
-			$("div.debugdata").each( function(){
-				var $this = $( this );
-
-				// if bundleid passed and not the same bundle
-				if( specid != undefined && $this.attr( "data-specid" ) != specid ){
-					return;
-				}
-				// toggle.
-				$this.fadeToggle();
-			});
-		}
-		</script>
-
+		<link rel="stylesheet" href="#ASSETS_DIR#/css/fontawesome.css">
+		<link rel="stylesheet" href="#ASSETS_DIR#/css/bootstrap.min.css">
+		<script	src="#ASSETS_DIR#/js/jquery-3.3.1.min.js"></script>
+		<script src="#ASSETS_DIR#/js/popper.min.js"></script>
+		<script src="#ASSETS_DIR#/js/bootstrap.min.js"></script>
+		<script src="#ASSETS_DIR#/js/stupidtable.min.js"></script>
 	</head>
-
 	<body>
+</cfif>
 		<div class="container-fluid my-3">
 			<!-- Header --->
 			<p>TestBox v#testbox.getVersion()#</p>
@@ -51,7 +36,7 @@
 					<span class="badge badge-success" data-status="passed">Pass: #results.getTotalPass()#</span>
 					<span class="badge badge-warning" data-status="failed">Failures: #results.getTotalFail()#</span>
 					<span class="badge badge-danger" data-status="error">Errors: #results.getTotalError()#</span>
-					<span class="badge badge-info" data-status="skipped">Skipped: #results.getTotalSkipped()#</span>
+					<span class="badge badge-secondary" data-status="skipped">Skipped: #results.getTotalSkipped()#</span>
 					<br>
 					<cfif arrayLen( results.getLabels() )>
 					[ Labels Applied: #arrayToList( results.getLabels() )# ]<br>
@@ -90,6 +75,24 @@
 				</cfif>
 			</cfloop>
 		</div>
+</cfoutput>
+		<script>
+		$(document).ready(function() {
+		});
+		function toggleDebug( specid ){
+			$("div.debugdata").each( function(){
+				var $this = $( this );
+
+				// if bundleid passed and not the same bundle
+				if( specid != undefined && $this.attr( "data-specid" ) != specid ){
+					return;
+				}
+				// toggle.
+				$this.fadeToggle();
+			});
+		}
+		</script>
+<cfif url.full_page>
 	</body>
 </html>
-</cfoutput>
+</cfif>

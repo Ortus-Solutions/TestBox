@@ -5,11 +5,13 @@
 			<meta charset="utf-8">
 			<title>#fileData.relativeFilePath#</title>
 
-			<link rel="stylesheet" href="#relPathToRoot#bootstrap.min.css">
-			<link rel="stylesheet" href="#relPathToRoot#syntaxhighlighter.css">
+			<link rel="stylesheet" href="#variables.ASSETS_DIR#/css/fontawesome.css">
+			<link rel="stylesheet" href="#variables.ASSETS_DIR#/css/bootstrap.min.css">
+			<script	src="#variables.ASSETS_DIR#/js/jquery-3.3.1.min.js"></script>
+			<script src="#variables.ASSETS_DIR#/js/popper.min.js"></script>
+			<script src="#variables.ASSETS_DIR#/js/bootstrap.min.js"></script>
+			<script src="#variables.ASSETS_DIR#/js/stupidtable.min.js"></script>
 
-			<script	src="#relPathToRoot#jquery-3.3.1.min.js"></script>
-			<script src="#relPathToRoot#syntaxhighlighter.js"></script>
 			<script>
 				$( document ).ready( function(){
 					var lineNumbersBGColorsJSON = #lineNumbersBGColorsJSON#;
@@ -40,7 +42,7 @@
 					<tbody>
 						<tr>
 							<td>
-								<a href="javascript:history.back()"><button type="button" class="btn btn-secondary btn-sm my-1">&laquo; Back</button></a>
+								<a href="javascript:history.back()"><button type="button" class="btn btn-secondary btn-sm my-1"><i class="fas fa-backward"></i> Back</button></a>
 							</td>
 							<td>
 								&nbsp;

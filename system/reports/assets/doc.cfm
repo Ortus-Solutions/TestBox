@@ -1,7 +1,4 @@
-<cfset cDir = getDirectoryFromPath( getCurrentTemplatePath() )>
 <cfoutput>
-
-
 <!-- Stats --->
 <section class="border border-info my-1 p-1 bg-light clearfix" id="globalStats">
 
@@ -12,7 +9,7 @@
 		<span class="badge badge-success" data-status="passed">Pass: #results.getTotalPass()#</span>
 		<span class="badge badge-warning" data-status="failed">Failures: #results.getTotalFail()#</span>
 		<span class="badge badge-danger" data-status="error">Errors: #results.getTotalError()#</span>
-		<span class="badge badge-info" data-status="skipped">Skipped: #results.getTotalSkipped()#</span>
+		<span class="badge badge-secondary" data-status="skipped">Skipped: #results.getTotalSkipped()#</span>
 		<br>
 		<cfif arrayLen( results.getLabels() )>
 		Labels Applied: #arrayToList( results.getLabels() )#<br>
@@ -35,7 +32,7 @@
 			<span class="badge badge-success" 	data-status="passed" data-bundleid="#thisBundle.id#">Pass: #thisBundle.totalPass#</span>
 			<span class="badge badge-warning" 	data-status="failed" data-bundleid="#thisBundle.id#">Failures: #thisBundle.totalFail#</span>
 			<span class="badge badge-danger" 	data-status="error" data-bundleid="#thisBundle.id#">Errors: #thisBundle.totalError#</span>
-			<span class="badge badge-info" 	data-status="skipped" data-bundleid="#thisBundle.id#">Skipped: #thisBundle.totalSkipped#</span>
+			<span class="badge badge-secondary" 	data-status="skipped" data-bundleid="#thisBundle.id#">Skipped: #thisBundle.totalSkipped#</span>
 		</p>
 
 		<!-- Global Error --->
@@ -66,7 +63,7 @@
 	<cfelseif lcase( arguments.status ) eq "passed">
 		<cfset bootstrapClass = "text-success">
 	<cfelseif lcase( arguments.status ) eq "skipped">
-		<cfset bootstrapClass = "text-info">
+		<cfset bootstrapClass = "text-secondary">
 	</cfif>
 
 	<cfreturn bootstrapClass>
