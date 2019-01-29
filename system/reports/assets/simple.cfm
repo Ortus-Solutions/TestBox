@@ -28,7 +28,7 @@
 					</div>
 					<div class="col-7">
 
-						<input class="d-inline col-7 ml-2 form-control float-right" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
+						<input class="d-inline col-7 ml-2 form-control float-right mb-2" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
 
 						<cfif results.getCoverageEnabled() >
 							<!-- Button trigger modal -->
@@ -100,10 +100,10 @@
 					<div class="card-header" id="header_#thisBundle.id#">
 						<h4 class="mb-0 clearfix">
 							<!--- bundle stats --->
-							<a href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&target=#URLEncodedFormat( thisBundle.path )#&opt_run=true" title="Run only this bundle">
-								#thisBundle.path#
-							</a> (#thisBundle.totalDuration# ms)
-							<button class="btn btn-link float-right" type="button" data-toggle="collapse" data-target="##details_#thisBundle.id#" aria-expanded="false" aria-controls="details_#thisBundle.id#">
+							<a class="alert-link" href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&target=#URLEncodedFormat( thisBundle.path )#&opt_run=true" title="Run only this bundle">
+								#thisBundle.path# (#thisBundle.totalDuration# ms)
+							</a>
+							<button class="btn btn-link float-right py-0" type="button" data-toggle="collapse" data-target="##details_#thisBundle.id#" aria-expanded="false" aria-controls="details_#thisBundle.id#">
 								<i class="fa" aria-hidden="true"></i>
 							</button>
 						</h4>
@@ -166,7 +166,7 @@
 						resetSpecs();
 					});
 					// Filter Bundles
-					$( "#bundleFilter" ).keyup(function(){
+					$( "#bundleFilter" ).keyup( debounce( function(){
 						var targetText = $( this ).val().toLowerCase();
 						$( ".bundle" ).each(function( index ){
 							var bundle = $( this ).data( "bundle" ).toLowerCase();
@@ -177,7 +177,8 @@
 								$( this ).show();
 							}
 						});
-					});
+					},100));
+
 					$( "#bundleFilter" ).focus();
 					// Bootstrap Collapse
 					$('.collapse').each(function() {
@@ -185,6 +186,21 @@
 					});
 
 				});
+
+				function debounce(func, wait, immediate) {
+					var timeout;
+					return function() {
+						var context = this, args = arguments;
+						var later = function() {
+							timeout = null;
+							if (!immediate) func.apply(context, args);
+						};
+						var callNow = immediate && !timeout;
+						clearTimeout(timeout);
+						timeout = setTimeout(later, wait);
+						if (callNow) func.apply(context, args);
+					};
+				};
 
 				function resetSpecs(){
 					$("li.spec").each( function(){
@@ -241,6 +257,9 @@
 					[data-toggle="collapse"].collapsed .fa:before, .expand-collapse.collapsed .fa:before {
 						content: "\f13a";
 					}
+					code {
+						color: black !important;
+					}
 				</style>
 
 <cfoutput>
@@ -273,11 +292,11 @@
 		<cfoutput>
 		<!--- Suite Results --->
 		<li class="list-group-item #statusPlusBootstrapClass( arguments.suiteStats.status )#">
-			<a title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#"
+			<a class="alert-link" title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#"
 			   href="#variables.baseURL#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&target=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
 				   <strong>+#arguments.suiteStats.name#</strong>
+					(#arguments.suiteStats.totalDuration# ms)
 			</a>
-			(#arguments.suiteStats.totalDuration# ms)
 		</li>
 			<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
 				<!--- Spec Results --->
@@ -285,46 +304,55 @@
 
 				<ul class="list-group">
 					<li class="list-group-item #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
-						<a href="#variables.baseURL#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&target=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true"
-							class="pl-4 #thisSpecStatusClass#">
-							#local.thisSpec.name#
-						</a> (#local.thisSpec.totalDuration# ms)
+						<div class="clearfix">
+							<a class="alert-link" href="#variables.baseURL#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&target=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true"
+								class="pl-4 #thisSpecStatusClass#">
+								#local.thisSpec.name#(#local.thisSpec.totalDuration# ms)
 
-						<cfif local.thisSpec.status eq "failed">
-							- <strong>#encodeForHTML( local.thisSpec.failMessage )#</strong>
-							<button class="btn btn-link float-right expand-collapse collapsed" id="btn_#local.thisSpec.id#" onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">
-								<i class="fa" aria-hidden="true"></i>
-							</button><br>
+							<cfif local.thisSpec.status eq "failed">
+								- <strong>#encodeForHTML( local.thisSpec.failMessage )#</strong></a>
+								<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#local.thisSpec.id#" onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">
+									<i class="fa" aria-hidden="true"></i>
+								</button></div>
 
-							<cfif arrayLen( local.thisSpec.failOrigin )>
-								<div class="">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
-								<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
-									<div class="">#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</div>
+								<cfif arrayLen( local.thisSpec.failOrigin )>
+									<div class="pl-4">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
+									<div class="pl-5">
+										<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
+											<code>#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</code>
+										</cfif>
+									</div>
 								</cfif>
+
+								<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
+									<cfdump var="#local.thisSpec.failorigin#" label="Failure Origin">
+								</div>
+							<cfelse>
+								</a>
 							</cfif>
 
-							<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
-								<cfdump var="#local.thisSpec.failorigin#" label="Failure Origin">
-							</div>
-						</cfif>
+							<cfif local.thisSpec.status eq "error">
+								- <strong>#encodeForHTML( local.thisSpec.error.message )#</strong></a>
+								<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#local.thisSpec.id#" onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">
+									<i class="fa" aria-hidden="true"></i>
+								</button></div>
 
-						<cfif local.thisSpec.status eq "error">
-							- <strong>#encodeForHTML( local.thisSpec.error.message )#</strong>
-							<button class="btn btn-link float-right expand-collapse collapsed" id="btn_#local.thisSpec.id#" onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">
-								<i class="fa" aria-hidden="true"></i>
-							</button><br>
-
-							<cfif arrayLen( local.thisSpec.failOrigin )>
-								<div class="">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
-								<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
-									<div class="">#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</div>
+								<cfif arrayLen( local.thisSpec.failOrigin )>
+									<div class="pl-4">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
+									<div class="pl-5">
+										<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
+											<code>#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</code>
+										</cfif>
+									</div>
 								</cfif>
-							</cfif>
 
-							<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
-								<cfdump var="#local.thisSpec.error#" label="Exception Structure">
-							</div>
-						</cfif>
+								<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
+									<cfdump var="#local.thisSpec.error#" label="Exception Structure">
+								</div>
+							<cfelse>
+									</a>
+								</div>
+							</cfif>
 					</li>
 				</ul>
 			</cfloop>

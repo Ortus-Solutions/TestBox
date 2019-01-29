@@ -60,11 +60,19 @@ ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
 	<script>
 	function runTests(){
 		console.log($("#runnerForm").serialize());
-		$("#tb-results").html( "" );
-		$("#btn-run").html( 'Running...' ).css( "opacity", "0.5" );
-		$("#tb-results").load( "index.cfm", $("#runnerForm").serialize(), function( data ){
-			$("#btn-run").html( 'Run' ).css( "opacity", "1" );
-		} );
+
+		$("#tb-results")
+			.html( "" );
+
+		$("#btn-run")
+			.attr( "disabled", "disabled" )
+			.html( 'Running...' )
+			.css( "opacity", "0.5" );
+
+		$("#tb-results")
+			.load( "index.cfm", $("#runnerForm").serialize(), function( data ){
+				$("#btn-run").removeAttr("disabled").html( 'Run' ).css( "opacity", "1" );
+			} );
 	}
 	function clearResults(){
 		$("#tb-results").html( '' );
