@@ -37,7 +37,7 @@
 
 		<!-- Global Error --->
 		<cfif !isSimpleValue( thisBundle.globalException )>
-			<h2>Global Bundle Exception<h2>
+			<h2>Global Bundle Exception</h2>
 			<p>#thisBundle.globalException.stacktrace#</p>
 		</cfif>
 

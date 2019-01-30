@@ -4,6 +4,7 @@
 .project
 .settings/
 .vscode
+.engine/
 cpu.json
 
 # Test Results

@@ -1,11 +1,11 @@
 /**
-* ********************************************************************************
-* Copyright Ortus Solutions, Corp
-* www.ortussolutions.com
-* ********************************************************************************
-* I generate a code browser to see file-level coverage statistics
-*/
-component accessors=true {
+ * ********************************************************************************
+ * Copyright Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ********************************************************************************
+ * I generate a code browser to see file-level coverage statistics
+ */
+component accessors = true {
 
 	// Location of all assets in TestBox
 	variables.ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
@@ -23,10 +23,10 @@ component accessors=true {
 	}
 
 	/**
-	* @qryCoverageData A query object containing coverage data
-	* @stats A struct of overview stats
-	* @browserOutputDir Generation folder for code browser
-	*/
+	 * @qryCoverageData A query object containing coverage data
+	 * @stats A struct of overview stats
+	 * @browserOutputDir Generation folder for code browser
+	 */
 	function generateBrowser(
 		required query qryCoverageData,
 		required struct stats,
@@ -34,7 +34,7 @@ component accessors=true {
 	) {
 
 		// wipe old files
-		if( directoryExists( browserOutputDir ) ) {
+		if ( directoryExists( browserOutputDir ) ) {
 			try {
 				directoryDelete( browserOutputDir, true );
 			} catch ( Any e ) {
@@ -44,7 +44,7 @@ component accessors=true {
 		}
 
 		// Create it fresh
-		if( !directoryExists( browserOutputDir ) ) {
+		if ( !directoryExists( browserOutputDir ) ) {
 			directoryCreate( browserOutputDir );
 			fileCopy( "#variables.ASSETS_DIR#/js/syntaxhighlighter.js", browserOutputDir );
 			fileCopy( "#variables.ASSETS_DIR#/js/jquery-3.3.1.min.js", browserOutputDir );
@@ -54,22 +54,22 @@ component accessors=true {
 		}
 
 		// Create index
-		savecontent variable="index" {
+		savecontent variable = "local.index" {
 			include "templates/index.cfm";
 		}
-		fileWrite( browserOutputDir & '/index.html', index );
+		fileWrite( browserOutputDir & '/index.html', local.index );
 
 		// Create directory skeletons
 		var dataStream = variables.streamBuilder
 			.new()
 			.rangeClosed( 1, qryCoverageData.recordcount )
-			.map( function( index ){
+			.map( function ( index ) {
 				return qryCoverageData.getRow( index );
 			} )
-			.peek( function( item ){
+			.peek( function ( item ) {
 				var theContainerDirectory = getDirectoryFromPath( "#browserOutputDir & item.relativeFilePath#" );
 
-				if( !directoryExists( theContainerDirectory ) ){
+				if ( !directoryExists( theContainerDirectory ) ) {
 					directoryCreate( theContainerDirectory );
 				}
 			} )
@@ -79,24 +79,24 @@ component accessors=true {
 		variables.streamBuilder
 			.new( dataStream )
 			.parallel()
-			.forEach( function( fileData ){
+			.forEach( function ( fileData ) {
 				// Coverage files are named after "real" files
 				var theFile = "#browserOutputDir & fileData.relativeFilePath#.html";
 
-				var lineNumbersBGColors = fileData.lineData.map( function( key, value ){
+				var lineNumbersBGColors = fileData.lineData.map( function ( key, value ) {
 					return ( value > 0 ) ? "success" : "danger";
 				} );
-				var percentage              = round( fileData.percCoverage * 100 );
+				var percentage = round( fileData.percCoverage * 100 );
 				var lineNumbersBGColorsJSON = SerializeJSON( lineNumbersBGColors );
-				var fileContents            = fileRead( fileData.filePath );
+				var fileContents = fileRead( fileData.filePath );
 
 				var brush = right( fileData.relativeFilePath, 4 ) == ".cfm" ? "coldfusion" : "javascript";
 
-				savecontent variable="fileTemplate" {
+				savecontent variable = "local.fileTemplate" {
 					include "templates/file.cfm";
 				}
 
-				fileWrite( theFile, fileTemplate );
+				fileWrite( theFile, local.fileTemplate );
 			} );
 	}
 
@@ -108,11 +108,11 @@ component accessors=true {
 	 */
 	function percentToContextualClass( required percentage ) {
 		percentage = percentage;
-		if( percentage > variables.coverageTresholds.bad && percentage < variables.coverageTresholds.good ) {
+		if ( percentage > variables.coverageTresholds.bad && percentage < variables.coverageTresholds.good ) {
 			return 'warning';
-		} else if( percentage >= variables.coverageTresholds.good ) {
+		} else if ( percentage >= variables.coverageTresholds.good ) {
 			return 'success';
-		} else if( percentage <= variables.coverageTresholds.bad ) {
+		} else if ( percentage <= variables.coverageTresholds.bad ) {
 			return 'danger';
 		}
 	}
