@@ -25,7 +25,7 @@
 								<div class=" col-3 d-inline-flex float-right">
 								<div class="progress position-relative w-100">
 									<div class="progress-bar bg-#codeBrowser.percentToContextualClass( percentage )#" role="progressbar" style="width: #percentage#%" aria-valuenow="#percentage#" aria-valuemin="0" aria-valuemax="100"></div>
-									<div class="progress-bar bg-danger" role="progressbar" style="width: #100-percentage#%" aria-valuenow="#100-percentage#" aria-valuemin="0" aria-valuemax="100"></div>
+									<div class="progress-bar bg-secondary" role="progressbar" style="width: #100-percentage#%" aria-valuenow="#100-percentage#" aria-valuemin="0" aria-valuemax="100"></div>
 									<span class="justify-content-center text-light d-flex position-absolute w-100">#percentage#% coverage</span>
 								</div>
 							</div>
@@ -43,7 +43,7 @@
 								<div class=" col-3 d-inline-flex float-right">
 								<div class="progress position-relative w-100">
 									<div class="progress-bar bg-#codeBrowser.percentToContextualClass( percentage )#" role="progressbar" style="width: #percentage#%" aria-valuenow="#percentage#" aria-valuemin="0" aria-valuemax="100"></div>
-									<div class="progress-bar bg-danger" role="progressbar" style="width: #100-percentage#%" aria-valuenow="#100-percentage#" aria-valuemin="0" aria-valuemax="100"></div>
+									<div class="progress-bar bg-secondary" role="progressbar" style="width: #100-percentage#%" aria-valuenow="#100-percentage#" aria-valuemin="0" aria-valuemax="100"></div>
 									<span class="justify-content-center text-light d-flex position-absolute w-100">#percentage#% coverage</span>
 								</div>
 							</div>

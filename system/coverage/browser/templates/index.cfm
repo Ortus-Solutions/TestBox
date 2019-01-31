@@ -5,12 +5,12 @@
 		<meta charset="utf-8">
 		<title>Code Coverage Browser</title>
 
-		<link rel="stylesheet" href="#variables.ASSETS_DIR#/css/fontawesome.css">
-		<link rel="stylesheet" href="#variables.ASSETS_DIR#/css/bootstrap.min.css">
-		<script	src="#variables.ASSETS_DIR#/js/jquery-3.3.1.min.js"></script>
-		<script src="#variables.ASSETS_DIR#/js/popper.min.js"></script>
-		<script src="#variables.ASSETS_DIR#/js/bootstrap.min.js"></script>
-		<script src="#variables.ASSETS_DIR#/js/stupidtable.min.js"></script>
+		<link rel="stylesheet" href="assets/css/fontawesome.css">
+		<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+		<script	src="assets/js/jquery-3.3.1.min.js"></script>
+		<script src="assets/js/popper.min.js"></script>
+		<script src="assets/js/bootstrap.min.js"></script>
+		<script src="assets/js/stupidtable.min.js"></script>
 
 		<script>
 			$(function(){
@@ -47,15 +47,15 @@
 					</tr>
 				</thead>
 				<tbody>
+					<cfset percTotalCoverage = round( stats.percTotalCoverage * 100 )>
 					<tr class="h4 pr-3">
 						<td class="text-right pr-3">
 							Total project coverage:
 						</td>
 						<td style="width: 300px">
-							<cfset percTotalCoverage = round( stats.percTotalCoverage * 100 )>
 							<div class="progress position-relative" style="line-height: 2.5rem;font-size: 1.5rem; height:40px;">
 								<div class="progress-bar bg-#percentToContextualClass( percTotalCoverage )#" role="progressbar" style="width: #percTotalCoverage#%" aria-valuenow="#percTotalCoverage#" aria-valuemin="0" aria-valuemax="100"></div>
-								<div class="progress-bar bg-danger" role="progressbar" style="width: #100-percTotalCoverage#%" aria-valuenow="#100-percTotalCoverage#" aria-valuemin="0" aria-valuemax="100"></div>
+								<div class="progress-bar bg-secondary" role="progressbar" style="width: #100-percTotalCoverage#%" aria-valuenow="#100-percTotalCoverage#" aria-valuemin="0" aria-valuemax="100"></div>
 								<span class="justify-content-center text-light d-flex position-absolute w-100">#percTotalCoverage#% coverage</span>
 							</div>
 						</td>
@@ -74,13 +74,13 @@
 				<thead>
 					<tr>
 						<th data-sort="string"><span class="btn btn-link">Path</span></th>
-						<th data-sort="string" data-sort-onload=yes data-sort-default="asc"><span class="btn btn-link">Coverage</span></th>
+						<th data-sort="int" data-sort-onload=yes data-sort-default="asc"><span class="btn btn-link">Coverage</span></th>
 					</tr>
 				<thead>
 				<tbody>
 					<cfloop query="qryCoverageDataSorted">
 					<cfset percentage = round( percCoverage * 100 )>
-					<tr>
+					<tr class="table-#percentToContextualClass( percentage )# ">
 						<!--- Coverage files are named after "real" files --->
 						<cfset link = "#replace( relativeFilePath, '\', '/', 'all' )#.html">
 						<!--- Trim of leading slash so it's relative --->
@@ -97,7 +97,7 @@
 									aria-valuemax="100">
 								</div>
 								<div
-									class="progress-bar bg-danger"
+									class="progress-bar bg-secondary"
 									role="progressbar"
 									style="width: #100 - percentage#%"
 									aria-valuenow="#100 - percentage#"

@@ -46,11 +46,7 @@ component accessors = true {
 		// Create it fresh
 		if ( !directoryExists( browserOutputDir ) ) {
 			directoryCreate( browserOutputDir );
-			fileCopy( "#variables.ASSETS_DIR#/js/syntaxhighlighter.js", browserOutputDir );
-			fileCopy( "#variables.ASSETS_DIR#/js/jquery-3.3.1.min.js", browserOutputDir );
-			fileCopy( "#variables.ASSETS_DIR#/js/stupidtable.min.js", browserOutputDir );
-			fileCopy( "#variables.ASSETS_DIR#/css/syntaxhighlighter.css", browserOutputDir );
-			fileCopy( "#variables.ASSETS_DIR#/css/bootstrap.min.css", browserOutputDir );
+			directoryCopy( "#variables.ASSETS_DIR#", "#browserOutputDir#/assets", true );
 		}
 
 		// Create index
@@ -89,7 +85,8 @@ component accessors = true {
 				var percentage = round( fileData.percCoverage * 100 );
 				var lineNumbersBGColorsJSON = SerializeJSON( lineNumbersBGColors );
 				var fileContents = fileRead( fileData.filePath );
-
+				var levelsFromRoot = fileData.relativeFilePath.listLen( "/" );
+				var relPathToRoot = RepeatString( "../", levelsFromRoot - 1 );
 				var brush = right( fileData.relativeFilePath, 4 ) == ".cfm" ? "coldfusion" : "javascript";
 
 				savecontent variable = "local.fileTemplate" {

@@ -5,12 +5,14 @@
 			<meta charset="utf-8">
 			<title>#fileData.relativeFilePath#</title>
 
-			<link rel="stylesheet" href="#variables.ASSETS_DIR#/css/fontawesome.css">
-			<link rel="stylesheet" href="#variables.ASSETS_DIR#/css/bootstrap.min.css">
-			<script	src="#variables.ASSETS_DIR#/js/jquery-3.3.1.min.js"></script>
-			<script src="#variables.ASSETS_DIR#/js/popper.min.js"></script>
-			<script src="#variables.ASSETS_DIR#/js/bootstrap.min.js"></script>
-			<script src="#variables.ASSETS_DIR#/js/stupidtable.min.js"></script>
+			<link rel="stylesheet" href="#relPathToRoot#assets/css/fontawesome.css">
+			<link rel="stylesheet" href="#relPathToRoot#assets/css/syntaxhighlighter.css">
+			<link rel="stylesheet" href="#relPathToRoot#assets/css/bootstrap.min.css">
+			<script	src="#relPathToRoot#assets/js/jquery-3.3.1.min.js"></script>
+			<script src="#relPathToRoot#assets/js/popper.min.js"></script>
+			<script src="#relPathToRoot#assets/js/bootstrap.min.js"></script>
+			<script src="#relPathToRoot#assets/js/stupidtable.min.js"></script>
+			<script src="#relPathToRoot#assets/js/syntaxhighlighter.js"></script>
 
 			<script>
 				$( document ).ready( function(){
@@ -33,7 +35,7 @@
 							<th style="width: 300px">
 								<div class="progress position-relative" style="line-height: 2.5rem;font-size: 1.5rem; height:40px;">
 									<div class="progress-bar bg-#percentToContextualClass( percentage )#" role="progressbar" style="width: #percentage#%" aria-valuenow="#percentage#" aria-valuemin="0" aria-valuemax="100"></div>
-									<div class="progress-bar bg-danger" role="progressbar" style="width: #100-percentage#%" aria-valuenow="#100-percentage#" aria-valuemin="0" aria-valuemax="100"></div>
+									<div class="progress-bar bg-secondary" role="progressbar" style="width: #100-percentage#%" aria-valuenow="#100-percentage#" aria-valuemin="0" aria-valuemax="100"></div>
 									<span class="justify-content-center text-light d-flex position-absolute w-100">#percentage#% coverage</span>
 								</div>
 							</th>
