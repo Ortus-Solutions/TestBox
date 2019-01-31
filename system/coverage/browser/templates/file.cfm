@@ -5,16 +5,20 @@
 			<meta charset="utf-8">
 			<title>#fileData.relativeFilePath#</title>
 
-			<link rel="stylesheet" href="bootstrap.min.css">
-			<link rel="stylesheet" href="syntaxhighlighter.css">
+			<link rel="stylesheet" href="#relPathToRoot#assets/css/fontawesome.css">
+			<link rel="stylesheet" href="#relPathToRoot#assets/css/syntaxhighlighter.css">
+			<link rel="stylesheet" href="#relPathToRoot#assets/css/bootstrap.min.css">
+			<script src="#relPathToRoot#assets/js/jquery-3.3.1.min.js"></script>
+			<script src="#relPathToRoot#assets/js/popper.min.js"></script>
+			<script src="#relPathToRoot#assets/js/bootstrap.min.js"></script>
+			<script src="#relPathToRoot#assets/js/stupidtable.min.js"></script>
+			<script src="#relPathToRoot#assets/js/syntaxhighlighter.js"></script>
 
-			<script	src="jquery-3.3.1.min.js"></script>
-			<script src="syntaxhighlighter.js"></script>
 			<script>
 				$( document ).ready( function(){
 					var lineNumbersBGColorsJSON = #lineNumbersBGColorsJSON#;
 					$.each( lineNumbersBGColorsJSON, function( key, value ) {
-						$( `.line.number${key}` ).addClass( `text-light bg-${value}` );
+						$( `td.gutter > div.line.number${key}` ).addClass( `text-light bg-${value}` );
 					});
 				});
 			</script>
@@ -22,25 +26,38 @@
 		</head>
 		<body>
 			<div class="container-fluid my-3">
-				<h2 class="row text-center">
-					<div class="d-inline-block mx-auto col-5">
-						<span class="d-inline-block">#fileData.relativeFilePath#</span>
-						<span class="d-inline">
-							<div class="progress position-relative h-100" style="line-height: 2.5rem;font-size: 1.5rem;">
-								<div class="progress-bar bg-#percentToContextualClass( percentage )#" role="progressbar" style="width: #percentage#%" aria-valuenow="#percentage#" aria-valuemin="0" aria-valuemax="100"></div>
-								<div class="progress-bar bg-danger" role="progressbar" style="width: #100-percentage#%" aria-valuenow="#100-percentage#" aria-valuemin="0" aria-valuemax="100"></div>
-								<span class="justify-content-center text-light d-flex position-absolute w-100">#percentage#% coverage</span>
-							</div>
-						</span>
-					</div>
-				</h2>
-				<a href="javascript:history.back()"><button type="button" class="btn btn-secondary btn-sm my-1">&laquo; Back</button></a>
+				<table class="table-borderless mx-auto">
+					<thead>
+						<tr>
+							<th class="h2 text-right pr-3">
+								#fileData.relativeFilePath#
+							</th>
+							<th style="width: 300px">
+								<div class="progress position-relative" style="line-height: 2.5rem;font-size: 1.5rem; height:40px;">
+									<div class="progress-bar bg-#percentToContextualClass( percentage )#" role="progressbar" style="width: #percentage#%" aria-valuenow="#percentage#" aria-valuemin="0" aria-valuemax="100"></div>
+									<div class="progress-bar bg-secondary" role="progressbar" style="width: #100-percentage#%" aria-valuenow="#100-percentage#" aria-valuemin="0" aria-valuemax="100"></div>
+									<span class="justify-content-center text-light d-flex position-absolute w-100">#percentage#% coverage</span>
+								</div>
+							</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								<a href="javascript:history.back()"><button type="button" class="btn btn-secondary btn-sm my-1"><i class="fas fa-backward"></i> Back</button></a>
+							</td>
+							<td>
+								&nbsp;
+							</td>
+						</tr>
+					</tbody>
+				</table>
 				<hr width="100%">
 
-<script type="text/syntaxhighlighter" class="brush: coldfusion"><![CDATA[
+<script type="text/syntaxhighlighter" class="brush: #brush#"><![CDATA[
 #fileContents#
 ]]></script>
-			</div>
-		</body>
-	</html>
-	</cfoutput>
+		</div>
+	</body>
+</html>
+</cfoutput>

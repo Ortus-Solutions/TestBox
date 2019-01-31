@@ -1,15 +1,15 @@
 {
-	"name":"testbox-lucee@5",
+    "name":"testbox-lucee@5",
     "force":true,
     "openbrowser":"false",
     "web":{
-		"directoryBrowsing": true,
+        "directoryBrowsing":true,
         "http":{
             "port":"49616"
         }
     },
     "app":{
-		"cfengine":"lucee@5",
-		"serverHomeDirectory":".engine/lucee5"
+        "cfengine":"lucee@5",
+        "serverHomeDirectory":".engine/lucee5"
     }
 }

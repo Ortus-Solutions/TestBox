@@ -5,19 +5,64 @@
 		<meta charset="utf-8">
 		<title>Code Coverage Browser</title>
 
-		<link rel="stylesheet" href="fontawesome.css">
-		<link rel="stylesheet" href="bootstrap.min.css">
-		<script	src="jquery-3.3.1.min.js"></script>
-		<script src="popper.min.js"></script>
-		<script src="bootstrap.min.js"></script>
+		<link rel="stylesheet" href="assets/css/fontawesome.css">
+		<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+		<script	src="assets/js/jquery-3.3.1.min.js"></script>
+		<script src="assets/js/popper.min.js"></script>
+		<script src="assets/js/bootstrap.min.js"></script>
+		<script src="assets/js/stupidtable.min.js"></script>
+
+		<script>
+			$(function(){
+				$("table").stupidtable();
+			});
+		</script>
+
+
+
+	<style>
+		th.sorting-asc > span:after {
+			content: "\2193";
+		}
+
+		th.sorting-desc > span:after {
+			content: "\2191";
+		}
+	</style>
 
 	</head>
 	<body>
 		<div class="container-fluid my-3">
-			<h2>Code Coverage Browser</h2>
+			<h2 class="text-center">Code Coverage Browser</h2>
 
-			<h4>Total Files Processed: #stats.numFiles#</h4>
-			<h4>Total project coverage: <span class="text-#percentToContextualClass( stats.percTotalCoverage )#">#round( stats.percTotalCoverage * 100 )#%</span></h4>
+			<table class="table-borderless">
+				<thead>
+					<tr class="h4 pr-3">
+						<th class="text-right pr-3">
+							Total Files Processed:
+						</th>
+						<th style="width: 30%">
+							#stats.numFiles#
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+					<cfset percTotalCoverage = round( stats.percTotalCoverage * 100 )>
+					<tr class="h4 pr-3">
+						<td class="text-right pr-3">
+							Total project coverage:
+						</td>
+						<td style="width: 300px">
+							<div class="progress position-relative" style="line-height: 2.5rem;font-size: 1.5rem; height:40px;">
+								<div class="progress-bar bg-#percentToContextualClass( percTotalCoverage )#" role="progressbar" style="width: #percTotalCoverage#%" aria-valuenow="#percTotalCoverage#" aria-valuemin="0" aria-valuemax="100"></div>
+								<div class="progress-bar bg-secondary" role="progressbar" style="width: #100-percTotalCoverage#%" aria-valuenow="#100-percTotalCoverage#" aria-valuemin="0" aria-valuemax="100"></div>
+								<span class="justify-content-center text-light d-flex position-absolute w-100">#percTotalCoverage#% coverage</span>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+
 
 			<cfquery name="qryCoverageDataSorted" dbtype="query">
 				SELECT filePath, relativeFilePath, numLines, numCoveredLines, numExecutableLines, percCoverage
@@ -28,23 +73,23 @@
 			<table class="table my-3">
 				<thead>
 					<tr>
-						<th>Path</th>
-						<th>Coverage</th>
+						<th data-sort="string"><span class="btn btn-link">Path</span></th>
+						<th data-sort="int" data-sort-onload=yes data-sort-default="asc"><span class="btn btn-link">Coverage</span></th>
 					</tr>
 				<thead>
 				<tbody>
 					<cfloop query="qryCoverageDataSorted">
-					<cfset local.percentage = round( percCoverage * 100 )>
-					<tr>
+					<cfset percentage = round( percCoverage * 100 )>
+					<tr class="table-#percentToContextualClass( percentage )# ">
 						<!--- Coverage files are named after "real" files --->
 						<cfset link = "#replace( relativeFilePath, '\', '/', 'all' )#.html">
 						<!--- Trim of leading slash so it's relative --->
 						<cfset link = right( link, len( link ) - 1 )>
-						<td><a href="#link#">#relativeFilePath#</a></td>
-						<td>
+						<td data-sort-value="#relativeFilePath#"><a href="#link#">#relativeFilePath#</a></td>
+						<td data-sort-value="#percentage#">
 							<div class="progress position-relative" style="height: 1.4rem;">
 								<div
-									class="progress-bar bg-#percentToContextualClass( local.percentage )#"
+									class="progress-bar bg-#percentToContextualClass( percentage )#"
 									role="progressbar"
 									style="width: #percentage#%"
 									aria-valuenow="#percentage#"
@@ -52,7 +97,7 @@
 									aria-valuemax="100">
 								</div>
 								<div
-									class="progress-bar bg-danger"
+									class="progress-bar bg-secondary"
 									role="progressbar"
 									style="width: #100 - percentage#%"
 									aria-valuenow="#100 - percentage#"

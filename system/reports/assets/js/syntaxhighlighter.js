@@ -6,7 +6,7 @@
  * http://alexgorbatchev.com/SyntaxHighlighter/donate.html
  * 
  * @version
- * 4.0.1 (Tue, 22 Jan 2019 23:58:46 GMT)
+ * 4.0.1 (Sat, 26 Jan 2019 01:06:00 GMT)
  * 
  * @copyright
  * Copyright (C) 2004-2016 Alex Gorbatchev.
@@ -78,13 +78,13 @@
 	  });
 	});
 	
-	var _domready = __webpack_require__(24);
+	var _domready = __webpack_require__(25);
 	
 	var _domready2 = _interopRequireDefault(_domready);
 	
 	var _core2 = _interopRequireDefault(_core);
 	
-	var _dasherize = __webpack_require__(25);
+	var _dasherize = __webpack_require__(26);
 	
 	var dasherize = _interopRequireWildcard(_dasherize);
 	
@@ -346,6 +346,8 @@
 	 * */
 	
 	registerBrush(__webpack_require__(23));
+	
+	registerBrush(__webpack_require__(24));
 	
 	/*
 	
@@ -3722,6 +3724,45 @@
 
 	'use strict';
 	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  var keywords = 'break case catch class continue ' + 'default delete do else enum export extends false  ' + 'for from as function if implements import in instanceof ' + 'interface let new null package private protected ' + 'static return super switch ' + 'this throw true try typeof var while with yield';
+	
+	  this.regexList = [{
+	    regex: regexLib.multiLineDoubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.multiLineSingleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.singleLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.multiLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: /\s*#.*/gm,
+	    css: 'preprocessor'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }];
+	
+	  this.forHtmlScript(regexLib.scriptScriptTags);
+	}
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['js', 'jscript', 'javascript', 'json'];
+	module.exports = Brush;
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
 	/*!
@@ -3753,7 +3794,7 @@
 	});
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports) {
 
 	'use strict';
