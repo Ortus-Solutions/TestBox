@@ -12,9 +12,6 @@
 				<link rel="stylesheet" href="#ASSETS_DIR#/css/fontawesome.css">
 				<link rel="stylesheet" href="#ASSETS_DIR#/css/bootstrap.min.css">
 				<script src="#ASSETS_DIR#/js/jquery-3.3.1.min.js"></script>
-				<script src="#ASSETS_DIR#/js/popper.min.js"></script>
-				<script src="#ASSETS_DIR#/js/bootstrap.min.js"></script>
-				<script src="#ASSETS_DIR#/js/stupidtable.min.js"></script>
 			</head>
 			<body>
 	</cfif>
@@ -90,7 +87,7 @@ function showInfo(failMessage, specID, isError) {
 	if (failMessage.length) {
 		alert("Failure Message: " + failMessage);
 	} else if (isError || isError == 'yes' || isError == 'true') {
-		$("#error_" + specID).fadeToggle();
+		$("#error_" + specID).slideToggle();
 	}
 }
 
@@ -103,7 +100,7 @@ function toggleDebug(specid) {
 			return;
 		}
 		// toggle.
-		$this.fadeToggle();
+		$this.slideToggle();
 	});
 }
 </script>

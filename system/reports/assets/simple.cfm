@@ -260,7 +260,7 @@ function toggleDebug(specid) {
 			return;
 		}
 		// toggle.
-		$this.fadeToggle();
+		$this.slideToggle();
 	});
 }
 </script>
