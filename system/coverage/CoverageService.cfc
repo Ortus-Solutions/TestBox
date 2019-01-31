@@ -118,6 +118,8 @@ component accessors="true" {
 	*/
 	function renderStats( required struct coverageData ) {
 		var stats = coverageData.stats;
+		var pathToCapture = getCoverageOptions().pathToCapture;
+
 		var codeBrowser = new browser.CodeBrowser( getCoverageOptions().coverageTresholds );
 
 		savecontent variable="local.statsHTML" {

@@ -20,9 +20,10 @@
 				<ol class="list-group">
 					<cfloop query="stats.qryFilesBestCoverage">
 						<cfset percentage = round( percCoverage*100 )>
+						<cfset trimmedFilePath = replaceNoCase( filePath, pathToCapture, '' )>
 						<li class="list-group-item list-group-item-#codeBrowser.percentToContextualClass( percentage )#">
-							<span class="col-9">#filePath#</span>
-								<div class=" col-3 d-inline-flex float-right">
+							<span class="col-9">#trimmedFilePath#</span>
+							<div class=" col-3 d-inline-flex float-right">
 								<div class="progress position-relative w-100">
 									<div class="progress-bar bg-#codeBrowser.percentToContextualClass( percentage )#" role="progressbar" style="width: #percentage#%" aria-valuenow="#percentage#" aria-valuemin="0" aria-valuemax="100"></div>
 									<div class="progress-bar bg-secondary" role="progressbar" style="width: #100-percentage#%" aria-valuenow="#100-percentage#" aria-valuemin="0" aria-valuemax="100"></div>
@@ -39,8 +40,8 @@
 					<cfloop query="stats.qryFilesWorstCoverage">
 						<cfset percentage = round( percCoverage*100 )>
 						<li class="list-group-item list-group-item-#codeBrowser.percentToContextualClass( percentage )#">
-							<span class="col-9">#filePath#</span>
-								<div class=" col-3 d-inline-flex float-right">
+							<span class="col-9">#trimmedFilePath#</span>
+							<div class=" col-3 d-inline-flex float-right">
 								<div class="progress position-relative w-100">
 									<div class="progress-bar bg-#codeBrowser.percentToContextualClass( percentage )#" role="progressbar" style="width: #percentage#%" aria-valuenow="#percentage#" aria-valuemin="0" aria-valuemax="100"></div>
 									<div class="progress-bar bg-secondary" role="progressbar" style="width: #100-percentage#%" aria-valuenow="#100-percentage#" aria-valuemin="0" aria-valuemax="100"></div>
