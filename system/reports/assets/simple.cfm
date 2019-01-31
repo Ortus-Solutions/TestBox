@@ -118,36 +118,48 @@
 					</div>
 					<div id="details_#thisBundle.id#" class="collapse" aria-labelledby="header_#thisBundle.id#" data-bundle="#thisBundle.path#">
 						<div class="card-body">
-							<!--- Global Error --->
-							<cfif !isSimpleValue( thisBundle.globalException )>
-								<h2>Global Bundle Exception</h2>
-								<cfdump var="#thisBundle.globalException#" />
-							</cfif>
+							<ul class="suite list-group">
+								<!--- Global Error --->
+								<cfif !isSimpleValue( thisBundle.globalException )>
+									<li class="list-group-item list-group-item-danger">
+										<span class="h5">
+											<strong>Global Bundle Exception</strong>
+										</span>
+										<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_globalException_#thisBundle#" onclick="toggleDebug( 'globalException_#thisBundle#' )" title="Show more information">
+											<i class="fa" aria-hidden="true"></i>
+										</button>
+										<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="globalException_#thisBundle#">
+											<cfdump var="#thisBundle.globalException#" />
+										</div>
+									</li>
+								</cfif>
 
-							<!-- Iterate over bundle suites -->
-							<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
-								<ul class="suite list-group #statusPlusBootstrapClass( suiteStats.status )#" data-bundleid="#thisBundle.id#">
-									#genSuiteReport( suiteStats, thisBundle )#
-								</ul>
-							</cfloop>
+								<!-- Iterate over bundle suites -->
+								<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
+									<ul class="suite list-group #statusPlusBootstrapClass( suiteStats.status )#" data-bundleid="#thisBundle.id#">
+										#genSuiteReport( suiteStats, thisBundle )#
+									</ul>
+								</cfloop>
 
-							<!--- Debug Panel --->
-							<cfif arrayLen( thisBundle.debugBuffer )>
-								<hr>
-								<h2>Debug Stream&nbsp;
-									<button class="btn btn-sm btn-primary expand-collapse collapsed" id="btn_#thisBundle.id#" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">
-										<i class="fa" aria-hidden="true"></i>
-									</button>
-								</h2>
-								<div class="debugdata" style="display:none;" data-specid="#thisBundle.id#">
-									<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
-									<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
-										<h2>#thisDebug.label#</h2>
-										<cfdump var="#thisDebug.data#" label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#" top="#thisDebug.top#" />
-										<p>&nbsp;</p>
-									</cfloop>
-								</div>
-							</cfif>
+								<!--- Debug Panel --->
+								<cfif arrayLen( thisBundle.debugBuffer )>
+									<li class="list-group-item list-group-item-info">
+										<span class="alert-link h5">
+											<strong>Debug Stream</strong>
+										</span>
+										<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#thisBundle.id#" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">
+											<i class="fa" aria-hidden="true"></i>
+										</button>
+										<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#thisBundle.id#">
+											<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
+											<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
+												<h6>#thisDebug.label#</h6>
+												<cfdump var="#thisDebug.data#" label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#" top="#thisDebug.top#" />
+											</cfloop>
+										</div>
+									</li>
+								</cfif>
+							</ul>
 						</div>
 					</div>
 				</div>
@@ -299,7 +311,7 @@ code {
 		<cfoutput>
 			<!--- Suite Results --->
 			<li class="list-group-item #statusPlusBootstrapClass( arguments.suiteStats.status )#">
-				<a class="alert-link" title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#" href="#variables.baseURL#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&target=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
+				<a class="alert-link h5" title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#" href="#variables.baseURL#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&target=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
 					<strong>+#arguments.suiteStats.name#</strong>
 					(#arguments.suiteStats.totalDuration# ms)
 				</a>
@@ -313,51 +325,34 @@ code {
 						<div class="clearfix">
 							<a class="alert-link" href="#variables.baseURL#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&target=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true" class="pl-4 #thisSpecStatusClass#">
 								#local.thisSpec.name#(#local.thisSpec.totalDuration# ms)
-
+							</a>
 							<cfif local.thisSpec.status eq "failed">
-								- <strong>#encodeForHTML( local.thisSpec.failMessage )#</strong></a>
-								<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#local.thisSpec.id#" onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">
-									<i class="fa" aria-hidden="true"></i>
-								</button></div>
-
-								<cfif arrayLen( local.thisSpec.failOrigin )>
-									<div class="pl-4">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
-									<div class="pl-5">
-										<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
-											<code>#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</code>
-										</cfif>
-									</div>
-								</cfif>
-
-								<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
-									<cfdump var="#local.thisSpec.failorigin#" label="Failure Origin">
-								</div>
-							<cfelse>
-								</a>
+								<cfset local.thisSpec.message = local.thisSpec.failMessage>
 							</cfif>
-
 							<cfif local.thisSpec.status eq "error">
-								- <strong>#encodeForHTML( local.thisSpec.error.message )#</strong></a>
+								<cfset local.thisSpec.message = local.thisSpec.error.message>
+							</cfif>
+							<cfif structKeyExists( local.thisSpec, "message" )>
+								- <strong>#encodeForHTML( local.thisSpec.message )#</strong></a>
 								<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#local.thisSpec.id#" onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">
 									<i class="fa" aria-hidden="true"></i>
-								</button></div>
-
-								<cfif arrayLen( local.thisSpec.failOrigin )>
-									<div class="pl-4">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
-									<div class="pl-5">
-										<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
-											<code>#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</code>
-										</cfif>
-									</div>
-								</cfif>
-
-								<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
-									<cfdump var="#local.thisSpec.error#" label="Exception Structure">
-								</div>
-							<cfelse>
-								</a>
+								</button>
 							</cfif>
 						</div>
+						<cfif structKeyExists( local.thisSpec, "message" )>
+							<cfif arrayLen( local.thisSpec.failOrigin )>
+								<div class="pl-4">#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
+								<div class="pl-5">
+									<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
+										<code>#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</code>
+									</cfif>
+								</div>
+							</cfif>
+
+							<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
+								<cfdump var="#local.thisSpec.failorigin#" label="Failure Origin">
+							</div>
+						</cfif>
 					</li>
 				</ul>
 			</cfloop>
