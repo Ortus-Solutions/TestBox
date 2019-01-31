@@ -9,12 +9,12 @@
 				<meta name="generator" content="TestBox v#testbox.getVersion()#">
 				<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
 
-				<link rel="stylesheet" href="#ASSETS_DIR#/css/fontawesome.css">
-				<link rel="stylesheet" href="#ASSETS_DIR#/css/bootstrap.min.css">
-				<script src="#ASSETS_DIR#/js/jquery-3.3.1.min.js"></script>
-				<script src="#ASSETS_DIR#/js/popper.min.js"></script>
-				<script src="#ASSETS_DIR#/js/bootstrap.min.js"></script>
-				<script src="#ASSETS_DIR#/js/stupidtable.min.js"></script>
+				<style>#fileRead( '#ASSETS_DIR#/css/fontawesome.css' )#</style>
+				<style>#fileRead( '#ASSETS_DIR#/css/bootstrap.min.css' )#</style>
+				<script>#fileRead( '#ASSETS_DIR#/js/jquery-3.3.1.min.js' )#</script>
+				<script>#fileRead( '#ASSETS_DIR#/js/popper.min.js' )#</script>
+				<script>#fileRead( '#ASSETS_DIR#/js/bootstrap.min.js' )#</script>
+				<script>#fileRead( '#ASSETS_DIR#/js/stupidtable.min.js' )#</script>
 			</head>
 			<body>
 	</cfif>
