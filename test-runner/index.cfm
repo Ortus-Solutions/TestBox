@@ -49,7 +49,6 @@ ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
 		<title>TestBox Global Runner</title>
 
 		<cfoutput>
-			<style>#fileRead( '#ASSETS_DIR#/css/fontawesome.css' )#</style>
 			<style>#fileRead( '#ASSETS_DIR#/css/bootstrap.min.css' )#</style>
 			<script>#fileRead( '#ASSETS_DIR#/js/jquery-3.3.1.min.js' )#</script>
 			<script>#fileRead( '#ASSETS_DIR#/js/popper.min.js' )#</script>

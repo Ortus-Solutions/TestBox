@@ -5,7 +5,6 @@
 		<meta charset="utf-8">
 		<title>Code Coverage Browser</title>
 
-		<link rel="stylesheet" href="assets/css/fontawesome.css">
 		<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 		<script	src="assets/js/jquery-3.3.1.min.js"></script>
 		<script src="assets/js/popper.min.js"></script>
