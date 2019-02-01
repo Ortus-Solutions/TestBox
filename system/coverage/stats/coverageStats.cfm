@@ -1,16 +1,49 @@
 <!---
 	Template for outputting overview stats about the line coverage details that were captured.
  --->
+<cfset ASSETS_DIR=expandPath( "/testbox/system/reports/assets" )>
 <cfoutput>
-	<cfif isDefined( 'stats' )>
-		<cfset totalProjectCoverage = round( stats.percTotalCoverage*100 )>
+<cfif fullPage>
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<meta charset="utf-8">
+			<meta name="generator" content="TestBox v#testbox.getVersion()#">
+			<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
 
+			<style>#fileRead( '#ASSETS_DIR#/css/bootstrap.min.css' )#</style>
+			<script>#fileRead( '#ASSETS_DIR#/js/jquery-3.3.1.min.js' )#</script>
+			<script>#fileRead( '#ASSETS_DIR#/js/popper.min.js' )#</script>
+			<script>#fileRead( '#ASSETS_DIR#/js/bootstrap.min.js' )#</script>
+			<script>#fileRead( '#ASSETS_DIR#/js/stupidtable.min.js' )#</script>
+
+			<style>
+			[data-toggle="collapse"] .arrow:before,
+			.expand-collapse .arrow:before {
+				content: "\2b06";
+			}
+
+			[data-toggle="collapse"].collapsed .arrow:before,
+			.expand-collapse.collapsed .arrow:before {
+				content: "\2b07";
+			}
+
+			code {
+				color: black !important;
+			}
+			</style>
+		</head>
+		<body>
+</cfif>
+<cfif isDefined( 'stats' )>
+	<cfset totalProjectCoverage = round( stats.percTotalCoverage*100 )>
+	<div class="list-group mb-3">
 		<div class="list-group-item list-group-item-info" id="coverageStats">
 			<h2 class="clearfix">
-				<span>Coverage Stats</span>
+				<span>Code Coverage Stats</span>
 				<div class="mt-2 h5 float-right">
 					<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_coverageStats" onclick="toggleDebug( 'coverageStats' )" title="Show coverage stats">
-						<i class="arrow" aria-hidden="true"></i>
+						<span class="arrow" aria-hidden="true"></span>
 					</button>
 					<span class="ml-2">Total Files Processed:<span class="badge badge-info ml-1">#stats.numFiles#</span></span>
 					<span>
@@ -41,7 +74,7 @@
 					Coverage Browser generated in #coverageData.browserResults#
 				</h6>
 			</cfif>
-			<div class="my-3 debugdata" style="display:none;" data-specid="coverageStats">
+			<div class="my-3 debugdata" <cfif !fullPage>style="display:none;" </cfif>data-specid="coverageStats">
 				<ul class="list-group">
 					<li class="list-group-item">
 						<h4>Files with best coverage:</h4>
@@ -83,7 +116,25 @@
 				</ul>
 			</div>
 		</div>
-
-
-	</cfif>
+	</div>
+</cfif>
 </cfoutput>
+<cfif fullPage>
+		<script>
+			function toggleDebug(specid) {
+				$(`#btn_${specid}`).toggleClass("collapsed");
+				$("div.debugdata").each(function() {
+					var $this = $(this);
+
+					// if bundleid passed and not the same bundle
+					if (specid != undefined && $this.attr("data-specid") != specid) {
+						return;
+					}
+					// toggle.
+					$this.slideToggle();
+				});
+			}
+			</script>
+		</body>
+	</html>
+</cfif>
