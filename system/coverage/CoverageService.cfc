@@ -116,7 +116,7 @@ component accessors="true" {
 	/**
 	* Render HTML representation of statistics
 	*/
-	function renderStats( required struct coverageData ) {
+	function renderStats( required struct coverageData, boolean fullPage=true ) {
 		var stats = coverageData.stats;
 		var pathToCapture = getCoverageOptions().pathToCapture;
 

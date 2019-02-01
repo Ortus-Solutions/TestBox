@@ -35,7 +35,7 @@
 
 		<!--- Code Coverage Stats --->
 		<cfif results.getCoverageEnabled()>
-			#testbox.getCoverageService().renderStats( results.getCoverageData() )#
+			#testbox.getCoverageService().renderStats( results.getCoverageData(), false )#
 		</cfif>
 
 		<div class="list-group">
@@ -85,7 +85,7 @@
 									#thisBundle.path# (#thisBundle.totalDuration# ms)
 								</a>
 								<button class="btn btn-link float-right py-0" type="button" data-toggle="collapse" data-target="##details_#thisBundle.id#" aria-expanded="false" aria-controls="details_#thisBundle.id#">
-									<i class="arrow" aria-hidden="true"></i>
+									<span class="arrow" aria-hidden="true"></span>
 								</button>
 							</h4>
 							<div class="float-right">
@@ -110,7 +110,7 @@
 												<strong>Global Bundle Exception</strong>
 											</span>
 											<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_globalException_#thisBundle#" onclick="toggleDebug( 'globalException_#thisBundle#' )" title="Show more information">
-												<i class="arrow" aria-hidden="true"></i>
+												<span class="arrow" aria-hidden="true"></span>
 											</button>
 											<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="globalException_#thisBundle#">
 												<cfdump var="#thisBundle.globalException#" />
@@ -132,7 +132,7 @@
 												<strong>Debug Stream</strong>
 											</span>
 											<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#thisBundle.id#" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">
-												<i class="arrow" aria-hidden="true"></i>
+												<span class="arrow" aria-hidden="true"></span>
 											</button>
 											<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#thisBundle.id#">
 												<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
@@ -325,7 +325,7 @@ code {
 							<cfif structKeyExists( local.thisSpec, "message" )>
 								- <strong>#encodeForHTML( local.thisSpec.message )#</strong></a>
 								<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#local.thisSpec.id#" onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">
-									<i class="arrow" aria-hidden="true"></i>
+									<span class="arrow" aria-hidden="true"></span>
 								</button>
 							</cfif>
 						</div>
