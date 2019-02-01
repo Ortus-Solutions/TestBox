@@ -9,7 +9,6 @@
 				<meta name="generator" content="TestBox v#testbox.getVersion()#">
 				<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
 
-				<style>#fileRead( '#ASSETS_DIR#/css/fontawesome.css' )#</style>
 				<style>#fileRead( '#ASSETS_DIR#/css/bootstrap.min.css' )#</style>
 				<script>#fileRead( '#ASSETS_DIR#/js/jquery-3.3.1.min.js' )#</script>
 			</head>
@@ -71,7 +70,7 @@
 			<cfif arrayLen( thisBundle.debugBuffer )>
 				<h2>Debug Stream: #thisBundle.path#&nbsp;
 					<button class="btn btn-sm btn-primary" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">
-						<i class="fas fa-plus-square"></i>
+						✚
 					</button>
 				</h2>
 				<div class="debugdata" style="display:none;" data-specid="#thisBundle.id#">
