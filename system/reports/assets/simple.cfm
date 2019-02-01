@@ -9,7 +9,6 @@
 				<meta name="generator" content="TestBox v#testbox.getVersion()#">
 				<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
 
-				<style>#fileRead( '#ASSETS_DIR#/css/fontawesome.css' )#</style>
 				<style>#fileRead( '#ASSETS_DIR#/css/bootstrap.min.css' )#</style>
 				<script>#fileRead( '#ASSETS_DIR#/js/jquery-3.3.1.min.js' )#</script>
 				<script>#fileRead( '#ASSETS_DIR#/js/popper.min.js' )#</script>
@@ -30,49 +29,26 @@
 
 				<input class="d-inline col-7 ml-2 form-control float-right mb-2" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
 
-				<cfif results.getCoverageEnabled()>
-					<!-- Button trigger modal -->
-					<button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="##coverageStatsModal">
-						View coverage statistics
-					</button>
 
-					<!-- Modal -->
-					<div class="modal fade" id="coverageStatsModal" tabindex="-1" role="dialog" aria-labelledby="coverageStatsModalLabel" aria-hidden="true">
-						<div class="modal-dialog modal-xl" role="document">
-							<div class="modal-content">
-								<div class="modal-header">
-									<h5 class="modal-title" id="coverageStatsModalLabel">Modal title</h5>
-									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-										<span aria-hidden="true">&times;</span>
-									</button>
-								</div>
-								<div class="modal-body">
-									#testbox.getCoverageService().renderStats( results.getCoverageData() )#
-								</div>
-								<div class="modal-footer">
-									<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</cfif>
 			</div>
 
 		</div>
 
 		<!--- Stats --->
 		<div class="list-group">
+			<cfif results.getCoverageEnabled()>
+				#testbox.getCoverageService().renderStats( results.getCoverageData() )#
+			</cfif>
+
 			<div class="list-group-item list-group-item-info" id="globalStats">
 
 				<div class="buttonBar">
-					<cfif structKeyExists(URL ,"target")>
-						<a class=" m-1 btn btn-sm btn-primary float-right" href="#variables.baseURL#&opt_run=true&target=#URL.target#" title="Run the tests">Rerun Tests</a>
-					</cfif>
-					<span class=" m-1 btn btn-sm btn-primary float-right" onclick="toggleDebug()" title="Toggle the test debug information">Toggle All Debug Information</button>
+					<a class="m-1 btn btn-sm btn-primary float-right" href="#variables.baseURL#" title="Run all tests">Run All Tests</a>
+					<button id="collapse-bundles" class="m-1 btn btn-sm btn-primary float-right" title="Collapse all bundles">Collapse All Bundles</button>
+					<button id="expand-bundles" class="m-1 btn btn-sm btn-primary float-right" title="Expand all bundles">Expand All Bundles</button>
 				</div>
 
-				<h2>Stats (#results.getTotalDuration()# ms)</h2>
-				[ Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()# ]
+				<h2>Test Results Stats (#results.getTotalDuration()# ms)</h2>
 				<div class="float-right">
 					<span class="specStatus m-1 btn btn-sm btn-success passed" data-status="passed">Pass: #results.getTotalPass()#</span>
 					<span class="specStatus m-1 btn btn-sm btn-warning failed" data-status="failed">Failures: #results.getTotalFail()#</span>
@@ -80,9 +56,15 @@
 					<span class="specStatus m-1 btn btn-sm btn-secondary skipped" data-status="skipped">Skipped: #results.getTotalSkipped()#</span>
 					<span class="reset m-1 btn btn-sm btn-dark" title="Clear status filters">Reset</span>
 				</div>
-				<br>
+				<h5 class="mt-2">
+					<span>Bundles:<span class="badge badge-info ml-1">#results.getTotalBundles()#</span></span>
+					<span class="ml-3">Suites:<span class="badge badge-info ml-1">#results.getTotalSuites()#</span></span>
+					<span class="ml-3">Specs:<span class="badge badge-info ml-1">#results.getTotalSpecs()#</span></span>
+				</h5>
 				<cfif arrayLen( results.getLabels() )>
-					[ Labels Applied: #arrayToList( results.getLabels() )# ]
+					<h5 class="mt-2 mb-0">
+						<span>Labels Applied: <span class="badge badge-info ml-1">#arrayToList( results.getLabels() )#</u></span>
+					</h5>
 				</cfif>
 			</div>
 		</div>
@@ -100,14 +82,13 @@
 					<div class="card-header" id="header_#thisBundle.id#">
 						<h4 class="mb-0 clearfix">
 							<!--- bundle stats --->
-							<a class="alert-link" href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&target=#URLEncodedFormat( thisBundle.path )#&opt_run=true" title="Run only this bundle">
+							<a class="alert-link" href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&target=#URLEncodedFormat( thisBundle.path )#&opt_run=true" title="Run only this bundle">
 								#thisBundle.path# (#thisBundle.totalDuration# ms)
 							</a>
 							<button class="btn btn-link float-right py-0" type="button" data-toggle="collapse" data-target="##details_#thisBundle.id#" aria-expanded="false" aria-controls="details_#thisBundle.id#">
-								<i class="fa" aria-hidden="true"></i>
+								<i class="arrow" aria-hidden="true"></i>
 							</button>
 						</h4>
-						[ Suites/Specs: #thisBundle.totalSuites#/#thisBundle.totalSpecs# ]
 						<div class="float-right">
 							<span class="specStatus  m-1 btn btn-sm btn-success passed" data-status="passed" data-bundleid="#thisBundle.id#">Pass: #thisBundle.totalPass#</span>
 							<span class="specStatus  m-1 btn btn-sm btn-warning failed" data-status="failed" data-bundleid="#thisBundle.id#">Failures: #thisBundle.totalFail#</span>
@@ -115,8 +96,12 @@
 							<span class="specStatus  m-1 btn btn-sm btn-secondary skipped" data-status="skipped" data-bundleid="#thisBundle.id#">Skipped: #thisBundle.totalSkipped#</span>
 							<span class="reset m-1 btn btn-sm btn-dark" title="Clear status filters">Reset</span>
 						</div>
+						<h5 class="d-inline-block mt-2">
+							<span>Suites:<span class="badge badge-info ml-1">#thisBundle.totalSuites#</span></span>
+							<span class="ml-3">Specs:<span class="badge badge-info ml-1">#thisBundle.totalSpecs#</span></span>
+						</h5>
 					</div>
-					<div id="details_#thisBundle.id#" class="collapse" aria-labelledby="header_#thisBundle.id#" data-bundle="#thisBundle.path#">
+					<div id="details_#thisBundle.id#" class="collapse details-panel show" aria-labelledby="header_#thisBundle.id#" data-bundle="#thisBundle.path#">
 						<div class="card-body">
 							<ul class="suite list-group">
 								<!--- Global Error --->
@@ -126,7 +111,7 @@
 											<strong>Global Bundle Exception</strong>
 										</span>
 										<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_globalException_#thisBundle#" onclick="toggleDebug( 'globalException_#thisBundle#' )" title="Show more information">
-											<i class="fa" aria-hidden="true"></i>
+											<i class="arrow" aria-hidden="true"></i>
 										</button>
 										<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="globalException_#thisBundle#">
 											<cfdump var="#thisBundle.globalException#" />
@@ -148,7 +133,7 @@
 											<strong>Debug Stream</strong>
 										</span>
 										<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#thisBundle.id#" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">
-											<i class="fa" aria-hidden="true"></i>
+											<i class="arrow" aria-hidden="true"></i>
 										</button>
 										<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#thisBundle.id#">
 											<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
@@ -193,10 +178,12 @@ $(document).ready(function() {
 
 	$("#bundleFilter").focus();
 	// Bootstrap Collapse
-	$('.collapse').each(function() {
-		$(`#${$(this).attr('id')}`).collapse("toggle");
+	$('#collapse-bundles').click( function () {
+		$('.details-panel.show').collapse('hide');
 	});
-
+	$('#expand-bundles').click( function () {
+		$('.details-panel:not(".show")').collapse('show');
+	});
 });
 
 function debounce(func, wait, immediate) {
@@ -266,14 +253,14 @@ function toggleDebug(specid) {
 </script>
 
 <style>
-[data-toggle="collapse"] .fa:before,
-.expand-collapse .fa:before {
-	content: "\f139";
+[data-toggle="collapse"] .arrow:before,
+.expand-collapse .arrow:before {
+	content: "\2b06";
 }
 
-[data-toggle="collapse"].collapsed .fa:before,
-.expand-collapse.collapsed .fa:before {
-	content: "\f13a";
+[data-toggle="collapse"].collapsed .arrow:before,
+.expand-collapse.collapsed .arrow:before {
+	content: "\2b07";
 }
 
 code {
@@ -311,7 +298,9 @@ code {
 		<cfoutput>
 			<!--- Suite Results --->
 			<li class="list-group-item #statusPlusBootstrapClass( arguments.suiteStats.status )#">
-				<a class="alert-link h5" title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#" href="#variables.baseURL#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&target=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
+				<a class="alert-link h5"
+					title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#"
+					href="#variables.baseURL#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#">
 					<strong>+#arguments.suiteStats.name#</strong>
 					(#arguments.suiteStats.totalDuration# ms)
 				</a>
@@ -323,7 +312,8 @@ code {
 				<ul class="list-group">
 					<li class="list-group-item #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
 						<div class="clearfix">
-							<a class="alert-link" href="#variables.baseURL#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&target=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true" class="pl-4 #thisSpecStatusClass#">
+							<a class="alert-link pl-4 #thisSpecStatusClass#"
+								href="#variables.baseURL#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#">
 								#local.thisSpec.name#(#local.thisSpec.totalDuration# ms)
 							</a>
 							<cfif local.thisSpec.status eq "failed">
@@ -335,7 +325,7 @@ code {
 							<cfif structKeyExists( local.thisSpec, "message" )>
 								- <strong>#encodeForHTML( local.thisSpec.message )#</strong></a>
 								<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#local.thisSpec.id#" onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">
-									<i class="fa" aria-hidden="true"></i>
+									<i class="arrow" aria-hidden="true"></i>
 								</button>
 							</cfif>
 						</div>

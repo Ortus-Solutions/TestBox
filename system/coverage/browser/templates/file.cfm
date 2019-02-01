@@ -5,7 +5,6 @@
 			<meta charset="utf-8">
 			<title>#fileData.relativeFilePath#</title>
 
-			<link rel="stylesheet" href="#relPathToRoot#assets/css/fontawesome.css">
 			<link rel="stylesheet" href="#relPathToRoot#assets/css/syntaxhighlighter.css">
 			<link rel="stylesheet" href="#relPathToRoot#assets/css/bootstrap.min.css">
 			<script src="#relPathToRoot#assets/js/jquery-3.3.1.min.js"></script>
@@ -44,7 +43,7 @@
 					<tbody>
 						<tr>
 							<td>
-								<a href="javascript:history.back()"><button type="button" class="btn btn-secondary btn-sm my-1"><i class="fas fa-backward"></i> Back</button></a>
+								<a href="javascript:history.back()"><button type="button" class="btn btn-secondary btn-sm my-1">« Back</button></a>
 							</td>
 							<td>
 								&nbsp;
