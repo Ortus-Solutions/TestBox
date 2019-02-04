@@ -109,10 +109,10 @@
 											<span class="h5">
 												<strong>Global Bundle Exception</strong>
 											</span>
-											<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_globalException_#thisBundle#" onclick="toggleDebug( 'globalException_#thisBundle#' )" title="Show more information">
+											<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_globalException_#thisBundle.id#" onclick="toggleDebug( 'globalException_#thisBundle.id#' )" title="Show more information">
 												<span class="arrow" aria-hidden="true"></span>
 											</button>
-											<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="globalException_#thisBundle#">
+											<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="globalException_#thisBundle.id#">
 												<cfdump var="#thisBundle.globalException#" />
 											</div>
 										</li>
