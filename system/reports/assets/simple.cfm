@@ -221,7 +221,6 @@ function toggleSpecs(type, bundleID) {
 }
 
 function handleToggle(target, bundleID, type) {
-	console.log(target, bundleID, type);
 	var $this = target;
 
 	// if bundleid passed and not the same bundle, skip
