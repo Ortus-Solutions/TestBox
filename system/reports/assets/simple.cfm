@@ -1,7 +1,7 @@
-<cfparam name="url.full_page" default="true">
+<cfparam name="url.fullPage" default="true">
 <cfset ASSETS_DIR=expandPath( "/testbox/system/reports/assets" )>
 <cfoutput>
-	<cfif url.full_page>
+	<cfif url.fullPage>
 		<!DOCTYPE html>
 		<html>
 			<head>
@@ -43,7 +43,7 @@
 			<div class="list-group-item list-group-item-info" id="globalStats">
 
 				<div class="buttonBar">
-					<a class="m-1 btn btn-sm btn-primary float-right" href="#variables.baseURL#" title="Run all tests">Run All Tests</a>
+					<a class="m-1 btn btn-sm btn-primary float-right" href="#variables.baseURL#?opt_run=true" title="Run all tests">Run All Tests</a>
 					<button id="collapse-bundles" class="m-1 btn btn-sm btn-primary float-right" title="Collapse all bundles">Collapse All Bundles</button>
 					<button id="expand-bundles" class="m-1 btn btn-sm btn-primary float-right" title="Expand all bundles">Expand All Bundles</button>
 				</div>
@@ -109,10 +109,10 @@
 											<span class="h5">
 												<strong>Global Bundle Exception</strong>
 											</span>
-											<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_globalException_#thisBundle#" onclick="toggleDebug( 'globalException_#thisBundle#' )" title="Show more information">
+											<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_globalException_#thisBundle.id#" onclick="toggleDebug( 'globalException_#thisBundle.id#' )" title="Show more information">
 												<span class="arrow" aria-hidden="true"></span>
 											</button>
-											<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="globalException_#thisBundle#">
+											<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="globalException_#thisBundle.id#">
 												<cfdump var="#thisBundle.globalException#" />
 											</div>
 										</li>
@@ -269,7 +269,7 @@ code {
 </style>
 
 
-<cfif url.full_page>
+<cfif url.fullPage>
 		</body>
 	</html>
 </cfif>
@@ -300,7 +300,7 @@ code {
 			<li class="list-group-item #statusPlusBootstrapClass( arguments.suiteStats.status )#">
 				<a class="alert-link h5"
 					title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#"
-					href="#variables.baseURL#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#">
+					href="#variables.baseURL#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
 					<strong>+#arguments.suiteStats.name#</strong>
 					(#arguments.suiteStats.totalDuration# ms)
 				</a>
@@ -310,10 +310,10 @@ code {
 				<cfset thisSpecStatusClass=statusPlusBootstrapClass(local.thisSpec.status)>
 
 				<ul class="list-group">
-					<li class="list-group-item #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
+					<li class="spec list-group-item #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
 						<div class="clearfix">
 							<a class="alert-link pl-4 #thisSpecStatusClass#"
-								href="#variables.baseURL#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#">
+								href="#variables.baseURL#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
 								#local.thisSpec.name#(#local.thisSpec.totalDuration# ms)
 							</a>
 							<cfif local.thisSpec.status eq "failed">

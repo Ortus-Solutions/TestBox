@@ -10,7 +10,8 @@
 <cfparam name="url.reportpath" 						default="">
 <cfparam name="url.propertiesFilename"			 	default="TEST.properties">
 <cfparam name="url.propertiesSummary"			 	default="false" type="boolean">
-<cfparam name="url.coverageEnabled"					default="false">
+
+<cfparam name="url.coverageEnabled"					default="false" type="boolean">
 <cfparam name="url.coverageSonarQubeXMLOutputPath"	default="">
 <cfparam name="url.coverageBrowserOutputDir"		default="">
 <cfparam name="url.coveragePathToCapture"			default="">

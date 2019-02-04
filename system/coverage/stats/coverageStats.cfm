@@ -45,8 +45,7 @@
 					<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_coverageStats" onclick="toggleDebug( 'coverageStats' )" title="Show coverage stats">
 						<span class="arrow" aria-hidden="true"></span>
 					</button>
-					<span class="ml-2">Total Files Processed:<span class="badge badge-info ml-1">#stats.numFiles#</span></span>
-					<span>
+					<span class="ml-2 float-right">
 						<span class="h5 float-left">Total project coverage:</span>
 						<div class="float-left" style="width:200px;">
 							<div class="ml-1 progress position-relative" style="height: 1.4rem;">
@@ -60,6 +59,7 @@
 							</div>
 						</div>
 					</span>
+					<span>Total Files Processed:<span class="badge badge-info ml-1">#stats.numFiles#</span></span>
 				</div>
 			</h2>
 
