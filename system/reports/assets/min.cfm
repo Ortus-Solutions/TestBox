@@ -1,7 +1,7 @@
-<cfparam name="url.full_page" default="true">
+<cfparam name="url.fullPage" default="true">
 <cfset ASSETS_DIR=expandPath( "/testbox/system/reports/assets" )>
 <cfoutput>
-	<cfif url.full_page>
+	<cfif url.fullPage>
 		<!DOCTYPE html>
 		<html>
 			<head>
@@ -90,7 +90,7 @@ function toggleDebug(specid) {
 	});
 }
 </script>
-<cfif url.full_page>
+<cfif url.fullPage>
 		</body>
 	</html>
 </cfif>

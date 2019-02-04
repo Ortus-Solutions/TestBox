@@ -1,7 +1,7 @@
-<cfparam name="url.full_page" default="true">
+<cfparam name="url.fullPage" default="true">
 <cfset ASSETS_DIR=expandPath( "/testbox/system/reports/assets" )>
 <cfoutput>
-	<cfif url.full_page>
+	<cfif url.fullPage>
 		<!DOCTYPE html>
 		<html>
 			<head>
@@ -221,6 +221,7 @@ function toggleSpecs(type, bundleID) {
 }
 
 function handleToggle(target, bundleID, type) {
+	console.log(target, bundleID, type);
 	var $this = target;
 
 	// if bundleid passed and not the same bundle, skip
@@ -269,7 +270,7 @@ code {
 </style>
 
 
-<cfif url.full_page>
+<cfif url.fullPage>
 		</body>
 	</html>
 </cfif>
@@ -310,7 +311,7 @@ code {
 				<cfset thisSpecStatusClass=statusPlusBootstrapClass(local.thisSpec.status)>
 
 				<ul class="list-group">
-					<li class="list-group-item #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
+					<li class="spec list-group-item #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
 						<div class="clearfix">
 							<a class="alert-link pl-4 #thisSpecStatusClass#"
 								href="#variables.baseURL#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#">
