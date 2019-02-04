@@ -43,7 +43,7 @@
 			<div class="list-group-item list-group-item-info" id="globalStats">
 
 				<div class="buttonBar">
-					<a class="m-1 btn btn-sm btn-primary float-right" href="#variables.baseURL#" title="Run all tests">Run All Tests</a>
+					<a class="m-1 btn btn-sm btn-primary float-right" href="#variables.baseURL#?opt_run=true" title="Run all tests">Run All Tests</a>
 					<button id="collapse-bundles" class="m-1 btn btn-sm btn-primary float-right" title="Collapse all bundles">Collapse All Bundles</button>
 					<button id="expand-bundles" class="m-1 btn btn-sm btn-primary float-right" title="Expand all bundles">Expand All Bundles</button>
 				</div>
@@ -301,7 +301,7 @@ code {
 			<li class="list-group-item #statusPlusBootstrapClass( arguments.suiteStats.status )#">
 				<a class="alert-link h5"
 					title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#"
-					href="#variables.baseURL#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#">
+					href="#variables.baseURL#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
 					<strong>+#arguments.suiteStats.name#</strong>
 					(#arguments.suiteStats.totalDuration# ms)
 				</a>
@@ -314,7 +314,7 @@ code {
 					<li class="spec list-group-item #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
 						<div class="clearfix">
 							<a class="alert-link pl-4 #thisSpecStatusClass#"
-								href="#variables.baseURL#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#">
+								href="#variables.baseURL#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
 								#local.thisSpec.name#(#local.thisSpec.totalDuration# ms)
 							</a>
 							<cfif local.thisSpec.status eq "failed">
