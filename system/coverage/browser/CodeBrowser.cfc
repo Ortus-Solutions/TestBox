@@ -72,9 +72,14 @@ component accessors = true {
 			.toArray();
 
 		// Created individual files now that skeleton is online
-		variables.streamBuilder
-			.new( dataStream )
-			.parallel()
+		var fileStream = variables.streamBuilder.new( dataStream );
+
+		// Don't use parallel if in Adobe, it sucks!
+		if( server.keyExists( "lucee" ) ){
+			fileStream.parallel();
+		}
+
+		fileStream
 			.forEach( function ( fileData ) {
 				// Coverage files are named after "real" files
 				var theFile = "#browserOutputDir & fileData.relativeFilePath#.html";

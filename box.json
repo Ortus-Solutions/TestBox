@@ -36,7 +36,7 @@
         "watchDelay":"250"
     },
     "dependencies":{
-        "cbstreams":"^1.2.0",
+        "cbstreams":"^1.3.0",
         "cbemoji":"^1.1.0+11"
     },
     "installPaths":{
