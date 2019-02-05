@@ -10,15 +10,6 @@
 		<script src="assets/js/popper.min.js"></script>
 		<script src="assets/js/bootstrap.min.js"></script>
 		<script src="assets/js/stupidtable.min.js"></script>
-
-		<script>
-			$(function(){
-				$("table").stupidtable();
-			});
-		</script>
-
-
-
 	<style>
 		th.sorting-asc > span:after {
 			content: "\2193";
@@ -35,17 +26,15 @@
 			<h2 class="text-center">Code Coverage Browser</h2>
 
 			<table class="table-borderless">
-				<thead>
-					<tr class="h4 pr-3">
-						<th class="text-right pr-3">
-							Total Files Processed:
-						</th>
-						<th style="width: 30%">
-							#stats.numFiles#
-						</th>
-					</tr>
-				</thead>
 				<tbody>
+					<tr class="h4 pr-3">
+						<td class="text-right pr-3">
+							Total Files Processed:
+						</td>
+						<td style="width: 30%">
+							#stats.numFiles#
+						</td>
+					</tr>
 					<cfset percTotalCoverage = round( stats.percTotalCoverage * 100 )>
 					<tr class="h4 pr-3">
 						<td class="text-right pr-3">
@@ -59,9 +48,16 @@
 							</div>
 						</td>
 					</tr>
+					<tr class="h4 pr-3">
+						<td class="text-right pr-3">
+							File Filter:
+						</td>
+						<td style="width: 300px">
+							<input class="form-control" type="text" name="fileFilter" id="fileFilter" placeholder="Filter Files..." size="35">
+						</td>
+					</tr>
 				</tbody>
 			</table>
-
 
 			<cfquery name="qryCoverageDataSorted" dbtype="query">
 				SELECT filePath, relativeFilePath, numLines, numCoveredLines, numExecutableLines, percCoverage
@@ -79,13 +75,13 @@
 				<tbody>
 					<cfloop query="qryCoverageDataSorted">
 					<cfset percentage = round( percCoverage * 100 )>
-					<tr class="table-#percentToContextualClass( percentage )# ">
+					<tr class="file table-#percentToContextualClass( percentage )# ">
 						<!--- Coverage files are named after "real" files --->
 						<cfset link = "#replace( relativeFilePath, '\', '/', 'all' )#.html">
 						<!--- Trim of leading slash so it's relative --->
 						<cfset link = right( link, len( link ) - 1 )>
-						<td data-sort-value="#relativeFilePath#"><a href="#link#">#relativeFilePath#</a></td>
-						<td data-sort-value="#percentage#">
+						<td class="file-name" data-sort-value="#relativeFilePath#"><a href="#link#">#relativeFilePath#</a></td>
+						<td class="file-coverage" data-sort-value="#percentage#">
 							<div class="progress position-relative" style="height: 1.4rem;">
 								<div
 									class="progress-bar bg-#percentToContextualClass( percentage )#"
@@ -116,6 +112,40 @@
 				</tbody>
 			</table>
 		</div>
+</cfoutput>
+		<script>
+			$(document).ready(function() {
+				$("table").stupidtable();
+
+				// Filter Bundles
+				$("#fileFilter").keyup(debounce(function() {
+					var targetText = $(this).val().toLowerCase();
+					$(".file").each(function(index) {
+						var file = $(this).find(".file-name a").text().toLowerCase();
+						if (file.search(targetText) < 0) {
+							// hide it
+							$(this).hide();
+						} else {
+							$(this).show();
+						}
+					});
+				}, 100));
+			});
+			function debounce(func, wait, immediate) {
+				var timeout;
+				return function() {
+					var context = this,
+						args = arguments;
+					var later = function() {
+						timeout = null;
+						if (!immediate) func.apply(context, args);
+					};
+					var callNow = immediate && !timeout;
+					clearTimeout(timeout);
+					timeout = setTimeout(later, wait);
+					if (callNow) func.apply(context, args);
+				};
+			};
+		</script>
 	</body>
 </html>
-</cfoutput>
