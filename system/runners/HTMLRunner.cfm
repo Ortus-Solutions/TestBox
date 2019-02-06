@@ -20,20 +20,24 @@
 
 <cfscript>
 // prepare for tests for bundles or directories
-testbox = new testbox.system.TestBox( labels=url.labels, excludes=url.excludes, options = {
-	coverage : {
-		enabled : url.coverageEnabled,
-		pathToCapture : url.coveragePathToCapture,
-		whitelist : url.coverageWhitelist,
-		blacklist: url.coverageBlacklist,
-		sonarQube : {
-			XMLOutputPath : url.coverageSonarQubeXMLOutputPath
-		},
-		browser : {
-			outputDir : url.coverageBrowserOutputDir
+testbox = new testbox.system.TestBox(
+	labels   = url.labels,
+	excludes = url.excludes,
+	options  =  {
+		coverage : {
+			enabled       	: url.coverageEnabled,
+			pathToCapture 	: url.coveragePathToCapture,
+			whitelist     	: url.coverageWhitelist,
+			blacklist     	: url.coverageBlacklist,
+			sonarQube     	: {
+				XMLOutputPath : url.coverageSonarQubeXMLOutputPath
+			},
+			browser			: {
+				outputDir : url.coverageBrowserOutputDir
+			}
 		}
 	}
-} );
+);
 if( len( url.bundles ) ){
 	testbox.addBundles( url.bundles );
 }

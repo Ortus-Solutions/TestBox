@@ -20,13 +20,26 @@
 
 	<div class="container-fluid my-3">
 		<!--- Filter--->
-		<div class="row mb-3 clearfix">
+		<div class="row clearfix">
 			<div class="col-5">
 				<!--- Header --->
-				<p>TestBox v#testbox.getVersion()#</p>
+				<p>
+					<img
+						src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#"
+						height="75"
+					>
+					<span class="badge badge-info">v#testbox.getVersion()#</span>
+				</p>
 			</div>
 			<div class="col-7">
-				<input class="d-inline col-7 ml-2 form-control float-right mb-2" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
+				<input
+					class="d-inline col-7 ml-2 form-control float-right mb-2 mt-4"
+					type="text"
+					name="bundleFilter"
+					id="bundleFilter"
+					placeholder="Filter Bundles..."
+					size="35"
+				>
 			</div>
 
 		</div>
@@ -81,7 +94,10 @@
 						<div class="card-header" id="header_#thisBundle.id#">
 							<h4 class="mb-0 clearfix">
 								<!--- bundle stats --->
-								<a class="alert-link" href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&target=#URLEncodedFormat( thisBundle.path )#&opt_run=true" title="Run only this bundle">
+								<a
+									class="alert-link"
+									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&target=#URLEncodedFormat( thisBundle.path )#&opt_run=true"
+									title="Run only this bundle">
 									#thisBundle.path# (#thisBundle.totalDuration# ms)
 								</a>
 								<button class="btn btn-link float-right py-0" type="button" data-toggle="collapse" data-target="##details_#thisBundle.id#" aria-expanded="false" aria-controls="details_#thisBundle.id#">
@@ -153,20 +169,20 @@
 	</div>
 </cfoutput>
 <script>
-$(document).ready(function() {
+$( document ).ready( function(){
 	// spec toggler
-	$("span.specStatus").click(function() {
+	$( "span.specStatus" ).click( function(){
 		toggleSpecs($(this).attr("data-status"), $(this).attr("data-bundleid"));
 	});
 	// spec reseter
-	$("span.reset").click(function() {
+	$( "span.reset" ).click( function() {
 		resetSpecs();
 	});
 	// Filter Bundles
-	$("#bundleFilter").keyup(debounce(function() {
+	$( "#bundleFilter" ).keyup(debounce(function() {
 		var targetText = $(this).val().toLowerCase();
-		$(".bundle").each(function(index) {
-			var bundle = $(this).data("bundle").toLowerCase();
+		$( ".bundle" ).each(function(index) {
+			var bundle = $(this).data("bundle" ).toLowerCase();
 			if (bundle.search(targetText) < 0) {
 				// hide it
 				$(this).hide();
@@ -176,7 +192,7 @@ $(document).ready(function() {
 		});
 	}, 100));
 
-	$("#bundleFilter").focus();
+	$( "#bundleFilter" ).focus();
 	// Bootstrap Collapse
 	$('#collapse-bundles').click( function () {
 		$('.details-panel.show').collapse('hide');
@@ -203,19 +219,19 @@ function debounce(func, wait, immediate) {
 };
 
 function resetSpecs() {
-	$("li.spec").each(function() {
+	$( "li.spec" ).each(function() {
 		$(this).show();
 	});
-	$("ul.suite").each(function() {
+	$( "ul.suite" ).each(function() {
 		$(this).show();
 	});
 }
 
 function toggleSpecs(type, bundleID) {
-	$("ul.suite").each(function() {
+	$( "ul.suite" ).each(function() {
 		handleToggle($(this), bundleID, type);
 	});
-	$("li.spec").each(function() {
+	$( "li.spec" ).each(function() {
 		handleToggle($(this), bundleID, type);
 	});
 }
@@ -239,7 +255,7 @@ function handleToggle(target, bundleID, type) {
 
 function toggleDebug(specid) {
 	$(`#btn_${specid}`).toggleClass("collapsed");
-	$("div.debugdata").each(function() {
+	$( "div.debugdata" ).each(function() {
 		var $this = $(this);
 
 		// if bundleid passed and not the same bundle

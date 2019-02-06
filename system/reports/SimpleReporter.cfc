@@ -38,8 +38,8 @@ component{
 
 		// prepare base links
 		variables.baseURL = "?";
-		if( structKeyExists( url, "method") ){ variables.baseURL&= "method=#URLEncodedFormat( url.method )#"; }
-		if( structKeyExists( url, "output") ){ variables.baseURL&= "output=#URLEncodedFormat( url.output )#"; }
+		if( structKeyExists( url, "method" ) ){ variables.baseURL&= "method=#URLEncodedFormat( url.method )#"; }
+		if( structKeyExists( url, "output" ) ){ variables.baseURL&= "output=#URLEncodedFormat( url.output )#"; }
 
 		// prepare incoming params
 		if( !structKeyExists( url, "testMethod") ){ url.testMethod = ""; }
