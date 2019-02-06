@@ -134,27 +134,27 @@ code {
 }
 </style>
 <script>
-$(document).ready(function() {});
+$( document ).ready( function(){} );
 
-function showInfo(failMessage, specID, isError) {
-	if (failMessage.length) {
-		alert("Failure Message: " + failMessage);
+function showInfo( failMessage, specID, isError ){
+	if ( failMessage.length ) {
+		alert( "Failure Message: " + failMessage );
 	} else if (isError || isError == 'yes' || isError == 'true') {
-		$("#error_" + specID).slideToggle();
+		$( "#error_" + specID ).slideToggle();
 	}
 }
 
-function toggleDebug(specid) {
-	$("div.debugdata").each(function() {
-		var $this = $(this);
+function toggleDebug( specid ) {
+	$( "div.debugdata" ).each( function() {
+		var $this = $( this );
 
 		// if bundleid passed and not the same bundle
-		if (specid != undefined && $this.attr("data-specid") != specid) {
+		if ( specid != undefined && $this.attr( "data-specid" ) != specid) {
 			return;
 		}
 		// toggle.
 		$this.slideToggle();
-	});
+	} );
 }
 </script>
 

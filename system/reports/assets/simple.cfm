@@ -172,79 +172,83 @@
 $( document ).ready( function(){
 	// spec toggler
 	$( "span.specStatus" ).click( function(){
-		toggleSpecs($(this).attr("data-status"), $(this).attr("data-bundleid"));
+		toggleSpecs( $( this ).attr( "data-status" ), $( this ).attr( "data-bundleid" ) );
 	});
 	// spec reseter
 	$( "span.reset" ).click( function() {
 		resetSpecs();
 	});
 	// Filter Bundles
-	$( "#bundleFilter" ).keyup(debounce(function() {
-		var targetText = $(this).val().toLowerCase();
-		$( ".bundle" ).each(function(index) {
-			var bundle = $(this).data("bundle" ).toLowerCase();
-			if (bundle.search(targetText) < 0) {
+	$( "#bundleFilter" ).keyup( debounce( function() {
+		var targetText = $( this ).val().toLowerCase();
+		$( ".bundle" ).each( function( index ) {
+			var bundle = $( this ).data( "bundle" ).toLowerCase();
+			if ( bundle.search( targetText ) < 0 ) {
 				// hide it
-				$(this).hide();
+				$( this ).hide();
 			} else {
-				$(this).show();
+				$( this ).show();
 			}
-		});
-	}, 100));
+		} );
+	}, 100 ));
 
 	$( "#bundleFilter" ).focus();
 	// Bootstrap Collapse
-	$('#collapse-bundles').click( function () {
-		$('.details-panel.show').collapse('hide');
+	$( "#collapse-bundles" ).click( function () {
+		$( ".details-panel.show" ).collapse( "hide" );
 	});
 	$('#expand-bundles').click( function () {
-		$('.details-panel:not(".show")').collapse('show');
+		$( '.details-panel:not( ".show" )' ).collapse( "show" );
 	});
 });
 
-function debounce(func, wait, immediate) {
+function debounce( func, wait, immediate ) {
 	var timeout;
 	return function() {
 		var context = this,
 			args = arguments;
 		var later = function() {
 			timeout = null;
-			if (!immediate) func.apply(context, args);
+			if ( !immediate ){
+				func.apply(context, args);
+			}
 		};
 		var callNow = immediate && !timeout;
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
-		if (callNow) func.apply(context, args);
+		clearTimeout( timeout );
+		timeout = setTimeout( later, wait );
+		if ( callNow ){
+			func.apply( context, args );
+		}
 	};
 };
 
 function resetSpecs() {
-	$( "li.spec" ).each(function() {
-		$(this).show();
+	$( "li.spec" ).each( function() {
+		$( this ).show();
 	});
-	$( "ul.suite" ).each(function() {
-		$(this).show();
-	});
-}
-
-function toggleSpecs(type, bundleID) {
-	$( "ul.suite" ).each(function() {
-		handleToggle($(this), bundleID, type);
-	});
-	$( "li.spec" ).each(function() {
-		handleToggle($(this), bundleID, type);
+	$( "ul.suite" ).each( function() {
+		$( this ).show();
 	});
 }
 
-function handleToggle(target, bundleID, type) {
+function toggleSpecs( type, bundleID ) {
+	$( "ul.suite" ).each( function() {
+		handleToggle( $( this ), bundleID, type );
+	});
+	$( "li.spec" ).each( function() {
+		handleToggle( $( this ), bundleID, type );
+	});
+}
+
+function handleToggle( target, bundleID, type ) {
 	var $this = target;
 
 	// if bundleid passed and not the same bundle, skip
-	if (bundleID != undefined && $this.attr("data-bundleid") != bundleID) {
+	if ( bundleID != undefined && $this.attr( "data-bundleid" ) != bundleID ) {
 		return;
 	}
 	// toggle the opposite type
-	if (!$this.hasClass(type)) {
+	if ( !$this.hasClass( type ) ) {
 		$this.hide();
 	} else {
 		// show the type you sent
@@ -253,13 +257,13 @@ function handleToggle(target, bundleID, type) {
 	}
 }
 
-function toggleDebug(specid) {
-	$(`#btn_${specid}`).toggleClass("collapsed");
-	$( "div.debugdata" ).each(function() {
-		var $this = $(this);
+function toggleDebug( specid ) {
+	$( `#btn_${specid}` ).toggleClass( "collapsed" );
+	$( "div.debugdata" ).each( function() {
+		var $this = $( this );
 
 		// if bundleid passed and not the same bundle
-		if (specid != undefined && $this.attr("data-specid") != specid) {
+		if ( specid != undefined && $this.attr( "data-specid" ) != specid ) {
 			return;
 		}
 		// toggle.
