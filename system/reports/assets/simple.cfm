@@ -20,13 +20,26 @@
 
 	<div class="container-fluid my-3">
 		<!--- Filter--->
-		<div class="row mb-3 clearfix">
+		<div class="row clearfix">
 			<div class="col-5">
 				<!--- Header --->
-				<p>TestBox v#testbox.getVersion()#</p>
+				<p>
+					<img
+						src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#"
+						height="75"
+					>
+					<span class="badge badge-info">v#testbox.getVersion()#</span>
+				</p>
 			</div>
 			<div class="col-7">
-				<input class="d-inline col-7 ml-2 form-control float-right mb-2" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
+				<input
+					class="d-inline col-7 ml-2 form-control float-right mb-2 mt-4"
+					type="text"
+					name="bundleFilter"
+					id="bundleFilter"
+					placeholder="Filter Bundles..."
+					size="35"
+				>
 			</div>
 
 		</div>
@@ -153,7 +166,7 @@
 	</div>
 </cfoutput>
 <script>
-$(document).ready(function() {
+$( document ).ready( function(){
 	// spec toggler
 	$("span.specStatus").click(function() {
 		$(this).parent().children().removeClass("active");
@@ -162,76 +175,80 @@ $(document).ready(function() {
 		toggleSpecs($(this).attr("data-status"), $(this).attr("data-bundleid"));
 	});
 	// spec reseter
-	$("span.reset").click(function() {
+	$( "span.reset" ).click( function() {
 		resetSpecs();
 	});
 	// Filter Bundles
-	$("#bundleFilter").keyup(debounce(function() {
-		var targetText = $(this).val().toLowerCase();
-		$(".bundle").each(function(index) {
-			var bundle = $(this).data("bundle").toLowerCase();
-			if (bundle.search(targetText) < 0) {
+	$( "#bundleFilter" ).keyup( debounce( function() {
+		var targetText = $( this ).val().toLowerCase();
+		$( ".bundle" ).each( function( index ) {
+			var bundle = $( this ).data( "bundle" ).toLowerCase();
+			if ( bundle.search( targetText ) < 0 ) {
 				// hide it
-				$(this).hide();
+				$( this ).hide();
 			} else {
-				$(this).show();
+				$( this ).show();
 			}
-		});
-	}, 100));
+		} );
+	}, 100 ));
 
-	$("#bundleFilter").focus();
+	$( "#bundleFilter" ).focus();
 	// Bootstrap Collapse
-	$('#collapse-bundles').click( function () {
-		$('.details-panel.show').collapse('hide');
+	$( "#collapse-bundles" ).click( function () {
+		$( ".details-panel.show" ).collapse( "hide" );
 	});
 	$('#expand-bundles').click( function () {
-		$('.details-panel:not(".show")').collapse('show');
+		$( '.details-panel:not( ".show" )' ).collapse( "show" );
 	});
 });
 
-function debounce(func, wait, immediate) {
+function debounce( func, wait, immediate ) {
 	var timeout;
 	return function() {
 		var context = this,
 			args = arguments;
 		var later = function() {
 			timeout = null;
-			if (!immediate) func.apply(context, args);
+			if ( !immediate ){
+				func.apply(context, args);
+			}
 		};
 		var callNow = immediate && !timeout;
-		clearTimeout(timeout);
-		timeout = setTimeout(later, wait);
-		if (callNow) func.apply(context, args);
+		clearTimeout( timeout );
+		timeout = setTimeout( later, wait );
+		if ( callNow ){
+			func.apply( context, args );
+		}
 	};
 };
 
 function resetSpecs() {
-	$("li.spec").each(function() {
-		$(this).show();
+	$( "li.spec" ).each( function() {
+		$( this ).show();
 	});
-	$("ul.suite").each(function() {
-		$(this).show();
-	});
-}
-
-function toggleSpecs(type, bundleID) {
-	$("ul.suite").each(function() {
-		handleToggle($(this), bundleID, type);
-	});
-	$("li.spec").each(function() {
-		handleToggle($(this), bundleID, type);
+	$( "ul.suite" ).each( function() {
+		$( this ).show();
 	});
 }
 
-function handleToggle(target, bundleID, type) {
+function toggleSpecs( type, bundleID ) {
+	$( "ul.suite" ).each( function() {
+		handleToggle( $( this ), bundleID, type );
+	});
+	$( "li.spec" ).each( function() {
+		handleToggle( $( this ), bundleID, type );
+	});
+}
+
+function handleToggle( target, bundleID, type ) {
 	var $this = target;
 
 	// if bundleid passed and not the same bundle, skip
-	if (bundleID != undefined && $this.attr("data-bundleid") != bundleID) {
+	if ( bundleID != undefined && $this.attr( "data-bundleid" ) != bundleID ) {
 		return;
 	}
 	// toggle the opposite type
-	if (!$this.hasClass(type)) {
+	if ( !$this.hasClass( type ) ) {
 		$this.hide();
 	} else {
 		// show the type you sent
@@ -240,13 +257,13 @@ function handleToggle(target, bundleID, type) {
 	}
 }
 
-function toggleDebug(specid) {
-	$(`#btn_${specid}`).toggleClass("collapsed");
-	$("div.debugdata").each(function() {
-		var $this = $(this);
+function toggleDebug( specid ) {
+	$( `#btn_${specid}` ).toggleClass( "collapsed" );
+	$( "div.debugdata" ).each( function() {
+		var $this = $( this );
 
 		// if bundleid passed and not the same bundle
-		if (specid != undefined && $this.attr("data-specid") != specid) {
+		if ( specid != undefined && $this.attr( "data-specid" ) != specid ) {
 			return;
 		}
 		// toggle.

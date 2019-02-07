@@ -10,24 +10,24 @@
 				<meta name="generator" content="TestBox v#testbox.getVersion()#">
 				<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
 
-				<style>
-				#fileRead('#ASSETS_DIR#/css/bootstrap.min.css')#
-				</style>
-				<script>
-				#
-				fileRead('#ASSETS_DIR#/js/jquery-3.3.1.min.js')#
-				</script>
-				<script>
-				#
-				fileRead('#ASSETS_DIR#/js/bootstrap.min.js')#
-				</script>
+				<style>#fileRead( '#ASSETS_DIR#/css/bootstrap.min.css' )#</style>
+				<script>#fileRead( '#ASSETS_DIR#/js/jquery-3.3.1.min.js' )#</script>
+				<script>#fileRead( '#ASSETS_DIR#/js/bootstrap.min.js' )#</script>
+
 			</head>
 
 			<body>
 	</cfif>
 	<div class="container-fluid my-3">
-		<!-- Header --->
-		<p>TestBox v#testbox.getVersion()#</p>
+		<!-- Header -->
+		<p>
+			<img
+				src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#"
+				height="75"
+			>
+			<span class="badge badge-info">v#testbox.getVersion()#</span>
+
+		</p>
 
 		<!--- Code Coverage Stats --->
 		<cfif results.getCoverageEnabled()>
@@ -125,19 +125,19 @@ code {
 }
 </style>
 <script>
-$(document).ready(function() {});
+$( document ).ready( function(){} );
 
-function toggleDebug(specid) {
-	$("div.debugdata").each(function() {
-		var $this = $(this);
+function toggleDebug( specid ) {
+	$( "div.debugdata" ).each( function() {
+		var $this = $( this );
 
 		// if bundleid passed and not the same bundle
-		if (specid != undefined && $this.attr("data-specid") != specid) {
+		if ( specid != undefined && $this.attr( "data-specid" ) != specid ) {
 			return;
 		}
 		// toggle.
 		$this.slideToggle();
-	});
+	} );
 }
 </script>
 <cfif url.fullPage>

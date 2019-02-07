@@ -36,7 +36,7 @@
 		<body>
 </cfif>
 <cfif isDefined( 'stats' )>
-	<cfset totalProjectCoverage = round( stats.percTotalCoverage*100 )>
+	<cfset totalProjectCoverage = round( stats.percTotalCoverage * 100 )>
 	<div class="list-group mb-3">
 		<div class="list-group-item list-group-item-info" id="coverageStats">
 			<h2 class="clearfix">
@@ -74,14 +74,17 @@
 					Coverage Browser generated in #coverageData.browserResults#
 				</h6>
 			</cfif>
+
 			<div class="my-3 debugdata" <cfif !fullPage>style="display:none;" </cfif>data-specid="coverageStats">
 				<ul class="list-group">
+
 					<li class="list-group-item">
 						<h4>Files with best coverage:</h4>
 						<ol class="list-group">
 							<cfloop query="stats.qryFilesBestCoverage">
-								<cfset percentage = round( percCoverage*100 )>
-								<cfset trimmedFilePath = replaceNoCase( filePath, pathToCapture, '' )>
+								<cfset qTarget         = stats.qryFilesBestCoverage>
+								<cfset percentage      = round( qTarget.percCoverage * 100 )>
+								<cfset trimmedFilePath = replaceNoCase( qTarget.filePath, pathToCapture, '' )>
 								<li class="list-group-item list-group-item-#codeBrowser.percentToContextualClass( percentage )#">
 									<span class="col-9">#trimmedFilePath#</span>
 									<div class=" col-3 d-inline-flex float-right">
@@ -95,11 +98,14 @@
 							</cfloop>
 						</ol>
 					</li>
+
 					<li class="list-group-item">
 						<h4>Files with worst coverage:</h4>
 						<ol class="list-group">
 							<cfloop query="stats.qryFilesWorstCoverage">
-								<cfset percentage = round( percCoverage*100 )>
+								<cfset qTarget      	= stats.qryFilesWorstCoverage>
+								<cfset percentage 		= round( qTarget.percCoverage * 100 )>
+								<cfset trimmedFilePath 	= replaceNoCase( qTarget.filePath, pathToCapture, '' )>
 								<li class="list-group-item list-group-item-#codeBrowser.percentToContextualClass( percentage )#">
 									<span class="col-9">#trimmedFilePath#</span>
 									<div class=" col-3 d-inline-flex float-right">
@@ -122,12 +128,12 @@
 <cfif fullPage>
 		<script>
 			function toggleDebug(specid) {
-				$(`#btn_${specid}`).toggleClass("collapsed");
-				$("div.debugdata").each(function() {
-					var $this = $(this);
+				$( `#btn_${specid}` ).toggleClass( "collapsed" );
+				$( "div.debugdata" ).each( function() {
+					var $this = $( this );
 
 					// if bundleid passed and not the same bundle
-					if (specid != undefined && $this.attr("data-specid") != specid) {
+					if ( specid != undefined && $this.attr( "data-specid" ) != specid ) {
 						return;
 					}
 					// toggle.
