@@ -70,7 +70,7 @@
 									<cfcontinue>
 								</cfif>
 								<!--- Bundle div --->
-								<div class="card bundle" id="#thisBundle.path#" data-bundle="#thisBundle.path#">
+								<div class="bundle card" id="#thisBundle.path#" data-bundle="#thisBundle.path#">
 									<div class="card-header" id="header_#thisBundle.id#">
 										<h4 class="mb-0 clearfix">
 											<!--- bundle stats --->
@@ -112,7 +112,7 @@
 												</cfif>
 												<!-- Iterate over bundle suites -->
 												<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
-													<li class="suite list-group-item #statusPlusBootstrapClass( suiteStats.status )#" data-bundleid="#thisBundle.id#">
+													<li class="list-group-item #statusPlusBootstrapClass( suiteStats.status )#" data-bundleid="#thisBundle.id#">
 														#genSuiteReport( suiteStats, thisBundle, emojiService )#
 													</li>
 												</cfloop>
@@ -353,15 +353,17 @@ code {
 						</cfif>
 					</li>
 				</cfloop>
+				<!--- Do we have nested suites --->
+				<cfif arrayLen( arguments.suiteStats.suiteStats )>
+					<li class="spec list-group-item #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#">
+						<ul class="suite list-group #statusPlusBootstrapClass( arguments.suiteStats.status )#" data-bundleid="#arguments.bundleStats.id#">
+							<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
+								#genSuiteReport( local.nestedSuite, arguments.bundleStats, emojiService )#
+							</cfloop>
+						</ul>
+					</li>
+				</cfif>
 			</ul>
-			<!--- Do we have nested suites --->
-			<cfif arrayLen( arguments.suiteStats.suiteStats )>
-				<ul class="suite list-group #statusPlusBootstrapClass( arguments.suiteStats.status )#" data-bundleid="#arguments.bundleStats.id#">
-					<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
-						#genSuiteReport( local.nestedSuite, arguments.bundleStats, emojiService )#
-					</cfloop>
-				</ul>
-			</cfif>
 		</cfoutput>
 	</cfsavecontent>
 	<cfreturn local.report>
