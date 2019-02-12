@@ -22,7 +22,7 @@
 						<div class="col-5">
 							<!--- Header --->
 							<p>
-								<img src="data:image/png;base64, #toBase64( fileReadBinary( "#ASSETS_DIR#/images/TestBoxLogo125.png" ) )#" height="75">
+								<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75">
 								<span class="badge badge-info">v#testbox.getVersion()#</span>
 							</p>
 						</div>
@@ -252,7 +252,6 @@ function toggleDebug( specid ) {
 	});
 }
 </script>
-
 <style>
 [data-toggle="collapse"] .arrow:before,
 .expand-collapse .arrow:before {
@@ -270,6 +269,7 @@ code {
 			</body>
 		</html>
 </cfif>
+
 <cffunction name="statusPlusBootstrapClass" output="false">
 	<cfargument name="status">
 	<cfset bootstrapClass="">
