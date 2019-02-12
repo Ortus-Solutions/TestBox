@@ -1,5 +1,5 @@
 <cfparam name="url.fullPage" default="true">
-<cfset ASSETS_DIR=expandPath( "/testbox/system/reports/assets" )>
+<cfset ASSETS_DIR = expandPath( "/testbox/system/reports/assets" )>
 <cfoutput>
 	<cfif url.fullPage>
 		<!DOCTYPE html>
@@ -272,15 +272,15 @@ code {
 
 <cffunction name="statusPlusBootstrapClass" output="false">
 	<cfargument name="status">
-	<cfset bootstrapClass="">
+	<cfset bootstrapClass = "">
 	<cfif lcase( arguments.status ) eq "failed">
-		<cfset bootstrapClass="list-group-item-warning failed">
+		<cfset bootstrapClass = "list-group-item-warning failed">
 		<cfelseif lcase( arguments.status ) eq "error">
-		<cfset bootstrapClass="list-group-item-danger error">
+		<cfset bootstrapClass = "list-group-item-danger error">
 		<cfelseif lcase( arguments.status ) eq "passed">
-		<cfset bootstrapClass="list-group-item-success passed">
+		<cfset bootstrapClass = "list-group-item-success passed">
 		<cfelseif lcase( arguments.status ) eq "skipped">
-		<cfset bootstrapClass="list-group-item-secondary skipped">
+		<cfset bootstrapClass = "list-group-item-secondary skipped">
 	</cfif>
 	<cfreturn bootstrapClass>
 </cffunction>
@@ -288,15 +288,15 @@ code {
 <cffunction name="statusToEmoji" output="false">
 	<cfargument name="status">
 	<cfargument name="emojiService">
-	<cfset emoji="">
+	<cfset emoji = "">
 	<cfif lcase( arguments.status ) eq "failed">
-		<cfset emoji=arguments.emojiService.get( "warning" )>
+		<cfset emoji = arguments.emojiService.get( "warning" )>
 		<cfelseif lcase( arguments.status ) eq "error">
-		<cfset emoji=arguments.emojiService.get( "x" )>
+		<cfset emoji = arguments.emojiService.get( "x" )>
 		<cfelseif lcase( arguments.status ) eq "passed">
-		<cfset emoji=arguments.emojiService.get( "white_check_mark" )>
+		<cfset emoji = arguments.emojiService.get( "white_check_mark" )>
 		<cfelseif lcase( arguments.status ) eq "skipped">
-		<cfset emoji=arguments.emojiService.get( "no_entry" )>
+		<cfset emoji = arguments.emojiService.get( "no_entry" )>
 	</cfif>
 	<cfreturn emoji>
 </cffunction>
@@ -318,7 +318,7 @@ code {
 			<ul class="list-group">
 				<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
 					<!--- Spec Results --->
-					<cfset thisSpecStatusClass=statusPlusBootstrapClass( local.thisSpec.status )>
+					<cfset thisSpecStatusClass = statusPlusBootstrapClass( local.thisSpec.status )>
 
 					<li class="spec list-group-item #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
 						<div class="clearfix">
@@ -326,10 +326,10 @@ code {
 								#statusToEmoji( local.thisSpec.status, emojiService )# #local.thisSpec.name#(#local.thisSpec.totalDuration# ms)
 							</a>
 							<cfif local.thisSpec.status eq "failed">
-								<cfset local.thisSpec.message=local.thisSpec.failMessage>
+								<cfset local.thisSpec.message = local.thisSpec.failMessage>
 							</cfif>
 							<cfif local.thisSpec.status eq "error">
-								<cfset local.thisSpec.message=local.thisSpec.error.message>
+								<cfset local.thisSpec.message = local.thisSpec.error.message>
 							</cfif>
 							<cfif structKeyExists( local.thisSpec, "message" )>
 								- <strong>#encodeForHTML( local.thisSpec.message )#</strong></a>

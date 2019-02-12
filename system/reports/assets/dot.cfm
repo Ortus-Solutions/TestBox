@@ -1,5 +1,5 @@
 <cfparam name="url.fullPage" default="true">
-<cfset ASSETS_DIR=expandPath( "/testbox/system/reports/assets" )>
+<cfset ASSETS_DIR = expandPath( "/testbox/system/reports/assets" )>
 <cfoutput>
 	<cfif url.fullPage>
 		<!DOCTYPE html>
@@ -152,13 +152,13 @@ function toggleDebug( specid ) {
 	<cffunction name="statusPlusBootstrapClass" output="false">
 		<cfargument name="status">
 		<cfif lcase( arguments.status ) eq "failed">
-			<cfset bootstrapClass="text-warning failed">
+			<cfset bootstrapClass = "text-warning failed">
 			<cfelseif lcase( arguments.status ) eq "error">
-			<cfset bootstrapClass="text-danger error">
+			<cfset bootstrapClass = "text-danger error">
 			<cfelseif lcase( arguments.status ) eq "passed">
-			<cfset bootstrapClass="text-success passed">
+			<cfset bootstrapClass = "text-success passed">
 			<cfelseif lcase( arguments.status ) eq "skipped">
-			<cfset bootstrapClass="text-secondary skipped">
+			<cfset bootstrapClass = "text-secondary skipped">
 		</cfif>
 		<cfreturn bootstrapClass>
 	</cffunction>
@@ -167,7 +167,7 @@ function toggleDebug( specid ) {
 	<cffunction name="genSuiteReport" output="false">
 		<cfargument name="suiteStats">
 		<cfargument name="bundleStats">
-		<cfset var thisSpec="">
+		<cfset var thisSpec = "">
 		<cfsavecontent variable="local.report">
 			<cfoutput>
 				<!--- Iterate over suite specs --->

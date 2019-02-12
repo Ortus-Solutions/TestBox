@@ -1,5 +1,5 @@
 <cfparam name="url.fullPage" default="true">
-<cfset ASSETS_DIR=expandPath( "/testbox/system/reports/assets" )>
+<cfset ASSETS_DIR = expandPath( "/testbox/system/reports/assets" )>
 <cfoutput>
 	<cfif url.fullPage>
 		<!DOCTYPE html>
