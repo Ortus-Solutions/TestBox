@@ -153,11 +153,11 @@ function toggleDebug( specid ) {
 		<cfargument name="status">
 		<cfif lcase( arguments.status ) eq "failed">
 			<cfset bootstrapClass = "text-warning failed">
-			<cfelseif lcase( arguments.status ) eq "error">
+		<cfelseif lcase( arguments.status ) eq "error">
 			<cfset bootstrapClass = "text-danger error">
-			<cfelseif lcase( arguments.status ) eq "passed">
+		<cfelseif lcase( arguments.status ) eq "passed">
 			<cfset bootstrapClass = "text-success passed">
-			<cfelseif lcase( arguments.status ) eq "skipped">
+		<cfelseif lcase( arguments.status ) eq "skipped">
 			<cfset bootstrapClass = "text-secondary skipped">
 		</cfif>
 		<cfreturn bootstrapClass>

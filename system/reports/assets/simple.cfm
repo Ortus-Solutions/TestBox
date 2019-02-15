@@ -280,11 +280,11 @@ code {
 	<cfset bootstrapClass = "">
 	<cfif lcase( arguments.status ) eq "failed">
 		<cfset bootstrapClass = "list-group-item-warning failed">
-		<cfelseif lcase( arguments.status ) eq "error">
+	<cfelseif lcase( arguments.status ) eq "error">
 		<cfset bootstrapClass = "list-group-item-danger error">
-		<cfelseif lcase( arguments.status ) eq "passed">
+	<cfelseif lcase( arguments.status ) eq "passed">
 		<cfset bootstrapClass = "list-group-item-success passed">
-		<cfelseif lcase( arguments.status ) eq "skipped">
+	<cfelseif lcase( arguments.status ) eq "skipped">
 		<cfset bootstrapClass = "list-group-item-secondary skipped">
 	</cfif>
 	<cfreturn bootstrapClass>
@@ -296,11 +296,11 @@ code {
 	<cfset emoji = "">
 	<cfif lcase( arguments.status ) eq "failed">
 		<cfset emoji = arguments.emojiService.get( "warning" )>
-		<cfelseif lcase( arguments.status ) eq "error">
+	<cfelseif lcase( arguments.status ) eq "error">
 		<cfset emoji = arguments.emojiService.get( "x" )>
-		<cfelseif lcase( arguments.status ) eq "passed">
+	<cfelseif lcase( arguments.status ) eq "passed">
 		<cfset emoji = arguments.emojiService.get( "white_check_mark" )>
-		<cfelseif lcase( arguments.status ) eq "skipped">
+	<cfelseif lcase( arguments.status ) eq "skipped">
 		<cfset emoji = arguments.emojiService.get( "no_entry" )>
 	</cfif>
 	<cfreturn emoji>
