@@ -101,7 +101,7 @@
 									<div id="details_#thisBundle.id#" class="collapse details-panel show" aria-labelledby="header_#thisBundle.id#" data-bundle="#thisBundle.path#">
 										<div class="card-body">
 											<ul class="suite list-group">
-												<!--- Global Error --->
+												<!--- Global Exception --->
 												<cfif !isSimpleValue( thisBundle.globalException )>
 													<li class="list-group-item list-group-item-danger">
 														<span class="h5">
@@ -110,6 +110,10 @@
 														<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_globalException_#thisBundle.id#" onclick="toggleDebug( 'globalException_#thisBundle.id#' )" title="Show more information">
 															<span class="arrow" aria-hidden="true"></span>
 														</button>
+														<div>#thisBundle.globalException.Message#</div>
+														<div class="pl-5">
+                											<code>#thisBundle.globalException.TagContext[1].codePrintHTML#</code>
+														</div>
 														<div class="my-2 debugdata" style="display:none;" data-specid="globalException_#thisBundle.id#">
 															<cfdump var="#thisBundle.globalException#" />
 														</div>
