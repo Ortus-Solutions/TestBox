@@ -61,6 +61,11 @@
 									<span>Labels Applied: <span class="badge badge-info ml-1">#arrayToList( results.getLabels() )#</u></span>
 								</h5>
 							</cfif>
+							<cfif arrayLen( results.getExcludes() )>
+								<h5 class="mt-2 mb-0">
+									<span>Excludes Applied: <span class="badge badge-info ml-1">#arrayToList( results.getExcludes() )#</u></span>
+								</h5>
+							</cfif>
 						</div>
 						<div class="list-group-item list-group-item-info accordion" id="bundles">
 							<!--- Bundle Info --->
