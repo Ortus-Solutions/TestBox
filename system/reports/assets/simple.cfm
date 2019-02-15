@@ -105,7 +105,7 @@
 												<cfif !isSimpleValue( thisBundle.globalException )>
 													<li class="list-group-item list-group-item-danger">
 														<span class="h5">
-															<strong>#emojiService.get( "x" )# Global Bundle Exception</strong>
+															<strong>#emojiService.get( "x" )# Global Bundle Exception</strong>(#thisBundle.totalDuration# ms)
 														</span>
 														<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_globalException_#thisBundle.id#" onclick="toggleDebug( 'globalException_#thisBundle.id#' )" title="Show more information">
 															<span class="arrow" aria-hidden="true"></span>
