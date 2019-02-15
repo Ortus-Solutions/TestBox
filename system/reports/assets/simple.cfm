@@ -117,9 +117,7 @@
 												</cfif>
 												<!-- Iterate over bundle suites -->
 												<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
-													<li class="list-group-item #statusPlusBootstrapClass( suiteStats.status )#" data-bundleid="#thisBundle.id#">
-														#genSuiteReport( suiteStats, thisBundle, emojiService )#
-													</li>
+													#genSuiteReport( suiteStats, thisBundle, emojiService )#
 												</cfloop>
 												<!--- Debug Panel --->
 												<cfif arrayLen( thisBundle.debugBuffer )>
@@ -279,13 +277,13 @@ code {
 	<cfargument name="status">
 	<cfset bootstrapClass = "">
 	<cfif lcase( arguments.status ) eq "failed">
-		<cfset bootstrapClass = "list-group-item-warning failed">
+		<cfset bootstrapClass = "warning failed">
 	<cfelseif lcase( arguments.status ) eq "error">
-		<cfset bootstrapClass = "list-group-item-danger error">
+		<cfset bootstrapClass = "danger error">
 	<cfelseif lcase( arguments.status ) eq "passed">
-		<cfset bootstrapClass = "list-group-item-success passed">
+		<cfset bootstrapClass = "success passed">
 	<cfelseif lcase( arguments.status ) eq "skipped">
-		<cfset bootstrapClass = "list-group-item-secondary skipped">
+		<cfset bootstrapClass = "secondary skipped">
 	</cfif>
 	<cfreturn bootstrapClass>
 </cffunction>
@@ -313,62 +311,64 @@ code {
 	<cfargument name="emojiService">
 	<cfsavecontent variable="local.report">
 		<cfoutput>
-			<!--- Suite Results --->
-			<h3 class="#statusPlusBootstrapClass( arguments.suiteStats.status )#">
-				<a class="alert-link h5" title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#" href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
-					#statusToEmoji( arguments.suiteStats.status, emojiService )# <strong>#arguments.suiteStats.name#</strong>
-					(#arguments.suiteStats.totalDuration# ms)
-				</a>
-			</h3>
-			<ul class="list-group">
-				<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
-					<!--- Spec Results --->
-					<cfset thisSpecStatusClass = statusPlusBootstrapClass( local.thisSpec.status )>
+			<li class="list-group-item list-group-item-#statusPlusBootstrapClass( suiteStats.status )#" data-bundleid="#suiteStats.bundleID#">
+				<!--- Suite Results --->
+				<h3>
+					<a class="alert-link h5" title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#" href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
+						#statusToEmoji( arguments.suiteStats.status, emojiService )# <strong>#arguments.suiteStats.name#</strong>
+						(#arguments.suiteStats.totalDuration# ms)
+					</a>
+				</h3>
+				<ul class="list-group">
+					<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
+						<!--- Spec Results --->
+						<cfset thisSpecStatusClass = statusPlusBootstrapClass( local.thisSpec.status )>
 
-					<li class="spec list-group-item #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
-						<div class="clearfix">
-							<a class="alert-link #thisSpecStatusClass#" href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
-								#statusToEmoji( local.thisSpec.status, emojiService )# #local.thisSpec.name#(#local.thisSpec.totalDuration# ms)
-							</a>
-							<cfif local.thisSpec.status eq "failed">
-								<cfset local.thisSpec.message = local.thisSpec.failMessage>
-							</cfif>
-							<cfif local.thisSpec.status eq "error">
-								<cfset local.thisSpec.message = local.thisSpec.error.message>
-							</cfif>
+						<li class="spec list-group-item list-group-item-#thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
+							<div class="clearfix">
+								<a class="alert-link #thisSpecStatusClass#" href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
+									#statusToEmoji( local.thisSpec.status, emojiService )# #local.thisSpec.name#(#local.thisSpec.totalDuration# ms)
+								</a>
+								<cfif local.thisSpec.status eq "failed">
+									<cfset local.thisSpec.message = local.thisSpec.failMessage>
+								</cfif>
+								<cfif local.thisSpec.status eq "error">
+									<cfset local.thisSpec.message = local.thisSpec.error.message>
+								</cfif>
+								<cfif structKeyExists( local.thisSpec, "message" )>
+									- <strong>#encodeForHTML( local.thisSpec.message )#</strong></a>
+									<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#local.thisSpec.id#" onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">
+										<span class="arrow" aria-hidden="true"></span>
+									</button>
+								</cfif>
+							</div>
 							<cfif structKeyExists( local.thisSpec, "message" )>
-								- <strong>#encodeForHTML( local.thisSpec.message )#</strong></a>
-								<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#local.thisSpec.id#" onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">
-									<span class="arrow" aria-hidden="true"></span>
-								</button>
-							</cfif>
-						</div>
-						<cfif structKeyExists( local.thisSpec, "message" )>
-							<cfif arrayLen( local.thisSpec.failOrigin )>
-								<div>#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
-								<div class="pl-5">
-									<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
-										<code>#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</code>
-									</cfif>
+								<cfif arrayLen( local.thisSpec.failOrigin )>
+									<div>#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
+									<div class="pl-5">
+										<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
+											<code>#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</code>
+										</cfif>
+									</div>
+								</cfif>
+								<div class="my-2 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
+									<cfdump var="#local.thisSpec.failorigin#" label="Failure Origin">
 								</div>
 							</cfif>
-							<div class="my-2 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
-								<cfdump var="#local.thisSpec.failorigin#" label="Failure Origin">
-							</div>
-						</cfif>
-					</li>
-				</cfloop>
-				<!--- Do we have nested suites --->
-				<cfif arrayLen( arguments.suiteStats.suiteStats )>
-					<li class="spec list-group-item #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#">
-						<ul class="suite list-group #statusPlusBootstrapClass( arguments.suiteStats.status )#" data-bundleid="#arguments.bundleStats.id#">
-							<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
-								#genSuiteReport( local.nestedSuite, arguments.bundleStats, emojiService )#
-							</cfloop>
-						</ul>
-					</li>
-				</cfif>
-			</ul>
+						</li>
+					</cfloop>
+					<!--- Do we have nested suites --->
+					<cfif arrayLen( arguments.suiteStats.suiteStats )>
+						<li class="spec list-group-item list-group-item-#thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#">
+							<ul class="suite list-group" data-bundleid="#arguments.bundleStats.id#">
+								<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
+									#genSuiteReport( local.nestedSuite, arguments.bundleStats, emojiService )#
+								</cfloop>
+							</ul>
+						</li>
+					</cfif>
+				</ul>
+			</li>
 		</cfoutput>
 	</cfsavecontent>
 	<cfreturn local.report>
