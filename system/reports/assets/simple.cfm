@@ -186,7 +186,7 @@ $( document ).ready( function() {
 	});
 
 	$( "#expand-bundles" ).click(function() {
-		$( ".details-panel:not( '.show' )" ).collapse( "show" );
+		$( ".details-panel:not(.show)" ).collapse( "show" );
 	});
 });
 
