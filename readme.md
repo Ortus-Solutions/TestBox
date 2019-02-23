@@ -41,7 +41,7 @@ Official Site
 
 ## SYSTEM REQUIREMENTS
 
-- Lucee 4.5+ (xUnit + BDD)
+- Lucee 5+ (xUnit + BDD)
 - ColdFusion 11+ (xUnit + BDD)
 
 ## TESTBOX INSTALLATION
