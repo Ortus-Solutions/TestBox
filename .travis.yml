@@ -58,7 +58,7 @@ deploy:
       branch:
         - master
         - development
-      condition: "$ENGINE = lucee@4.5"
+      condition: "$ENGINE = lucee@5"
     skip_cleanup: true
     #AWS Credentials need to be set in Travis
     access_key_id: $AWS_ACCESS_KEY
@@ -74,7 +74,7 @@ deploy:
       branch:
         - master
         - development
-      condition: "$ENGINE = lucee@4.5"
+      condition: "$ENGINE = lucee@5"
     skip_cleanup: true
     #AWS Credentials need to be set in Travis
     access_key_id: $AWS_ACCESS_KEY
@@ -86,4 +86,4 @@ deploy:
 
 after_deploy:
   - cd $TRAVIS_BUILD_DIR/build-testbox/testbox
-  - if [ ${ENGINE} = 'lucee@4.5' ]; then box forgebox publish; fi
+  - if [ ${ENGINE} = 'lucee@5' ]; then box forgebox publish; fi
