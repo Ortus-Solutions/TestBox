@@ -432,7 +432,7 @@ component{
         boolean asyncAll=false
     ){
         arguments.skip = true;
-        return xstory( argumentCollection = arguments );
+        return story( argumentCollection = arguments );
     }
 
     /**
