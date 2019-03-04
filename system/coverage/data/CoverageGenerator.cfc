@@ -185,7 +185,12 @@ component accessors=true {
 					}
 
 					// Count as covered any closing CF tags where the previous line ran.  Ending tags don't always seem to get picked up.
-					if( !covered && reFindNoCase( '<\/cf.*>', trim( line) ) && previousLineRan ) {
+					if( !covered && previousLineRan && reFindNoCase( '<\/cf.*>', trim( line) ) ) {
+						covered = previousLineRan;
+					}
+
+					// Count as covered any closing script braces where the previous line ran.  E.x, I've seen trailing } in a switch statement not picked up
+					if( !covered && previousLineRan && trim( line ) == '}' ) {
 						covered = previousLineRan;
 					}
 
