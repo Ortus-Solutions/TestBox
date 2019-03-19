@@ -111,7 +111,7 @@
     }
 
     function renderCodeCoverageStats( coverageData ) {
-      const totalCoveragePercent = parseFloat( Math.round( coverageData.stats.percTotalCoverage * 100 ) / 100 ).toFixed( 2 );
+      const totalCoveragePercent = parseFloat( coverageData.stats.percTotalCoverage * 100 ).toFixed( 2 );
       const codeCoverageStatsHtml = `<div class="list-group-item list-group-item-info" id="coverageStats">
               <h2 class="clearfix">
                 <span>Code Coverage Stats</span>
