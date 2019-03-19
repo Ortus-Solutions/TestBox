@@ -83,7 +83,7 @@
 											<a class="alert-link" href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true" title="Run only this bundle">
 												#thisBundle.path# (#thisBundle.totalDuration# ms)
 											</a>
-											<button class="btn btn-link float-right py-0" type="button" data-toggle="collapse" data-target="##details_#thisBundle.id#" aria-expanded="false" aria-controls="details_#thisBundle.id#">
+											<button class="btn btn-link float-right py-0" style="text-decoration: none;" type="button" data-toggle="collapse" data-target="##details_#thisBundle.id#" aria-expanded="false" aria-controls="details_#thisBundle.id#">
 												<span class="arrow" aria-hidden="true"></span>
 											</button>
 										</h4>
@@ -108,7 +108,7 @@
 														<span class="h5">
 															<strong><i class="fas fa-times"></i> Global Bundle Exception</strong>(#thisBundle.totalDuration# ms)
 														</span>
-														<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_globalException_#thisBundle.id#" onclick="toggleDebug( 'globalException_#thisBundle.id#' )" title="Show more information">
+														<button class="btn btn-link float-right py-0 expand-collapse collapsed" style="text-decoration: none;" id="btn_globalException_#thisBundle.id#" onclick="toggleDebug( 'globalException_#thisBundle.id#' )" title="Show more information">
 															<span class="arrow" aria-hidden="true"></span>
 														</button>
 														<div>#thisBundle.globalException.Message#</div>
@@ -130,7 +130,7 @@
 														<span class="alert-link h5">
 															<strong><i class="fas fa-bug"></i> Debug Stream</strong>
 														</span>
-														<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#thisBundle.id#" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">
+														<button class="btn btn-link float-right py-0 expand-collapse collapsed" style="text-decoration: none;" id="btn_#thisBundle.id#" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">
 															<span class="arrow" aria-hidden="true"></span>
 														</button>
 														<div class="my-2 debugdata" style="display:none;" data-specid="#thisBundle.id#">
@@ -340,7 +340,7 @@ code {
 								</cfif>
 								<cfif structKeyExists( local.thisSpec, "message" )>
 									- <strong>#encodeForHTML( local.thisSpec.message )#</strong></a>
-									<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#local.thisSpec.id#" onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">
+									<button class="btn btn-link float-right py-0 expand-collapse collapsed" style="text-decoration: none;" id="btn_#local.thisSpec.id#" onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">
 										<span class="arrow" aria-hidden="true"></span>
 									</button>
 								</cfif>
