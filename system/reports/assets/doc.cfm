@@ -15,7 +15,7 @@
 		Labels Applied: #arrayToList( results.getLabels() )#<br>
 		</cfif>
 		<cfif results.getCoverageEnabled()>
-		Coverage: #round( results.getCoverageData().stats.percTotalCoverage*100 )#%
+		Coverage: #numberFormat( results.getCoverageData().stats.percTotalCoverage*100, '9.9' )#%
 		</cfif>
 	</p>
 </section>

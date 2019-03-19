@@ -48,7 +48,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="generator" content="TestBox v#testbox.getVersion()#">
-	<title>TestBox Global Runner</title>
+	<title>TestBox Browser</title>
 	<cfoutput>
 		<style>#fileRead( '#ASSETS_DIR#/css/bootstrap.min.css' )#</style>
 		<script>#fileRead( '#ASSETS_DIR#/js/jquery-3.3.1.min.js' )#</script>

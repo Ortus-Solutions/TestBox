@@ -87,7 +87,7 @@ component accessors = true {
 				var lineNumbersBGColors = fileData.lineData.map( function ( key, value ) {
 					return ( value > 0 ) ? "success" : "danger";
 				} );
-				var percentage = round( fileData.percCoverage * 100 );
+				var percentage = numberFormat( fileData.percCoverage * 100, '9.9' );
 				var lineNumbersBGColorsJSON = SerializeJSON( lineNumbersBGColors );
 				var fileContents = fileRead( fileData.filePath );
 				var levelsFromRoot = fileData.relativeFilePath.listLen( "/" );

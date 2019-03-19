@@ -36,7 +36,7 @@
 		<body>
 </cfif>
 <cfif isDefined( 'stats' )>
-	<cfset totalProjectCoverage = round( stats.percTotalCoverage * 100 )>
+	<cfset totalProjectCoverage = numberFormat( stats.percTotalCoverage * 100, '9.9' )>
 	<div class="list-group mb-3">
 		<div class="list-group-item list-group-item-info" id="coverageStats">
 			<h2 class="clearfix">
@@ -83,7 +83,7 @@
 						<ol class="list-group">
 							<cfloop query="stats.qryFilesBestCoverage">
 								<cfset qTarget         = stats.qryFilesBestCoverage>
-								<cfset percentage      = round( qTarget.percCoverage * 100 )>
+								<cfset percentage      = numberFormat( qTarget.percCoverage * 100, '9.9' )>
 								<cfset trimmedFilePath = replaceNoCase( qTarget.filePath, pathToCapture, '' )>
 								<li class="list-group-item list-group-item-#codeBrowser.percentToContextualClass( percentage )#">
 									<span class="col-9">#trimmedFilePath#</span>
@@ -104,7 +104,7 @@
 						<ol class="list-group">
 							<cfloop query="stats.qryFilesWorstCoverage">
 								<cfset qTarget      	= stats.qryFilesWorstCoverage>
-								<cfset percentage 		= round( qTarget.percCoverage * 100 )>
+								<cfset percentage 		= numberFormat( qTarget.percCoverage * 100, '9.9' )>
 								<cfset trimmedFilePath 	= replaceNoCase( qTarget.filePath, pathToCapture, '' )>
 								<li class="list-group-item list-group-item-#codeBrowser.percentToContextualClass( percentage )#">
 									<span class="col-9">#trimmedFilePath#</span>
