@@ -108,11 +108,11 @@
 <style>
 [data-toggle="collapse"] .arrow:before,
 .expand-collapse .arrow:before {
-	content: "\2b06";
+	content: "\23EB";
 }
 [data-toggle="collapse"].collapsed .arrow:before,
 .expand-collapse.collapsed .arrow:before {
-	content: "\2b07";
+	content: "\23EC";
 }
 .dots {
 	font-size: 60px;

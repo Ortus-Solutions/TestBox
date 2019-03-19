@@ -20,12 +20,12 @@
 			<style>
 			[data-toggle="collapse"] .arrow:before,
 			.expand-collapse .arrow:before {
-				content: "\2b06";
+				content: "\23EB";
 			}
 
 			[data-toggle="collapse"].collapsed .arrow:before,
 			.expand-collapse.collapsed .arrow:before {
-				content: "\2b07";
+				content: "\23EC";
 			}
 
 			code {
@@ -42,7 +42,7 @@
 			<h2 class="clearfix">
 				<span>Code Coverage Stats</span>
 				<div class="mt-2 h5 float-right">
-					<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_coverageStats" onclick="toggleDebug( 'coverageStats' )" title="Show coverage stats">
+					<button class="btn btn-link float-right py-0 expand-collapse collapsed" style="text-decoration: none;" id="btn_coverageStats" onclick="toggleDebug( 'coverageStats' )" title="Show coverage stats">
 						<span class="arrow" aria-hidden="true"></span>
 					</button>
 					<span class="ml-2 float-right">
