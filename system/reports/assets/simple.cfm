@@ -13,6 +13,7 @@
 				<script>#fileRead( "#ASSETS_DIR#/js/popper.min.js" )#</script>
 				<script>#fileRead( "#ASSETS_DIR#/js/bootstrap.min.js" )#</script>
 				<script>#fileRead( "#ASSETS_DIR#/js/stupidtable.min.js" )#</script>
+				<script>#fileRead( "#ASSETS_DIR#/js/fontawesome.js" )#</script>
 			</head>
 			<body>
 	</cfif>
@@ -45,10 +46,10 @@
 							</div>
 							<h2>Test Results Stats (#results.getTotalDuration()# ms)</h2>
 							<div class="float-right">
-								<span class="specStatus m-1 btn btn-sm btn-success passed" data-status="passed">#emojiService.get( "white_check_mark" )# Pass: #results.getTotalPass()#</span>
-								<span class="specStatus m-1 btn btn-sm btn-warning failed" data-status="failed">#emojiService.get( "warning" )# Failures: #results.getTotalFail()#</span>
-								<span class="specStatus m-1 btn btn-sm btn-danger error" data-status="error">#emojiService.get( "x" )# Errors: #results.getTotalError()#</span>
-								<span class="specStatus m-1 btn btn-sm btn-secondary skipped" data-status="skipped">#emojiService.get( "no_entry" )# Skipped: #results.getTotalSkipped()#</span>
+								<span class="specStatus m-1 btn btn-sm btn-success passed" data-status="passed"><i class="fas fa-check"></i> Pass: #results.getTotalPass()#</span>
+								<span class="specStatus m-1 btn btn-sm btn-warning failed" data-status="failed"><i class="fas fa-exclamation-triangle"></i> Failures: #results.getTotalFail()#</span>
+								<span class="specStatus m-1 btn btn-sm btn-danger error" data-status="error"><i class="fas fa-times"></i> Errors: #results.getTotalError()#</span>
+								<span class="specStatus m-1 btn btn-sm btn-secondary skipped" data-status="skipped"><i class="fas fa-minus-circle"></i> Skipped: #results.getTotalSkipped()#</span>
 								<span class="reset m-1 btn btn-sm btn-dark" title="Clear status filters">Reset</span>
 							</div>
 							<h5 class="mt-2">
@@ -87,10 +88,10 @@
 											</button>
 										</h4>
 										<div class="float-right">
-											<span class="specStatus m-1 btn btn-sm btn-success passed" data-status="passed" data-bundleid="#thisBundle.id#">#emojiService.get( "white_check_mark" )# Pass: #thisBundle.totalPass#</span>
-											<span class="specStatus m-1 btn btn-sm btn-warning failed" data-status="failed" data-bundleid="#thisBundle.id#">#emojiService.get( "warning" )# Failures: #thisBundle.totalFail#</span>
-											<span class="specStatus m-1 btn btn-sm btn-danger error" data-status="error" data-bundleid="#thisBundle.id#">#emojiService.get( "x" )# Errors: #thisBundle.totalError#</span>
-											<span class="specStatus m-1 btn btn-sm btn-secondary skipped" data-status="skipped" data-bundleid="#thisBundle.id#">#emojiService.get( "no_entry" )# Skipped: #thisBundle.totalSkipped#</span>
+											<span class="specStatus m-1 btn btn-sm btn-success passed" data-status="passed" data-bundleid="#thisBundle.id#"><i class="fas fa-check"></i> Pass: #thisBundle.totalPass#</span>
+											<span class="specStatus m-1 btn btn-sm btn-warning failed" data-status="failed" data-bundleid="#thisBundle.id#"><i class="fas fa-exclamation-triangle"></i> Failures: #thisBundle.totalFail#</span>
+											<span class="specStatus m-1 btn btn-sm btn-danger error" data-status="error" data-bundleid="#thisBundle.id#"><i class="fas fa-times"></i> Errors: #thisBundle.totalError#</span>
+											<span class="specStatus m-1 btn btn-sm btn-secondary skipped" data-status="skipped" data-bundleid="#thisBundle.id#"><i class="fas fa-minus-circle"></i> Skipped: #thisBundle.totalSkipped#</span>
 											<span class="reset m-1 btn btn-sm btn-dark" title="Clear status filters">Reset</span>
 										</div>
 										<h5 class="d-inline-block mt-2">
@@ -105,7 +106,7 @@
 												<cfif !isSimpleValue( thisBundle.globalException )>
 													<li class="list-group-item list-group-item-danger">
 														<span class="h5">
-															<strong>#emojiService.get( "x" )# Global Bundle Exception</strong>(#thisBundle.totalDuration# ms)
+															<strong><i class="fas fa-times"></i> Global Bundle Exception</strong>(#thisBundle.totalDuration# ms)
 														</span>
 														<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_globalException_#thisBundle.id#" onclick="toggleDebug( 'globalException_#thisBundle.id#' )" title="Show more information">
 															<span class="arrow" aria-hidden="true"></span>
@@ -121,13 +122,13 @@
 												</cfif>
 												<!-- Iterate over bundle suites -->
 												<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
-													#genSuiteReport( suiteStats, thisBundle, emojiService )#
+													#genSuiteReport( suiteStats, thisBundle )#
 												</cfloop>
 												<!--- Debug Panel --->
 												<cfif arrayLen( thisBundle.debugBuffer )>
 													<li class="list-group-item list-group-item-info">
 														<span class="alert-link h5">
-															<strong>#emojiService.get( "information_source" )# Debug Stream</strong>
+															<strong><i class="fas fa-bug"></i> Debug Stream</strong>
 														</span>
 														<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#thisBundle.id#" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">
 															<span class="arrow" aria-hidden="true"></span>
@@ -262,11 +263,11 @@ function toggleDebug( specid ) {
 <style>
 [data-toggle="collapse"] .arrow:before,
 .expand-collapse .arrow:before {
-	content: "\2b06";
+	content: "\23EB";
 }
 [data-toggle="collapse"].collapsed .arrow:before,
 .expand-collapse.collapsed .arrow:before {
-	content: "\2b07";
+	content: "\23EC";
 }
 code {
 	color: black !important;
@@ -292,34 +293,32 @@ code {
 	<cfreturn bootstrapClass>
 </cffunction>
 
-<cffunction name="statusToEmoji" output="false">
+<cffunction name="statusToIcon" output="false">
 	<cfargument name="status">
-	<cfargument name="emojiService">
-	<cfset emoji = "">
+	<cfset icon = "">
 	<cfif lcase( arguments.status ) eq "failed">
-		<cfset emoji = arguments.emojiService.get( "warning" )>
+		<cfset icon = '<i class="fas fa-exclamation-triangle"></i>'>
 	<cfelseif lcase( arguments.status ) eq "error">
-		<cfset emoji = arguments.emojiService.get( "x" )>
+		<cfset icon = '<i class="fas fa-times"></i>'>
 	<cfelseif lcase( arguments.status ) eq "passed">
-		<cfset emoji = arguments.emojiService.get( "white_check_mark" )>
+		<cfset icon = '<i class="fas fa-check"></i>'>
 	<cfelseif lcase( arguments.status ) eq "skipped">
-		<cfset emoji = arguments.emojiService.get( "no_entry" )>
+		<cfset icon = '<i class="fas fa-minus-circle"></i>'>
 	</cfif>
-	<cfreturn emoji>
+	<cfreturn icon>
 </cffunction>
 
 <!--- Recursive Output --->
 <cffunction name="genSuiteReport" output="false">
 	<cfargument name="suiteStats">
 	<cfargument name="bundleStats">
-	<cfargument name="emojiService">
 	<cfsavecontent variable="local.report">
 		<cfoutput>
 			<li class="list-group-item list-group-item-#statusPlusBootstrapClass( suiteStats.status )#" data-bundleid="#suiteStats.bundleID#">
 				<!--- Suite Results --->
 				<h3>
 					<a class="alert-link h5" title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#" href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
-						#statusToEmoji( arguments.suiteStats.status, emojiService )# <strong>#arguments.suiteStats.name#</strong>
+						#statusToIcon( arguments.suiteStats.status )# <strong>#arguments.suiteStats.name#</strong>
 						(#arguments.suiteStats.totalDuration# ms)
 					</a>
 				</h3>
@@ -331,7 +330,7 @@ code {
 						<li class="spec list-group-item list-group-item-#thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
 							<div class="clearfix">
 								<a class="alert-link #thisSpecStatusClass#" href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
-									#statusToEmoji( local.thisSpec.status, emojiService )# #local.thisSpec.name#(#local.thisSpec.totalDuration# ms)
+									#statusToIcon( local.thisSpec.status )# #local.thisSpec.name#(#local.thisSpec.totalDuration# ms)
 								</a>
 								<cfif local.thisSpec.status eq "failed">
 									<cfset local.thisSpec.message = local.thisSpec.failMessage>
@@ -366,7 +365,7 @@ code {
 						<li class="spec list-group-item list-group-item-#thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#">
 							<ul class="suite list-group" data-bundleid="#arguments.bundleStats.id#">
 								<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
-									#genSuiteReport( local.nestedSuite, arguments.bundleStats, emojiService )#
+									#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
 								</cfloop>
 							</ul>
 						</li>

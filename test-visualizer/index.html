@@ -9,14 +9,16 @@
 		<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/js/bootstrap.min.js" integrity="sha384-7aThvCh9TypR7fIc2HV4O/nFMVCBwyIUKL8XCtKE+8xgCgl/PQGuFsvShjr74PBp" crossorigin="anonymous"></script>
-		<style>
+    <script defer src="https://use.fontawesome.com/releases/v5.7.2/js/all.js" integrity="sha384-0pzryjIRos8mFBWMzSSZApWtPl/5++eIfzYmTgBBmXYdhvxPc+XcFEk+zJwDgWbP" crossorigin="anonymous"></script>
+
+    <style>
 			[data-toggle="collapse"] .arrow:before,
       .expand-collapse .arrow:before {
-        content: "\2b06";
+        content: "\23EB";
       }
       [data-toggle="collapse"].collapsed .arrow:before,
       .expand-collapse.collapsed .arrow:before {
-        content: "\2b07";
+        content: "\23EC";
       }
       code {
         color: black !important;
@@ -190,20 +192,20 @@
               <span
                 class="spec-status m-1 btn btn-sm btn-success passed"
                 data-status="passed"
-                >✅ Pass: ${data.totalPass}</span
+                ><i class="fas fa-check"></i> Pass: ${data.totalPass}</span
               >
               <span
                 class="spec-status m-1 btn btn-sm btn-warning failed"
                 data-status="failed"
-                >⚠️ Failures: ${data.totalFail}</span
+                ><i class="fas fa-exclamation-triangle"></i> Failures: ${data.totalFail}</span
               >
               <span class="spec-status m-1 btn btn-sm btn-danger error" data-status="error"
-                >❌ Errors: ${data.totalError}</span
+                ><i class="fas fa-times"></i> Errors: ${data.totalError}</span
               >
               <span
                 class="spec-status m-1 btn btn-sm btn-secondary skipped"
                 data-status="skipped"
-                >⛔️ Skipped: ${data.totalSkipped}</span
+                ><i class="fas fa-minus-circle"></i> Skipped: ${data.totalSkipped}</span
               >
               <span class="reset m-1 btn btn-sm btn-dark" title="Clear status filters"
                 >Reset</span
@@ -287,7 +289,7 @@
           >
             <div class="clearfix">
               <span class="h5">
-                <strong>❌ Global Bundle Exception</strong>(${
+                <strong><i class="fas fa-times"></i> Global Bundle Exception</strong>(${
                   bundleStat.totalDuration
                 }" ms)
               </span>
@@ -313,6 +315,7 @@
                   ${bundleStat.name} (${bundleStat.totalDuration} ms)
                 <button
                   class="btn btn-link float-right py-0"
+                  style="text-decoration: none;"
                   type="button"
                   data-toggle="collapse"
                   data-target="#details_${bundleStat.id}"
@@ -327,25 +330,25 @@
                   class="spec-status m-1 btn btn-sm btn-success passed"
                   data-status="passed"
                   data-bundleid="${bundleStat.id}"
-                  >✅ Pass: ${bundleStat.totalPass}</span
+                  ><i class="fas fa-check"></i> Pass: ${bundleStat.totalPass}</span
                 >
                 <span
                   class="spec-status m-1 btn btn-sm btn-warning failed"
                   data-status="failed"
                   data-bundleid="${bundleStat.id}"
-                  >⚠️ Failures: ${bundleStat.totalFail}</span
+                  ><i class="fas fa-exclamation-triangle"></i> Failures: ${bundleStat.totalFail}</span
                 >
                 <span
                   class="spec-status m-1 btn btn-sm btn-danger error"
                   data-status="error"
                   data-bundleid="${bundleStat.id}"
-                  >❌ Errors: ${bundleStat.totalError}</span
+                  ><i class="fas fa-times"></i> Errors: ${bundleStat.totalError}</span
                 >
                 <span
                   class="spec-status m-1 btn btn-sm btn-secondary skipped"
                   data-status="skipped"
                   data-bundleid="${bundleStat.id}"
-                  >⛔️ Skipped: ${bundleStat.totalSkipped}</span
+                  ><i class="fas fa-minus-circle"></i> Skipped: ${bundleStat.totalSkipped}</span
                 >
                 <span class="reset m-1 btn btn-sm btn-dark" title="Clear status filters"
                   >Reset</span
@@ -423,7 +426,7 @@
               data-bundleid="${suite.bundleID}"
             >
               <h5>
-                    ${statusToEmoji(suite.status)} <strong>${
+                    ${statusToIcon(suite.status)} <strong>${
         suite.name
       }</strong>(${suite.totalDuration} ms)
               </h5>
@@ -473,7 +476,7 @@
         data-specid="${spec.id}"
       >
         <div class="clearfix">
-          ${statusToEmoji(spec.status)} ${spec.name}(${spec.totalDuration} ms)
+          ${statusToIcon(spec.status)} ${spec.name}(${spec.totalDuration} ms)
         </div>
         ${specMessageHtml}
       </li>`;
@@ -572,18 +575,18 @@
       return classes;
     }
 
-    function statusToEmoji( status ) {
-      let emoji = "";
+    function statusToIcon( status ) {
+      let icon = "";
       if ( status === "Failed" ) {
-        emoji = "⚠️";
+        icon = '<i class="fas fa-exclamation-triangle"></i>';
       } else if ( status === "Error" ) {
-        emoji = "❌";
+        icon = '<i class="fas fa-times"></i>';
       } else if ( status === "Passed" ) {
-        emoji = "✅";
+        icon = '<i class="fas fa-check"></i>';
       } else if ( status === "Skipped" ) {
-        emoji = "⛔️";
+        icon = '<i class="fas fa-minus-circle"></i>';
       }
-      return emoji;
+      return icon;
     }
     </script>
 	</head>

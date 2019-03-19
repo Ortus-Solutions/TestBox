@@ -36,11 +36,9 @@
         "watchDelay":"250"
     },
     "dependencies":{
-        "cbstreams":"^1.2.0",
-        "cbemoji":"^1.1.0+11"
+        "cbstreams":"^1.2.0"
     },
     "installPaths":{
-        "cbstreams":"system/modules/cbstreams/",
-        "cbemoji":"system/modules/cbemoji/"
+        "cbstreams":"system/modules/cbstreams/"
     }
 }
