@@ -102,7 +102,6 @@ component accessors=true {
 
 		for( var theFile in fileList ) {
 			theFile=theFile.replace("\","/","all");
-			pathToCapture=pathToCapture.replace("\","/","all");
 
 			var relativeFilePath = replaceNoCase( theFile, arguments.pathToCapture, '' );
 

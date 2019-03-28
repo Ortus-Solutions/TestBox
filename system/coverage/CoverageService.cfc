@@ -144,6 +144,19 @@ component accessors="true" {
 		if( isNull( opts.browser ) ) { opts.browser = {}; }
 		if( isNull( opts.browser.outputDir ) ) { opts.browser.outputDir = ''; }
 
+		// If no output dir provided
+		if( !len( opts.browser.outputDir ) ) {
+			opts.pathToCapture = expandPath( '/tests/results/coverageReport' );
+		} else if( !directoryExists( opts.browser.outputDir ) && directoryExists( expandPath( opts.browser.outputDir ) ) ) {
+			opts.browser.outputDir = expandPath( opts.browser.outputDir );
+		}
+		
+		opts.browser.outputDir = opts.browser.outputDir.replace("\","/","all");
+
+		if ( !opts.browser.outputDir.endsWith( '\' ) ) {
+			opts.browser.outputDir = opts.browser.outputDir & '/';
+		}
+
 		if( isNull( opts.coverageTresholds ) ) { opts.coverageTresholds = {}; }
 		if( isNull( opts.coverageTresholds.good ) ) { opts.coverageTresholds.good = 85; }
 		if( isNull( opts.coverageTresholds.bad ) ) { opts.coverageTresholds.bad = 50; }
@@ -152,21 +165,27 @@ component accessors="true" {
 		if( isNull( opts.whitelist ) ) { opts.whitelist = ''; }
 		if( isNull( opts.blacklist ) ) { opts.blacklist = ''; }
 
-	  	// If no path provided to capture
-	  	if( !len( opts.pathToCapture ) ) {
+		// If no path provided to capture
+		if( !len( opts.pathToCapture ) ) {
 
-	  		// Look for a /root mapping
-	  		if( directoryExists( expandPath( '/root' ) ) ) {
-	  			opts.pathToCapture = expandPath( '/root' );
-	  		// And default to entire web root
-	  		} else {
-	  			opts.pathToCapture = expandPath( '/' );
-	  		}
+			// Look for a /root mapping
+			if( directoryExists( expandPath( '/root' ) ) ) {
+				opts.pathToCapture = expandPath( '/root' );
+			// And default to entire web root
+			} else {
+				opts.pathToCapture = expandPath( '/' );
+			}
 
-	  	} else if( !directoryExists( opts.pathToCapture ) && directoryExists( expandPath( opts.pathToCapture ) ) ) {
-	  		opts.pathToCapture = expandPath( opts.pathToCapture );
-	  	}
+		} else if( !directoryExists( opts.pathToCapture ) && directoryExists( expandPath( opts.pathToCapture ) ) ) {
+			opts.pathToCapture = expandPath( opts.pathToCapture );
+		}
+		
+		opts.pathToCapture = opts.pathToCapture.replace("\","/","all");
 
+		if ( !opts.pathToCapture.endsWith( '/' ) ) {
+			opts.pathToCapture = opts.pathToCapture & '/';
+		}
+		
 		// Bypass validation if not enabled
 		if( !opts.enabled ) {
 			return opts;
