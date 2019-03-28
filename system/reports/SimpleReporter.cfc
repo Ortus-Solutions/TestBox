@@ -48,9 +48,6 @@ component{
 		if( !structKeyExists( url, "testBundles") ){ url.testBundles = ""; }
 		if( !structKeyExists( url, "directory") ){ url.directory = ""; }
 
-		// put emoji service in scope
-		var emojiService = new testbox.system.modules.cbemoji.models.EmojiService();
-
 		// prepare the report
 		savecontent variable="local.report"{
 			include "assets/simple.cfm";

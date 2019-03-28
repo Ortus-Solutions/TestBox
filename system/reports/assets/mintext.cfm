@@ -13,7 +13,7 @@ Stats (#results.getTotalDuration()# ms)
 ->[Errors: #results.getTotalError()#]
 ->[Skipped: #results.getTotalSkipped()#]
 ->[Labels Applied: #arrayToList( results.getLabels() )#]<cfif results.getCoverageEnabled()>
-->[Coverage: #round( results.getCoverageData().stats.percTotalCoverage*100 )#%]
+->[Coverage: #numberFormat( results.getCoverageData().stats.percTotalCoverage*100, '9.9' )#%]
 </cfif>
 <cfloop array="#variables.bundleStats#" index="thisBundle">
 =============================================================

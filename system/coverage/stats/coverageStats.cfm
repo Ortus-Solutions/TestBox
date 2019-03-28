@@ -20,12 +20,12 @@
 			<style>
 			[data-toggle="collapse"] .arrow:before,
 			.expand-collapse .arrow:before {
-				content: "\2b06";
+				content: "\23EB";
 			}
 
 			[data-toggle="collapse"].collapsed .arrow:before,
 			.expand-collapse.collapsed .arrow:before {
-				content: "\2b07";
+				content: "\23EC";
 			}
 
 			code {
@@ -36,13 +36,13 @@
 		<body>
 </cfif>
 <cfif isDefined( 'stats' )>
-	<cfset totalProjectCoverage = round( stats.percTotalCoverage * 100 )>
+	<cfset totalProjectCoverage = numberFormat( stats.percTotalCoverage * 100, '9.9' )>
 	<div class="list-group mb-3">
 		<div class="list-group-item list-group-item-info" id="coverageStats">
 			<h2 class="clearfix">
 				<span>Code Coverage Stats</span>
 				<div class="mt-2 h5 float-right">
-					<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_coverageStats" onclick="toggleDebug( 'coverageStats' )" title="Show coverage stats">
+					<button class="btn btn-link float-right py-0 expand-collapse collapsed" style="text-decoration: none;" id="btn_coverageStats" onclick="toggleDebug( 'coverageStats' )" title="Show coverage stats">
 						<span class="arrow" aria-hidden="true"></span>
 					</button>
 					<span class="ml-2 float-right">
@@ -83,7 +83,7 @@
 						<ol class="list-group">
 							<cfloop query="stats.qryFilesBestCoverage">
 								<cfset qTarget         = stats.qryFilesBestCoverage>
-								<cfset percentage      = round( qTarget.percCoverage * 100 )>
+								<cfset percentage      = numberFormat( qTarget.percCoverage * 100, '9.9' )>
 								<cfset trimmedFilePath = replaceNoCase( qTarget.filePath, pathToCapture, '' )>
 								<li class="list-group-item list-group-item-#codeBrowser.percentToContextualClass( percentage )#">
 									<span class="col-9">#trimmedFilePath#</span>
@@ -104,7 +104,7 @@
 						<ol class="list-group">
 							<cfloop query="stats.qryFilesWorstCoverage">
 								<cfset qTarget      	= stats.qryFilesWorstCoverage>
-								<cfset percentage 		= round( qTarget.percCoverage * 100 )>
+								<cfset percentage 		= numberFormat( qTarget.percCoverage * 100, '9.9' )>
 								<cfset trimmedFilePath 	= replaceNoCase( qTarget.filePath, pathToCapture, '' )>
 								<li class="list-group-item list-group-item-#codeBrowser.percentToContextualClass( percentage )#">
 									<span class="col-9">#trimmedFilePath#</span>

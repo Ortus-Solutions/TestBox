@@ -35,7 +35,7 @@
 							#stats.numFiles#
 						</td>
 					</tr>
-					<cfset percTotalCoverage = round( stats.percTotalCoverage * 100 )>
+					<cfset percTotalCoverage = numberFormat( stats.percTotalCoverage * 100, '9.9' )>
 					<tr class="h4 pr-3">
 						<td class="text-right pr-3">
 							Total project coverage:
@@ -74,7 +74,7 @@
 				<thead>
 				<tbody>
 					<cfloop query="qryCoverageDataSorted">
-					<cfset percentage = round( percCoverage * 100 )>
+					<cfset percentage = numberFormat( percCoverage * 100, '9.9' )>
 					<tr class="file table-#percentToContextualClass( percentage )# ">
 						<!--- Coverage files are named after "real" files --->
 						<cfset link = "#replace( relativeFilePath, '\', '/', 'all' )#.html">

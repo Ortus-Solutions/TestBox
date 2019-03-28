@@ -36,7 +36,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="generator" content="TestBox v#testbox.getVersion()#">
-		<title>TestBox Global Runner</title>
+		<title>TestBox Runner</title>
 
 		<cfoutput>
 			<style>#fileRead( '#ASSETS_DIR#/css/bootstrap.min.css' )#</style>
