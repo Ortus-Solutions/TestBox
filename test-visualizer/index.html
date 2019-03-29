@@ -38,7 +38,7 @@
           } )
           .fail( function ( jqxhr, textStatus, error ) {
             $( "body" )
-              .html( "<h1>Could not load the report's JSON file</h1>" );
+              .html( "<h1>Could not load the report's JSON file, by convention it should be <code>test-results.json</code> in this same folder.</h1>" );
             console.log( "Request Failed: " + err );
           } );
       } );
