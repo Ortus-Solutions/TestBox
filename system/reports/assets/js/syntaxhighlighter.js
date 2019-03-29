@@ -6,7 +6,7 @@
  * http://alexgorbatchev.com/SyntaxHighlighter/donate.html
  * 
  * @version
- * 4.0.1 (Sat, 26 Jan 2019 01:06:00 GMT)
+ * 4.0.1 (Thu, 28 Mar 2019 23:50:19 GMT)
  * 
  * @copyright
  * Copyright (C) 2004-2016 Alex Gorbatchev.
@@ -78,13 +78,13 @@
 	  });
 	});
 	
-	var _domready = __webpack_require__(25);
+	var _domready = __webpack_require__(52);
 	
 	var _domready2 = _interopRequireDefault(_domready);
 	
 	var _core2 = _interopRequireDefault(_core);
 	
-	var _dasherize = __webpack_require__(26);
+	var _dasherize = __webpack_require__(53);
 	
 	var dasherize = _interopRequireWildcard(_dasherize);
 	
@@ -348,6 +348,62 @@
 	registerBrush(__webpack_require__(23));
 	
 	registerBrush(__webpack_require__(24));
+	
+	registerBrush(__webpack_require__(22));
+	
+	registerBrush(__webpack_require__(25));
+	
+	registerBrush(__webpack_require__(26));
+	
+	registerBrush(__webpack_require__(27));
+	
+	registerBrush(__webpack_require__(28));
+	
+	registerBrush(__webpack_require__(29));
+	
+	registerBrush(__webpack_require__(30));
+	
+	registerBrush(__webpack_require__(31));
+	
+	registerBrush(__webpack_require__(32));
+	
+	registerBrush(__webpack_require__(33));
+	
+	registerBrush(__webpack_require__(34));
+	
+	registerBrush(__webpack_require__(35));
+	
+	registerBrush(__webpack_require__(36));
+	
+	registerBrush(__webpack_require__(37));
+	
+	registerBrush(__webpack_require__(38));
+	
+	registerBrush(__webpack_require__(39));
+	
+	registerBrush(__webpack_require__(40));
+	
+	registerBrush(__webpack_require__(41));
+	
+	registerBrush(__webpack_require__(42));
+	
+	registerBrush(__webpack_require__(43));
+	
+	registerBrush(__webpack_require__(44));
+	
+	registerBrush(__webpack_require__(45));
+	
+	registerBrush(__webpack_require__(46));
+	
+	registerBrush(__webpack_require__(47));
+	
+	registerBrush(__webpack_require__(48));
+	
+	registerBrush(__webpack_require__(49));
+	
+	registerBrush(__webpack_require__(50));
+	
+	registerBrush(__webpack_require__(51));
 	
 	/*
 	
@@ -3681,6 +3737,202 @@
 	var regexLib = __webpack_require__(3).commonRegExp;
 	
 	function Brush() {
+	  // AppleScript brush by David Chambers
+	  // http://davidchambersdesign.com/
+	  var keywords = 'after before beginning continue copy each end every from return get global in local named of set some that the then times to where whose with without';
+	  var ordinals = 'first second third fourth fifth sixth seventh eighth ninth tenth last front back middle';
+	  var specials = 'activate add alias ask attachment boolean class constant delete duplicate empty exists id integer list make message modal modified new no pi properties quit real record remove rest result reveal reverse run running save string word yes';
+	
+	  this.regexList = [{
+	    regex: /(--|#).*$/gm,
+	    css: 'comments'
+	  }, {
+	    regex: /\(\*(?:[\s\S]*?\(\*[\s\S]*?\*\))*[\s\S]*?\*\)/gm, // support nested comments
+	    css: 'comments'
+	  }, {
+	    regex: /"[\s\S]*?"/gm,
+	    css: 'string'
+	  }, {
+	    regex: /(?:,|:|¬|'s\b|\(|\)|\{|\}|«|\b\w*»)/g, // operators
+	    css: 'color1'
+	  }, {
+	    regex: /(-)?(\d)+(\.(\d)?)?(E\+(\d)+)?/g, // numbers
+	    css: 'color1'
+	  }, {
+	    regex: /(?:&(amp;|gt;|lt;)?|=|� |>|<|≥|>=|≤|<=|\*|\+|-|\/|÷|\^)/g,
+	    css: 'color2'
+	  }, {
+	    regex: /\b(?:and|as|div|mod|not|or|return(?!\s&)(ing)?|equals|(is(n't| not)? )?equal( to)?|does(n't| not) equal|(is(n't| not)? )?(greater|less) than( or equal( to)?)?|(comes|does(n't| not) come) (after|before)|is(n't| not)?( in)? (back|front) of|is(n't| not)? behind|is(n't| not)?( (in|contained by))?|does(n't| not) contain|contain(s)?|(start|begin|end)(s)? with|((but|end) )?(consider|ignor)ing|prop(erty)?|(a )?ref(erence)?( to)?|repeat (until|while|with)|((end|exit) )?repeat|((else|end) )?if|else|(end )?(script|tell|try)|(on )?error|(put )?into|(of )?(it|me)|its|my|with (timeout( of)?|transaction)|end (timeout|transaction))\b/g,
+	    css: 'keyword'
+	  }, {
+	    regex: /\b\d+(st|nd|rd|th)\b/g, // ordinals
+	    css: 'keyword'
+	  }, {
+	    regex: /\b(?:about|above|against|around|at|below|beneath|beside|between|by|(apart|aside) from|(instead|out) of|into|on(to)?|over|since|thr(ough|u)|under)\b/g,
+	    css: 'color3'
+	  }, {
+	    regex: /\b(?:adding folder items to|after receiving|clipboard info|set the clipboard to|(the )?clipboard|entire contents|document( (edited|file|nib name))?|file( (name|type))?|(info )?for|giving up after|(name )?extension|return(ed)?|second(?! item)(s)?|list (disks|folder)|(Unicode )?text|(disk )?item(s)?|((current|list) )?view|((container|key) )?window|case|diacriticals|hyphens|numeric strings|punctuation|white space|folder creation|application(s( folder)?| (processes|scripts position|support))?|((desktop )?(pictures )?|(documents|downloads|favorites|home|keychain|library|movies|music|public|scripts|sites|system|users|utilities|workflows) )folder|desktop|Folder Action scripts|font(s| panel)?|help|internet plugins|modem scripts|(system )?preferences|printer descriptions|scripting (additions|components)|shared (documents|libraries)|startup (disk|items)|temporary items|trash|on server|in AppleTalk zone|((as|long|short) )?user name|user (ID|locale)|(with )?password|in (bundle( with identifier)?|directory)|(close|open for) access|read|write( permission)?|(g|s)et eof|starting at|hidden( answer)?|open(ed| (location|untitled))?|error (handling|reporting)|administrator privileges|altering line endings|get volume settings|(alert|boot|input|mount|output|set) volume|output muted|(fax|random )?number|round(ing)?|up|down|toward zero|to nearest|as taught in school|system (attribute|info)|((AppleScript( Studio)?|system) )?version|(home )?directory|(IPv4|primary Ethernet) address|CPU (type|speed)|physical memory|time (stamp|to GMT)|replacing|ASCII (character|number)|localized string|from table|offset|summarize|beep|delay|say|(empty|multiple) selections allowed|(of|preferred) type|invisibles|showing( package contents)?|editable URL|(File|FTP|News|Media|Web) [Ss]ervers|Telnet hosts|Directory services|Remote applications|waiting until completion|saving( (in|to))?|path (for|to( (((current|frontmost) )?application|resource))?)|(background|RGB) color|(OK|cancel) button name|cancel button|button(s)?|cubic ((centi)?met(re|er)s|yards|feet|inches)|square ((kilo)?met(re|er)s|miles|yards|feet)|(centi|kilo)?met(re|er)s|miles|yards|feet|inches|lit(re|er)s|gallons|quarts|(kilo)?grams|ounces|pounds|degrees (Celsius|Fahrenheit|Kelvin)|print( (dialog|settings))?|clos(e(able)?|ing)|(de)?miniaturized|miniaturizable|zoom(ed|able)|attribute run|action (method|property|title)|phone|email|((start|end)ing|home) page|((birth|creation|current|custom|modification) )?date|((((phonetic )?(first|last|middle))|computer|host|maiden|related) |nick)?name|aim|icq|jabber|msn|yahoo|address(es)?|save addressbook|should enable action|city|country( code)?|formatte(r|d address)|(palette )?label|state|street|zip|AIM [Hh]andle(s)?|my card|select(ion| all)?|unsaved|(alpha )?value|entr(y|ies)|(ICQ|Jabber|MSN) handle|person|people|company|department|icon image|job title|note|organization|suffix|vcard|url|copies|collating|pages (across|down)|request print time|target( printer)?|((GUI Scripting|Script menu) )?enabled|show Computer scripts|(de)?activated|awake from nib|became (key|main)|call method|of (class|object)|center|clicked toolbar item|closed|for document|exposed|(can )?hide|idle|keyboard (down|up)|event( (number|type))?|launch(ed)?|load (image|movie|nib|sound)|owner|log|mouse (down|dragged|entered|exited|moved|up)|move|column|localization|resource|script|register|drag (info|types)|resigned (active|key|main)|resiz(e(d)?|able)|right mouse (down|dragged|up)|scroll wheel|(at )?index|should (close|open( untitled)?|quit( after last window closed)?|zoom)|((proposed|screen) )?bounds|show(n)?|behind|in front of|size (mode|to fit)|update(d| toolbar item)?|was (hidden|miniaturized)|will (become active|close|finish launching|hide|miniaturize|move|open|quit|(resign )?active|((maximum|minimum|proposed) )?size|show|zoom)|bundle|data source|movie|pasteboard|sound|tool(bar| tip)|(color|open|save) panel|coordinate system|frontmost|main( (bundle|menu|window))?|((services|(excluded from )?windows) )?menu|((executable|frameworks|resource|scripts|shared (frameworks|support)) )?path|(selected item )?identifier|data|content(s| view)?|character(s)?|click count|(command|control|option|shift) key down|context|delta (x|y|z)|key( code)?|location|pressure|unmodified characters|types|(first )?responder|playing|(allowed|selectable) identifiers|allows customization|(auto saves )?configuration|visible|image( name)?|menu form representation|tag|user(-| )defaults|associated file name|(auto|needs) display|current field editor|floating|has (resize indicator|shadow)|hides when deactivated|level|minimized (image|title)|opaque|position|release when closed|sheet|title(d)?)\b/g,
+	    css: 'color4'
+	  }, {
+	    regex: /\b(?:tracks|paragraph|text item(s)?)\b/g,
+	    css: 'classes'
+	  }, {
+	    regex: /\b(?:AppleScript|album|video kind|grouping|length|text item delimiters|quoted form|POSIX path(?= of))\b/g,
+	    css: 'properties'
+	  }, {
+	    regex: /\b(?:run|exists|count)\b/g,
+	    css: 'commandNames'
+	  }, {
+	    regex: /\b(?:POSIX (file|path))\b/g,
+	    css: 'additionClasses'
+	  }, {
+	    regex: /\b(?:message|with (data|icon( (caution|note|stop))?|parameter(s)?|prompt|properties|seed|title)|regexp|string result|using( delimiters)?|default (answer|button|color|country code|entr(y|ies)|identifiers|items|name|location|script editor))\b/g,
+	    css: 'additionParameterNames'
+	  }, {
+	    regex: /\b(?:display(ing| (alert|dialog|mode))?|choose( ((remote )?application|color|folder|from list|URL))?|(do( shell)?|load|run|store) script|re_compile|find text)\b/g,
+	    css: 'additionCommandNames'
+	  }, {
+	    regex: /\b(?:xxx)\b/g,
+	    css: 'parameterNames'
+	  }, {
+	    regex: /\b(?:true|false|none)\b/g,
+	    css: 'enumeratedValues'
+	  }, {
+	    regex: new RegExp(this.getKeywords(specials), 'gm'),
+	    css: 'color3'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }, {
+	    regex: new RegExp(this.getKeywords(ordinals), 'gm'),
+	    css: 'keyword'
+	  }];
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['applescript'];
+	module.exports = Brush;
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  // Created by Peter Atoria @ http://iAtoria.com
+	
+	  var inits = 'class interface function package';
+	
+	  var keywords = '-Infinity ...rest Array as AS3 Boolean break case catch const continue Date decodeURI ' + 'decodeURIComponent default delete do dynamic each else encodeURI encodeURIComponent escape ' + 'extends false final finally flash_proxy for get if implements import in include Infinity ' + 'instanceof int internal is isFinite isNaN isXMLName label namespace NaN native new null ' + 'Null Number Object object_proxy override parseFloat parseInt private protected public ' + 'return set static String super switch this throw true try typeof uint undefined unescape ' + 'use void while with';
+	
+	  this.regexList = [{
+	    regex: regexLib.singleLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.multiLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.doubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.singleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: /\b([\d]+(\.[\d]+)?|0x[a-f0-9]+)\b/gi,
+	    css: 'value'
+	  }, {
+	    regex: new RegExp(this.getKeywords(inits), 'gm'),
+	    css: 'color3'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }, {
+	    regex: new RegExp('var', 'gm'),
+	    css: 'variable'
+	  }, {
+	    regex: new RegExp('trace', 'gm'),
+	    css: 'color1'
+	  }];
+	
+	  this.forHtmlScript(regexLib.scriptScriptTags);
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['actionscript3', 'as3'];
+	module.exports = Brush;
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	var XRegExp = __webpack_require__(3).XRegExp;
+	var Match = __webpack_require__(5).Match;
+	
+	function Brush() {
+	  function hereDocProcess(match, regexInfo) {
+	    var result = [];
+	
+	    if (match.here_doc != null) result.push(new Match(match.here_doc, match.index + match[0].indexOf(match.here_doc), 'string'));
+	
+	    if (match.full_tag != null) result.push(new Match(match.full_tag, match.index, 'preprocessor'));
+	
+	    if (match.end_tag != null) result.push(new Match(match.end_tag, match.index + match[0].lastIndexOf(match.end_tag), 'preprocessor'));
+	
+	    return result;
+	  }
+	
+	  var keywords = 'if fi then elif else for do done until while break continue case esac function return in eq ne ge le';
+	  var commands = 'alias apropos awk basename base64 bash bc bg builtin bunzip2 bzcat bzip2 bzip2recover cal cat cd cfdisk chgrp chmod chown chroot' + 'cksum clear cmp comm command cp cron crontab crypt csplit cut date dc dd ddrescue declare df ' + 'diff diff3 dig dir dircolors dirname dirs du echo egrep eject enable env ethtool eval ' + 'exec exit expand export expr false fdformat fdisk fg fgrep file find fmt fold format ' + 'free fsck ftp gawk gcc gdb getconf getopts grep groups gunzip gzcat gzip hash head history hostname id ifconfig ' + 'import install join kill less let ln local locate logname logout look lpc lpr lprint ' + 'lprintd lprintq lprm ls lsof make man mkdir mkfifo mkisofs mknod more mount mtools ' + 'mv nasm nc ndisasm netstat nice nl nohup nslookup objdump od open op passwd paste pathchk ping popd pr printcap ' + 'printenv printf ps pushd pwd quota quotacheck quotactl ram rcp read readonly renice ' + 'remsync rm rmdir rsync screen scp sdiff sed select seq set sftp shift shopt shutdown ' + 'sleep sort source split ssh strace strings su sudo sum symlink sync tail tar tee test time ' + 'times touch top traceroute trap tr true tsort tty type ulimit umask umount unalias ' + 'uname unexpand uniq units unset unshar useradd usermod users uuencode uudecode v vdir ' + 'vi watch wc whereis which who whoami Wget xargs xxd yes chsh zcat';
+	
+	  this.regexList = [{
+	    regex: /^#!.*$/gm,
+	    css: 'preprocessor bold'
+	  }, {
+	    regex: /\/[\w-\/]+/gm,
+	    css: 'plain'
+	  }, {
+	    regex: regexLib.singleLinePerlComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.doubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.singleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }, {
+	    regex: new RegExp(this.getKeywords(commands), 'gm'),
+	    css: 'functions'
+	  }, {
+	    regex: new XRegExp("(?<full_tag>(&lt;|<){2}(?<tag>\\w+)) .*$(?<here_doc>[\\s\\S]*)(?<end_tag>^\\k<tag>$)", 'gm'),
+	    func: hereDocProcess
+	  }];
+	}
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['bash', 'shell', 'sh'];
+	module.exports = Brush;
+
+/***/ }),
+/* 26 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
 	  // Contributed by Jen
 	  // http://www.jensbits.com/2009/05/14/coldfusion-brush-for-syntaxhighlighter-plus
 	
@@ -3719,7 +3971,7 @@
 	module.exports = Brush;
 
 /***/ }),
-/* 24 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3728,7 +3980,1262 @@
 	var regexLib = __webpack_require__(3).commonRegExp;
 	
 	function Brush() {
-	  var keywords = 'break case catch class continue ' + 'default delete do else enum export extends false  ' + 'for from as function if implements import in instanceof ' + 'interface let new null package private protected ' + 'static return super switch ' + 'this throw true try typeof var while with yield';
+	  // Copyright 2006 Shin, YoungJin
+	
+	  var datatypes = 'ATOM BOOL BOOLEAN BYTE CHAR COLORREF DWORD DWORDLONG DWORD_PTR ' + 'DWORD32 DWORD64 FLOAT HACCEL HALF_PTR HANDLE HBITMAP HBRUSH ' + 'HCOLORSPACE HCONV HCONVLIST HCURSOR HDC HDDEDATA HDESK HDROP HDWP ' + 'HENHMETAFILE HFILE HFONT HGDIOBJ HGLOBAL HHOOK HICON HINSTANCE HKEY ' + 'HKL HLOCAL HMENU HMETAFILE HMODULE HMONITOR HPALETTE HPEN HRESULT ' + 'HRGN HRSRC HSZ HWINSTA HWND INT INT_PTR INT32 INT64 LANGID LCID LCTYPE ' + 'LGRPID LONG LONGLONG LONG_PTR LONG32 LONG64 LPARAM LPBOOL LPBYTE LPCOLORREF ' + 'LPCSTR LPCTSTR LPCVOID LPCWSTR LPDWORD LPHANDLE LPINT LPLONG LPSTR LPTSTR ' + 'LPVOID LPWORD LPWSTR LRESULT PBOOL PBOOLEAN PBYTE PCHAR PCSTR PCTSTR PCWSTR ' + 'PDWORDLONG PDWORD_PTR PDWORD32 PDWORD64 PFLOAT PHALF_PTR PHANDLE PHKEY PINT ' + 'PINT_PTR PINT32 PINT64 PLCID PLONG PLONGLONG PLONG_PTR PLONG32 PLONG64 POINTER_32 ' + 'POINTER_64 PSHORT PSIZE_T PSSIZE_T PSTR PTBYTE PTCHAR PTSTR PUCHAR PUHALF_PTR ' + 'PUINT PUINT_PTR PUINT32 PUINT64 PULONG PULONGLONG PULONG_PTR PULONG32 PULONG64 ' + 'PUSHORT PVOID PWCHAR PWORD PWSTR SC_HANDLE SC_LOCK SERVICE_STATUS_HANDLE SHORT ' + 'SIZE_T SSIZE_T TBYTE TCHAR UCHAR UHALF_PTR UINT UINT_PTR UINT32 UINT64 ULONG ' + 'ULONGLONG ULONG_PTR ULONG32 ULONG64 USHORT USN VOID WCHAR WORD WPARAM WPARAM WPARAM ' + 'char char16_t char32_t bool short int __int32 __int64 __int8 __int16 long float double __wchar_t ' + 'clock_t _complex _dev_t _diskfree_t div_t ldiv_t _exception _EXCEPTION_POINTERS ' + 'FILE _finddata_t _finddatai64_t _wfinddata_t _wfinddatai64_t __finddata64_t ' + '__wfinddata64_t _FPIEEE_RECORD fpos_t _HEAPINFO _HFILE lconv intptr_t ' + 'jmp_buf mbstate_t _off_t _onexit_t _PNH ptrdiff_t _purecall_handler ' + 'sig_atomic_t size_t _stat __stat64 _stati64 terminate_function ' + 'time_t __time64_t _timeb __timeb64 tm uintptr_t _utimbuf ' + 'va_list wchar_t wctrans_t wctype_t wint_t signed';
+	
+	  var keywords = 'alignas alignof auto break case catch class const constexpr decltype __finally __exception __try ' + 'const_cast continue private public protected __declspec ' + 'default delete deprecated dllexport dllimport do dynamic_cast ' + 'else enum explicit extern if for friend goto inline ' + 'mutable naked namespace new noinline noreturn nothrow noexcept nullptr ' + 'register reinterpret_cast return selectany ' + 'sizeof static static_cast static_assert struct switch template this ' + 'thread thread_local throw true false try typedef typeid typename union ' + 'using uuid virtual void volatile whcar_t while';
+	
+	  var functions = 'assert isalnum isalpha iscntrl isdigit isgraph islower isprint ' + 'ispunct isspace isupper isxdigit tolower toupper errno localeconv ' + 'setlocale acos asin atan atan2 ceil cos cosh exp fabs floor fmod ' + 'frexp ldexp log log10 modf pow sin sinh sqrt tan tanh jmp_buf ' + 'longjmp setjmp raise signal sig_atomic_t va_arg va_end va_start ' + 'clearerr fclose feof ferror fflush fgetc fgetpos fgets fopen ' + 'fprintf fputc fputs fread freopen fscanf fseek fsetpos ftell ' + 'fwrite getc getchar gets perror printf putc putchar puts remove ' + 'rename rewind scanf setbuf setvbuf sprintf sscanf tmpfile tmpnam ' + 'ungetc vfprintf vprintf vsprintf abort abs atexit atof atoi atol ' + 'bsearch calloc div exit free getenv labs ldiv malloc mblen mbstowcs ' + 'mbtowc qsort rand realloc srand strtod strtol strtoul system ' + 'wcstombs wctomb memchr memcmp memcpy memmove memset strcat strchr ' + 'strcmp strcoll strcpy strcspn strerror strlen strncat strncmp ' + 'strncpy strpbrk strrchr strspn strstr strtok strxfrm asctime ' + 'clock ctime difftime gmtime localtime mktime strftime time';
+	
+	  this.regexList = [{
+	    regex: regexLib.singleLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.multiLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.doubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.singleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: /^ *#.*/gm,
+	    css: 'preprocessor'
+	  }, {
+	    regex: new RegExp(this.getKeywords(datatypes), 'gm'),
+	    css: 'color1 bold'
+	  }, {
+	    regex: new RegExp(this.getKeywords(functions), 'gm'),
+	    css: 'functions bold'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword bold'
+	  }];
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['cpp', 'cc', 'c++', 'c', 'h', 'hpp', 'h++'];
+	module.exports = Brush;
+
+/***/ }),
+/* 28 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	var Match = __webpack_require__(5).Match;
+	
+	function Brush() {
+	  var keywords = 'abstract as base bool break byte case catch char checked class const ' + 'continue decimal default delegate do double else enum event explicit volatile ' + 'extern false finally fixed float for foreach get goto if implicit in int ' + 'interface internal is lock long namespace new null object operator out ' + 'override params private protected public readonly ref return sbyte sealed set ' + 'short sizeof stackalloc static string struct switch this throw true try ' + 'typeof uint ulong unchecked unsafe ushort using virtual void while var ' + 'from group by into select let where orderby join on equals ascending descending';
+	
+	  function fixComments(match, regexInfo) {
+	    var css = match[0].indexOf("///") == 0 ? 'color1' : 'comments';
+	    return [new Match(match[0], match.index, css)];
+	  }
+	
+	  this.regexList = [{
+	    regex: regexLib.singleLineCComments,
+	    func: fixComments
+	  }, {
+	    regex: regexLib.multiLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: /@"(?:[^"]|"")*"/g,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.doubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.singleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: /^\s*#.*/gm,
+	    css: 'preprocessor'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }, {
+	    regex: /\bpartial(?=\s+(?:class|interface|struct)\b)/g,
+	    css: 'keyword'
+	  }, {
+	    regex: /\byield(?=\s+(?:return|break)\b)/g,
+	    css: 'keyword'
+	  }];
+	
+	  this.forHtmlScript(regexLib.aspScriptTags);
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['c#', 'c-sharp', 'csharp'];
+	module.exports = Brush;
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  function getKeywordsCSS(str) {
+	    return '\\b([a-z_]|)' + str.replace(/ /g, '(?=:)\\b|\\b([a-z_\\*]|\\*|)') + '(?=:)\\b';
+	  };
+	
+	  function getValuesCSS(str) {
+	    return '\\b' + str.replace(/ /g, '(?!-)(?!:)\\b|\\b()') + '\:\\b';
+	  };
+	
+	  var keywords = 'ascent azimuth background-attachment background-color background-image background-position ' + 'background-repeat background baseline bbox border-collapse border-color border-spacing border-style border-top ' + 'border-right border-bottom border-left border-top-color border-right-color border-bottom-color border-left-color ' + 'border-top-style border-right-style border-bottom-style border-left-style border-top-width border-right-width ' + 'border-bottom-width border-left-width border-width border bottom cap-height caption-side centerline clear clip color ' + 'content counter-increment counter-reset cue-after cue-before cue cursor definition-src descent direction display ' + 'elevation empty-cells float font-size-adjust font-family font-size font-stretch font-style font-variant font-weight font ' + 'height left letter-spacing line-height list-style-image list-style-position list-style-type list-style margin-top ' + 'margin-right margin-bottom margin-left margin marker-offset marks mathline max-height max-width min-height min-width orphans ' + 'outline-color outline-style outline-width outline overflow padding-top padding-right padding-bottom padding-left padding page ' + 'page-break-after page-break-before page-break-inside pause pause-after pause-before pitch pitch-range play-during position ' + 'quotes right richness size slope src speak-header speak-numeral speak-punctuation speak speech-rate stemh stemv stress ' + 'table-layout text-align top text-decoration text-indent text-shadow text-transform unicode-bidi unicode-range units-per-em ' + 'vertical-align visibility voice-family volume white-space widows width widths word-spacing x-height z-index';
+	
+	  var values = 'above absolute all always aqua armenian attr aural auto avoid baseline behind below bidi-override black blink block blue bold bolder ' + 'both bottom braille capitalize caption center center-left center-right circle close-quote code collapse compact condensed ' + 'continuous counter counters crop cross crosshair cursive dashed decimal decimal-leading-zero default digits disc dotted double ' + 'embed embossed e-resize expanded extra-condensed extra-expanded fantasy far-left far-right fast faster fixed format fuchsia ' + 'gray green groove handheld hebrew help hidden hide high higher icon inline-table inline inset inside invert italic ' + 'justify landscape large larger left-side left leftwards level lighter lime line-through list-item local loud lower-alpha ' + 'lowercase lower-greek lower-latin lower-roman lower low ltr marker maroon medium message-box middle mix move narrower ' + 'navy ne-resize no-close-quote none no-open-quote no-repeat normal nowrap n-resize nw-resize oblique olive once open-quote outset ' + 'outside overline pointer portrait pre print projection purple red relative repeat repeat-x repeat-y rgb ridge right right-side ' + 'rightwards rtl run-in screen scroll semi-condensed semi-expanded separate se-resize show silent silver slower slow ' + 'small small-caps small-caption smaller soft solid speech spell-out square s-resize static status-bar sub super sw-resize ' + 'table-caption table-cell table-column table-column-group table-footer-group table-header-group table-row table-row-group teal ' + 'text-bottom text-top thick thin top transparent tty tv ultra-condensed ultra-expanded underline upper-alpha uppercase upper-latin ' + 'upper-roman url visible wait white wider w-resize x-fast x-high x-large x-loud x-low x-slow x-small x-soft xx-large xx-small yellow';
+	
+	  var fonts = '[mM]onospace [tT]ahoma [vV]erdana [aA]rial [hH]elvetica [sS]ans-serif [sS]erif [cC]ourier mono sans serif';
+	
+	  this.regexList = [{
+	    regex: regexLib.multiLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.doubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.singleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: /\#[a-fA-F0-9]{3,6}/g,
+	    css: 'value'
+	  }, {
+	    regex: /(-?\d+)(\.\d+)?(px|em|pt|\:|\%|)/g,
+	    css: 'value'
+	  }, {
+	    regex: /!important/g,
+	    css: 'color3'
+	  }, {
+	    regex: new RegExp(getKeywordsCSS(keywords), 'gm'),
+	    css: 'keyword'
+	  }, {
+	    regex: new RegExp(getValuesCSS(values), 'g'),
+	    css: 'value'
+	  }, {
+	    regex: new RegExp(this.getKeywords(fonts), 'g'),
+	    css: 'color1'
+	  }];
+	
+	  this.forHtmlScript({
+	    left: /(&lt;|<)\s*style.*?(&gt;|>)/gi,
+	    right: /(&lt;|<)\/\s*style\s*(&gt;|>)/gi
+	  });
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['css'];
+	module.exports = Brush;
+
+/***/ }),
+/* 30 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  var keywords = 'abs addr and ansichar ansistring array as asm begin boolean byte cardinal ' + 'case char class comp const constructor currency destructor div do double ' + 'downto else end except exports extended false file finalization finally ' + 'for function goto if implementation in inherited int64 initialization ' + 'integer interface is label library longint longword mod nil not object ' + 'of on or packed pansichar pansistring pchar pcurrency pdatetime pextended ' + 'pint64 pointer private procedure program property pshortstring pstring ' + 'pvariant pwidechar pwidestring protected public published raise real real48 ' + 'record repeat set shl shortint shortstring shr single smallint string then ' + 'threadvar to true try type unit until uses val var varirnt while widechar ' + 'widestring with word write writeln xor';
+	
+	  this.regexList = [{
+	    regex: /\(\*[\s\S]*?\*\)/gm,
+	    css: 'comments'
+	  }, {
+	    regex: /{(?!\$)[\s\S]*?}/gm,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.singleLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.singleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: /\{\$[a-zA-Z]+ .+\}/g,
+	    css: 'color1'
+	  }, {
+	    regex: /\b[\d\.]+\b/g,
+	    css: 'value'
+	  }, {
+	    regex: /\$[a-zA-Z0-9]+\b/g,
+	    css: 'value'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gmi'),
+	    css: 'keyword'
+	  }];
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['delphi', 'pascal', 'pas'];
+	module.exports = Brush;
+
+/***/ }),
+/* 31 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  this.regexList = [{
+	    regex: /^\+\+\+ .*$/gm,
+	    css: 'color2'
+	  }, {
+	    regex: /^\-\-\- .*$/gm,
+	    css: 'color2'
+	  }, {
+	    regex: /^\s.*$/gm,
+	    css: 'color1'
+	  }, {
+	    regex: /^@@.*@@.*$/gm,
+	    css: 'variable'
+	  }, {
+	    regex: /^\+.*$/gm,
+	    css: 'string'
+	  }, {
+	    regex: /^\-.*$/gm,
+	    css: 'color3'
+	  }];
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['diff', 'patch'];
+	module.exports = Brush;
+
+/***/ }),
+/* 32 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  // Contributed by Jean-Lou Dupont
+	  // http://jldupont.blogspot.com/2009/06/erlang-syntax-highlighter.html
+	
+	  // According to: http://erlang.org/doc/reference_manual/introduction.html#1.5
+	  var keywords = 'after and andalso band begin bnot bor bsl bsr bxor ' + 'case catch cond div end fun if let not of or orelse ' + 'query receive rem try when xor' +
+	  // additional
+	  ' module export import define';
+	
+	  this.regexList = [{
+	    regex: new RegExp("[A-Z][A-Za-z0-9_]+", 'g'),
+	    css: 'constants'
+	  }, {
+	    regex: new RegExp("\\%.+", 'gm'),
+	    css: 'comments'
+	  }, {
+	    regex: new RegExp("\\?[A-Za-z0-9_]+", 'g'),
+	    css: 'preprocessor'
+	  }, {
+	    regex: new RegExp("[a-z0-9_]+:[a-z0-9_]+", 'g'),
+	    css: 'functions'
+	  }, {
+	    regex: regexLib.doubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.singleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }];
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['erl', 'erlang'];
+	module.exports = Brush;
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  // Contributed by Andres Almiray
+	  // http://jroller.com/aalmiray/entry/nice_source_code_syntax_highlighter
+	
+	  var keywords = 'as assert break case catch class continue def default do else extends finally ' + 'if in implements import instanceof interface new package property return switch ' + 'throw throws try while public protected private static';
+	  var types = 'void boolean byte char short int long float double';
+	  var constants = 'null';
+	  var methods = 'allProperties count get size ' + 'collect each eachProperty eachPropertyName eachWithIndex find findAll ' + 'findIndexOf grep inject max min reverseEach sort ' + 'asImmutable asSynchronized flatten intersect join pop reverse subMap toList ' + 'padRight padLeft contains eachMatch toCharacter toLong toUrl tokenize ' + 'eachFile eachFileRecurse eachB yte eachLine readBytes readLine getText ' + 'splitEachLine withReader append encodeBase64 decodeBase64 filterLine ' + 'transformChar transformLine withOutputStream withPrintWriter withStream ' + 'withStreams withWriter withWriterAppend write writeLine ' + 'dump inspect invokeMethod print println step times upto use waitForOrKill ' + 'getText';
+	
+	  this.regexList = [{
+	    regex: regexLib.singleLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.multiLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.doubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.singleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: /""".*"""/g,
+	    css: 'string'
+	  }, {
+	    regex: new RegExp('\\b([\\d]+(\\.[\\d]+)?|0x[a-f0-9]+)\\b', 'gi'),
+	    css: 'value'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }, {
+	    regex: new RegExp(this.getKeywords(types), 'gm'),
+	    css: 'color1'
+	  }, {
+	    regex: new RegExp(this.getKeywords(constants), 'gm'),
+	    css: 'constants'
+	  }, {
+	    regex: new RegExp(this.getKeywords(methods), 'gm'),
+	    css: 'functions'
+	  }];
+	
+	  this.forHtmlScript(regexLib.aspScriptTags);
+	}
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['groovy'];
+	module.exports = Brush;
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	
+	  var inits = 'class interface package macro enum typedef extends implements dynamic in for if while else do try switch case catch';
+	
+	  var keywords = 'return break continue new throw cast using import function public private inline static untyped callback true false null Int Float String Void Std Bool Dynamic Array Vector';
+	
+	  this.regexList = [{
+	    regex: regexLib.singleLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.multiLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.doubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.singleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: /\b([\d]+(\.[\d]+)?|0x[a-f0-9]+)\b/gi,
+	    css: 'value'
+	  }, {
+	    regex: new RegExp(this.getKeywords(inits), 'gm'),
+	    css: 'color3'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }, {
+	    regex: new RegExp('var', 'gm'),
+	    css: 'variable'
+	  }, {
+	    regex: new RegExp('trace', 'gm'),
+	    css: 'color1'
+	  }, {
+	    regex: new RegExp('#if', 'gm'),
+	    css: 'comments'
+	  }, {
+	    regex: new RegExp('#elseif', 'gm'),
+	    css: 'comments'
+	  }, {
+	    regex: new RegExp('#end', 'gm'),
+	    css: 'comments'
+	  }, {
+	    regex: new RegExp('#error', 'gm'),
+	    css: 'comments'
+	  }];
+	
+	  //standard compiler conditionals flags
+	  var flags = ["debug", "error", "cpp", "js", "neko", "php", "flash", "flash8", "flash9", "flash10", "flash10", "mobile", "desktop", "web", "ios", "android", "iphone"];
+	
+	  //append the flags to the array with a ! operator
+	  var i;
+	  var length = flags.length;
+	  for (i = 0; i <= length - 1; i++) {
+	    this.regexList.push({
+	      regex: new RegExp(flags[i], 'gm'),
+	      css: 'comments'
+	    });
+	    this.regexList.push({
+	      regex: new RegExp('!' + flags[i], 'gm'),
+	      css: 'comments'
+	    });
+	  }
+	
+	  this.forHtmlScript(regexLib.scriptScriptTags);
+	}
+	
+	;
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['haxe', 'hx'];
+	module.exports = Brush;
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  var keywords = 'abstract assert boolean break byte case catch char class const ' + 'continue default do double else enum extends ' + 'false final finally float for goto if implements import ' + 'instanceof int interface long native new null ' + 'package private protected public return ' + 'short static strictfp super switch synchronized this throw throws true ' + 'transient try void volatile while';
+	
+	  this.regexList = [{
+	    regex: regexLib.singleLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: /\/\*([^\*][\s\S]*?)?\*\//gm,
+	    css: 'comments'
+	  }, {
+	    regex: /\/\*(?!\*\/)\*[\s\S]*?\*\//gm,
+	    css: 'preprocessor'
+	  }, {
+	    regex: regexLib.doubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.singleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: /\b([\d]+(\.[\d]+)?f?|[\d]+l?|0x[a-f0-9]+)\b/gi,
+	    css: 'value'
+	  }, {
+	    regex: /(?!\@interface\b)\@[\$\w]+\b/g,
+	    css: 'color1'
+	  }, {
+	    regex: /\@interface\b/g,
+	    css: 'color2'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }];
+	
+	  this.forHtmlScript({
+	    left: /(&lt;|<)%[@!=]?/g,
+	    right: /%(&gt;|>)/g
+	  });
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['java'];
+	module.exports = Brush;
+
+/***/ }),
+/* 36 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  // Contributed by Patrick Webster
+	  // http://patrickwebster.blogspot.com/2009/04/javafx-brush-for-syntaxhighlighter.html
+	  var datatypes = 'Boolean Byte Character Double Duration ' + 'Float Integer Long Number Short String Void';
+	
+	  var keywords = 'abstract after and as assert at before bind bound break catch class ' + 'continue def delete else exclusive extends false finally first for from ' + 'function if import in indexof init insert instanceof into inverse last ' + 'lazy mixin mod nativearray new not null on or override package postinit ' + 'protected public public-init public-read replace return reverse sizeof ' + 'step super then this throw true try tween typeof var where while with ' + 'attribute let private readonly static trigger';
+	
+	  this.regexList = [{
+	    regex: regexLib.singleLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.multiLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.singleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.doubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: /(-?\.?)(\b(\d*\.?\d+|\d+\.?\d*)(e[+-]?\d+)?|0x[a-f\d]+)\b\.?/gi,
+	    css: 'color2'
+	  }, {
+	    regex: new RegExp(this.getKeywords(datatypes), 'gm'),
+	    css: 'variable'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }];
+	  this.forHtmlScript(regexLib.aspScriptTags);
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['jfx', 'javafx'];
+	module.exports = Brush;
+
+/***/ }),
+/* 37 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  var keywords = "break case catch class continue " + "default delete do else enum export extends false  " + "for from as function if implements import in instanceof " + "interface let new null package private protected " + "static return super switch " + "this throw true try typeof var while with yield";
+	
+	  this.regexList = [
+	  /*
+	  {
+	  regex: regexLib.multiLineDoubleQuotedString,
+	  css: 'string'
+	  }, // double quoted strings
+	  {
+	  regex: regexLib.multiLineSingleQuotedString,
+	  css: 'string'
+	  }, // single quoted strings
+	  */
+	
+	  { regex: regexLib.doubleQuotedString, css: "string" }, // double quoted strings
+	  { regex: regexLib.singleQuotedString, css: "string" }, // single quoted strings
+	
+	  {
+	    regex: /`([^`])*`/g,
+	    css: "string"
+	  }, // template literals
+	  {
+	    regex: regexLib.singleLineCComments,
+	    css: "comments"
+	  }, // one line comments
+	  {
+	    regex: regexLib.multiLineCComments,
+	    css: "comments"
+	  }, // multiline comments
+	  {
+	    regex: /\s*#.*/gm,
+	    css: "preprocessor"
+	  }, // preprocessor tags like #region and #endregion
+	  {
+	    regex: new RegExp(this.getKeywords(keywords), "gm"),
+	    css: "keyword" // keywords
+	  }];
+	
+	  this.forHtmlScript(regexLib.scriptScriptTags);
+	}
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ["js", "jscript", "javascript", "json"];
+	module.exports = Brush;
+
+/***/ }),
+/* 38 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  // Contributed by David Simmons-Duffin and Marty Kube
+	
+	  var funcs = 'abs accept alarm atan2 bind binmode chdir chmod chomp chop chown chr ' + 'chroot close closedir connect cos crypt defined delete each endgrent ' + 'endhostent endnetent endprotoent endpwent endservent eof exec exists ' + 'exp fcntl fileno flock fork format formline getc getgrent getgrgid ' + 'getgrnam gethostbyaddr gethostbyname gethostent getlogin getnetbyaddr ' + 'getnetbyname getnetent getpeername getpgrp getppid getpriority ' + 'getprotobyname getprotobynumber getprotoent getpwent getpwnam getpwuid ' + 'getservbyname getservbyport getservent getsockname getsockopt glob ' + 'gmtime grep hex index int ioctl join keys kill lc lcfirst length link ' + 'listen localtime lock log lstat map mkdir msgctl msgget msgrcv msgsnd ' + 'oct open opendir ord pack pipe pop pos print printf prototype push ' + 'quotemeta rand read readdir readline readlink readpipe recv rename ' + 'reset reverse rewinddir rindex rmdir scalar seek seekdir select semctl ' + 'semget semop send setgrent sethostent setnetent setpgrp setpriority ' + 'setprotoent setpwent setservent setsockopt shift shmctl shmget shmread ' + 'shmwrite shutdown sin sleep socket socketpair sort splice split sprintf ' + 'sqrt srand stat study substr symlink syscall sysopen sysread sysseek ' + 'system syswrite tell telldir time times tr truncate uc ucfirst umask ' + 'undef unlink unpack unshift utime values vec wait waitpid warn write ' +
+	  // feature
+	  'say';
+	
+	  var keywords = 'bless caller continue dbmclose dbmopen die do dump else elsif eval exit ' + 'for foreach goto if import last local my next no our package redo ref ' + 'require return sub tie tied unless untie until use wantarray while ' +
+	  // feature
+	  'given when default ' +
+	  // Try::Tiny
+	  'try catch finally ' +
+	  // Moose
+	  'has extends with before after around override augment';
+	
+	  this.regexList = [{
+	    regex: /(<<|&lt;&lt;)((\w+)|(['"])(.+?)\4)[\s\S]+?\n\3\5\n/g,
+	    css: 'string'
+	  }, {
+	    regex: /#.*$/gm,
+	    css: 'comments'
+	  }, {
+	    regex: /^#!.*\n/g,
+	    css: 'preprocessor'
+	  }, {
+	    regex: /-?\w+(?=\s*=(>|&gt;))/g,
+	    css: 'string'
+	  },
+	
+	  // is this too much?
+	  {
+	    regex: /\bq[qwxr]?\([\s\S]*?\)/g,
+	    css: 'string'
+	  }, {
+	    regex: /\bq[qwxr]?\{[\s\S]*?\}/g,
+	    css: 'string'
+	  }, {
+	    regex: /\bq[qwxr]?\[[\s\S]*?\]/g,
+	    css: 'string'
+	  }, {
+	    regex: /\bq[qwxr]?(<|&lt;)[\s\S]*?(>|&gt;)/g,
+	    css: 'string'
+	  }, {
+	    regex: /\bq[qwxr]?([^\w({<[])[\s\S]*?\1/g,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.doubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.singleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: /(?:&amp;|[$@%*]|\$#)\$?[a-zA-Z_](\w+|::)*/g,
+	    css: 'variable'
+	  }, {
+	    regex: /\b__(?:END|DATA)__\b[\s\S]*$/g,
+	    css: 'comments'
+	  }, {
+	    regex: /(^|\n)=\w[\s\S]*?(\n=cut\s*(?=\n)|$)/g,
+	    css: 'comments'
+	  }, {
+	    regex: new RegExp(this.getKeywords(funcs), 'gm'),
+	    css: 'functions'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }];
+	
+	  this.forHtmlScript(regexLib.phpScriptTags);
+	}
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['perl', 'Perl', 'pl'];
+	module.exports = Brush;
+
+/***/ }),
+/* 39 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _brushBase = __webpack_require__(22);
+	
+	var _brushBase2 = _interopRequireDefault(_brushBase);
+	
+	var _syntaxhighlighterRegex = __webpack_require__(3);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var functions = 'abs acos acosh addcslashes addslashes ' + 'array_change_key_case array_chunk array_combine array_count_values array_diff ' + 'array_diff_assoc array_diff_key array_diff_uassoc array_diff_ukey array_fill ' + 'array_filter array_flip array_intersect array_intersect_assoc array_intersect_key ' + 'array_intersect_uassoc array_intersect_ukey array_key_exists array_keys array_map ' + 'array_merge array_merge_recursive array_multisort array_pad array_pop array_product ' + 'array_push array_rand array_reduce array_reverse array_search array_shift ' + 'array_slice array_splice array_sum array_udiff array_udiff_assoc ' + 'array_udiff_uassoc array_uintersect array_uintersect_assoc ' + 'array_uintersect_uassoc array_unique array_unshift array_values array_walk ' + 'array_walk_recursive atan atan2 atanh base64_decode base64_encode base_convert ' + 'basename bcadd bccomp bcdiv bcmod bcmul bindec bindtextdomain bzclose bzcompress ' + 'bzdecompress bzerrno bzerror bzerrstr bzflush bzopen bzread bzwrite ceil chdir ' + 'checkdate checkdnsrr chgrp chmod chop chown chr chroot chunk_split class_exists ' + 'closedir closelog copy cos cosh count count_chars date decbin dechex decoct ' + 'deg2rad delete ebcdic2ascii echo empty end ereg ereg_replace eregi eregi_replace error_log ' + 'error_reporting escapeshellarg escapeshellcmd eval exec exit exp explode extension_loaded ' + 'feof fflush fgetc fgetcsv fgets fgetss file_exists file_get_contents file_put_contents ' + 'fileatime filectime filegroup fileinode filemtime fileowner fileperms filesize filetype ' + 'floatval flock floor flush fmod fnmatch fopen fpassthru fprintf fputcsv fputs fread fscanf ' + 'fseek fsockopen fstat ftell ftok getallheaders getcwd getdate getenv gethostbyaddr gethostbyname ' + 'gethostbynamel getimagesize getlastmod getmxrr getmygid getmyinode getmypid getmyuid getopt ' + 'getprotobyname getprotobynumber getrandmax getrusage getservbyname getservbyport gettext ' + 'gettimeofday gettype glob gmdate gmmktime ini_alter ini_get ini_get_all ini_restore ini_set ' + 'interface_exists intval ip2long is_a is_array is_bool is_callable is_dir is_double ' + 'is_executable is_file is_finite is_float is_infinite is_int is_integer is_link is_long ' + 'is_nan is_null is_numeric is_object is_readable is_real is_resource is_scalar is_soap_fault ' + 'is_string is_subclass_of is_uploaded_file is_writable is_writeable mkdir mktime nl2br ' + 'parse_ini_file parse_str parse_url passthru pathinfo print readlink realpath rewind rewinddir rmdir ' + 'round str_ireplace str_pad str_repeat str_replace str_rot13 str_shuffle str_split ' + 'str_word_count strcasecmp strchr strcmp strcoll strcspn strftime strip_tags stripcslashes ' + 'stripos stripslashes stristr strlen strnatcasecmp strnatcmp strncasecmp strncmp strpbrk ' + 'strpos strptime strrchr strrev strripos strrpos strspn strstr strtok strtolower strtotime ' + 'strtoupper strtr strval substr substr_compare';
+	
+	var keywords = 'abstract and array as break case catch cfunction class clone const continue declare default die do ' + 'else elseif enddeclare endfor endforeach endif endswitch endwhile extends final finally for foreach ' + 'function global goto if implements include include_once interface instanceof insteadof namespace new ' + 'old_function or private protected public return require require_once static switch ' + 'trait throw try use const while xor yield ';
+	
+	var constants = '__FILE__ __LINE__ __METHOD__ __FUNCTION__ __CLASS__';
+	
+	var Brush = function (_BrushBase) {
+	  _inherits(Brush, _BrushBase);
+	
+	  _createClass(Brush, null, [{
+	    key: 'aliases',
+	    get: function get() {
+	      return ['php'];
+	    }
+	  }]);
+	
+	  function Brush() {
+	    _classCallCheck(this, Brush);
+	
+	    var _this = _possibleConstructorReturn(this, (Brush.__proto__ || Object.getPrototypeOf(Brush)).call(this));
+	
+	    _this.regexList = [{ regex: _syntaxhighlighterRegex.commonRegExp.singleLineCComments, css: 'comments' }, { regex: _syntaxhighlighterRegex.commonRegExp.multiLineCComments, css: 'comments' }, { regex: _syntaxhighlighterRegex.commonRegExp.doubleQuotedString, css: 'string' }, { regex: _syntaxhighlighterRegex.commonRegExp.singleQuotedString, css: 'string' }, { regex: /\$\w+/g, css: 'variable' }, { regex: new RegExp(_this.getKeywords(functions), 'gmi'), css: 'functions' }, { regex: new RegExp(_this.getKeywords(constants), 'gmi'), css: 'constants' }, { regex: new RegExp(_this.getKeywords(keywords), 'gm'), css: 'keyword' }];
+	
+	    _this.forHtmlScript(_syntaxhighlighterRegex.commonRegExp.phpScriptTags);
+	    return _this;
+	  }
+	
+	  return Brush;
+	}(_brushBase2.default);
+	
+	exports.default = Brush;
+
+/***/ }),
+/* 40 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  this.regexList = [];
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['text', 'plain'];
+	module.exports = Brush;
+
+/***/ }),
+/* 41 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  // Contributed by Joel 'Jaykul' Bennett, http://PoshCode.org | http://HuddledMasses.org
+	  var keywords = 'while validateset validaterange validatepattern validatelength validatecount ' + 'until trap switch return ref process param parameter in if global: ' + 'function foreach for finally filter end elseif else dynamicparam do default ' + 'continue cmdletbinding break begin alias \\? % #script #private #local #global ' + 'mandatory parametersetname position valuefrompipeline ' + 'valuefrompipelinebypropertyname valuefromremainingarguments helpmessage ';
+	
+	  var operators = ' and as band bnot bor bxor casesensitive ccontains ceq cge cgt cle ' + 'clike clt cmatch cne cnotcontains cnotlike cnotmatch contains ' + 'creplace eq exact f file ge gt icontains ieq ige igt ile ilike ilt ' + 'imatch ine inotcontains inotlike inotmatch ireplace is isnot le like ' + 'lt match ne not notcontains notlike notmatch or regex replace wildcard';
+	
+	  var verbs = 'write where wait use update unregister undo trace test tee take suspend ' + 'stop start split sort skip show set send select scroll resume restore ' + 'restart resolve resize reset rename remove register receive read push ' + 'pop ping out new move measure limit join invoke import group get format ' + 'foreach export expand exit enter enable disconnect disable debug cxnew ' + 'copy convertto convertfrom convert connect complete compare clear ' + 'checkpoint aggregate add';
+	
+	  // I can't find a way to match the comment based help in multi-line comments, because SH won't highlight in highlights, and javascript doesn't support lookbehind
+	  var commenthelp = ' component description example externalhelp forwardhelpcategory forwardhelptargetname forwardhelptargetname functionality inputs link notes outputs parameter remotehelprunspace role synopsis';
+	
+	  this.regexList = [{
+	    regex: new RegExp('^\\s*#[#\\s]*\\.(' + this.getKeywords(commenthelp) + ').*$', 'gim'),
+	    css: 'preprocessor help bold'
+	  }, {
+	    regex: regexLib.singleLinePerlComments,
+	    css: 'comments'
+	  }, {
+	    regex: /(&lt;|<)#[\s\S]*?#(&gt;|>)/gm,
+	    css: 'comments here'
+	  }, {
+	    regex: new RegExp('@"\\n[\\s\\S]*?\\n"@', 'gm'),
+	    css: 'script string here'
+	  }, {
+	    regex: new RegExp("@'\\n[\\s\\S]*?\\n'@", 'gm'),
+	    css: 'script string single here'
+	  }, {
+	    regex: new RegExp('"(?:\\$\\([^\\)]*\\)|[^"]|`"|"")*[^`]"', 'g'),
+	    css: 'string'
+	  }, {
+	    regex: new RegExp("'(?:[^']|'')*'", 'g'),
+	    css: 'string single'
+	  }, {
+	    regex: new RegExp('[\\$|@|@@](?:(?:global|script|private|env):)?[A-Z0-9_]+', 'gi'),
+	    css: 'variable'
+	  }, {
+	    regex: new RegExp('(?:\\b' + verbs.replace(/ /g, '\\b|\\b') + ')-[a-zA-Z_][a-zA-Z0-9_]*', 'gmi'),
+	    css: 'functions'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gmi'),
+	    css: 'keyword'
+	  }, {
+	    regex: new RegExp('-' + this.getKeywords(operators), 'gmi'),
+	    css: 'operator value'
+	  }, {
+	    regex: new RegExp('\\[[A-Z_\\[][A-Z0-9_. `,\\[\\]]*\\]', 'gi'),
+	    css: 'constants'
+	  }, {
+	    regex: new RegExp('\\s+-(?!' + this.getKeywords(operators) + ')[a-zA-Z_][a-zA-Z0-9_]*', 'gmi'),
+	    css: 'color1'
+	  }];
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['powershell', 'ps', 'posh'];
+	module.exports = Brush;
+
+/***/ }),
+/* 42 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  // Contributed by Gheorghe Milas and Ahmad Sherif
+	
+	  var keywords = 'and assert break class continue def del elif else ' + 'except exec finally for from global if import in is ' + 'lambda not or pass raise return try yield while';
+	
+	  var funcs = '__import__ abs all any apply basestring bin bool buffer callable ' + 'chr classmethod cmp coerce compile complex delattr dict dir ' + 'divmod enumerate eval execfile file filter float format frozenset ' + 'getattr globals hasattr hash help hex id input int intern ' + 'isinstance issubclass iter len list locals long map max min next ' + 'object oct open ord pow print property range raw_input reduce ' + 'reload repr reversed round set setattr slice sorted staticmethod ' + 'str sum super tuple type type unichr unicode vars xrange zip';
+	
+	  var special = 'None True False self cls class_';
+	
+	  this.regexList = [{
+	    regex: regexLib.singleLinePerlComments,
+	    css: 'comments'
+	  }, {
+	    regex: /^\s*@\w+/gm,
+	    css: 'decorator'
+	  }, {
+	    regex: /(['\"]{3})([^\1])*?\1/gm,
+	    css: 'comments'
+	  }, {
+	    regex: /"(?!")(?:\.|\\\"|[^\""\n])*"/gm,
+	    css: 'string'
+	  }, {
+	    regex: /'(?!')(?:\.|(\\\')|[^\''\n])*'/gm,
+	    css: 'string'
+	  }, {
+	    regex: /\+|\-|\*|\/|\%|=|==/gm,
+	    css: 'keyword'
+	  }, {
+	    regex: /\b\d+\.?\w*/g,
+	    css: 'value'
+	  }, {
+	    regex: new RegExp(this.getKeywords(funcs), 'gmi'),
+	    css: 'functions'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }, {
+	    regex: new RegExp(this.getKeywords(special), 'gm'),
+	    css: 'color1'
+	  }];
+	
+	  this.forHtmlScript(regexLib.aspScriptTags);
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['py', 'python'];
+	module.exports = Brush;
+
+/***/ }),
+/* 43 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  // Contributed by Erik Peterson.
+	
+	  var keywords = 'alias and BEGIN begin break case class def define_method defined do each else elsif ' + 'END end ensure false for if in module new next nil not or raise redo rescue retry return ' + 'self super then throw true undef unless until when while yield';
+	
+	  var builtins = 'Array Bignum Binding Class Continuation Dir Exception FalseClass File::Stat File Fixnum Fload ' + 'Hash Integer IO MatchData Method Module NilClass Numeric Object Proc Range Regexp String Struct::TMS Symbol ' + 'ThreadGroup Thread Time TrueClass';
+	
+	  this.regexList = [{
+	    regex: regexLib.singleLinePerlComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.doubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.singleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: /\b[A-Z0-9_]+\b/g,
+	    css: 'constants'
+	  }, {
+	    regex: /:[a-z][A-Za-z0-9_]*/g,
+	    css: 'color2'
+	  }, {
+	    regex: /(\$|@@|@)\w+/g,
+	    css: 'variable bold'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }, {
+	    regex: new RegExp(this.getKeywords(builtins), 'gm'),
+	    css: 'color1'
+	  }];
+	
+	  this.forHtmlScript(regexLib.aspScriptTags);
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['ruby', 'rails', 'ror', 'rb'];
+	module.exports = Brush;
+
+/***/ }),
+/* 44 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  function getKeywordsCSS(str) {
+	    return '\\b([a-z_]|)' + str.replace(/ /g, '(?=:)\\b|\\b([a-z_\\*]|\\*|)') + '(?=:)\\b';
+	  };
+	
+	  function getValuesCSS(str) {
+	    return '\\b' + str.replace(/ /g, '(?!-)(?!:)\\b|\\b()') + '\:\\b';
+	  };
+	
+	  function getKeywordsPrependedBy(keywords, by) {
+	    return '(?:' + keywords.replace(/^\s+|\s+$/g, '').replace(/\s+/g, '|' + by + '\\b').replace(/^/, by + '\\b') + ')\\b';
+	  }
+	
+	  var keywords = 'ascent azimuth background-attachment background-color background-image background-position ' + 'background-repeat background baseline bbox border-collapse border-color border-spacing border-style border-top ' + 'border-right border-bottom border-left border-top-color border-right-color border-bottom-color border-left-color ' + 'border-top-style border-right-style border-bottom-style border-left-style border-top-width border-right-width ' + 'border-bottom-width border-left-width border-width border bottom cap-height caption-side centerline clear clip color ' + 'content counter-increment counter-reset cue-after cue-before cue cursor definition-src descent direction display ' + 'elevation empty-cells float font-size-adjust font-family font-size font-stretch font-style font-variant font-weight font ' + 'height left letter-spacing line-height list-style-image list-style-position list-style-type list-style margin-top ' + 'margin-right margin-bottom margin-left margin marker-offset marks mathline max-height max-width min-height min-width orphans ' + 'outline-color outline-style outline-width outline overflow padding-top padding-right padding-bottom padding-left padding page ' + 'page-break-after page-break-before page-break-inside pause pause-after pause-before pitch pitch-range play-during position ' + 'quotes right richness size slope src speak-header speak-numeral speak-punctuation speak speech-rate stemh stemv stress ' + 'table-layout text-align top text-decoration text-indent text-shadow text-transform unicode-bidi unicode-range units-per-em ' + 'vertical-align visibility voice-family volume white-space widows width widths word-spacing x-height z-index zoom';
+	
+	  var values = 'above absolute all always aqua armenian attr aural auto avoid baseline behind below bidi-override black blink block blue bold bolder ' + 'both bottom braille capitalize caption center center-left center-right circle close-quote code collapse compact condensed ' + 'continuous counter counters crop cross crosshair cursive dashed decimal decimal-leading-zero digits disc dotted double ' + 'embed embossed e-resize expanded extra-condensed extra-expanded fantasy far-left far-right fast faster fixed format fuchsia ' + 'gray green groove handheld hebrew help hidden hide high higher icon inline-table inline inset inside invert italic ' + 'justify landscape large larger left-side left leftwards level lighter lime line-through list-item local loud lower-alpha ' + 'lowercase lower-greek lower-latin lower-roman lower low ltr marker maroon medium message-box middle mix move narrower ' + 'navy ne-resize no-close-quote none no-open-quote no-repeat normal nowrap n-resize nw-resize oblique olive once open-quote outset ' + 'outside overline pointer portrait pre print projection purple red relative repeat repeat-x repeat-y rgb ridge right right-side ' + 'rightwards rtl run-in screen scroll semi-condensed semi-expanded separate se-resize show silent silver slower slow ' + 'small small-caps small-caption smaller soft solid speech spell-out square s-resize static status-bar sub super sw-resize ' + 'table-caption table-cell table-column table-column-group table-footer-group table-header-group table-row table-row-group teal ' + 'text-bottom text-top thick thin top transparent tty tv ultra-condensed ultra-expanded underline upper-alpha uppercase upper-latin ' + 'upper-roman url visible wait white wider w-resize x-fast x-high x-large x-loud x-low x-slow x-small x-soft xx-large xx-small yellow';
+	
+	  var fonts = '[mM]onospace [tT]ahoma [vV]erdana [aA]rial [hH]elvetica [sS]ans-serif [sS]erif [cC]ourier mono sans serif';
+	
+	  var statements = 'important default';
+	  var preprocessor = 'import extend debug warn if else for while mixin function include content media';
+	
+	  var r = regexLib;
+	
+	  this.regexList = [{
+	    regex: r.multiLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: r.singleLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: r.doubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: r.singleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: /\#[a-fA-F0-9]{3,6}/g,
+	    css: 'value'
+	  }, {
+	    regex: /\b(-?\d+)(\.\d+)?(px|em|rem|pt|\:|\%|)\b/g,
+	    css: 'value'
+	  }, {
+	    regex: /\$[\w-]+/g,
+	    css: 'variable'
+	  }, {
+	    regex: new RegExp(getKeywordsPrependedBy(statements, '!'), 'g'),
+	    css: 'color3'
+	  }, {
+	    regex: new RegExp(getKeywordsPrependedBy(preprocessor, '@'), 'g'),
+	    css: 'preprocessor'
+	  }, {
+	    regex: new RegExp(getKeywordsCSS(keywords), 'gm'),
+	    css: 'keyword'
+	  }, {
+	    regex: new RegExp(getValuesCSS(values), 'g'),
+	    css: 'value'
+	  }, {
+	    regex: new RegExp(this.getKeywords(fonts), 'g'),
+	    css: 'color1'
+	  }];
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['sass', 'scss'];
+	module.exports = Brush;
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  // Contributed by Yegor Jbanov and David Bernard.
+	
+	  var keywords = 'val sealed case def true trait implicit forSome import match object null finally super ' + 'override try lazy for var catch throw type extends class while with new final yield abstract ' + 'else do if return protected private this package false';
+	
+	  var keyops = '[_:=><%#@]+';
+	
+	  this.regexList = [{
+	    regex: regexLib.singleLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.multiLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.multiLineSingleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.multiLineDoubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.singleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: /0x[a-f0-9]+|\d+(\.\d+)?/gi,
+	    css: 'value'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }, {
+	    regex: new RegExp(keyops, 'gm'),
+	    css: 'keyword'
+	  }];
+	}
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['scala'];
+	module.exports = Brush;
+
+/***/ }),
+/* 46 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  var funcs = 'abs avg case cast coalesce convert count current_timestamp ' + 'current_user day isnull left lower month nullif replace right ' + 'session_user space substring sum system_user upper user year';
+	
+	  var keywords = 'absolute action add after alter as asc at authorization begin bigint ' + 'binary bit by cascade char character check checkpoint close collate ' + 'column commit committed connect connection constraint contains continue ' + 'create cube current current_date current_time cursor database date ' + 'deallocate dec decimal declare default delete desc distinct double drop ' + 'dynamic else end end-exec escape except exec execute false fetch first ' + 'float for force foreign forward free from full function global goto grant ' + 'group grouping having hour ignore index inner insensitive insert instead ' + 'int integer intersect into is isolation key last level load local max min ' + 'minute modify move name national nchar next no numeric of off on only ' + 'open option order out output partial password precision prepare primary ' + 'prior privileges procedure public read real references relative repeatable ' + 'restrict return returns revoke rollback rollup rows rule schema scroll ' + 'second section select sequence serializable set size smallint static ' + 'statistics table temp temporary then time timestamp to top transaction ' + 'translation trigger true truncate uncommitted union unique update values ' + 'varchar varying view when where with work';
+	
+	  var operators = 'all and any between cross in join like not null or outer some';
+	
+	  this.regexList = [{
+	    regex: /--(.*)$/gm,
+	    css: 'comments'
+	  }, {
+	    regex: /\/\*([^\*][\s\S]*?)?\*\//gm,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.multiLineDoubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.multiLineSingleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: new RegExp(this.getKeywords(funcs), 'gmi'),
+	    css: 'color2'
+	  }, {
+	    regex: new RegExp(this.getKeywords(operators), 'gmi'),
+	    css: 'color1'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gmi'),
+	    css: 'keyword'
+	  }];
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['sql'];
+	module.exports = Brush;
+
+/***/ }),
+/* 47 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	var Match = __webpack_require__(5).Match;
+	
+	function Brush() {
+	  // Swift brush contributed by Nate Cook
+	  // http://natecook.com/code/swift-syntax-highlighting
+	
+	  function getKeywordsPrependedBy(keywords, by) {
+	    return '(?:' + keywords.replace(/^\s+|\s+$/g, '').replace(/\s+/g, '|' + by + '\\b').replace(/^/, by + '\\b') + ')\\b';
+	  }
+	
+	  function multiLineCCommentsAdd(match, regexInfo) {
+	    var str = match[0],
+	        result = [],
+	        pos = 0,
+	        matchStart = 0,
+	        level = 0;
+	
+	    while (pos < str.length - 1) {
+	      var chunk = str.substr(pos, 2);
+	      if (level == 0) {
+	        if (chunk == "/*") {
+	          matchStart = pos;
+	          level++;
+	          pos += 2;
+	        } else {
+	          pos++;
+	        }
+	      } else {
+	        if (chunk == "/*") {
+	          level++;
+	          pos += 2;
+	        } else if (chunk == "*/") {
+	          level--;
+	          if (level == 0) {
+	            result.push(new Match(str.substring(matchStart, pos + 2), matchStart + match.index, regexInfo.css));
+	          }
+	          pos += 2;
+	        } else {
+	          pos++;
+	        }
+	      }
+	    }
+	
+	    return result;
+	  }
+	
+	  function stringAdd(match, regexInfo) {
+	    var str = match[0],
+	        result = [],
+	        pos = 0,
+	        matchStart = 0,
+	        level = 0;
+	
+	    while (pos < str.length - 1) {
+	      if (level == 0) {
+	        if (str.substr(pos, 2) == "\\(") {
+	          result.push(new Match(str.substring(matchStart, pos + 2), matchStart + match.index, regexInfo.css));
+	          level++;
+	          pos += 2;
+	        } else {
+	          pos++;
+	        }
+	      } else {
+	        if (str[pos] == "(") {
+	          level++;
+	        }
+	        if (str[pos] == ")") {
+	          level--;
+	          if (level == 0) {
+	            matchStart = pos;
+	          }
+	        }
+	        pos++;
+	      }
+	    }
+	    if (level == 0) {
+	      result.push(new Match(str.substring(matchStart, str.length), matchStart + match.index, regexInfo.css));
+	    }
+	
+	    return result;
+	  };
+	
+	  // "Swift-native types" are all the protocols, classes, structs, enums, funcs, vars, and typealiases built into the language
+	  var swiftTypes = 'AbsoluteValuable Any AnyClass Array ArrayBound ArrayBuffer ArrayBufferType ArrayLiteralConvertible ArrayType AutoreleasingUnsafePointer BidirectionalIndex Bit BitwiseOperations Bool C CBool CChar CChar16 CChar32 CConstPointer CConstVoidPointer CDouble CFloat CInt CLong CLongLong CMutablePointer CMutableVoidPointer COpaquePointer CShort CSignedChar CString CUnsignedChar CUnsignedInt CUnsignedLong CUnsignedLongLong CUnsignedShort CVaListPointer CVarArg CWideChar Character CharacterLiteralConvertible Collection CollectionOfOne Comparable ContiguousArray ContiguousArrayBuffer DebugPrintable Dictionary DictionaryGenerator DictionaryIndex DictionaryLiteralConvertible Double EmptyCollection EmptyGenerator EnumerateGenerator Equatable ExtendedGraphemeClusterLiteralConvertible ExtendedGraphemeClusterType ExtensibleCollection FilterCollectionView FilterCollectionViewIndex FilterGenerator FilterSequenceView Float Float32 Float64 Float80 FloatLiteralConvertible FloatLiteralType FloatingPointClassification FloatingPointNumber ForwardIndex Generator GeneratorOf GeneratorOfOne GeneratorSequence Hashable HeapBuffer HeapBufferStorage HeapBufferStorageBase ImplicitlyUnwrappedOptional IndexingGenerator Int Int16 Int32 Int64 Int8 IntEncoder IntMax Integer IntegerArithmetic IntegerLiteralConvertible IntegerLiteralType Less LifetimeManager LogicValue MapCollectionView MapSequenceGenerator MapSequenceView MaxBuiltinFloatType MaxBuiltinIntegerType Mirror MirrorDisposition MutableCollection MutableSliceable ObjectIdentifier OnHeap Optional OutputStream PermutationGenerator Printable QuickLookObject RandomAccessIndex Range RangeGenerator RawByte RawOptionSet RawRepresentable Reflectable Repeat ReverseIndex ReverseRange ReverseRangeGenerator ReverseView Sequence SequenceOf SignedInteger SignedNumber Sink SinkOf Slice SliceBuffer Sliceable StaticString Streamable StridedRangeGenerator String StringElement StringInterpolationConvertible StringLiteralConvertible StringLiteralType UInt UInt16 UInt32 UInt64 UInt8 UIntMax UTF16 UTF32 UTF8 UWord UnicodeCodec UnicodeScalar Unmanaged UnsafeArray UnsafePointer UnsignedInteger Void Word Zip2 ZipGenerator2 abs advance alignof alignofValue assert bridgeFromObjectiveC bridgeFromObjectiveCUnconditional bridgeToObjectiveC bridgeToObjectiveCUnconditional c contains count countElements countLeadingZeros debugPrint debugPrintln distance dropFirst dropLast dump encodeBitsAsWords enumerate equal false filter find getBridgedObjectiveCType getVaList indices insertionSort isBridgedToObjectiveC isBridgedVerbatimToObjectiveC isUniquelyReferenced join lexicographicalCompare map max maxElement min minElement nil numericCast partition posix print println quickSort reduce reflect reinterpretCast reverse roundUpToAlignment sizeof sizeofValue sort split startsWith strideof strideofValue swap swift toString transcode true underestimateCount unsafeReflect withExtendedLifetime withObjectAtPlusZero withUnsafePointer withUnsafePointerToObject withUnsafePointers withVaList';
+	
+	  var keywords = 'as break case class continue default deinit do dynamicType else enum ' + 'extension fallthrough for func if import in init is let new protocol ' + 'return self Self static struct subscript super switch Type typealias ' + 'var where while __COLUMN__ __FILE__ __FUNCTION__ __LINE__ associativity ' + 'didSet get infix inout left mutating none nonmutating operator override ' + 'postfix precedence prefix right set unowned unowned(safe) unowned(unsafe) weak willSet';
+	
+	  var attributes = 'assignment class_protocol exported final lazy noreturn NSCopying NSManaged objc optional required auto_closure noreturn IBAction IBDesignable IBInspectable IBOutlet infix prefix postfix';
+	
+	  this.regexList = [
+	  // html entities
+	  {
+	    regex: new RegExp('\&[a-z]+;', 'gi'),
+	    css: 'plain'
+	  }, {
+	    regex: regexLib.singleLineCComments,
+	    css: 'comments'
+	  }, {
+	    regex: new RegExp('\\/\\*[\\s\\S]*\\*\\/', 'g'),
+	    css: 'comments',
+	    func: multiLineCCommentsAdd
+	  }, {
+	    regex: regexLib.doubleQuotedString,
+	    css: 'string',
+	    func: stringAdd
+	  }, {
+	    regex: new RegExp('\\b([\\d_]+(\\.[\\de_]+)?|0x[a-f0-9_]+(\\.[a-f0-9p_]+)?|0b[01_]+|0o[0-7_]+)\\b', 'gi'),
+	    css: 'value'
+	  }, {
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }, {
+	    regex: new RegExp(getKeywordsPrependedBy(attributes, '@'), 'gm'),
+	    css: 'color1'
+	  }, {
+	    regex: new RegExp(this.getKeywords(swiftTypes), 'gm'),
+	    css: 'color2'
+	  }, {
+	    regex: new RegExp('\\b([a-zA-Z_][a-zA-Z0-9_]*)\\b', 'gi'),
+	    css: 'variable'
+	  }];
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['swift'];
+	module.exports = Brush;
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  // Contributed by Chad Granum
+	  this.regexList = [{
+	    regex: new RegExp('^1..\\d+', 'gm'),
+	    css: 'plain bold italic'
+	  }, {
+	    regex: new RegExp('^ok( \\d+)?', 'gm'),
+	    css: 'keyword'
+	  }, {
+	    regex: new RegExp('^not ok( \\d+)?', 'gm'),
+	    css: 'color3 bold'
+	  }, {
+	    regex: new RegExp('(?!^\\s*)#.*$', 'gm'),
+	    css: 'variable bold'
+	  }, {
+	    regex: new RegExp('^#.*$', 'gm'),
+	    css: 'comments bold'
+	  }, {
+	    regex: new RegExp('^(?!(not )?ok)[^1].*$', 'gm'),
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.doubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: regexLib.singleQuotedString,
+	    css: 'string'
+	  }];
+	}
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['tap', 'Tap', 'TAP'];
+	module.exports = Brush;
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  var keywords = 'break case catch class continue ' + 'default delete do else enum export extends false  ' + 'for function if implements import in instanceof ' + 'interface let new null package private protected ' + 'static return super switch ' + 'this throw true try typeof var while with yield' + ' any bool declare get module never number public readonly set string'; // TypeScript-specific, everything above is common with JavaScript
 	
 	  this.regexList = [{
 	    regex: regexLib.multiLineDoubleQuotedString,
@@ -3743,22 +5250,102 @@
 	    regex: regexLib.multiLineCComments,
 	    css: 'comments'
 	  }, {
-	    regex: /\s*#.*/gm,
+	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
+	    css: 'keyword'
+	  }];
+	
+	  this.forHtmlScript(regexLib.scriptScriptTags);
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['ts', 'typescript'];
+	module.exports = Brush;
+
+/***/ }),
+/* 50 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	
+	function Brush() {
+	  var keywords = 'AddHandler AddressOf AndAlso Alias And Ansi As Assembly Auto ' + 'Boolean ByRef Byte ByVal Call Case Catch CBool CByte CChar CDate ' + 'CDec CDbl Char CInt Class CLng CObj Const CShort CSng CStr CType ' + 'Date Decimal Declare Default Delegate Dim DirectCast Do Double Each ' + 'Else ElseIf End Enum Erase Error Event Exit False Finally For Friend ' + 'Function Get GetType GoSub GoTo Handles If Implements Imports In ' + 'Inherits Integer Interface Is Let Lib Like Long Loop Me Mod Module ' + 'MustInherit MustOverride MyBase MyClass Namespace New Next Not Nothing ' + 'NotInheritable NotOverridable Object On Option Optional Or OrElse ' + 'Overloads Overridable Overrides ParamArray Preserve Private Property ' + 'Protected Public RaiseEvent ReadOnly ReDim REM RemoveHandler Resume ' + 'Return Select Set Shadows Shared Short Single Static Step Stop String ' + 'Structure Sub SyncLock Then Throw To True Try TypeOf Unicode Until ' + 'Variant When While With WithEvents WriteOnly Xor';
+	
+	  this.regexList = [{
+	    regex: /'.*$/gm,
+	    css: 'comments'
+	  }, {
+	    regex: regexLib.doubleQuotedString,
+	    css: 'string'
+	  }, {
+	    regex: /^\s*#.*$/gm,
 	    css: 'preprocessor'
 	  }, {
 	    regex: new RegExp(this.getKeywords(keywords), 'gm'),
 	    css: 'keyword'
 	  }];
 	
-	  this.forHtmlScript(regexLib.scriptScriptTags);
-	}
+	  this.forHtmlScript(regexLib.aspScriptTags);
+	};
 	
 	Brush.prototype = new BrushBase();
-	Brush.aliases = ['js', 'jscript', 'javascript', 'json'];
+	Brush.aliases = ['vb', 'vbnet'];
 	module.exports = Brush;
 
 /***/ }),
-/* 25 */
+/* 51 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var BrushBase = __webpack_require__(22);
+	var regexLib = __webpack_require__(3).commonRegExp;
+	var XRegExp = __webpack_require__(3).XRegExp;
+	var Match = __webpack_require__(5).Match;
+	
+	function Brush() {
+	  function process(match, regexInfo) {
+	    var code = match[0],
+	        tag = XRegExp.exec(code, XRegExp('(&lt;|<)[\\s\\/\\?!]*(?<name>[:\\w-\\.]+)', 'xg')),
+	        result = [];
+	
+	    if (match.attributes != null) {
+	      var attributes,
+	          pos = 0,
+	          regex = XRegExp('(?<name> [\\w:.-]+)' + '\\s*=\\s*' + '(?<value> ".*?"|\'.*?\'|\\w+)', 'xg');
+	
+	      while ((attributes = XRegExp.exec(code, regex, pos)) != null) {
+	        result.push(new Match(attributes.name, match.index + attributes.index, 'color1'));
+	        result.push(new Match(attributes.value, match.index + attributes.index + attributes[0].indexOf(attributes.value), 'string'));
+	        pos = attributes.index + attributes[0].length;
+	      }
+	    }
+	
+	    if (tag != null) result.push(new Match(tag.name, match.index + tag[0].indexOf(tag.name), 'keyword'));
+	
+	    return result;
+	  }
+	
+	  this.regexList = [{
+	    regex: XRegExp('(\\&lt;|<)\\!\\[[\\w\\s]*?\\[(.|\\s)*?\\]\\](\\&gt;|>)', 'gm'),
+	    css: 'color2'
+	  }, {
+	    regex: regexLib.xmlComments,
+	    css: 'comments'
+	  }, {
+	    regex: XRegExp('(&lt;|<)[\\s\\/\\?!]*(\\w+)(?<attributes>.*?)[\\s\\/\\?]*(&gt;|>)', 'sg'),
+	    func: process
+	  }];
+	};
+	
+	Brush.prototype = new BrushBase();
+	Brush.aliases = ['xml', 'xhtml', 'xslt', 'html', 'plist'];
+	module.exports = Brush;
+
+/***/ }),
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3794,7 +5381,7 @@
 	});
 
 /***/ }),
-/* 26 */
+/* 53 */
 /***/ (function(module, exports) {
 
 	'use strict';

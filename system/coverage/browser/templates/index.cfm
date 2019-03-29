@@ -76,11 +76,7 @@
 					<cfloop query="qryCoverageDataSorted">
 					<cfset percentage = numberFormat( percCoverage * 100, '9.9' )>
 					<tr class="file table-#percentToContextualClass( percentage )# ">
-						<!--- Coverage files are named after "real" files --->
-						<cfset link = "#replace( relativeFilePath, '\', '/', 'all' )#.html">
-						<!--- Trim of leading slash so it's relative --->
-						<cfset link = right( link, len( link ) - 1 )>
-						<td class="file-name" data-sort-value="#relativeFilePath#"><a href="#link#">#relativeFilePath#</a></td>
+						<td class="file-name" data-sort-value="#relativeFilePath#"><a href="#relativeFilePath#.html">#relativeFilePath#</a></td>
 						<td class="file-coverage" data-sort-value="#percentage#">
 							<div class="progress position-relative" style="height: 1.4rem;">
 								<div
