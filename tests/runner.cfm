@@ -14,7 +14,7 @@
 <cfparam name="url.coverageSonarQubeXMLOutputPath"	default="">
 <cfparam name="url.coveragePathToCapture"			default="#expandPath( '/testbox/system/' )#">
 <cfparam name="url.coverageWhitelist"				default="">
-<cfparam name="url.coverageBlacklist"				default="/stubs/**">
+<cfparam name="url.coverageBlacklist"				default="/stubs/**,/modules/**,/coverage/**,Application.cfc">
 <cfparam name="url.coverageBrowserOutputDir"		default="#expandPath( '/tests/results/coverageReport' )#">
 
 <!--- Include the TestBox HTML Runner --->
