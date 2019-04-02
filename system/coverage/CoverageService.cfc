@@ -144,17 +144,19 @@ component accessors="true" {
 		if( isNull( opts.browser ) ) { opts.browser = {}; }
 		if( isNull( opts.browser.outputDir ) ) { opts.browser.outputDir = ''; }
 
-		// If no output dir provided
-		if( !len( opts.browser.outputDir ) ) {
-			opts.pathToCapture = expandPath( '/tests/results/coverageReport' );
-		} else if( !directoryExists( opts.browser.outputDir ) && directoryExists( expandPath( opts.browser.outputDir ) ) ) {
-			opts.browser.outputDir = expandPath( opts.browser.outputDir );
-		}
-		
-		opts.browser.outputDir = opts.browser.outputDir.replace("\","/","all");
-
-		if ( !opts.browser.outputDir.endsWith( '\' ) ) {
-			opts.browser.outputDir = opts.browser.outputDir & '/';
+		// Clean up the browser output dir if it is set
+		if( len( opts.browser.outputDir ) ) {
+			
+			// Expand the output dir if it looks like it needs it
+			if( !directoryExists( opts.browser.outputDir ) && directoryExists( expandPath( opts.browser.outputDir ) ) ) {
+				opts.browser.outputDir = expandPath( opts.browser.outputDir );
+			}
+			
+			opts.browser.outputDir = normalizeSlashes( opts.browser.outputDir );
+	
+			if ( !opts.browser.outputDir.endsWith( '/' ) ) {
+				opts.browser.outputDir = opts.browser.outputDir & '/';
+			}
 		}
 
 		if( isNull( opts.coverageTresholds ) ) { opts.coverageTresholds = {}; }
@@ -168,19 +170,23 @@ component accessors="true" {
 		// If no path provided to capture
 		if( !len( opts.pathToCapture ) ) {
 
-			// Look for a /root mapping
-			if( directoryExists( expandPath( '/root' ) ) ) {
+			// Look for a /root mapping which is a common ColdBox convention
+			if( !isNull( getApplicationMetadata().mappings ) ) {
+				var mappings = getApplicationMetadata().mappings;
+			} else {
+				var mappings = {};	
+			}
+			if( mappings.keyExists( '/root' ) ) {
 				opts.pathToCapture = expandPath( '/root' );
 			// And default to entire web root
 			} else {
 				opts.pathToCapture = expandPath( '/' );
 			}
-
 		} else if( !directoryExists( opts.pathToCapture ) && directoryExists( expandPath( opts.pathToCapture ) ) ) {
 			opts.pathToCapture = expandPath( opts.pathToCapture );
 		}
 		
-		opts.pathToCapture = opts.pathToCapture.replace("\","/","all");
+		opts.pathToCapture = normalizeSlashes( opts.pathToCapture );
 
 		if ( !opts.pathToCapture.endsWith( '/' ) ) {
 			opts.pathToCapture = opts.pathToCapture & '/';
@@ -246,6 +252,19 @@ component accessors="true" {
 	  		return opts.browser.outputDir;
 		}
   		return '';
+	}
+	
+	/*
+	* Turns all slashes in a path to forward slashes except for \\ in a Windows UNC network share
+	* Also changes double slashes to a single slash
+	*/
+	function normalizeSlashes( string path ) {
+		if( path.left( 2 ) == '\\' ) {
+			path = '\\' & path.replace( '\', '/', 'all' ).right( len( path ) - 2 );
+			return path.replace( '//', '/', 'all' );
+		} else {
+			return path.replace( '\', '/', 'all' ).replace( '//', '/', 'all' );			
+		}
 	}
 
 }
