@@ -9,112 +9,122 @@
 		<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.0/js/bootstrap.min.js" integrity="sha384-7aThvCh9TypR7fIc2HV4O/nFMVCBwyIUKL8XCtKE+8xgCgl/PQGuFsvShjr74PBp" crossorigin="anonymous"></script>
-    <script defer src="https://use.fontawesome.com/releases/v5.7.2/js/all.js" integrity="sha384-0pzryjIRos8mFBWMzSSZApWtPl/5++eIfzYmTgBBmXYdhvxPc+XcFEk+zJwDgWbP" crossorigin="anonymous"></script>
+		<script defer src="https://use.fontawesome.com/releases/v5.7.2/js/all.js" integrity="sha384-0pzryjIRos8mFBWMzSSZApWtPl/5++eIfzYmTgBBmXYdhvxPc+XcFEk+zJwDgWbP" crossorigin="anonymous"></script>
 
-    <style>
-			[data-toggle="collapse"] .arrow:before,
-      .expand-collapse .arrow:before {
-        content: "\23EB";
-      }
-      [data-toggle="collapse"].collapsed .arrow:before,
-      .expand-collapse.collapsed .arrow:before {
-        content: "\23EC";
-      }
-      code {
-        color: black !important;
-      }
-    </style>
+		<style>
+		[data-toggle="collapse"] .arrow:before,
+		.expand-collapse .arrow:before {
+			content: "\23EB";
+		}
+
+		[data-toggle="collapse"].collapsed .arrow:before,
+		.expand-collapse.collapsed .arrow:before {
+			content: "\23EC";
+		}
+
+		code {
+			color: black !important;
+		}
+		</style>
 		<script>
-			$( document )
-      .ready( function () {
-        $.getJSON( "test-results.json" )
-          .done( function ( data ) {
-            setPageTitle( data.totalPass, data.totalFail, data.totalError );
-            if ( data.coverage.enabled === true ) {
-              renderCodeCoverageStats( data.coverage.data );
-            }
-            renderTestResultsStats( data );
-            renderBundles( data );
-          } )
-          .fail( function ( jqxhr, textStatus, error ) {
-            $( "body" )
-              .html( "<h1>Could not load the report's JSON file, by convention it should be <code>test-results.json</code> in this same folder.</h1>" );
-            console.log( "Request Failed: " + err );
-          } );
-      } );
-    $( window )
-      .on( "load", function () {
-        // spec toggler
-        $( "body" )
-          .on( "click", "span.spec-status", function () {
-            $( this )
-              .parent()
-              .children()
-              .removeClass( "active" );
-            $( this )
-              .addClass( "active" );
-            toggleSpecs(
-              $( this )
-              .attr( "data-status" ),
-              $( this )
-              .attr( "data-bundleid" )
-            );
-          } );
+		$(document)
+			.ready(function() {
 
-        // spec reseter
-        $( "body" )
-          .on( "click", "span.reset", function () {
-            resetSpecs();
-          } );
+        $(document)
+					.ajaxStop(function() {
+						$("#loading-div").removeClass("d-flex").addClass("d-none");
+						$("#content").removeClass("d-none").addClass("d-block");
+					});
 
-        // Filter Bundles
-        $( "#bundleFilter" )
-          .keyup(
-            debounce( function () {
-              const targetText = $( this )
-                .val()
-                .toLowerCase();
-              $( ".bundle" )
-                .each( function ( index ) {
-                  const bundle = $( this )
-                    .data( "bundle" )
-                    .toLowerCase();
-                  if ( bundle.search( targetText ) < 0 ) {
-                    // hide it
-                    $( this )
-                      .hide();
-                  } else {
-                    $( this )
-                      .show();
-                  }
-                } );
-            }, 100 )
-          );
+				$.getJSON("test-results.json")
+					.done(function(data) {
+						setPageTitle(data.totalPass, data.totalFail, data.totalError);
+						if (data.coverage.enabled === true) {
+							renderCodeCoverageStats(data.coverage.data);
+						}
+						renderTestResultsStats(data);
+						renderBundles(data);
+					})
+					.fail(function(jqxhr, textStatus, error) {
+						$("body")
+							.html("<h1>Could not load the report's JSON file, by convention it should be <code>test-results.json</code> in this same folder.</h1>");
+						console.log("Request Failed: " + err);
+					});
 
-        $( "#bundleFilter" )
-          .focus();
+			});
+		$(window)
+			.on("load", function() {
+				// spec toggler
+				$("body")
+					.on("click", "span.spec-status", function() {
+						$(this)
+							.parent()
+							.children()
+							.removeClass("active");
+						$(this)
+							.addClass("active");
+						toggleSpecs(
+							$(this)
+							.attr("data-status"),
+							$(this)
+							.attr("data-bundleid")
+						);
+					});
 
-        // Bootstrap Collapse
-        $( "body" )
-          .on( "click", "#collapse-bundles", function () {
-            $( ".details-panel.show" )
-              .collapse( "hide" );
-          } );
+				// spec reseter
+				$("body")
+					.on("click", "span.reset", function() {
+						resetSpecs();
+					});
 
-        $( "body" )
-          .on( "click", "#expand-bundles", function () {
-            $( ".details-panel:not(.show)" )
-              .collapse( "show" );
-          } );
-      } );
+				// Filter Bundles
+				$("#bundleFilter")
+					.keyup(
+						debounce(function() {
+							const targetText = $(this)
+								.val()
+								.toLowerCase();
+							$(".bundle")
+								.each(function(index) {
+									const bundle = $(this)
+										.data("bundle")
+										.toLowerCase();
+									if (bundle.search(targetText) < 0) {
+										// hide it
+										$(this)
+											.hide();
+									} else {
+										$(this)
+											.show();
+									}
+								});
+						}, 100)
+					);
 
-    function setPageTitle( totalPass, totalFail, totalError ) {
-      document.title = `Pass: ${totalPass} Fail: ${totalFail} Errors: ${totalError}`;
-    }
+				$("#bundleFilter")
+					.focus();
 
-    function renderCodeCoverageStats( coverageData ) {
-      const totalCoveragePercent = parseFloat( coverageData.stats.percTotalCoverage * 100 ).toFixed( 2 );
-      const codeCoverageStatsHtml = `<div class="list-group-item list-group-item-info" id="coverageStats">
+				// Bootstrap Collapse
+				$("body")
+					.on("click", "#collapse-bundles", function() {
+						$(".details-panel.show")
+							.collapse("hide");
+					});
+
+				$("body")
+					.on("click", "#expand-bundles", function() {
+						$(".details-panel:not(.show)")
+							.collapse("show");
+					});
+			});
+
+		function setPageTitle(totalPass, totalFail, totalError) {
+			document.title = `Pass: ${totalPass} Fail: ${totalFail} Errors: ${totalError}`;
+		}
+
+		function renderCodeCoverageStats(coverageData) {
+			const totalCoveragePercent = parseFloat(coverageData.stats.percTotalCoverage * 100).toFixed(2);
+			const codeCoverageStatsHtml = `<div class="list-group-item list-group-item-info" id="coverageStats">
               <h2 class="clearfix">
                 <span>Code Coverage Stats</span>
                 <div class="mt-2 h5 float-right">
@@ -166,12 +176,12 @@
                 ${coverageData.browserResults}
               </h6>
             </div>`;
-      $( "div#coverage-data" )
-        .html( codeCoverageStatsHtml );
-    }
+			$("div#coverage-data")
+				.html(codeCoverageStatsHtml);
+		}
 
-    function renderTestResultsStats( data ) {
-      let testResultsStatsHtml = `<div class="buttonBar">
+		function renderTestResultsStats(data) {
+			let testResultsStatsHtml = `<div class="buttonBar">
               <button
                 id="collapse-bundles"
                 class="m-1 btn btn-sm btn-primary float-right"
@@ -223,21 +233,21 @@
               }</span></span>
             </h5>`;
 
-      if ( data.labels.length ) {
-        testResultsStatsHtml = testResultsStatsHtml + labelsHtml( data.labels );
-      }
+			if (data.labels.length) {
+				testResultsStatsHtml = testResultsStatsHtml + labelsHtml(data.labels);
+			}
 
-      if ( data.excludes.length ) {
-        testResultsStatsHtml =
-          testResultsStatsHtml + excludesHtml( data.excludes );
-      }
+			if (data.excludes.length) {
+				testResultsStatsHtml =
+					testResultsStatsHtml + excludesHtml(data.excludes);
+			}
 
-      $( "div#global-stats" )
-        .html( testResultsStatsHtml );
-    }
+			$("div#global-stats")
+				.html(testResultsStatsHtml);
+		}
 
-    function labelsHtml( labels ) {
-      return `<h5 class="mt-2 mb-0">
+		function labelsHtml(labels) {
+			return `<h5 class="mt-2 mb-0">
               <span
                 >Labels Applied:
                 <span class="badge badge-info ml-1">${labels.join(
@@ -245,10 +255,10 @@
                 )}</span>
               </span>
             </h5>`;
-    }
+		}
 
-    function excludesHtml( excludes ) {
-      return `<h5 class="mt-2 mb-0">
+		function excludesHtml(excludes) {
+			return `<h5 class="mt-2 mb-0">
               <span
                 >Excludes Applied:
                 <span class="badge badge-info ml-1">${excludes.join(
@@ -256,17 +266,17 @@
                 )}</span>
               </span>
             </h5>`;
-    }
+		}
 
-    function renderBundles( data ) {
-      const bundlesHtml = data.bundleStats.map( bundleHtml )
-        .join( "" );
-      $( "div#bundles" )
-        .html( bundlesHtml );
-    }
+		function renderBundles(data) {
+			const bundlesHtml = data.bundleStats.map(bundleHtml)
+				.join("");
+			$("div#bundles")
+				.html(bundlesHtml);
+		}
 
-    function bundleHtml( bundleStat ) {
-      const bundleHtml = `<div
+		function bundleHtml(bundleStat) {
+			const bundleHtml = `<div
               class="bundle card"
               id="${bundleStat.id}"
               data-bundle="${bundleStat.path}"
@@ -276,13 +286,13 @@
             </div>
             `;
 
-      return bundleHtml;
-    }
+			return bundleHtml;
+		}
 
-    function globalExceptionHtml( bundleStat ) {
-      let globalExceptionHtml = "";
-      if ( bundleStat.globalException !== "" ) {
-        globalExceptionHtml = `<!-- Global exception -->
+		function globalExceptionHtml(bundleStat) {
+			let globalExceptionHtml = "";
+			if (bundleStat.globalException !== "") {
+				globalExceptionHtml = `<!-- Global exception -->
           <li
             class="list-group-item list-group-item-danger"
             data-bundleid="${bundleStat.id}"
@@ -303,12 +313,12 @@
               </code>
             </div>
           </li>`;
-      }
-      return globalExceptionHtml;
-    }
+			}
+			return globalExceptionHtml;
+		}
 
-    function bundleHeaderHtml( bundleStat ) {
-      const bundleHeaderHtml = `<div class="card-header" id="header_${
+		function bundleHeaderHtml(bundleStat) {
+			const bundleHeaderHtml = `<div class="card-header" id="header_${
         bundleStat.id
       }">
               <h4 class="mb-0 clearfix">
@@ -365,11 +375,11 @@
             </div>
     `;
 
-      return bundleHeaderHtml;
-    }
+			return bundleHeaderHtml;
+		}
 
-    function bundleDetailsHtml( bundleStat ) {
-      const bundleDetailsHtml = `<div
+		function bundleDetailsHtml(bundleStat) {
+			const bundleDetailsHtml = `<div
               class="bundle card"
               id="${bundleStat.id}"
               data-bundle="${bundleStat.id}"
@@ -385,30 +395,30 @@
             </div>
             `;
 
-      return bundleDetailsHtml;
-    }
+			return bundleDetailsHtml;
+		}
 
-    function bundleDetailsBodyHtml( bundleStat ) {
-      const bundleDetailsBodyHtml = `<div class="card-body">
+		function bundleDetailsBodyHtml(bundleStat) {
+			const bundleDetailsBodyHtml = `<div class="card-body">
               <ul class="suite list-group">
                 ${globalExceptionHtml(bundleStat)}
                 ${renderSuites(bundleStat.suiteStats)}
               </ul>
             </div>`;
 
-      return bundleDetailsBodyHtml;
-    }
+			return bundleDetailsBodyHtml;
+		}
 
-    function renderSuites( suiteStats ) {
-      const suitesHtml = suiteStats.map( suiteHtml )
-        .join( "" );
-      return suitesHtml;
-    }
+		function renderSuites(suiteStats) {
+			const suitesHtml = suiteStats.map(suiteHtml)
+				.join("");
+			return suitesHtml;
+		}
 
-    function suiteHtml( suite ) {
-      let nestedSuites = "";
-      if ( suite.suiteStats.length ) {
-        nestedSuites = `<li class="spec list-group-item list-group-item-${statusPlusBootstrapClass(
+		function suiteHtml(suite) {
+			let nestedSuites = "";
+			if (suite.suiteStats.length) {
+				nestedSuites = `<li class="spec list-group-item list-group-item-${statusPlusBootstrapClass(
           suite.status
         )}" data-bundleid="${suite.bundleID}">
                 <ul class="suite list-group" data-bundleid="${
@@ -417,9 +427,9 @@
                     ${renderSuites(suite.suiteStats)}
                 </ul>
               </li>`;
-      }
+			}
 
-      const suiteHtml = `<li
+			const suiteHtml = `<li
               class="list-group-item list-group-item-${statusPlusBootstrapClass(
                 suite.status
               )}"
@@ -436,29 +446,29 @@
               </ul>
             </li>`;
 
-      return suiteHtml;
-    }
+			return suiteHtml;
+		}
 
-    function renderSpecs( specStats, bundleID ) {
-      const specsHtml = specStats
-        .map( specHtml, {
-          bundleID: bundleID
-        } )
-        .join( "" );
-      return specsHtml;
-    }
+		function renderSpecs(specStats, bundleID) {
+			const specsHtml = specStats
+				.map(specHtml, {
+					bundleID: bundleID
+				})
+				.join("");
+			return specsHtml;
+		}
 
-    function specHtml( spec ) {
-      let specMessage = "";
-      if ( spec.status === "Failed" ) {
-        specMessage = spec.failMessage;
-      } else if ( spec.status === "Error" ) {
-        specMessage = spec.error.Message;
-      }
+		function specHtml(spec) {
+			let specMessage = "";
+			if (spec.status === "Failed") {
+				specMessage = spec.failMessage;
+			} else if (spec.status === "Error") {
+				specMessage = spec.error.Message;
+			}
 
-      let specMessageHtml = "";
-      if ( specMessage !== "" && spec.failOrigin.length ) {
-        specMessageHtml = `<div>
+			let specMessageHtml = "";
+			if (specMessage !== "" && spec.failOrigin.length) {
+				specMessageHtml = `<div>
           ${spec.failOrigin[0].Raw_Trace}
         </div>
         <div class="pl-5">
@@ -466,9 +476,9 @@
             ${spec.failOrigin[0].codePrintHTML}
           </code>
         </div>`;
-      }
+			}
 
-      const specHtml = `<li
+			const specHtml = `<li
         class="spec list-group-item list-group-item-${statusPlusBootstrapClass(
           spec.status
         )}"
@@ -480,115 +490,115 @@
         </div>
         ${specMessageHtml}
       </li>`;
-      return specHtml;
-    }
+			return specHtml;
+		}
 
-    function debounce( func, wait, immediate ) {
-      var timeout;
-      return function () {
-        var context = this,
-          args = arguments;
-        var later = function () {
-          timeout = null;
-          if ( !immediate ) {
-            func.apply( context, args );
-          }
-        };
-        var callNow = immediate && !timeout;
-        clearTimeout( timeout );
-        timeout = setTimeout( later, wait );
-        if ( callNow ) {
-          func.apply( context, args );
-        }
-      };
-    }
+		function debounce(func, wait, immediate) {
+			var timeout;
+			return function() {
+				var context = this,
+					args = arguments;
+				var later = function() {
+					timeout = null;
+					if (!immediate) {
+						func.apply(context, args);
+					}
+				};
+				var callNow = immediate && !timeout;
+				clearTimeout(timeout);
+				timeout = setTimeout(later, wait);
+				if (callNow) {
+					func.apply(context, args);
+				}
+			};
+		}
 
-    function resetSpecs() {
-      $( "li.spec" )
-        .each( function () {
-          $( this )
-            .show();
-        } );
-      $( "ul.suite" )
-        .each( function () {
-          $( this )
-            .show();
-        } );
-    }
+		function resetSpecs() {
+			$("li.spec")
+				.each(function() {
+					$(this)
+						.show();
+				});
+			$("ul.suite")
+				.each(function() {
+					$(this)
+						.show();
+				});
+		}
 
-    function toggleSpecs( type, bundleID ) {
-      $( "ul.suite" )
-        .each( function () {
-          handleToggle( $( this ), bundleID, type );
-        } );
-      $( "li.spec" )
-        .each( function () {
-          handleToggle( $( this ), bundleID, type );
-        } );
-    }
+		function toggleSpecs(type, bundleID) {
+			$("ul.suite")
+				.each(function() {
+					handleToggle($(this), bundleID, type);
+				});
+			$("li.spec")
+				.each(function() {
+					handleToggle($(this), bundleID, type);
+				});
+		}
 
-    function handleToggle( target, bundleID, type ) {
-      const $this = target;
+		function handleToggle(target, bundleID, type) {
+			const $this = target;
 
-      // if bundleid passed and not the same bundle, skip
-      if ( bundleID != undefined && $this.attr( "data-bundleid" ) != bundleID ) {
-        return;
-      }
-      // toggle the opposite type
-      if ( !$this.hasClass( type ) ) {
-        $this.hide();
-      } else {
-        // show the type you sent
-        $this.show();
-        $this.parents()
-          .show();
-      }
-    }
+			// if bundleid passed and not the same bundle, skip
+			if (bundleID != undefined && $this.attr("data-bundleid") != bundleID) {
+				return;
+			}
+			// toggle the opposite type
+			if (!$this.hasClass(type)) {
+				$this.hide();
+			} else {
+				// show the type you sent
+				$this.show();
+				$this.parents()
+					.show();
+			}
+		}
 
-    function toggleDebug( specid ) {
-      $( `#btn_${specid}` )
-        .toggleClass( "collapsed" );
-      $( "div.debugdata" )
-        .each( function () {
-          const $this = $( this );
+		function toggleDebug(specid) {
+			$(`#btn_${specid}`)
+				.toggleClass("collapsed");
+			$("div.debugdata")
+				.each(function() {
+					const $this = $(this);
 
-          // if bundleid passed and not the same bundle
-          if ( specid != undefined && $this.attr( "data-specid" ) != specid ) {
-            return;
-          }
-          // toggle.
-          $this.slideToggle();
-        } );
-    }
+					// if bundleid passed and not the same bundle
+					if (specid != undefined && $this.attr("data-specid") != specid) {
+						return;
+					}
+					// toggle.
+					$this.slideToggle();
+				});
+		}
 
-    function statusPlusBootstrapClass( status ) {
-      let classes = "";
-      if ( status === "Failed" ) {
-        classes = "warning failed";
-      } else if ( status === "Error" ) {
-        classes = "danger error";
-      } else if ( status === "Passed" ) {
-        classes = "success passed";
-      } else if ( status === "Skipped" ) {
-        classes = "secondary skipped";
-      }
-      return classes;
-    }
+		function statusPlusBootstrapClass(status) {
+			let classes = "";
+			if (status === "Failed") {
+				classes = "warning failed";
+			} else if (status === "Error") {
+				classes = "danger error";
+			} else if (status === "Passed") {
+				classes = "success passed";
+			} else if (status === "Skipped") {
+				classes = "secondary skipped";
+			}
+			return classes;
+		}
 
-    function statusToIcon( status ) {
-      let icon = "";
-      if ( status === "Failed" ) {
-        icon = '<i class="fas fa-exclamation-triangle"></i>';
-      } else if ( status === "Error" ) {
-        icon = '<i class="fas fa-times"></i>';
-      } else if ( status === "Passed" ) {
-        icon = '<i class="fas fa-check"></i>';
-      } else if ( status === "Skipped" ) {
-        icon = '<i class="fas fa-minus-circle"></i>';
-      }
-      return icon;
-    }
-    </script>
+		function statusToIcon(status) {
+			let icon = "";
+			if (status === "Failed") {
+				icon = '<i class="fas fa-exclamation-triangle"></i>';
+			} else if (status === "Error") {
+				icon = '<i class="fas fa-times"></i>';
+			} else if (status === "Passed") {
+				icon = '<i class="fas fa-check"></i>';
+			} else if (status === "Skipped") {
+				icon = '<i class="fas fa-minus-circle"></i>';
+			}
+			return icon;
+		}
+		</script>
 	</head>
 
 	<body>
@@ -605,11 +615,17 @@
 				</div>
 			</div>
 		</div>
-		<div id="coverage-data" class="list-group mb-3"></div>
-		<div class="list-group">
-			<div class="list-group-item list-group-item-info" id="global-stats"></div>
+		<div id="loading-div" class="d-flex justify-content-center mb-3">
+			<div class="spinner-border" role="status">
+				<span class="sr-only">Loading...</span>
+			</div>
 		</div>
-		<div class="list-group-item list-group-item-info accordion" id="bundles"></div>
+		<div id="content" class="d-none">
+			<div id="coverage-data" class="list-group mb-3"></div>
+			<div class="list-group">
+				<div class="list-group-item list-group-item-info" id="global-stats"></div>
+			</div>
+			<div class="list-group-item list-group-item-info accordion" id="bundles"></div>
+		</div>
 	</body>
-
 </html>
