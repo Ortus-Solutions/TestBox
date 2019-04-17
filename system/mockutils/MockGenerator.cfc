@@ -65,7 +65,7 @@ Description		:
 			// Clean up
 			structDelete( variables, "@@tmpMethodName@@" );
 			structDelete( this, "@@tmpMethodName@@" );
-			
+
 			#fncMD.access# #fncMD.returntype# function @@tmpMethodName@@( #instance.lb#');
 
 			// Create Arguments Signature
@@ -75,11 +75,11 @@ Description		:
 					udfOut.append('						');
 					if( !isNull( thisParam.required )  && thisParam.required ) {
 						udfOut.append( 'required ' );
-					}					
+					}
 					if( !isNull( thisParam.type )  && len( thisParam.required ) ) {
 						udfOut.append( thisParam.type & ' '  );
 					}
-					udfOut.append( thisParam.name & ' ' );					
+					udfOut.append( thisParam.name & ' ' );
 					if( !isNull( thisParam.default ) && thisParam.default != '[runtime expression]' ) {
 						udfOut.append( '= ' & outputQuotedValue( thisParam.default ) & ' '  );
 					}
@@ -98,7 +98,7 @@ Description		:
 					udfOut.append('#instance.lb#');
 				}
 			}
-			
+
 			udfOut.append('
 			) output=#fncMD.output# {#instance.lb# ');
 
@@ -152,7 +152,7 @@ Description		:
 			// Exceptions? To Throw
 			if( arguments.throwException ){
 				udfOut.append('
-				
+
 				throw( #outputQuotedValue( arguments.throwMessage )#, #outputQuotedValue( arguments.throwType )#, #outputQuotedValue( arguments.throwDetail )#, #outputQuotedValue( arguments.throwErrorCode )# );#instance.lb#');
 			}
 
@@ -189,11 +189,11 @@ Description		:
 			// Write it out
 			stubCode = trim( udfOUt.toString() );
 			tmpFile = hash( stubCode ) & ".cfm";
-			
+
 			// This is neccessary for methods named after CF keywords like "contains"
-			var tmpMethodName = 'tmp' & hash( stubCode );
-			stubCode = replaceNoCase( stubCode, '@@tmpMethodName@@', tmpMethodName, 'all' ); 
-			
+			var tmpMethodName = 'tmp_#arguments.method#_' & hash( stubCode );
+			stubCode = replaceNoCase( stubCode, '@@tmpMethodName@@', tmpMethodName, 'all' );
+
 			if( !FileExists( genPath & tmpFile ) ) {
 				writeStub( genPath & tmpFile, stubCode );
 			}
@@ -220,10 +220,10 @@ Description		:
 			}
 		</cfscript>
 	</cffunction>
-	
+
 	<cffunction name="outputQuotedValue" output="false">
 		<cfargument name="value">
-		<cfreturn '"#replaceNoCase( value, '"', '""', 'all' )#"'>		
+		<cfreturn '"#replaceNoCase( value, '"', '""', 'all' )#"'>
 	</cffunction>
 
 	<!--- writeStub --->
