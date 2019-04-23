@@ -649,7 +649,12 @@ component{
 		var runner = new testbox.system.TestBox(
 			bundles		= "#getMetadata(this).name#",
 			labels		= arguments.labels,
-			reporter	= arguments.reporter
+			reporter	= arguments.reporter,
+			options  	=  {
+				coverage : {
+					enabled	: false
+				}
+			}
 		);
 		// Produce report
 		writeOutput( runner.run( testSuites=arguments.testSuites, testSpecs=arguments.testSpecs ) );
