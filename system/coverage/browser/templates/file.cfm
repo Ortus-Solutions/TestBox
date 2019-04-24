@@ -6,7 +6,7 @@
 			<title>#fileData.relativeFilePath#</title>
 
 			<link rel="stylesheet" href="#relPathToRoot#assets/css/syntaxhighlighter.css">
-			<link rel="stylesheet" href="#relPathToRoot#assets/css/bootstrap.min.css">
+			<link rel="stylesheet" href="#relPathToRoot#assets/css/main.css">
 			<script src="#relPathToRoot#assets/js/jquery-3.3.1.min.js"></script>
 			<script src="#relPathToRoot#assets/js/popper.min.js"></script>
 			<script src="#relPathToRoot#assets/js/bootstrap.min.js"></script>
