@@ -4,6 +4,7 @@
 .project
 .settings/
 .vscode
+.idea
 .engine/
 cpu.json
 

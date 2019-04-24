@@ -119,7 +119,9 @@
 														</button>
 														<div>#thisBundle.globalException.Message#</div>
 														<div class="pl-5">
-                											<code>#thisBundle.globalException.TagContext[1].codePrintHTML#</code>
+															<cfif structKeyExists( thisBundle.globalException.TagContext[ 1 ], "codePrintHTML" )>
+																<code>#thisBundle.globalException.TagContext[ 1 ].codePrintHTML#</code>
+															</cfif>
 														</div>
 														<div class="my-2 debugdata" style="display:none;" data-specid="globalException_#thisBundle.id#">
 															<cfdump var="#thisBundle.globalException#" />
