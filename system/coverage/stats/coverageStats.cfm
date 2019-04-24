@@ -11,39 +11,24 @@
 			<meta name="generator" content="TestBox v#testbox.getVersion()#">
 			<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
 
-			<style>#fileRead( '#ASSETS_DIR#/css/bootstrap.min.css' )#</style>
+			<style>#fileRead( '#ASSETS_DIR#/css/main.css' )#</style>
 			<script>#fileRead( '#ASSETS_DIR#/js/jquery-3.3.1.min.js' )#</script>
 			<script>#fileRead( '#ASSETS_DIR#/js/popper.min.js' )#</script>
 			<script>#fileRead( '#ASSETS_DIR#/js/bootstrap.min.js' )#</script>
 			<script>#fileRead( '#ASSETS_DIR#/js/stupidtable.min.js' )#</script>
-
-			<style>
-			[data-toggle="collapse"] .arrow:before,
-			.expand-collapse .arrow:before {
-				content: "\23EB";
-			}
-
-			[data-toggle="collapse"].collapsed .arrow:before,
-			.expand-collapse.collapsed .arrow:before {
-				content: "\23EC";
-			}
-
-			code {
-				color: black !important;
-			}
-			</style>
+			<script>#fileRead( '#ASSETS_DIR#/js/fontawesome.js' )#</script>
 		</head>
 		<body>
 </cfif>
 <cfif isDefined( 'stats' )>
 	<cfset totalProjectCoverage = numberFormat( stats.percTotalCoverage * 100, '9.9' )>
 	<div class="list-group mb-3">
-		<div class="list-group-item list-group-item-info" id="coverageStats">
-			<h2 class="clearfix">
+		<div class="list-group-item list-group-item-info p-2" id="coverageStats">
+			<h3 class="clearfix">
 				<span>Code Coverage Stats</span>
 				<div class="mt-2 h5 float-right">
 					<button class="btn btn-link float-right py-0 expand-collapse collapsed" style="text-decoration: none;" id="btn_coverageStats" onclick="toggleDebug( 'coverageStats' )" title="Show coverage stats">
-						<span class="arrow" aria-hidden="true"></span>
+						<i class="fas fa-plus-square"></i>
 					</button>
 					<span class="ml-2 float-right">
 						<span class="h5 float-left">Total project coverage:</span>
@@ -61,7 +46,7 @@
 					</span>
 					<span>Total Files Processed:<span class="badge badge-info ml-1">#stats.numFiles#</span></span>
 				</div>
-			</h2>
+			</h3>
 
 			<cfif len( coverageData.sonarQubeResults ) >
 				<h6 class="mt-2">
@@ -70,12 +55,12 @@
 			</cfif>
 
 			<cfif len( coverageData.browserResults ) >
-				<h6 class="mt-2">
+				<h6 class="my-2">
 					Coverage Browser generated in #coverageData.browserResults#
 				</h6>
 			</cfif>
 
-			<div class="my-3 debugdata" <cfif !fullPage>style="display:none;" </cfif>data-specid="coverageStats">
+			<div class="debugdata" <cfif !fullPage>style="display:none;" </cfif>data-specid="coverageStats">
 				<ul class="list-group">
 
 					<li class="list-group-item">
@@ -85,7 +70,7 @@
 								<cfset qTarget         = stats.qryFilesBestCoverage>
 								<cfset percentage      = numberFormat( qTarget.percCoverage * 100, '9.9' )>
 								<cfset trimmedFilePath = replaceNoCase( qTarget.filePath, pathToCapture, '' )>
-								<li class="list-group-item list-group-item-#codeBrowser.percentToContextualClass( percentage )#">
+								<li class="list-group-item">
 									<span class="col-9">#trimmedFilePath#</span>
 									<div class=" col-3 d-inline-flex float-right">
 										<div class="progress position-relative w-100">
@@ -106,7 +91,7 @@
 								<cfset qTarget      	= stats.qryFilesWorstCoverage>
 								<cfset percentage 		= numberFormat( qTarget.percCoverage * 100, '9.9' )>
 								<cfset trimmedFilePath 	= replaceNoCase( qTarget.filePath, pathToCapture, '' )>
-								<li class="list-group-item list-group-item-#codeBrowser.percentToContextualClass( percentage )#">
+								<li class="list-group-item">
 									<span class="col-9">#trimmedFilePath#</span>
 									<div class=" col-3 d-inline-flex float-right">
 										<div class="progress position-relative w-100">
@@ -127,6 +112,19 @@
 </cfoutput>
 <cfif fullPage>
 		<script>
+			$( document ).ready( function() {
+				$(".expand-collapse").click(function (event) {
+					let icon = $(this).children(".svg-inline--fa");
+					var icon_fa_icon = icon.attr('data-icon');
+
+					if (icon_fa_icon === "minus-square") {
+							icon.attr('data-icon', 'plus-square');
+					} else if (icon_fa_icon === "plus-square") {
+							icon.attr('data-icon', 'minus-square');
+					}
+				});
+			});
+			
 			function toggleDebug(specid) {
 				$( `#btn_${specid}` ).toggleClass( "collapsed" );
 				$( "div.debugdata" ).each( function() {

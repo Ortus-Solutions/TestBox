@@ -5,7 +5,7 @@
 		<meta charset="utf-8">
 		<title>Code Coverage Browser</title>
 
-		<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+		<link rel="stylesheet" href="assets/css/main.css">
 		<script	src="assets/js/jquery-3.3.1.min.js"></script>
 		<script src="assets/js/popper.min.js"></script>
 		<script src="assets/js/bootstrap.min.js"></script>
@@ -75,7 +75,7 @@
 				<tbody>
 					<cfloop query="qryCoverageDataSorted">
 					<cfset percentage = numberFormat( percCoverage * 100, '9.9' )>
-					<tr class="file table-#percentToContextualClass( percentage )# ">
+					<tr class="file">
 						<td class="file-name" data-sort-value="#relativeFilePath#"><a href="#relativeFilePath#.html">#relativeFilePath#</a></td>
 						<td class="file-coverage" data-sort-value="#percentage#">
 							<div class="progress position-relative" style="height: 1.4rem;">
