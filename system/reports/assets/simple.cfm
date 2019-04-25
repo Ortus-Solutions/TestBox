@@ -22,14 +22,14 @@
 					<div class="row clearfix">
 						<div class="col-5">
 							<!--- Header --->
-							<p>
+							<div>
 								<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75">
 								<span class="badge badge-info">v#testbox.getVersion()#</span>
-							</p>
+							</div>
 						</div>
 						<div class="col-7">
-							<input class="d-inline col-7 ml-2 form-control float-right mb-2 mt-4" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
-							<div class="buttonBar mt-1 float-right">
+							<input class="d-inline col-7 ml-2 form-control float-right mb-1 mt-4" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
+							<div class="buttonBar mb-1 float-right">
 								<a 	class="ml-1 btn btn-sm btn-primary float-right"
 									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&opt_run=true"
 									title="Run all tests"
@@ -63,13 +63,9 @@
 					<div class="list-group">
 
 						<!--- Test Results Stats --->
-						<div class="list-group-item list-group-item-info p-2" id="globalStats">
-
-							<div class="d-flex justify-content-between">
+						<div class="list-group-item list-group-item-info p-2 d-flex justify-content-between align-items-end" id="globalStats">
+							<div>
 								<h3><i class="fas fa-chart-line"></i> Test Results Stats (#numberFormat( results.getTotalDuration() )# ms)</h3>
-							</div>
-
-							<div class="d-flex justify-content-between">
 								<div>
 									<h5 class="mt-2">
 										<span>Bundles:<span class="badge badge-info ml-1">#results.getTotalBundles()#</span></span>
@@ -87,38 +83,39 @@
 										</h5>
 									</cfif>
 								</div>
-								<div class="float-right">
-									<span
-										class="specStatus btn btn-sm btn-success passed"
-										data-status="passed"
-									>
-										<i class="fas fa-check"></i> Pass: #results.getTotalPass()#
-									</span>
-									<span
-										class="specStatus btn btn-sm btn-warning failed"
-										data-status="failed"
-									>
-										<i class="fas fa-exclamation-triangle"></i> Failures: #results.getTotalFail()#
-									</span>
-									<span
-										class="specStatus btn btn-sm btn-danger error"
-										data-status="error"
-									>
-										<i class="fas fa-times"></i> Errors: #results.getTotalError()#
-									</span>
-									<span
-										class="specStatus btn btn-sm btn-secondary skipped"
-										data-status="skipped"
-									>
-										<i class="fas fa-minus-circle"></i> Skipped: #results.getTotalSkipped()#
-									</span>
-									<span
-										class="reset btn btn-sm btn-dark"
-										title="Clear status filters"
-									>
-										<i class="fas fa-broom"></i> Reset
-									</span>
-								</div>
+							</div>
+
+							<div>
+								<span
+									class="specStatus btn btn-sm btn-success passed"
+									data-status="passed"
+								>
+									<i class="fas fa-check"></i> Pass: #results.getTotalPass()#
+								</span>
+								<span
+									class="specStatus btn btn-sm btn-warning failed"
+									data-status="failed"
+								>
+									<i class="fas fa-exclamation-triangle"></i> Failures: #results.getTotalFail()#
+								</span>
+								<span
+									class="specStatus btn btn-sm btn-danger error"
+									data-status="error"
+								>
+									<i class="fas fa-times"></i> Errors: #results.getTotalError()#
+								</span>
+								<span
+									class="specStatus btn btn-sm btn-secondary skipped"
+									data-status="skipped"
+								>
+									<i class="fas fa-minus-circle"></i> Skipped: #results.getTotalSkipped()#
+								</span>
+								<span
+									class="reset btn btn-sm btn-dark"
+									title="Clear status filters"
+								>
+									<i class="fas fa-broom"></i> Reset
+								</span>
 							</div>
 						</div>
 						<div class="list-group-item accordion pl-0" id="bundles">

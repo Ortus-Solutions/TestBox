@@ -12,43 +12,86 @@
 				<style>#fileRead(  "#ASSETS_DIR#/css/main.css" )#</style>
 				<script>#fileRead(  "#ASSETS_DIR#/js/jquery-3.3.1.min.js" )#</script>
 				<script>#fileRead(  "#ASSETS_DIR#/js/bootstrap.min.js" )#</script>
+				<script>#fileRead( "#ASSETS_DIR#/js/fontawesome.js" )#</script>
 			</head>
 			<body>
 	</cfif>
 				<div class="container-fluid my-3">
-					<!-- Header -->
-					<p>
-						<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75">
-						<span class="badge badge-info">v#testbox.getVersion()#</span>
-					</p>
+					<!-- Header -->					
+					<div class="d-flex justify-content-between align-items-end">
+						<div>
+							<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75">
+							<span class="badge badge-info">v#testbox.getVersion()#</span>
+						</div>
+						<div class="buttonBar mt-1 float-right mb-1">
+							<a 	class="ml-1 btn btn-sm btn-primary float-right"
+								href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&opt_run=true"
+								title="Run all tests"
+							>
+								<i class="fas fa-running"></i> Run All Tests
+							</a>
+						</div>
+					</div>
 					<!--- Code Coverage Stats --->
 					<cfif results.getCoverageEnabled()>
 						#testbox.getCoverageService().renderStats( results.getCoverageData(), false )#
 					</cfif>
 					<div class="list-group">
 						<!--- Test Results Stats --->
-						<div class="list-group-item list-group-item-info" id="globalStats">
-							<div class="buttonBar">
-								<a class="m-1 btn btn-sm btn-primary float-right" href="#variables.baseURL#?opt_run=true" title="Run all tests">Run All Tests</a>
+						<div class="list-group-item list-group-item-info p-2 d-flex justify-content-between align-items-end" id="globalStats">
+							<div>
+								<h3><i class="fas fa-chart-line"></i> Test Results Stats (#numberFormat( results.getTotalDuration() )# ms)</h3>
+								<div>
+									<h5 class="mt-2">
+										<span>Bundles:<span class="badge badge-info ml-1">#results.getTotalBundles()#</span></span>
+										<span class="ml-3">Suites:<span class="badge badge-info ml-1">#results.getTotalSuites()#</span></span>
+										<span class="ml-3">Specs:<span class="badge badge-info ml-1">#results.getTotalSpecs()#</span></span>
+									</h5>
+									<cfif arrayLen( results.getLabels() )>
+										<h5 class="mt-2 mb-0">
+											<span>Labels Applied: <span class="badge badge-info ml-1">#arrayToList( results.getLabels() )#</u></span>
+										</h5>
+									</cfif>
+									<cfif arrayLen( results.getExcludes() )>
+										<h5 class="mt-2 mb-0">
+											<span>Excludes Applied: <span class="badge badge-info ml-1">#arrayToList( results.getExcludes() )#</u></span>
+										</h5>
+									</cfif>
+								</div>
 							</div>
-							<h2>Test Results Stats (#results.getTotalDuration()# ms)</h2>
-							<div class="float-right">
-								<span class="specStatus m-1 badge badge-success passed" data-status="passed">Pass: #results.getTotalPass()#</span>
-								<span class="specStatus m-1 badge badge-warning failed" data-status="failed">Failures: #results.getTotalFail()#</span>
-								<span class="specStatus m-1 badge badge-danger error" data-status="error">Errors: #results.getTotalError()#</span>
-								<span class="specStatus m-1 badge badge-secondary skipped" data-status="skipped">Skipped: #results.getTotalSkipped()#</span>
-								<span class="reset m-1 badge badge-dark" title="Clear status filters">Reset</span>
+
+							<div>
+								<span
+									class="specStatus badge badge-success passed"
+									data-status="passed"
+								>
+									<i class="fas fa-check"></i> Pass: #results.getTotalPass()#
+								</span>
+								<span
+									class="specStatus badge badge-warning failed"
+									data-status="failed"
+								>
+									<i class="fas fa-exclamation-triangle"></i> Failures: #results.getTotalFail()#
+								</span>
+								<span
+									class="specStatus badge badge-danger error"
+									data-status="error"
+								>
+									<i class="fas fa-times"></i> Errors: #results.getTotalError()#
+								</span>
+								<span
+									class="specStatus badge badge-secondary skipped"
+									data-status="skipped"
+								>
+									<i class="fas fa-minus-circle"></i> Skipped: #results.getTotalSkipped()#
+								</span>
+								<span
+									class="reset badge badge-dark"
+									title="Clear status filters"
+								>
+									<i class="fas fa-broom"></i> Reset
+								</span>
 							</div>
-							<h5 class="mt-2">
-								<span>Bundles:<span class="badge badge-info ml-1">#results.getTotalBundles()#</span></span>
-								<span class="ml-3">Suites:<span class="badge badge-info ml-1">#results.getTotalSuites()#</span></span>
-								<span class="ml-3">Specs:<span class="badge badge-info ml-1">#results.getTotalSpecs()#</span></span>
-							</h5>
-							<cfif arrayLen( results.getLabels() )>
-								<h5 class="mt-2 mb-0">
-									<span>Labels Applied: <span class="badge badge-info ml-1">#arrayToList( results.getLabels() )#</u></span>
-								</h5>
-							</cfif>
 						</div>
 					</div>
 					<!--- Debug Panel --->
@@ -64,7 +107,7 @@
 													<strong>Global Bundle Exception</strong>
 												</span>
 												<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_globalException_#thisBundle.id#" onclick="toggleDebug( 'globalException_#thisBundle.id#' )" title="Show more information">
-													<span class="arrow" aria-hidden="true"></span>
+													<i class="fas fa-plus-square"></i>
 												</button>
 												<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="globalException_#thisBundle.id#">
 													<cfdump var="#thisBundle.globalException#" />
@@ -78,7 +121,7 @@
 													<strong>Debug Stream: #thisBundle.path#</strong>
 												</span>
 												<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#thisBundle.id#" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">
-													<span class="arrow" aria-hidden="true"></span>
+													<i class="fas fa-plus-square"></i>
 												</button>
 												<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#thisBundle.id#">
 													<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
@@ -96,21 +139,19 @@
 					</cfloop>
 				</div>
 </cfoutput>
-<style>
-[data-toggle="collapse"] .arrow:before,
-.expand-collapse .arrow:before {
-	content: "\23EB";
-}
-[data-toggle="collapse"].collapsed .arrow:before,
-.expand-collapse.collapsed .arrow:before {
-	content: "\23EC";
-}
-code {
-	color: black !important;
-}
-</style>
 <script>
-$( document ).ready( function() {} );
+$( document ).ready( function() {
+	$(".expand-collapse").click(function (event) {
+		let icon = $(this).children(".svg-inline--fa");
+		var icon_fa_icon = icon.attr('data-icon');
+
+		if (icon_fa_icon === "minus-square") {
+				icon.attr('data-icon', 'plus-square');
+		} else if (icon_fa_icon === "plus-square") {
+				icon.attr('data-icon', 'minus-square');
+		}
+	});
+} );
 
 function toggleDebug( specid ) {
 	$( `#btn_${specid}` ).toggleClass( "collapsed" );
