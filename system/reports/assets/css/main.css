@@ -52,7 +52,7 @@ article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  font-size: 1rem;
+  font-size: .80rem;
   font-weight: 400;
   line-height: 1.5;
   color: #212529;
@@ -304,22 +304,22 @@ h1, h2, h3, h4, h5, h6,
   line-height: 1.2; }
 
 h1, .h1 {
-  font-size: 2.5rem; }
-
-h2, .h2 {
   font-size: 2rem; }
 
-h3, .h3 {
-  font-size: 1.75rem; }
-
-h4, .h4 {
+h2, .h2 {
   font-size: 1.5rem; }
 
-h5, .h5 {
+h3, .h3 {
   font-size: 1.25rem; }
 
-h6, .h6 {
+h4, .h4 {
   font-size: 1rem; }
+
+h5, .h5 {
+  font-size: .85rem; }
+
+h6, .h6 {
+  font-size: .5rem; }
 
 .lead {
   font-size: 1.25rem;
@@ -1795,6 +1795,7 @@ textarea.form-control {
       margin-bottom: 0; } }
 
 .btn {
+  cursor: pointer;
   display: inline-block;
   font-weight: 400;
   color: #212529;
@@ -2166,7 +2167,7 @@ fieldset:disabled a.btn {
 
 .btn-sm, .btn-group-sm > .btn {
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   line-height: 1.5;
   border-radius: 0.2rem; }
 

@@ -29,24 +29,46 @@
 						</div>
 						<div class="col-7">
 							<input class="d-inline col-7 ml-2 form-control float-right mb-2 mt-4" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
+							<div class="buttonBar mt-1 float-right">
+								<a 	class="ml-1 btn btn-sm btn-primary float-right"
+									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&opt_run=true"
+									title="Run all tests"
+								>
+									<i class="fas fa-running"></i> Run All Tests
+								</a>
+								<button
+									id="collapse-bundles"
+									class="ml-1 btn btn-sm btn-primary float-right"
+									title="Collapse all bundles"
+									>
+										<i class="fas fa-minus-square"></i> Collapse All Bundles
+								</button>
+								<button
+									id="expand-bundles"
+									class="ml-1 btn btn-sm btn-primary float-right"
+									title="Expand all bundles"
+									>
+										<i class="fas fa-plus-square"></i> Expand All Bundles
+								</button>
+							</div>
 						</div>
 					</div>
-					<!--- Stats --->
+
 					<!--- Code Coverage Stats --->
 					<cfif results.getCoverageEnabled()>
 						#testbox.getCoverageService().renderStats( results.getCoverageData(), false )#
 					</cfif>
+
+					<!--- Global Stats --->
 					<div class="list-group">
+
 						<!--- Test Results Stats --->
 						<div class="list-group-item list-group-item-info p-2" id="globalStats">
+
 							<div class="d-flex justify-content-between">
-								<h3>Test Results Stats (#results.getTotalDuration()# ms)</h3>
-								<div class="buttonBar mb-1">
-									<a class="ml-1 btn btn-sm btn-primary float-right" href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&opt_run=true" title="Run all tests">Run All Tests</a>
-									<button id="collapse-bundles" class="ml-1 btn btn-sm btn-primary float-right" title="Collapse all bundles">Collapse All Bundles</button>
-									<button id="expand-bundles" class="ml-1 btn btn-sm btn-primary float-right" title="Expand all bundles">Expand All Bundles</button>
-								</div>
+								<h3><i class="fas fa-chart-line"></i> Test Results Stats (#numberFormat( results.getTotalDuration() )# ms)</h3>
 							</div>
+
 							<div class="d-flex justify-content-between">
 								<div>
 									<h5 class="mt-2">
@@ -66,21 +88,48 @@
 									</cfif>
 								</div>
 								<div class="float-right">
-									<span class="specStatus btn btn-sm btn-success passed" data-status="passed"><i class="fas fa-check"></i> Pass: #results.getTotalPass()#</span>
-									<span class="specStatus btn btn-sm btn-warning failed" data-status="failed"><i class="fas fa-exclamation-triangle"></i> Failures: #results.getTotalFail()#</span>
-									<span class="specStatus btn btn-sm btn-danger error" data-status="error"><i class="fas fa-times"></i> Errors: #results.getTotalError()#</span>
-									<span class="specStatus btn btn-sm btn-secondary skipped" data-status="skipped"><i class="fas fa-minus-circle"></i> Skipped: #results.getTotalSkipped()#</span>
-									<span class="reset btn btn-sm btn-dark" title="Clear status filters">Reset</span>
+									<span
+										class="specStatus btn btn-sm btn-success passed"
+										data-status="passed"
+									>
+										<i class="fas fa-check"></i> Pass: #results.getTotalPass()#
+									</span>
+									<span
+										class="specStatus btn btn-sm btn-warning failed"
+										data-status="failed"
+									>
+										<i class="fas fa-exclamation-triangle"></i> Failures: #results.getTotalFail()#
+									</span>
+									<span
+										class="specStatus btn btn-sm btn-danger error"
+										data-status="error"
+									>
+										<i class="fas fa-times"></i> Errors: #results.getTotalError()#
+									</span>
+									<span
+										class="specStatus btn btn-sm btn-secondary skipped"
+										data-status="skipped"
+									>
+										<i class="fas fa-minus-circle"></i> Skipped: #results.getTotalSkipped()#
+									</span>
+									<span
+										class="reset btn btn-sm btn-dark"
+										title="Clear status filters"
+									>
+										<i class="fas fa-broom"></i> Reset
+									</span>
 								</div>
 							</div>
 						</div>
 						<div class="list-group-item accordion pl-0" id="bundles">
 							<!--- Bundle Info --->
 							<cfloop array="#variables.bundleStats#" index="thisBundle">
+
 								<!--- Skip if not in the includes list --->
 								<cfif len( url.testBundles ) and !listFindNoCase( url.testBundles, thisBundle.path )>
 									<cfcontinue>
 								</cfif>
+
 								<!--- Bundle div --->
 								<div class="bundle card" id="#thisBundle.path#" data-bundle="#thisBundle.path#">
 									<div class="card-header" id="header_#thisBundle.id#">
@@ -94,11 +143,36 @@
 											</button>
 										</h5>
 										<div class="float-right">
-											<span class="specStatus btn btn-sm btn-success passed" data-status="passed" data-bundleid="#thisBundle.id#"><i class="fas fa-check"></i> Pass: #thisBundle.totalPass#</span>
-											<span class="specStatus btn btn-sm btn-warning failed" data-status="failed" data-bundleid="#thisBundle.id#"><i class="fas fa-exclamation-triangle"></i> Failures: #thisBundle.totalFail#</span>
-											<span class="specStatus btn btn-sm btn-danger error" data-status="error" data-bundleid="#thisBundle.id#"><i class="fas fa-times"></i> Errors: #thisBundle.totalError#</span>
-											<span class="specStatus btn btn-sm btn-secondary skipped" data-status="skipped" data-bundleid="#thisBundle.id#"><i class="fas fa-minus-circle"></i> Skipped: #thisBundle.totalSkipped#</span>
-											<span class="reset btn btn-sm btn-dark" title="Clear status filters">Reset</span>
+											<span
+												class="specStatus btn btn-sm btn-success passed"
+												data-status="passed" data-bundleid="#thisBundle.id#"
+											>
+												<i class="fas fa-check"></i> Pass: #thisBundle.totalPass#
+											</span>
+											<span
+												class="specStatus btn btn-sm btn-warning failed"
+												data-status="failed" data-bundleid="#thisBundle.id#"
+											>
+												<i class="fas fa-exclamation-triangle"></i> Failures: #thisBundle.totalFail#
+											</span>
+											<span
+												class="specStatus btn btn-sm btn-danger error"
+												data-status="error" data-bundleid="#thisBundle.id#"
+											>
+												<i class="fas fa-times"></i> Errors: #thisBundle.totalError#
+											</span>
+											<span
+												class="specStatus btn btn-sm btn-secondary skipped"
+												data-status="skipped" data-bundleid="#thisBundle.id#"
+											>
+												<i class="fas fa-minus-circle"></i> Skipped: #thisBundle.totalSkipped#
+											</span>
+											<span
+												class="reset btn btn-sm btn-dark"
+												title="Clear status filters"
+											>
+												<i class="fas fa-broom"></i> Reset
+											</span>
 										</div>
 										<h5 class="d-inline-block">
 											<span>Suites:<span class="badge badge-info ml-1">#thisBundle.totalSuites#</span></span>
@@ -132,16 +206,25 @@
 												<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
 													#genSuiteReport( suiteStats, thisBundle )#
 												</cfloop>
+
 												<!--- Debug Panel --->
 												<cfif arrayLen( thisBundle.debugBuffer )>
-													<li class="list-group-item">
+													<li class="list-group-item list-group-item-primary pt-2 pb-1 mt-4">
 														<span class="alert-link h5 text-info">
 															<strong><i class="fas fa-bug"></i> Debug Stream</strong>
 														</span>
-														<button class="btn btn-link float-right py-0 expand-collapse collapsed" style="text-decoration: none;" id="btn_#thisBundle.id#" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">
+
+														<button
+															class="btn btn-link float-right py-0 expand-collapse collapsed"
+															style="text-decoration: none;"
+															id="btn_#thisBundle.id#"
+															onclick="toggleDebug( '#thisBundle.id#' )"
+															title="Toggle the test debug stream"
+														>
 															<i class="fas fa-plus-square"></i>
 														</button>
-														<div class="my-2 debugdata" style="display:none;" data-specid="#thisBundle.id#">
+
+														<div class="my-2 debugdata bg-light border border-success p-2" style="display:none;" data-specid="#thisBundle.id#">
 															<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
 															<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
 																<h6>#thisDebug.label#</h6>
