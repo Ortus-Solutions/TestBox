@@ -221,7 +221,7 @@
 															<i class="fas fa-plus-square"></i>
 														</button>
 														<div>#thisBundle.globalException.Message#</div>
-														<div class="pl-5">
+														<div class="pl-5 bg-light">
 															<cfif structKeyExists( thisBundle.globalException.TagContext[ 1 ], "codePrintHTML" )>
 																<code>#thisBundle.globalException.TagContext[ 1 ].codePrintHTML#</code>
 															</cfif>
@@ -486,21 +486,25 @@ code {
 										onclick="toggleDebug( '#local.thisSpec.id#' )"
 										title="Show more information"
 									>
-										<i class="fas fa-minus-square"></i>
+										<i class="fas fa-plus-square"></i>
 									</button>
 								</cfif>
 							</div>
 							<cfif structKeyExists( local.thisSpec, "message" )>
-								<cfif arrayLen( local.thisSpec.failOrigin )>
-									<div>#local.thisSpec.failOrigin[ 1 ].raw_trace#</div>
-									<div class="pl-5">
-										<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
-											<code>#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</code>
-										</cfif>
+								<div
+									onclick="toggleDebug( '#local.thisSpec.id#' )"
+								>
+									<cfif arrayLen( local.thisSpec.failOrigin )>
+										<div><pre>#local.thisSpec.failOrigin[ 1 ].raw_trace#</pre></div>
+										<div class="pl-5 mb-2 bg-light">
+											<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
+												<code>#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</code>
+											</cfif>
+										</div>
+									</cfif>
+									<div class="my-2 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
+										<cfdump var="#local.thisSpec.failorigin#" label="Failure Origin">
 									</div>
-								</cfif>
-								<div class="my-2 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
-									<cfdump var="#local.thisSpec.failorigin#" label="Failure Origin">
 								</div>
 							</cfif>
 						</li>

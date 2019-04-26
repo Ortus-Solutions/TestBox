@@ -131,12 +131,12 @@
 				const totalCoveragePercent = parseFloat(
 					coverageData.stats.percTotalCoverage * 100
 				).toFixed(2);
-				const codeCoverageStatsHtml = 
+				const codeCoverageStatsHtml =
 					`<div class="list-group-item list-group-item-info p-2" id="coverageStats">
 						<div class="d-flex flex-fill justify-content-between align-items-stretch">
 							<div class="d-flex align-items-start flex-column">
 								<h3 class="mb-auto">Code Coverage Stats</h3>
-								${coverageBrowserReport(coverageData.browserResults)}				
+								${coverageBrowserReport(coverageData.browserResults)}
 							</div>
 							<div class="d-flex align-items-end flex-column">
 								<div class="mt-auto text-right">
@@ -170,7 +170,7 @@
 			}
 
 			function renderTestResultsStats(data) {
-				let testResultsStatsHtml = 
+				let testResultsStatsHtml =
 					`<div>
 						<h3><i class="fas fa-chart-line"></i> Test Results Stats (${data.totalDuration} ms)</h3>
 						<div>
@@ -252,7 +252,7 @@
 							<div>
 								${bundleStat.globalException.Message}
 							</div>
-							<div class="pl-5">
+							<div class="pl-5 bg-light">
 								<code>
 									${bundleStat.globalException.TagContext[0].codePrintHTML}
 								</code>
@@ -381,7 +381,7 @@
 				if (specMessage !== "" && spec.failOrigin.length) {
 					specMessageHtml =
 						`<div>${spec.failOrigin[0].Raw_Trace}</div>
-						<div class="pl-5">
+						<div class="pl-5 bg-light mb-2">
 							<code>
 								${spec.failOrigin[0].codePrintHTML}
 							</code>
