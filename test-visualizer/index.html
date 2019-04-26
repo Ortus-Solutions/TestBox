@@ -60,10 +60,13 @@
 						);
 						console.log("Request Failed: " + err);
 					});
-
-				$(".expand-collapse").click(function(event) {
-					let icon = $(this).children(".svg-inline--fa");
-					var icon_fa_icon = icon.attr("data-icon");
+				
+				$(".accordion").on("click", ".expand-collapse", function(event) {
+					let button = $(this).find(".toggle");
+					let button_target = button.attr("data-target");
+					let icon = button.find(".svg-inline--fa");
+					let icon_fa_icon = icon.attr("data-icon");
+					$(button_target).collapse('toggle');
 
 					if (icon_fa_icon === "minus-square") {
 						icon.attr("data-icon", "plus-square");
@@ -74,7 +77,8 @@
 			});
 			$(window).on("load", function() {
 				// spec toggler
-				$("body").on("click", "span.spec-status", function() {
+				$("body").on("click", "span.spec-status", function( event ) {
+  				event.stopPropagation();
 					$(this)
 						.parent()
 						.children()
@@ -88,7 +92,7 @@
 
 				// spec reseter
 				$("body").on("click", "span.reset", function() {
-					resetSpecs();
+					resetSpecs( $(this) );
 				});
 
 				// Filter Bundles
@@ -115,11 +119,13 @@
 
 				// Bootstrap Collapse
 				$("body").on("click", "#collapse-bundles", function() {
-					$(".details-panel.show").collapse("hide");
+					$(".details-panel").collapse("hide");
+					$(".toggle svg.svg-inline--fa").attr("data-icon", "plus-square");
 				});
-
+					
 				$("body").on("click", "#expand-bundles", function() {
 					$(".details-panel:not(.show)").collapse("show");
+					$(".toggle svg.svg-inline--fa").attr("data-icon", "minus-square");
 				});
 			});
 
@@ -135,14 +141,14 @@
 					`<div class="list-group-item list-group-item-info p-2" id="coverageStats">
 						<div class="d-flex flex-fill justify-content-between align-items-stretch">
 							<div class="d-flex align-items-start flex-column">
-								<h3 class="mb-auto">Code Coverage Stats</h3>
+								<h3 class="mb-auto"><i class="fas fa-microscope"></i> Code Coverage Stats</h3>
+								${sonaqubeCoverageXML(coverageData.sonarQubeResults)}
 								${coverageBrowserReport(coverageData.browserResults)}
 							</div>
 							<div class="d-flex align-items-end flex-column">
 								<div class="mt-auto text-right">
-									<span class="h5">Total Files Processed:<span class="badge badge-info ml-1">46</span></span>
+									<span class="h5">Files Processed:<span class="badge badge-info ml-1">46</span></span>
 									<div class="d-inline-block ml-2">
-										<span class="h5">Total project coverage:</span>
 										<div class="d-inline-block align-bottom" style="width:200px;">
 											<div class="ml-1 progress position-relative" style="height: 1.4rem;">
 												<div class="progress-bar bg-danger" role="progressbar" style="width: ${totalCoveragePercent}%" aria-valuenow="${totalCoveragePercent}" aria-valuemin="0" aria-valuemax="100">
@@ -164,9 +170,18 @@
 
 			function coverageBrowserReport (coverageReport) {
 				return `
-					<h6 class="mt-1">
-						Coverage Browser generated in ${coverageReport}
-					</h6>`;
+					<h5 class="mt-2">
+						Coverage Browser generated in <br>
+            <span class="badge badge-info">${coverageReport}</span>
+					</h5>`;
+			}
+
+			function sonaqubeCoverageXML (sonarQubeResults) {
+				return `
+					<h5 class="mt-2">
+						SonarQube code coverage XML file generated in <br>
+	          <span class="badge badge-info">${sonarQubeResults}</span>
+					</h5>`;
 			}
 
 			function renderTestResultsStats(data) {
@@ -268,7 +283,7 @@
             <h5 class="mb-0 clearfix">
               ${bundleStat.name} (${bundleStat.totalDuration} ms)
 							<button
-								class="btn btn-link float-right py-0"
+								class="btn btn-link float-right py-0 toggle"
 								style="text-decoration: none;"
 								type="button"
 								data-toggle="collapse"
@@ -300,7 +315,11 @@
 								data-status="skipped"
 								data-bundleid="${bundleStat.id}"
 								><i class="fas fa-minus-circle"></i> Skipped: ${bundleStat.totalSkipped}</span>
-							<span class="reset btn btn-sm btn-dark" title="Clear status filters"><i class="fas fa-broom"></i> Reset</span>
+							<span
+								class="reset btn btn-sm btn-dark"
+								title="Clear status filters"								
+								data-bundleid="${bundleStat.id}"
+								><i class="fas fa-broom"></i> Reset</span>
 						</div>
 						<h5 class="d-inline-block">
 							<span>Suites:<span class="badge badge-info ml-1">${bundleStat.totalSuites}</span></span>
@@ -402,17 +421,17 @@
 			}
 
 			function debounce(func, wait, immediate) {
-				var timeout;
+				let timeout;
 				return function() {
-					var context = this,
+					let context = this,
 						args = arguments;
-					var later = function() {
+					let later = function() {
 						timeout = null;
 						if (!immediate) {
 							func.apply(context, args);
 						}
 					};
-					var callNow = immediate && !timeout;
+					let callNow = immediate && !timeout;
 					clearTimeout(timeout);
 					timeout = setTimeout(later, wait);
 					if (callNow) {
@@ -421,13 +440,26 @@
 				};
 			}
 
-			function resetSpecs() {
-				$("li.spec").each(function() {
-					$(this).show();
-				});
-				$("ul.suite").each(function() {
-					$(this).show();
-				});
+			function resetSpecs(element) {
+
+				let selector = $( "li.spec, ul.suite" );
+
+				if ( element.attr( 'data-bundleid' ) ) {
+					selector = $( `#details_${element.attr( 'data-bundleid' )}` );
+					selector.find( "li.spec" ).each(function() {
+						$( this ).show();
+					});
+					selector.find( "ul.suite" ).each(function() {
+						$( this ).show();
+					});
+					selector.collapse("show");
+				}
+				else {
+					selector.each(function() {
+						$( this ).show();
+					});
+					$( ".details-panel" ).collapse("show");				
+				}
 			}
 
 			function toggleSpecs(type, bundleID) {
@@ -457,10 +489,6 @@
 					$this.show();
 					$this.parents().show();
 				}
-			}
-
-			function toggleDebug(specid) {
-				$(`#btn_${specid}`).toggleClass("collapsed");
 			}
 
 			function statusToBootstrapClass(status) {
@@ -506,10 +534,10 @@
 					<input class="d-inline col-7 ml-2 form-control float-right mb-1" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
 					<div class="buttonBar mb-1 float-right">
 						<button id="collapse-bundles" class="ml-1 btn btn-sm btn-primary float-right" title="Collapse all bundles">
-								<svg class="svg-inline--fa fa-minus-square fa-w-14" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="minus-square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zM92 296c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h264c6.6 0 12 5.4 12 12v56c0 6.6-5.4 12-12 12H92z"></path></svg><!-- <i class="fas fa-minus-square"></i> --> Collapse All Bundles
+							<i class="fas fa-minus-square"></i> Collapse All Bundles
 						</button>
 						<button id="expand-bundles" class="ml-1 btn btn-sm btn-primary float-right" title="Expand all bundles">
-								<svg class="svg-inline--fa fa-plus-square fa-w-14" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="plus-square" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-32 252c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92H92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"></path></svg><!-- <i class="fas fa-plus-square"></i> --> Expand All Bundles
+							<i class="fas fa-plus-square"></i> Expand All Bundles
 						</button>
 					</div>
 				</div>
