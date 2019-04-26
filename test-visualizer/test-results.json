@@ -1597,8 +1597,8 @@
 	"totalSkipped": 0,
 	"totalFail": 2,
 	"totalSpecs": 11,
-	"excludes": [],
-	"labels": [],
+	"excludes": ["exclude1", "exclude2"],
+	"labels": ["label1", "label2"],
 	"resultID": "",
 	"endTime": 1553009673188,
 	"coverage": {

@@ -19,16 +19,16 @@
 	</cfif>
 				<div class="container-fluid my-3">
 					<!--- Filter--->
-					<div class="row clearfix">
-						<div class="col-5">
+					<div class="d-flex justify-content-between align-items-end">
+						<div>
 							<!--- Header --->
 							<div>
 								<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75">
 								<span class="badge badge-info">v#testbox.getVersion()#</span>
 							</div>
 						</div>
-						<div class="col-7">
-							<input class="d-inline col-7 ml-2 form-control float-right mb-1 mt-4" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
+						<div>
+							<input class="d-inline col-7 ml-2 form-control float-right mb-1" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
 							<div class="buttonBar mb-1 float-right">
 								<a 	class="ml-1 btn btn-sm btn-primary float-right"
 									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&opt_run=true"
@@ -87,25 +87,25 @@
 
 							<div>
 								<span
-									class="specStatus btn btn-sm btn-success passed"
+									class="specStatus btn btn-sm btn-success Passed"
 									data-status="passed"
 								>
 									<i class="fas fa-check"></i> Pass: #results.getTotalPass()#
 								</span>
 								<span
-									class="specStatus btn btn-sm btn-warning failed"
+									class="specStatus btn btn-sm btn-warning Failed"
 									data-status="failed"
 								>
 									<i class="fas fa-exclamation-triangle"></i> Failures: #results.getTotalFail()#
 								</span>
 								<span
-									class="specStatus btn btn-sm btn-danger error"
+									class="specStatus btn btn-sm btn-danger Error"
 									data-status="error"
 								>
 									<i class="fas fa-times"></i> Errors: #results.getTotalError()#
 								</span>
 								<span
-									class="specStatus btn btn-sm btn-secondary skipped"
+									class="specStatus btn btn-sm btn-secondary Skipped"
 									data-status="skipped"
 								>
 									<i class="fas fa-minus-circle"></i> Skipped: #results.getTotalSkipped()#
@@ -141,25 +141,25 @@
 										</h5>
 										<div class="float-right">
 											<span
-												class="specStatus btn btn-sm btn-success passed"
+												class="specStatus btn btn-sm btn-success Passed"
 												data-status="passed" data-bundleid="#thisBundle.id#"
 											>
 												<i class="fas fa-check"></i> Pass: #thisBundle.totalPass#
 											</span>
 											<span
-												class="specStatus btn btn-sm btn-warning failed"
+												class="specStatus btn btn-sm btn-warning Failed"
 												data-status="failed" data-bundleid="#thisBundle.id#"
 											>
 												<i class="fas fa-exclamation-triangle"></i> Failures: #thisBundle.totalFail#
 											</span>
 											<span
-												class="specStatus btn btn-sm btn-danger error"
+												class="specStatus btn btn-sm btn-danger Error"
 												data-status="error" data-bundleid="#thisBundle.id#"
 											>
 												<i class="fas fa-times"></i> Errors: #thisBundle.totalError#
 											</span>
 											<span
-												class="specStatus btn btn-sm btn-secondary skipped"
+												class="specStatus btn btn-sm btn-secondary Skipped"
 												data-status="skipped" data-bundleid="#thisBundle.id#"
 											>
 												<i class="fas fa-minus-circle"></i> Skipped: #thisBundle.totalSkipped#
