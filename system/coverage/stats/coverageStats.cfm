@@ -59,7 +59,7 @@
 							id="btn_coverageStats"
 							title="Show coverage stats"
 						>
-							<i class="fas fa-minus-square"></i>
+							<i class="fas fa-plus-square"></i>
 						</button>
 					</div>
 					<div class="mt-auto text-right">
