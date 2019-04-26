@@ -3,23 +3,6 @@
  --->
 <cfset ASSETS_DIR=expandPath( "/testbox/system/reports/assets" )>
 <cfoutput>
-<cfif fullPage>
-	<!DOCTYPE html>
-	<html>
-		<head>
-			<meta charset="utf-8">
-			<meta name="generator" content="TestBox v#testbox.getVersion()#">
-			<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
-
-			<style>#fileRead( '#ASSETS_DIR#/css/main.css' )#</style>
-			<script>#fileRead( '#ASSETS_DIR#/js/jquery-3.3.1.min.js' )#</script>
-			<script>#fileRead( '#ASSETS_DIR#/js/popper.min.js' )#</script>
-			<script>#fileRead( '#ASSETS_DIR#/js/bootstrap.min.js' )#</script>
-			<script>#fileRead( '#ASSETS_DIR#/js/stupidtable.min.js' )#</script>
-			<script>#fileRead( '#ASSETS_DIR#/js/fontawesome.js' )#</script>
-		</head>
-		<body>
-</cfif>
 <cfif isDefined( 'stats' )>
 	<cfset totalProjectCoverage = numberFormat( stats.percTotalCoverage * 100, '9.9' )>
 	<div class="list-group mb-2">
@@ -131,10 +114,3 @@
 	</div>
 </cfif>
 </cfoutput>
-<cfif fullPage>
-		<script>
-			$( document ).ready( function() { });
-			</script>
-		</body>
-	</html>
-</cfif>
