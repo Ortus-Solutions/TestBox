@@ -3,28 +3,14 @@
  --->
 <cfset ASSETS_DIR=expandPath( "/testbox/system/reports/assets" )>
 <cfoutput>
-<cfif fullPage>
-	<!DOCTYPE html>
-	<html>
-		<head>
-			<meta charset="utf-8">
-			<meta name="generator" content="TestBox v#testbox.getVersion()#">
-			<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
-
-			<style>#fileRead( '#ASSETS_DIR#/css/main.css' )#</style>
-			<script>#fileRead( '#ASSETS_DIR#/js/jquery-3.3.1.min.js' )#</script>
-			<script>#fileRead( '#ASSETS_DIR#/js/popper.min.js' )#</script>
-			<script>#fileRead( '#ASSETS_DIR#/js/bootstrap.min.js' )#</script>
-			<script>#fileRead( '#ASSETS_DIR#/js/stupidtable.min.js' )#</script>
-			<script>#fileRead( '#ASSETS_DIR#/js/fontawesome.js' )#</script>
-		</head>
-		<body>
-</cfif>
 <cfif isDefined( 'stats' )>
 	<cfset totalProjectCoverage = numberFormat( stats.percTotalCoverage * 100, '9.9' )>
 	<div class="list-group mb-2">
-		<div class="list-group-item list-group-item-info p-2" id="coverageStats">
-			<div class="d-flex flex-fill justify-content-between align-items-stretch" onclick="toggleDebug( 'coverageStats' )">
+		<div
+			class="list-group-item list-group-item-info p-2 expand-collapse"
+			id="coverageStats"
+		>
+			<div class="d-flex flex-fill justify-content-between align-items-stretch">
 				<div class="d-flex align-items-start flex-column">
 					<h3 class="mb-auto">
 						<i class="fas fa-microscope"></i> Code Coverage Stats
@@ -48,9 +34,12 @@
 					<div class="text-right">
 						<button
 							class="btn btn-link py-0 expand-collapse collapsed"
+							data-toggle="collapse"
+							data-target="##coverage-stats"
+							aria-expanded="false"
+							aria-controls="coverage-stats"
 							style="text-decoration: none;"
 							id="btn_coverageStats"
-							onclick="toggleDebug( 'coverageStats' )"
 							title="Show coverage stats"
 						>
 							<i class="fas fa-plus-square"></i>
@@ -75,7 +64,7 @@
 				</div>
 			</div>
 
-			<div class="debugdata mt-2" <cfif !fullPage>style="display:none;" </cfif>data-specid="coverageStats">
+			<div id="coverage-stats" class="debugdata mt-2 collapse" data-specid="coverageStats">
 				<ul class="list-group">
 
 					<li class="list-group-item">
@@ -125,35 +114,3 @@
 	</div>
 </cfif>
 </cfoutput>
-<cfif fullPage>
-		<script>
-			$( document ).ready( function() {
-				$(".expand-collapse").click(function (event) {
-					let icon = $(this).children(".svg-inline--fa");
-					var icon_fa_icon = icon.attr('data-icon');
-
-					if (icon_fa_icon === "minus-square") {
-							icon.attr('data-icon', 'plus-square');
-					} else if (icon_fa_icon === "plus-square") {
-							icon.attr('data-icon', 'minus-square');
-					}
-				});
-			});
-
-			function toggleDebug(specid) {
-				$( `#btn_${specid}` ).toggleClass( "collapsed" );
-				$( "div.debugdata" ).each( function() {
-					var $this = $( this );
-
-					// if bundleid passed and not the same bundle
-					if ( specid != undefined && $this.attr( "data-specid" ) != specid ) {
-						return;
-					}
-					// toggle.
-					$this.slideToggle();
-				});
-			}
-			</script>
-		</body>
-	</html>
-</cfif>

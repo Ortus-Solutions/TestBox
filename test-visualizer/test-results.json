@@ -1603,7 +1603,7 @@
 	"endTime": 1553009673188,
 	"coverage": {
 		"data": {
-			"sonarQubeResults": "",
+			"sonarQubeResults": "/Users/iurquiza/Projects/ortus/TestBox/tests/results/sonarQubeResults",
 			"browserResults": "/Users/iurquiza/Projects/ortus/TestBox/tests/results/coverageReport",
 			"stats": {
 				"totalCoveredLines": 1253,

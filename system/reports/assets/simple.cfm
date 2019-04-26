@@ -87,25 +87,25 @@
 
 							<div>
 								<span
-									class="specStatus btn btn-sm btn-success Passed"
+									class="spec-status btn btn-sm btn-success Passed"
 									data-status="passed"
 								>
 									<i class="fas fa-check"></i> Pass: #results.getTotalPass()#
 								</span>
 								<span
-									class="specStatus btn btn-sm btn-warning Failed"
+									class="spec-status btn btn-sm btn-warning Failed"
 									data-status="failed"
 								>
 									<i class="fas fa-exclamation-triangle"></i> Failures: #results.getTotalFail()#
 								</span>
 								<span
-									class="specStatus btn btn-sm btn-danger Error"
+									class="spec-status btn btn-sm btn-danger Error"
 									data-status="error"
 								>
 									<i class="fas fa-times"></i> Errors: #results.getTotalError()#
 								</span>
 								<span
-									class="specStatus btn btn-sm btn-secondary Skipped"
+									class="spec-status btn btn-sm btn-secondary Skipped"
 									data-status="skipped"
 								>
 									<i class="fas fa-minus-circle"></i> Skipped: #results.getTotalSkipped()#
@@ -132,8 +132,6 @@
 									<div
 										class="card-header"
 										id="header_#thisBundle.id#"
-										data-toggle="collapse"
-										data-target="##details_#thisBundle.id#"
 									>
 										<h5 class="mb-0 clearfix">
 											<!--- bundle stats --->
@@ -158,31 +156,32 @@
 										</h5>
 										<div class="float-right">
 											<span
-												class="specStatus btn btn-sm btn-success Passed"
+												class="spec-status btn btn-sm btn-success Passed"
 												data-status="passed" data-bundleid="#thisBundle.id#"
 											>
 												<i class="fas fa-check"></i> Pass: #thisBundle.totalPass#
 											</span>
 											<span
-												class="specStatus btn btn-sm btn-warning Failed"
+												class="spec-status btn btn-sm btn-warning Failed"
 												data-status="failed" data-bundleid="#thisBundle.id#"
 											>
 												<i class="fas fa-exclamation-triangle"></i> Failures: #thisBundle.totalFail#
 											</span>
 											<span
-												class="specStatus btn btn-sm btn-danger Error"
+												class="spec-status btn btn-sm btn-danger Error"
 												data-status="error" data-bundleid="#thisBundle.id#"
 											>
 												<i class="fas fa-times"></i> Errors: #thisBundle.totalError#
 											</span>
 											<span
-												class="specStatus btn btn-sm btn-secondary Skipped"
+												class="spec-status btn btn-sm btn-secondary Skipped"
 												data-status="skipped" data-bundleid="#thisBundle.id#"
 											>
 												<i class="fas fa-minus-circle"></i> Skipped: #thisBundle.totalSkipped#
 											</span>
 											<span
 												class="reset btn btn-sm btn-dark"
+												data-bundleid="#thisBundle.id#"
 												title="Clear status filters"
 											>
 												<i class="fas fa-broom"></i> Reset
@@ -205,7 +204,9 @@
 
 												<!--- Global Exception --->
 												<cfif !isSimpleValue( thisBundle.globalException )>
-													<li class="list-group-item list-group-item-danger">
+													<li
+														class="list-group-item list-group-item-danger"
+														>
 														<span class="h5">
 															<strong>
 																<i class="fas fa-times"></i> Global Bundle Exception
@@ -213,9 +214,12 @@
 														</span>
 														<button
 															class="btn btn-link float-right py-0 expand-collapse collapsed"
+															data-toggle="collapse"
+															data-target="##globalException_#thisBundle.id#"
+															aria-expanded="false"
+															aria-controls="globalException_#thisBundle.id#"
 															style="text-decoration: none;"
 															id="btn_globalException_#thisBundle.id#"
-															onclick="toggleDebug( 'globalException_#thisBundle.id#' )"
 															title="Show more information"
 														>
 															<i class="fas fa-plus-square"></i>
@@ -226,7 +230,7 @@
 																<code>#thisBundle.globalException.TagContext[ 1 ].codePrintHTML#</code>
 															</cfif>
 														</div>
-														<div class="my-2 debugdata" style="display:none;" data-specid="globalException_#thisBundle.id#">
+														<div class="my-2 collapse details-panel" id="globalException_#thisBundle.id#" data-specid="globalException_#thisBundle.id#">
 															<cfdump var="#thisBundle.globalException#" />
 														</div>
 													</li>
@@ -241,8 +245,6 @@
 												<cfif arrayLen( thisBundle.debugBuffer )>
 													<li
 														class="list-group-item list-group-item-primary pt-2 pb-1 mt-4"
-														onclick="toggleDebug( '#thisBundle.id#' )"
-														style="cursor:pointer"
 														title="Toggle Debug Stream"
 													>
 														<span class="alert-link h5 text-info">
@@ -251,15 +253,18 @@
 
 														<button
 															class="btn btn-link float-right py-0 expand-collapse collapsed"
+															data-toggle="collapse"
+															data-target="##debugdata_#thisBundle.id#"
+															aria-expanded="false"
+															aria-controls="debugdata_#thisBundle.id#"
 															style="text-decoration: none;"
 															id="btn_#thisBundle.id#"
-															onclick="toggleDebug( '#thisBundle.id#' )"
 															title="Toggle the test debug stream"
 														>
 															<i class="fas fa-plus-square"></i>
 														</button>
 
-														<div class="my-2 debugdata bg-light border border-success p-2" style="display:none;" data-specid="#thisBundle.id#">
+														<div id="debugdata_#thisBundle.id#" class="my-2 bg-light border border-success p-2 collapse" data-specid="#thisBundle.id#">
 															<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
 															<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
 																<h6>#thisDebug.label#</h6>
@@ -280,7 +285,7 @@
 <script>
 $( document ).ready( function() {
 	// spec toggler
-	$( "span.specStatus" ).click( function() {
+	$( "span.spec-status" ).click( function() {
 		$( this ).parent().children().removeClass( "active" );
 		$( this ).addClass( "active" );
 		toggleSpecs( $( this ).attr( "data-status" ), $( this ).attr( "data-bundleid" ) );
@@ -288,14 +293,14 @@ $( document ).ready( function() {
 
 	// spec reseter
 	$( "span.reset" ).click(function() {
-		resetSpecs();
+		resetSpecs( $(this) );
 	});
 
 	// Filter Bundles
 	$( "#bundleFilter" ).keyup( debounce( function() {
-		var targetText = $( this ).val().toLowerCase();
+		let targetText = $( this ).val().toLowerCase();
 		$( ".bundle" ).each( function( index ) {
-			var bundle = $( this ).data( "bundle" ).toLowerCase();
+			let bundle = $( this ).data( "bundle" ).toLowerCase();
 			if ( bundle.search( targetText ) < 0 ) {
 				// hide it
 				$( this ).hide();
@@ -308,39 +313,47 @@ $( document ).ready( function() {
 	$( "#bundleFilter" ).focus();
 
 	// Bootstrap Collapse
-	$( "#collapse-bundles" ).click( function() {
-		$( ".details-panel.show" ).collapse( "hide" );
+	$("body").on("click", "#collapse-bundles", function() {
+		$(".details-panel").collapse("hide");
+		$(".card-header button.expand-collapse > svg.svg-inline--fa").attr("data-icon", "plus-square");
+	});
+		
+	$("body").on("click", "#expand-bundles", function() {
+		$(".details-panel:not(.show)").collapse("show");
+		$(".card-header button.expand-collapse > svg.svg-inline--fa").attr("data-icon", "minus-square");
 	});
 
-	$( "#expand-bundles" ).click(function() {
-		$( ".details-panel:not(.show)" ).collapse( "show" );
-	});
-
-	$(".expand-collapse").click(function (event) {
-		let icon = $(this).children(".svg-inline--fa");
-		var icon_fa_icon = icon.attr('data-icon');
-
-		if (icon_fa_icon === "minus-square") {
-				icon.attr('data-icon', 'plus-square');
-		} else if (icon_fa_icon === "plus-square") {
-				icon.attr('data-icon', 'minus-square');
-		}
+	$( "body" ).on("click", ".expand-collapse", function() {
+		$this = $( this )
+		let target_id = $this.attr( 'data-target' );
+		toggleButton( $this );
 	});
 
 });
 
+function toggleButton( element ) {
+	let icon = element.find( ".svg-inline--fa" );
+	let icon_fa_icon = icon.attr( 'data-icon' );
+
+	if (icon_fa_icon === "minus-square") {
+			icon.attr( 'data-icon', 'plus-square' );
+	} else if ( icon_fa_icon === "plus-square" ) {
+			icon.attr( 'data-icon', 'minus-square' );
+	}
+}
+
 function debounce( func, wait, immediate ) {
-	var timeout;
+	let timeout;
 	return function() {
-		var context = this,
+		let context = this,
 			args = arguments;
-		var later = function() {
+		let later = function() {
 			timeout = null;
 			if ( !immediate ) {
 				func.apply( context, args );
 			}
 		};
-		var callNow = immediate && !timeout;
+		let callNow = immediate && !timeout;
 		clearTimeout( timeout );
 		timeout = setTimeout( later, wait );
 		if ( callNow ) {
@@ -349,13 +362,25 @@ function debounce( func, wait, immediate ) {
 	};
 };
 
-function resetSpecs() {
-	$( "li.spec" ).each( function() {
+function resetSpecs(element) {
+
+	let selector = $( "li.spec, ul.suite" );
+
+	if ( element.attr( 'data-bundleid' ) ) {
+		selector = $( `#details_${element.attr( 'data-bundleid' )}` );
+		selector.find( "li.spec" ).each(function() {
+			$( this ).show();
+		});
+		selector.find( "ul.suite" ).each(function() {
+			$( this ).show();
+		});		
+		selector.collapse("show");
+	}
+
+	selector.each(function() {
 		$( this ).show();
 	});
-	$( "ul.suite" ).each(function() {
-		$( this ).show();
-	});
+	$( ".details-panel" ).collapse("show");
 }
 
 function toggleSpecs( type, bundleID ) {
@@ -369,7 +394,7 @@ function toggleSpecs( type, bundleID ) {
 
 function handleToggle( target, bundleID, type ) {
 	type = capitalizeFirstLetter( type );
-	var $this = target;
+	let $this = target;
 
 	// if bundleid passed and not the same bundle, skip
 	if ( bundleID != undefined && $this.attr( "data-bundleid" ) != bundleID ) {
@@ -383,20 +408,6 @@ function handleToggle( target, bundleID, type ) {
 		$this.show();
 		$this.parents().show();
 	}
-}
-
-function toggleDebug( specid ) {
-	$( `#btn_${specid}` ).toggleClass( "collapsed" );
-	$( "div.debugdata" ).each(function() {
-		var $this = $( this );
-
-		// if bundleid passed and not the same bundle
-		if ( specid != undefined && $this.attr("data-specid") != specid ) {
-			return;
-		}
-		// toggle.
-		$this.slideToggle();
-	});
 }
 
 function capitalizeFirstLetter(string) {
@@ -480,10 +491,12 @@ code {
 								<cfif structKeyExists( local.thisSpec, "message" )>
 									- <strong>#encodeForHTML( local.thisSpec.message )#</strong></a>
 									<button
-										class="btn btn-link float-right py-0 expand-collapse collapsed"
+										class="btn btn-link float-right py-0 expand-collapse collapsed"data-toggle="collapse"
+										data-target="##failure_error_#local.thisSpec.id#"
+										aria-expanded="false"
+										aria-controls="failure_error_#local.thisSpec.id#"
 										style="text-decoration: none;"
 										id="btn_#local.thisSpec.id#"
-										onclick="toggleDebug( '#local.thisSpec.id#' )"
 										title="Show more information"
 									>
 										<i class="fas fa-plus-square"></i>
@@ -491,9 +504,7 @@ code {
 								</cfif>
 							</div>
 							<cfif structKeyExists( local.thisSpec, "message" )>
-								<div
-									onclick="toggleDebug( '#local.thisSpec.id#' )"
-								>
+								<div>
 									<cfif arrayLen( local.thisSpec.failOrigin )>
 										<div><pre>#local.thisSpec.failOrigin[ 1 ].raw_trace#</pre></div>
 										<div class="pl-5 mb-2 bg-light">
@@ -502,7 +513,7 @@ code {
 											</cfif>
 										</div>
 									</cfif>
-									<div class="my-2 debugdata" style="display:none;" data-specid="#local.thisSpec.id#">
+									<div id="failure_error_#local.thisSpec.id#" class="my-2 collapse" data-specid="#local.thisSpec.id#">
 										<cfdump var="#local.thisSpec.failorigin#" label="Failure Origin">
 									</div>
 								</div>
