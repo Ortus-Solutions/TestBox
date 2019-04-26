@@ -129,13 +129,30 @@
 
 								<!--- Bundle div --->
 								<div class="bundle card" id="#thisBundle.path#" data-bundle="#thisBundle.path#">
-									<div class="card-header" id="header_#thisBundle.id#">
+									<div
+										class="card-header"
+										id="header_#thisBundle.id#"
+										data-toggle="collapse"
+										data-target="##details_#thisBundle.id#"
+									>
 										<h5 class="mb-0 clearfix">
 											<!--- bundle stats --->
-											<a class="alert-link h5" href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true" title="Run only this bundle">
-												#thisBundle.path# (#thisBundle.totalDuration# ms)
+											<a
+												class="alert-link h5"
+												href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true"
+												title="Run only this bundle"
+											>
+												#thisBundle.path# (#numberFormat( thisBundle.totalDuration )# ms)
 											</a>
-											<button class="btn btn-link float-right py-0 expand-collapse" style="text-decoration: none;" type="button" data-toggle="collapse" data-target="##details_#thisBundle.id#" aria-expanded="false" aria-controls="details_#thisBundle.id#">
+											<button
+													class="btn btn-link float-right py-0 expand-collapse"
+													style="text-decoration: none;"
+													type="button"
+													data-toggle="collapse"
+													data-target="##details_#thisBundle.id#"
+													aria-expanded="false"
+													aria-controls="details_#thisBundle.id#"
+												>
 												<i class="fas fa-minus-square"></i>
 											</button>
 										</h5>
@@ -176,16 +193,31 @@
 											<span class="ml-3">Specs:<span class="badge badge-info ml-1">#thisBundle.totalSpecs#</span></span>
 										</h5>
 									</div>
-									<div id="details_#thisBundle.id#" class="collapse details-panel show" aria-labelledby="header_#thisBundle.id#" data-bundle="#thisBundle.path#">
+
+									<div
+										id="details_#thisBundle.id#"
+										class="collapse details-panel show"
+										aria-labelledby="header_#thisBundle.id#"
+										data-bundle="#thisBundle.path#"
+									>
 										<div class="card-body">
 											<ul class="suite list-group">
+
 												<!--- Global Exception --->
 												<cfif !isSimpleValue( thisBundle.globalException )>
 													<li class="list-group-item list-group-item-danger">
 														<span class="h5">
-															<strong><i class="fas fa-times"></i> Global Bundle Exception</strong>(#thisBundle.totalDuration# ms)
+															<strong>
+																<i class="fas fa-times"></i> Global Bundle Exception
+															</strong>(#numberFormat( thisBundle.totalDuration )# ms)
 														</span>
-														<button class="btn btn-link float-right py-0 expand-collapse collapsed" style="text-decoration: none;" id="btn_globalException_#thisBundle.id#" onclick="toggleDebug( 'globalException_#thisBundle.id#' )" title="Show more information">
+														<button
+															class="btn btn-link float-right py-0 expand-collapse collapsed"
+															style="text-decoration: none;"
+															id="btn_globalException_#thisBundle.id#"
+															onclick="toggleDebug( 'globalException_#thisBundle.id#' )"
+															title="Show more information"
+														>
 															<i class="fas fa-plus-square"></i>
 														</button>
 														<div>#thisBundle.globalException.Message#</div>
@@ -199,6 +231,7 @@
 														</div>
 													</li>
 												</cfif>
+
 												<!-- Iterate over bundle suites -->
 												<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
 													#genSuiteReport( suiteStats, thisBundle )#
@@ -206,7 +239,12 @@
 
 												<!--- Debug Panel --->
 												<cfif arrayLen( thisBundle.debugBuffer )>
-													<li class="list-group-item list-group-item-primary pt-2 pb-1 mt-4">
+													<li
+														class="list-group-item list-group-item-primary pt-2 pb-1 mt-4"
+														onclick="toggleDebug( '#thisBundle.id#' )"
+														style="cursor:pointer"
+														title="Toggle Debug Stream"
+													>
 														<span class="alert-link h5 text-info">
 															<strong><i class="fas fa-bug"></i> Debug Stream</strong>
 														</span>
@@ -413,9 +451,13 @@ code {
 		<cfoutput>
 			<li class="list-group-item #suiteStats.status#" data-bundleid="#suiteStats.bundleID#">
 				<!--- Suite Results --->
-				<a class="alert-link text-#statusToBootstrapClass( suiteStats.status )#" title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#" href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
+				<a
+					class="alert-link text-#statusToBootstrapClass( suiteStats.status )#"
+					title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#"
+					href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true"
+				>
 					#statusToIcon( arguments.suiteStats.status )# <strong>#arguments.suiteStats.name#</strong>
-					(#arguments.suiteStats.totalDuration# ms)
+					(#numberFormat( arguments.suiteStats.totalDuration )# ms)
 				</a>
 				<ul class="list-group">
 					<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
@@ -423,8 +465,11 @@ code {
 
 						<li class="spec list-group-item #local.thisSpec.status#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
 							<div class="clearfix">
-								<a class="alert-link text-#statusToBootstrapClass( local.thisSpec.status )#" href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true">
-									#statusToIcon( local.thisSpec.status )# #local.thisSpec.name# (#local.thisSpec.totalDuration# ms)
+								<a
+									class="alert-link text-#statusToBootstrapClass( local.thisSpec.status )#"
+									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true"
+								>
+									#statusToIcon( local.thisSpec.status )# #local.thisSpec.name# (#numberFormat( local.thisSpec.totalDuration )# ms)
 								</a>
 								<cfif local.thisSpec.status eq "failed">
 									<cfset local.thisSpec.message = local.thisSpec.failMessage>
@@ -434,7 +479,13 @@ code {
 								</cfif>
 								<cfif structKeyExists( local.thisSpec, "message" )>
 									- <strong>#encodeForHTML( local.thisSpec.message )#</strong></a>
-									<button class="btn btn-link float-right py-0 expand-collapse collapsed" style="text-decoration: none;" id="btn_#local.thisSpec.id#" onclick="toggleDebug( '#local.thisSpec.id#' )" title="Show more information">
+									<button
+										class="btn btn-link float-right py-0 expand-collapse collapsed"
+										style="text-decoration: none;"
+										id="btn_#local.thisSpec.id#"
+										onclick="toggleDebug( '#local.thisSpec.id#' )"
+										title="Show more information"
+									>
 										<i class="fas fa-minus-square"></i>
 									</button>
 								</cfif>

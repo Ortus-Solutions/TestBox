@@ -24,31 +24,41 @@
 	<cfset totalProjectCoverage = numberFormat( stats.percTotalCoverage * 100, '9.9' )>
 	<div class="list-group mb-2">
 		<div class="list-group-item list-group-item-info p-2" id="coverageStats">
-			<div class="d-flex flex-fill justify-content-between align-items-stretch">
+			<div class="d-flex flex-fill justify-content-between align-items-stretch" onclick="toggleDebug( 'coverageStats' )">
 				<div class="d-flex align-items-start flex-column">
-					<h3 class="mb-auto">Code Coverage Stats</h3>
+					<h3 class="mb-auto">
+						<i class="fas fa-microscope"></i> Code Coverage Stats
+					</h3>
+
 					<cfif len( coverageData.sonarQubeResults ) >
-						<h6 class="mt-2">
-							SonarQube code coverage XML file generated in #coverageData.sonarQubeResults#
-						</h6>
+						<h5 class="mt-2">
+							SonarQube code coverage XML file generated in <br>
+							<span class="badge badge-info">#coverageData.sonarQubeResults#</span>
+						</h5>
 					</cfif>
 
 					<cfif len( coverageData.browserResults ) >
-						<h6 class="mt-1">
-							Coverage Browser generated in #coverageData.browserResults#
-						</h6>
+						<h5 class="mt-1">
+							Coverage Browser generated in <br>
+							<span class="badge badge-info">#coverageData.browserResults#</span>
+						</h5>
 					</cfif>
 				</div>
 				<div class="d-flex align-items-end flex-column">
 					<div class="text-right">
-						<button class="btn btn-link py-0 expand-collapse collapsed" style="text-decoration: none;" id="btn_coverageStats" onclick="toggleDebug( 'coverageStats' )" title="Show coverage stats">
+						<button
+							class="btn btn-link py-0 expand-collapse collapsed"
+							style="text-decoration: none;"
+							id="btn_coverageStats"
+							onclick="toggleDebug( 'coverageStats' )"
+							title="Show coverage stats"
+						>
 							<i class="fas fa-plus-square"></i>
 						</button>
 					</div>
 					<div class="mt-auto text-right">
-						<span class="h5">Total Files Processed:<span class="badge badge-info ml-1">#stats.numFiles#</span></span>
+						<span class="h5">Files Processed:<span class="badge badge-info ml-1">#stats.numFiles#</span></span>
 						<div class="d-inline-block ml-2">
-							<span class="h5">Total project coverage:</span>
 							<div class="d-inline-block align-bottom" style="width:200px;">
 								<div class="ml-1 progress position-relative" style="height: 1.4rem;">
 									<div class="progress-bar bg-#codeBrowser.percentToContextualClass(totalProjectCoverage)#" role="progressbar" style="width: #totalProjectCoverage#%" aria-valuenow="#totalProjectCoverage#" aria-valuemin="0" aria-valuemax="100">
@@ -65,7 +75,7 @@
 				</div>
 			</div>
 
-			<div class="debugdata" <cfif !fullPage>style="display:none;" </cfif>data-specid="coverageStats">
+			<div class="debugdata mt-2" <cfif !fullPage>style="display:none;" </cfif>data-specid="coverageStats">
 				<ul class="list-group">
 
 					<li class="list-group-item">
