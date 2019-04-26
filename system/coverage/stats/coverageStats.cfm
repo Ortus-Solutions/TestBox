@@ -22,43 +22,48 @@
 </cfif>
 <cfif isDefined( 'stats' )>
 	<cfset totalProjectCoverage = numberFormat( stats.percTotalCoverage * 100, '9.9' )>
-	<div class="list-group mb-3">
+	<div class="list-group mb-2">
 		<div class="list-group-item list-group-item-info p-2" id="coverageStats">
-			<h3 class="clearfix">
-				<span>Code Coverage Stats</span>
-				<div class="mt-2 h5 float-right">
-					<button class="btn btn-link float-right py-0 expand-collapse collapsed" style="text-decoration: none;" id="btn_coverageStats" onclick="toggleDebug( 'coverageStats' )" title="Show coverage stats">
-						<i class="fas fa-plus-square"></i>
-					</button>
-					<span class="ml-2 float-right">
-						<span class="h5 float-left">Total project coverage:</span>
-						<div class="float-left" style="width:200px;">
-							<div class="ml-1 progress position-relative" style="height: 1.4rem;">
-								<div class="progress-bar bg-#codeBrowser.percentToContextualClass(totalProjectCoverage)#" role="progressbar" style="width: #totalProjectCoverage#%" aria-valuenow="#totalProjectCoverage#" aria-valuemin="0" aria-valuemax="100">
+			<div class="d-flex flex-fill justify-content-between align-items-stretch">
+				<div class="d-flex align-items-start flex-column">
+					<h3 class="mb-auto">Code Coverage Stats</h3>
+					<cfif len( coverageData.sonarQubeResults ) >
+						<h6 class="mt-2">
+							SonarQube code coverage XML file generated in #coverageData.sonarQubeResults#
+						</h6>
+					</cfif>
+
+					<cfif len( coverageData.browserResults ) >
+						<h6 class="mt-1">
+							Coverage Browser generated in #coverageData.browserResults#
+						</h6>
+					</cfif>
+				</div>
+				<div class="d-flex align-items-end flex-column">
+					<div class="text-right">
+						<button class="btn btn-link py-0 expand-collapse collapsed" style="text-decoration: none;" id="btn_coverageStats" onclick="toggleDebug( 'coverageStats' )" title="Show coverage stats">
+							<i class="fas fa-plus-square"></i>
+						</button>
+					</div>
+					<div class="mt-auto text-right">
+						<span class="h5">Total Files Processed:<span class="badge badge-info ml-1">#stats.numFiles#</span></span>
+						<div class="d-inline-block ml-2">
+							<span class="h5">Total project coverage:</span>
+							<div class="d-inline-block align-bottom" style="width:200px;">
+								<div class="ml-1 progress position-relative" style="height: 1.4rem;">
+									<div class="progress-bar bg-#codeBrowser.percentToContextualClass(totalProjectCoverage)#" role="progressbar" style="width: #totalProjectCoverage#%" aria-valuenow="#totalProjectCoverage#" aria-valuemin="0" aria-valuemax="100">
+									</div>
+									<div class="progress-bar bg-secondary" role="progressbar" style="width: #100 - totalProjectCoverage#%" aria-valuenow="#100 - totalProjectCoverage#" aria-valuemin="0" aria-valuemax="100">
+									</div>
+									<span class="justify-content-center text-light d-flex position-absolute w-100" style="line-height: 1.25rem; font-size: 1.2rem;">
+										#totalProjectCoverage#% coverage
+									</span>
 								</div>
-								<div class="progress-bar bg-secondary" role="progressbar" style="width: #100 - totalProjectCoverage#%" aria-valuenow="#100 - totalProjectCoverage#" aria-valuemin="0" aria-valuemax="100">
-								</div>
-								<span class="justify-content-center text-light d-flex position-absolute w-100" style="line-height: 1.25rem; font-size: 1.2rem;">
-									#totalProjectCoverage#% coverage
-								</span>
 							</div>
 						</div>
-					</span>
-					<span>Total Files Processed:<span class="badge badge-info ml-1">#stats.numFiles#</span></span>
+					</div>
 				</div>
-			</h3>
-
-			<cfif len( coverageData.sonarQubeResults ) >
-				<h6 class="mt-2">
-					SonarQube code coverage XML file generated in #coverageData.sonarQubeResults#
-				</h6>
-			</cfif>
-
-			<cfif len( coverageData.browserResults ) >
-				<h6 class="my-2">
-					Coverage Browser generated in #coverageData.browserResults#
-				</h6>
-			</cfif>
+			</div>
 
 			<div class="debugdata" <cfif !fullPage>style="display:none;" </cfif>data-specid="coverageStats">
 				<ul class="list-group">
@@ -124,7 +129,7 @@
 					}
 				});
 			});
-			
+
 			function toggleDebug(specid) {
 				$( `#btn_${specid}` ).toggleClass( "collapsed" );
 				$( "div.debugdata" ).each( function() {

@@ -39,7 +39,7 @@
 		<title>TestBox Runner</title>
 
 		<cfoutput>
-			<style>#fileRead( '#ASSETS_DIR#/css/bootstrap.min.css' )#</style>
+			<style>#fileRead( '#ASSETS_DIR#/css/main.css' )#</style>
 			<script>#fileRead( '#ASSETS_DIR#/js/jquery-3.3.1.min.js' )#</script>
 			<script>#fileRead( '#ASSETS_DIR#/js/popper.min.js' )#</script>
 			<script>#fileRead( '#ASSETS_DIR#/js/bootstrap.min.js' )#</script>
