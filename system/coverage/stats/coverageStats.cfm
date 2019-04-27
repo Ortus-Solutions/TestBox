@@ -7,10 +7,16 @@
 	<cfset totalProjectCoverage = numberFormat( stats.percTotalCoverage * 100, '9.9' )>
 	<div class="list-group mb-2">
 		<div
-			class="list-group-item list-group-item-info p-2 expand-collapse"
+			class="list-group-item list-group-item-info p-2"
 			id="coverageStats"
 		>
-			<div class="d-flex flex-fill justify-content-between align-items-stretch">
+			<div class="d-flex flex-fill justify-content-between align-items-stretch expand-collapse"
+				data-toggle="collapse"
+				data-target="##coverage-stats"
+				aria-expanded="false"
+				aria-controls="coverage-stats"
+				style="cursor: pointer;"
+			>
 				<div class="d-flex align-items-start flex-column">
 					<h3 class="mb-auto">
 						<i class="fas fa-microscope"></i> Code Coverage Stats
@@ -33,16 +39,12 @@
 				<div class="d-flex align-items-end flex-column">
 					<div class="text-right">
 						<button
-							class="btn btn-link py-0 expand-collapse collapsed"
-							data-toggle="collapse"
-							data-target="##coverage-stats"
-							aria-expanded="false"
-							aria-controls="coverage-stats"
+							class="btn btn-link py-0"
 							style="text-decoration: none;"
 							id="btn_coverageStats"
 							title="Show coverage stats"
 						>
-							<i class="fas fa-plus-square"></i>
+							<i class="fas fa-plus-square plus-minus h2"></i>
 						</button>
 					</div>
 					<div class="mt-auto text-right">
