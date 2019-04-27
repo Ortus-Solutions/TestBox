@@ -130,8 +130,13 @@
 								<!--- Bundle div --->
 								<div class="bundle card" id="#thisBundle.path#" data-bundle="#thisBundle.path#">
 									<div
-										class="card-header"
+										class="card-header expand-collapse"
 										id="header_#thisBundle.id#"
+										data-toggle="collapse"
+										data-target="##details_#thisBundle.id#"
+										aria-expanded="false"
+										aria-controls="details_#thisBundle.id#"
+										style="cursor: pointer;"
 									>
 										<h5 class="mb-0 clearfix">
 											<!--- bundle stats --->
@@ -143,15 +148,11 @@
 												#thisBundle.path# (#numberFormat( thisBundle.totalDuration )# ms)
 											</a>
 											<button
-													class="btn btn-link float-right py-0 expand-collapse"
+													class="btn btn-link float-right py-0 bundle-btn"
 													style="text-decoration: none;"
 													type="button"
-													data-toggle="collapse"
-													data-target="##details_#thisBundle.id#"
-													aria-expanded="false"
-													aria-controls="details_#thisBundle.id#"
 												>
-												<i class="fas fa-minus-square"></i>
+												<i class="fas fa-minus-square plus-minus"></i>
 											</button>
 										</h5>
 										<div class="float-right">
@@ -199,30 +200,32 @@
 										aria-labelledby="header_#thisBundle.id#"
 										data-bundle="#thisBundle.path#"
 									>
-										<div class="card-body">
-											<ul class="suite list-group">
+										<div class="card-body suite list-group"
+												data-bundleid="#thisBundle.id#">
+											<ul class="list-group">
 
 												<!--- Global Exception --->
 												<cfif !isSimpleValue( thisBundle.globalException )>
 													<li
-														class="list-group-item list-group-item-danger"
-														>
+														class="list-group-item list-group-item-danger expand-collapse"
+														data-toggle="collapse"
+														data-target="##globalException_#thisBundle.id#"
+														aria-expanded="false"
+														aria-controls="globalException_#thisBundle.id#"
+														style="cursor: pointer;"
+													>
 														<span class="h5">
 															<strong>
 																<i class="fas fa-times"></i> Global Bundle Exception
 															</strong>(#numberFormat( thisBundle.totalDuration )# ms)
 														</span>
 														<button
-															class="btn btn-link float-right py-0 expand-collapse collapsed"
-															data-toggle="collapse"
-															data-target="##globalException_#thisBundle.id#"
-															aria-expanded="false"
-															aria-controls="globalException_#thisBundle.id#"
+															class="btn btn-link float-right py-0"
 															style="text-decoration: none;"
 															id="btn_globalException_#thisBundle.id#"
 															title="Show more information"
 														>
-															<i class="fas fa-plus-square"></i>
+															<i class="fas fa-plus-square plus-minus"></i>
 														</button>
 														<div>#thisBundle.globalException.Message#</div>
 														<div class="pl-5 bg-light">
@@ -244,24 +247,25 @@
 												<!--- Debug Panel --->
 												<cfif arrayLen( thisBundle.debugBuffer )>
 													<li
-														class="list-group-item list-group-item-primary pt-2 pb-1 mt-4"
+														class="list-group-item list-group-item-primary pt-2 pb-1 mt-4 expand-collapse"
 														title="Toggle Debug Stream"
+														data-toggle="collapse"
+														data-target="##debugdata_#thisBundle.id#"
+														aria-expanded="false"
+														aria-controls="debugdata_#thisBundle.id#"
+														style="cursor: pointer;"
 													>
 														<span class="alert-link h5 text-info">
 															<strong><i class="fas fa-bug"></i> Debug Stream</strong>
 														</span>
 
 														<button
-															class="btn btn-link float-right py-0 expand-collapse collapsed"
-															data-toggle="collapse"
-															data-target="##debugdata_#thisBundle.id#"
-															aria-expanded="false"
-															aria-controls="debugdata_#thisBundle.id#"
+															class="btn btn-link float-right py-0"
 															style="text-decoration: none;"
 															id="btn_#thisBundle.id#"
 															title="Toggle the test debug stream"
 														>
-															<i class="fas fa-plus-square"></i>
+															<i class="fas fa-plus-square plus-minus"></i>
 														</button>
 
 														<div id="debugdata_#thisBundle.id#" class="my-2 bg-light border border-success p-2 collapse" data-specid="#thisBundle.id#">
@@ -285,14 +289,16 @@
 <script>
 $( document ).ready( function() {
 	// spec toggler
-	$( "span.spec-status" ).click( function() {
+	$( "span.spec-status" ).click( function( event ) {
+    event.stopPropagation();
 		$( this ).parent().children().removeClass( "active" );
 		$( this ).addClass( "active" );
 		toggleSpecs( $( this ).attr( "data-status" ), $( this ).attr( "data-bundleid" ) );
 	});
 
 	// spec reseter
-	$( "span.reset" ).click(function() {
+	$( "span.reset" ).click( function( event ) {
+    event.stopPropagation();
 		resetSpecs( $(this) );
 	});
 
@@ -305,7 +311,7 @@ $( document ).ready( function() {
 				// hide it
 				$( this ).hide();
 			} else {
-				$( this ).show();
+				$( this ).removeAttr('style');
 			}
 		});
 	}, 100));
@@ -315,32 +321,27 @@ $( document ).ready( function() {
 	// Bootstrap Collapse
 	$("body").on("click", "#collapse-bundles", function() {
 		$(".details-panel").collapse("hide");
-		$(".card-header button.expand-collapse > svg.svg-inline--fa").attr("data-icon", "plus-square");
+		$(".bundle-btn > svg.plus-minus").attr("data-icon", "plus-square");
 	});
 		
 	$("body").on("click", "#expand-bundles", function() {
 		$(".details-panel:not(.show)").collapse("show");
-		$(".card-header button.expand-collapse > svg.svg-inline--fa").attr("data-icon", "minus-square");
+		$(".bundle-btn > svg.plus-minus").attr("data-icon", "minus-square");
 	});
 
 	$( "body" ).on("click", ".expand-collapse", function() {
-		$this = $( this )
-		let target_id = $this.attr( 'data-target' );
-		toggleButton( $this );
+		element = $( this );
+		let icon = element.find( ".plus-minus" );
+		let icon_fa_icon = icon.attr( 'data-icon' );
+
+		if (icon_fa_icon === "minus-square") {
+				icon.attr( 'data-icon', 'plus-square' );
+		} else if ( icon_fa_icon === "plus-square" ) {
+				icon.attr( 'data-icon', 'minus-square' );
+		}
 	});
 
 });
-
-function toggleButton( element ) {
-	let icon = element.find( ".svg-inline--fa" );
-	let icon_fa_icon = icon.attr( 'data-icon' );
-
-	if (icon_fa_icon === "minus-square") {
-			icon.attr( 'data-icon', 'plus-square' );
-	} else if ( icon_fa_icon === "plus-square" ) {
-			icon.attr( 'data-icon', 'minus-square' );
-	}
-}
 
 function debounce( func, wait, immediate ) {
 	let timeout;
@@ -363,28 +364,34 @@ function debounce( func, wait, immediate ) {
 };
 
 function resetSpecs(element) {
-
-	let selector = $( "li.spec, ul.suite" );
+	let selector = $( "li.spec, ul.suite, div.suite" );
 
 	if ( element.attr( 'data-bundleid' ) ) {
 		selector = $( `#details_${element.attr( 'data-bundleid' )}` );
 		selector.find( "li.spec" ).each(function() {
-			$( this ).show();
+			$( this ).removeAttr('style');
 		});
 		selector.find( "ul.suite" ).each(function() {
-			$( this ).show();
-		});		
-		selector.collapse("show");
+			$( this ).removeAttr('style');
+		});
+		selector.find( "div.suite" ).each(function() {
+			$( this ).removeAttr('style');
+		});
+		selector.addClass("show");
 	}
-
-	selector.each(function() {
-		$( this ).show();
-	});
-	$( ".details-panel" ).collapse("show");
+	else {
+		selector.each(function() {
+			$( this ).removeAttr('style');
+		});
+		$( ".details-panel" ).addClass("show");
+	}
 }
 
 function toggleSpecs( type, bundleID ) {
 	$( "ul.suite" ).each( function() {
+		handleToggle( $( this ), bundleID, type );
+	});
+	$( "div.suite" ).each( function() {
 		handleToggle( $( this ), bundleID, type );
 	});
 	$( "li.spec" ).each( function() {
@@ -405,8 +412,10 @@ function handleToggle( target, bundleID, type ) {
 		$this.hide();
 	} else {
 		// show the type you sent
-		$this.show();
-		$this.parents().show();
+		$this.removeAttr('style');
+		$this.parents().removeAttr('style');
+		$this.parents(".bundle").find(".details-panel:not(.show)").addClass("show");
+		$this.parents(".bundle").find(".bundle-btn > svg.plus-minus").attr("data-icon", "minus-square");
 	}
 }
 
@@ -491,7 +500,8 @@ code {
 								<cfif structKeyExists( local.thisSpec, "message" )>
 									- <strong>#encodeForHTML( local.thisSpec.message )#</strong></a>
 									<button
-										class="btn btn-link float-right py-0 expand-collapse collapsed"data-toggle="collapse"
+										class="btn btn-link float-right py-0 expand-collapse"
+										data-toggle="collapse"
 										data-target="##failure_error_#local.thisSpec.id#"
 										aria-expanded="false"
 										aria-controls="failure_error_#local.thisSpec.id#"
@@ -499,7 +509,7 @@ code {
 										id="btn_#local.thisSpec.id#"
 										title="Show more information"
 									>
-										<i class="fas fa-plus-square"></i>
+										<i class="fas fa-plus-square plus-minus"></i>
 									</button>
 								</cfif>
 							</div>

@@ -91,29 +91,24 @@
 				});
 
 				// spec reseter
-				$("body").on("click", "span.reset", function() {
+				$("body").on("click", "span.reset", function( event ) {
+    			event.stopPropagation();
 					resetSpecs( $(this) );
 				});
 
 				// Filter Bundles
-				$("#bundleFilter").keyup(
-					debounce(function() {
-						const targetText = $(this)
-							.val()
-							.toLowerCase();
-						$(".bundle").each(function(index) {
-							const bundle = $(this)
-								.data("bundle")
-								.toLowerCase();
-							if (bundle.search(targetText) < 0) {
-								// hide it
-								$(this).hide();
-							} else {
-								$(this).show();
-							}
-						});
-					}, 100)
-				);
+				$( "#bundleFilter" ).keyup( debounce( function() {
+					let targetText = $( this ).val().toLowerCase();
+					$( ".bundle" ).each( function( index ) {
+						let bundle = $( this ).data( "bundle" ).toLowerCase();
+						if ( bundle.search( targetText ) < 0 ) {
+							// hide it
+							$( this ).hide();
+						} else {
+							$( this ).removeAttr('style');
+						}
+					});
+				}, 100));
 
 				$("#bundleFilter").focus();
 
@@ -279,17 +274,20 @@
 
 			function bundleHeaderHtml(bundleStat) {
 				const bundleHeaderHtml =
-					`<div class="card-header" id="header_${bundleStat.id}">
+					`<div class="card-header expand-collapse"
+						data-toggle="collapse"
+						data-target="#details_${bundleStat.id}"
+						aria-expanded="false"
+						aria-controls="details_${bundleStat.id}"
+						id="header_${bundleStat.id}"
+						style="cursor: pointer;"
+						>
             <h5 class="mb-0 clearfix">
               ${bundleStat.name} (${bundleStat.totalDuration} ms)
 							<button
 								class="btn btn-link float-right py-0 toggle"
 								style="text-decoration: none;"
 								type="button"
-								data-toggle="collapse"
-								data-target="#details_${bundleStat.id}"
-								aria-expanded="false"
-								aria-controls="details_${bundleStat.id}"
 							>
 								<i class="fas fa-minus-square"></i>
 							</button>
@@ -338,8 +336,8 @@
 							aria-labelledby="header_${bundleStat.id}"
 							data-bundle="${bundleStat.name}"
 						>
-							<div class="card-body">
-								<ul class="suite list-group">
+							<div class="suite card-body" data-bundleid="${bundleStat.id}">
+								<ul class="list-group">
 									${globalExceptionHtml(bundleStat)}
 									${renderSuites(bundleStat.suiteStats)}
 								</ul>
@@ -441,53 +439,57 @@
 			}
 
 			function resetSpecs(element) {
-
-				let selector = $( "li.spec, ul.suite" );
+				let selector = $( "li.spec, ul.suite, div.suite" );
 
 				if ( element.attr( 'data-bundleid' ) ) {
 					selector = $( `#details_${element.attr( 'data-bundleid' )}` );
 					selector.find( "li.spec" ).each(function() {
-						$( this ).show();
+						$( this ).removeAttr('style');
 					});
 					selector.find( "ul.suite" ).each(function() {
-						$( this ).show();
+						$( this ).removeAttr('style');
 					});
-					selector.collapse("show");
+					selector.find( "div.suite" ).each(function() {
+						$( this ).removeAttr('style');
+					});
+					selector.addClass("show");
 				}
 				else {
 					selector.each(function() {
-						$( this ).show();
+						$( this ).removeAttr('style');
 					});
-					$( ".details-panel" ).collapse("show");				
+					$( ".details-panel" ).addClass("show");
 				}
 			}
 
-			function toggleSpecs(type, bundleID) {
-				$("ul.suite").each(function() {
-					handleToggle($(this), bundleID, type);
+			function toggleSpecs( type, bundleID ) {
+				$( "ul.suite" ).each( function() {
+					handleToggle( $( this ), bundleID, type );
 				});
-				$("li.spec").each(function() {
-					handleToggle($(this), bundleID, type);
+				$( "div.suite" ).each( function() {
+					handleToggle( $( this ), bundleID, type );
+				});
+				$( "li.spec" ).each( function() {
+					handleToggle( $( this ), bundleID, type );
 				});
 			}
 
-			function handleToggle(target, bundleID, type) {
-				const $this = target;
+			function handleToggle( target, bundleID, type ) {
+				let $this = target;
 
 				// if bundleid passed and not the same bundle, skip
-				if (
-					bundleID != undefined &&
-					$this.attr("data-bundleid") != bundleID
-				) {
+				if ( bundleID != undefined && $this.attr( "data-bundleid" ) != bundleID ) {
 					return;
 				}
 				// toggle the opposite type
-				if (!$this.hasClass(type.toLowerCase())) {
+				if ( !$this.hasClass( type.toLowerCase() ) ) {
 					$this.hide();
 				} else {
 					// show the type you sent
-					$this.show();
-					$this.parents().show();
+					$this.removeAttr('style');
+					$this.parents().removeAttr('style');
+					$this.parents(".bundle").find(".details-panel:not(.show)").addClass("show");
+					$this.parents(".bundle").find(".toggle svg.svg-inline--fa").attr("data-icon", "minus-square");
 				}
 			}
 
