@@ -3,18 +3,18 @@
 * www.ortussolutions.com
 * ---
 * A dot matrix reporter
-*/ 
+*/
 component{
 
-	function init(){ 
-		return this; 
+	function init(){
+		return this;
 	}
 
 	/**
 	* Get the name of the reporter
 	*/
 	function getName(){
-		return "Simple";
+		return "Dot";
 	}
 
 	/**
@@ -25,14 +25,14 @@ component{
 	* @testbox.hint The TestBox core object
 	* @options.hint A structure of options this reporter needs to build the report with
 	*/
-	any function runReport( 
+	any function runReport(
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
 		struct options={}
 	){
 		// bundle stats
 		variables.bundleStats = arguments.results.getBundleStats();
-		
+
 		// prepare base links
 		variables.baseURL = "?";
 		if( structKeyExists( url, "method") ){ variables.baseURL &= "method=#URLEncodedFormat( url.method )#"; }
@@ -43,7 +43,7 @@ component{
 		if( !structKeyExists( url, "testSpecs") ){ url.testSpecs = ""; }
 		if( !structKeyExists( url, "testSuites") ){ url.testSuites = ""; }
 		if( !structKeyExists( url, "testBundles") ){ url.testBundles = ""; }
-		
+
 		// prepare the report
 		savecontent variable="local.report"{
 			include "assets/dot.cfm";
@@ -51,5 +51,5 @@ component{
 
 		return local.report;
 	}
-	
+
 }

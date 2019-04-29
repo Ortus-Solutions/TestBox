@@ -5,14 +5,16 @@
    |_|\___||___/\__|____/ \___/_/\_\ v#testBox.getVersion()#
 
 =============================================================                                    
-Global Stats (#results.getTotalDuration()# ms)
+Stats (#results.getTotalDuration()# ms)
 =============================================================
 ->[Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#]
 ->[Pass: #results.getTotalPass()#]
 ->[Failures: #results.getTotalFail()#]
 ->[Errors: #results.getTotalError()#]
 ->[Skipped: #results.getTotalSkipped()#]
-->[Labels Applied: #arrayToList( results.getLabels() )#]
+->[Labels Applied: #arrayToList( results.getLabels() )#]<cfif results.getCoverageEnabled()>
+->[Coverage: #numberFormat( results.getCoverageData().stats.percTotalCoverage*100, '9.9' )#%]
+</cfif>
 <cfloop array="#variables.bundleStats#" index="thisBundle">
 =============================================================
 #thisBundle.path# (#thisBundle.totalDuration# ms)

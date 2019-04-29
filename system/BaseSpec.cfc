@@ -396,7 +396,7 @@ component{
 		boolean asyncAll=false
 	){
 		arguments.skip = true;
-		return describe( argumentCollection=arguments );
+		return this.describe( argumentCollection=arguments );
 	}
 
 	/**
@@ -413,7 +413,7 @@ component{
 		struct data={}
 	){
 		arguments.skip = true;
-		return it( argumentCollection=arguments );
+		return this.it( argumentCollection=arguments );
     }
 
     /**
@@ -432,7 +432,7 @@ component{
         boolean asyncAll=false
     ){
         arguments.skip = true;
-        return xstory( argumentCollection = arguments );
+        return this.story( argumentCollection = arguments );
     }
 
     /**
@@ -451,7 +451,7 @@ component{
         boolean asyncAll=false
     ){
         arguments.skip = true;
-        return feature( argumentCollection = arguments );
+        return this.feature( argumentCollection = arguments );
     }
 
     /**
@@ -470,7 +470,7 @@ component{
         boolean asyncAll=false
     ){
         arguments.skip = true;
-        return given( argumentCollection = arguments );
+        return this.given( argumentCollection = arguments );
     }
 
     /**
@@ -489,7 +489,7 @@ component{
         boolean asyncAll=false
     ){
         arguments.skip = true;
-        return scenario( argumentCollection = arguments );
+        return this.scenario( argumentCollection = arguments );
     }
 
     /**
@@ -508,7 +508,7 @@ component{
         boolean asyncAll=false
     ){
         arguments.skip = true;
-        return when( argumentCollection = arguments );
+        return this.when( argumentCollection = arguments );
     }
 
     /**
@@ -525,7 +525,7 @@ component{
         struct data={}
     ){
         arguments.skip = true;
-        return then( argumentCollection = arguments );
+        return this.then( argumentCollection = arguments );
     }
 
 	/**
@@ -649,7 +649,12 @@ component{
 		var runner = new testbox.system.TestBox(
 			bundles		= "#getMetadata(this).name#",
 			labels		= arguments.labels,
-			reporter	= arguments.reporter
+			reporter	= arguments.reporter,
+			options  	=  {
+				coverage : {
+					enabled	: false
+				}
+			}
 		);
 		// Produce report
 		writeOutput( runner.run( testSuites=arguments.testSuites, testSpecs=arguments.testSpecs ) );

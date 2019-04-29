@@ -1,31 +1,44 @@
 {
-	"name" 				: "TestBox",
-	"version"			: "@build.version@+@build.number@",
-	"location"			: "http://downloads.ortussolutions.com/ortussolutions/testbox/@build.version@/testbox-@build.version@.zip",
-	"author" 			: "Ortus Solutions <info@ortussolutions.com>",
-	"slug"				: "testbox",
-	"type"				: "testing",
-	"keywords"			: "testing,xunit,bdd,testbox,mxunit,tdd",
-	"homepage"			: "https://www.ortussolutions.com/products/testbox",
-	"documentation"		: "https://testbox.ortusbooks.com",
-	"repository"		: { "type" : "git", "url" : "https://github.com/Ortus-Solutions/TestBox" },
-	"bugs"				: "https://ortussolutions.atlassian.net/browse/TESTBOX",
-	"shortDescription"	: "A BDD and xUnit testing framework with Mocking Goodness",
-	"license"			: [ 
-		{ "type" : "Apache2", "url" : "http://www.apache.org/licenses/LICENSE-2.0.html" } 
-	],
-	"contributors"		: [
-		"Brad Wood <bdw429s@gmail.com>", "Curt Gratz <gratz@computerknowhow.com>"
-	],
-	"ignore":[
+    "name":"TestBox",
+    "version":"@build.version@+@build.number@",
+    "location":"https://downloads.ortussolutions.com/ortussolutions/testbox/@build.version@/testbox-@build.version@.zip",
+    "author":"Ortus Solutions <info@ortussolutions.com>",
+    "slug":"testbox",
+    "type":"testing",
+    "keywords":"testing,xunit,bdd,testbox,mxunit,tdd",
+    "homepage":"https://www.ortussolutions.com/products/testbox",
+    "documentation":"https://testbox.ortusbooks.com",
+    "repository":{
+        "type":"git",
+        "url":"https://github.com/Ortus-Solutions/TestBox"
+    },
+    "bugs":"https://ortussolutions.atlassian.net/browse/TESTBOX",
+    "shortDescription":"A BDD and xUnit testing framework with Mocking Goodness",
+    "license":[
+        {
+            "type":"Apache2",
+            "url":"http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    ],
+    "contributors":[
+        "Brad Wood <bdw429s@gmail.com>",
+        "Curt Gratz <gratz@computerknowhow.com>"
+    ],
+    "ignore":[
         "**/.*"
-	],
-	"testbox":{
-		"runner":"http://localhost:49616/tests/runner.cfm",
-		"watchers" : [ 
-			"system/**.cfc",
-			"tests/**.cfc"
-		],
-		"watchDelay" : "250"
- 	}
+    ],
+    "testbox":{
+        "runner":"http://localhost:49616/tests/runner.cfm",
+        "watchers":[
+            "system/**.cfc",
+            "tests/**.cfc"
+        ],
+        "watchDelay":"250"
+    },
+    "dependencies":{
+        "cbstreams":"^1.3.0"
+    },
+    "installPaths":{
+        "cbstreams":"system/modules/cbstreams/"
+    }
 }

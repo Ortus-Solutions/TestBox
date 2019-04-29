@@ -1,12 +1,15 @@
 {
-    "app":{
-        "cfengine":"adobe@11"
-    },
-    "name":"adobe@11",
+	"name":"testbox-adobe@11",
+    "force":true,
     "openbrowser":"false",
     "web":{
+		"directoryBrowsing": true,
         "http":{
             "port":"49616"
         }
+    },
+    "app":{
+		"cfengine":"adobe@11",
+		"serverHomeDirectory":".engine/adobe11"
     }
 }

@@ -1,18 +1,43 @@
 <cfsetting showDebugOutput="false">
 <cfsetting requesttimeout="99999999">
 <!--- Executes all tests in the 'specs' folder with simple reporter by default --->
-<cfparam name="url.reporter" 			default="simple">
-<cfparam name="url.directory" 			default="">
-<cfparam name="url.recurse" 			default="true" type="boolean">
-<cfparam name="url.bundles" 			default="">
-<cfparam name="url.labels" 				default="">
-<cfparam name="url.excludes" 			default="">
-<cfparam name="url.reportpath" 			default="">
-<cfparam name="url.propertiesFilename" 	default="TEST.properties">
-<cfparam name="url.propertiesSummary" 	default="false" type="boolean">
+<cfparam name="url.reporter" 						default="simple">
+<cfparam name="url.directory" 						default="">
+<cfparam name="url.recurse" 						default="true" type="boolean">
+<cfparam name="url.bundles" 						default="">
+<cfparam name="url.labels" 							default="">
+<cfparam name="url.excludes" 						default="">
+<cfparam name="url.reportpath" 						default="">
+<cfparam name="url.propertiesFilename"			 	default="TEST.properties">
+<cfparam name="url.propertiesSummary"			 	default="false" type="boolean">
+
+<cfparam name="url.coverageEnabled"					default="false" type="boolean">
+<cfparam name="url.coverageSonarQubeXMLOutputPath"	default="">
+<cfparam name="url.coverageBrowserOutputDir"		default="">
+<cfparam name="url.coveragePathToCapture"			default="">
+<cfparam name="url.coverageWhitelist"				default="">
+<cfparam name="url.coverageBlacklist"				default="/testbox">
+
 <cfscript>
 // prepare for tests for bundles or directories
-testbox = new testbox.system.TestBox( labels=url.labels, excludes=url.excludes );
+testbox = new testbox.system.TestBox(
+	labels   = url.labels,
+	excludes = url.excludes,
+	options  =  {
+		coverage : {
+			enabled       	: url.coverageEnabled,
+			pathToCapture 	: url.coveragePathToCapture,
+			whitelist     	: url.coverageWhitelist,
+			blacklist     	: url.coverageBlacklist,
+			sonarQube     	: {
+				XMLOutputPath : url.coverageSonarQubeXMLOutputPath
+			},
+			browser			: {
+				outputDir : url.coverageBrowserOutputDir
+			}
+		}
+	}
+);
 if( len( url.bundles ) ){
 	testbox.addBundles( url.bundles );
 }

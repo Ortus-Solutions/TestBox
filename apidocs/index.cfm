@@ -16,7 +16,7 @@
 --->
 
 <cfoutput>
-<h1>Done!</h1>
+<h2>Done!</h2>
 <a href="#docName#/index.html">Go to Docs!</a>
 </cfoutput>
 

@@ -41,7 +41,7 @@ Official Site
 
 ## SYSTEM REQUIREMENTS
 
-- Lucee 4.5+ (xUnit + BDD)
+- Lucee 5+ (xUnit + BDD)
 - ColdFusion 11+ (xUnit + BDD)
 
 ## TESTBOX INSTALLATION
@@ -59,6 +59,8 @@ You can also use [CommandBox](https://www.ortussolutions.com/products/commandbox
 **Bleeding Edge Release**
 
 `box install testbox@be`
+
+Bleeding edge builds are updated automatically as code is committed.
 
 ********************************************************************************
 Copyright Since 2005 by Luis Majano and Ortus Solutions, Corp
