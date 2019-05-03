@@ -532,13 +532,9 @@ code {
 					</cfloop>
 					<!--- Do we have nested suites --->
 					<cfif arrayLen( arguments.suiteStats.suiteStats )>
-						<li class="spec list-group-item" data-bundleid="#arguments.bundleStats.id#">
-							<ul class="suite list-group" data-bundleid="#arguments.bundleStats.id#">
-								<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
-									#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
-								</cfloop>
-							</ul>
-						</li>
+						<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
+							#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
+						</cfloop>
 					</cfif>
 				</ul>
 			</li>

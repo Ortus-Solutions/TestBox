@@ -355,12 +355,7 @@
 			function suiteHtml(suite) {
 				let nestedSuites = "";
 				if (suite.suiteStats.length) {
-					nestedSuites =
-						`<li class="spec list-group-item" data-bundleid="${suite.bundleID} ${suite.status.toLowerCase()}">
-							<ul class="suite list-group" data-bundleid="${suite.bundleID}">
-									${renderSuites(suite.suiteStats)}
-							</ul>
-						</li>`;
+					nestedSuites = renderSuites(suite.suiteStats);
 				}
 
 				const suiteHtml =
