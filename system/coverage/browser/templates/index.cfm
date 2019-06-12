@@ -10,16 +10,7 @@
 		<script src="assets/js/popper.min.js"></script>
 		<script src="assets/js/bootstrap.min.js"></script>
 		<script src="assets/js/stupidtable.min.js"></script>
-	<style>
-		th.sorting-asc > span:after {
-			content: "\2193";
-		}
-
-		th.sorting-desc > span:after {
-			content: "\2191";
-		}
-	</style>
-
+		<script src="assets/js/fontawesome.js"></script>
 	</head>
 	<body>
 		<div class="container-fluid my-3">
@@ -69,7 +60,7 @@
 				<thead>
 					<tr>
 						<th data-sort="string"><span class="btn btn-link">Path</span></th>
-						<th data-sort="int" data-sort-onload=yes data-sort-default="asc"><span class="btn btn-link">Coverage</span></th>
+						<th data-sort="int" data-sort-onload=yes data-sort-default="asc"><span class="btn btn-link">Coverage <i class="arrow fas fa-arrow-down"></i></span></th>
 					</tr>
 				<thead>
 				<tbody>
@@ -111,8 +102,20 @@
 </cfoutput>
 		<script>
 			$(document).ready(function() {
-				$("table").stupidtable();
 
+				var table = $("table").stupidtable();
+				table.bind('aftertablesort', function (event, data) {
+					console.log(data.direction);
+					if ( data.direction === "asc") {
+						$(".arrow").removeClass( "fa-arrow-up" );
+						$(".arrow").addClass( "fa-arrow-down" );
+					}
+					else {
+						$(".arrow").removeClass( "fa-arrow-down" );
+						$(".arrow").addClass( "fa-arrow-up" );
+					}
+				});
+				
 				// Filter Bundles
 				$("#fileFilter").keyup(debounce(function() {
 					var targetText = $(this).val().toLowerCase();
