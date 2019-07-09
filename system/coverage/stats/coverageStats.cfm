@@ -66,50 +66,55 @@
 				</div>
 			</div>
 
+			<cfset bestCoverageHasCoveredFiles = ArraySum(ValueArray(stats.qryFilesBestCoverage, "percCoverage")) GT 0 >
+			<cfset worstCoverageHasCoveredFiles = ArraySum(ValueArray(stats.qryFilesWorstCoverage, "percCoverage")) GT 0 >
+
 			<div id="coverage-stats" class="debugdata mt-2 collapse" data-specid="coverageStats">
 				<ul class="list-group">
-
-					<li class="list-group-item">
-						<h4>Files with best coverage:</h4>
-						<ol class="list-group">
-							<cfloop query="stats.qryFilesBestCoverage">
-								<cfset qTarget         = stats.qryFilesBestCoverage>
-								<cfset percentage      = numberFormat( qTarget.percCoverage * 100, '9.9' )>
-								<cfset trimmedFilePath = replaceNoCase( qTarget.filePath, pathToCapture, '' )>
-								<li class="list-group-item">
-									<span class="col-9">#trimmedFilePath#</span>
-									<div class=" col-3 d-inline-flex float-right">
-										<div class="progress position-relative w-100">
-											<div class="progress-bar bg-#codeBrowser.percentToContextualClass( percentage )#" role="progressbar" style="width: #percentage#%" aria-valuenow="#percentage#" aria-valuemin="0" aria-valuemax="100"></div>
-											<div class="progress-bar bg-secondary" role="progressbar" style="width: #100-percentage#%" aria-valuenow="#100-percentage#" aria-valuemin="0" aria-valuemax="100"></div>
-											<span class="justify-content-center text-light d-flex position-absolute w-100">#percentage#% coverage</span>
+					<cfif bestCoverageHasCoveredFiles >
+						<li class="list-group-item">
+							<h4>Files with best coverage:</h4>
+							<ol class="list-group">
+								<cfloop query="stats.qryFilesBestCoverage">
+									<cfset qTarget         = stats.qryFilesBestCoverage>
+									<cfset percentage      = numberFormat( qTarget.percCoverage * 100, '9.9' )>
+									<cfset trimmedFilePath = replaceNoCase( qTarget.filePath, pathToCapture, '' )>
+									<li class="list-group-item">
+										<span class="col-9">#trimmedFilePath#</span>
+										<div class=" col-3 d-inline-flex float-right">
+											<div class="progress position-relative w-100">
+												<div class="progress-bar bg-#codeBrowser.percentToContextualClass( percentage )#" role="progressbar" style="width: #percentage#%" aria-valuenow="#percentage#" aria-valuemin="0" aria-valuemax="100"></div>
+												<div class="progress-bar bg-secondary" role="progressbar" style="width: #100-percentage#%" aria-valuenow="#100-percentage#" aria-valuemin="0" aria-valuemax="100"></div>
+												<span class="justify-content-center text-light d-flex position-absolute w-100">#percentage#% coverage</span>
+											</div>
 										</div>
-									</div>
-								</li>
-							</cfloop>
-						</ol>
-					</li>
-
-					<li class="list-group-item">
-						<h4>Files with worst coverage:</h4>
-						<ol class="list-group">
-							<cfloop query="stats.qryFilesWorstCoverage">
-								<cfset qTarget      	= stats.qryFilesWorstCoverage>
-								<cfset percentage 		= numberFormat( qTarget.percCoverage * 100, '9.9' )>
-								<cfset trimmedFilePath 	= replaceNoCase( qTarget.filePath, pathToCapture, '' )>
-								<li class="list-group-item">
-									<span class="col-9">#trimmedFilePath#</span>
-									<div class=" col-3 d-inline-flex float-right">
-										<div class="progress position-relative w-100">
-											<div class="progress-bar bg-#codeBrowser.percentToContextualClass( percentage )#" role="progressbar" style="width: #percentage#%" aria-valuenow="#percentage#" aria-valuemin="0" aria-valuemax="100"></div>
-											<div class="progress-bar bg-secondary" role="progressbar" style="width: #100-percentage#%" aria-valuenow="#100-percentage#" aria-valuemin="0" aria-valuemax="100"></div>
-											<span class="justify-content-center text-light d-flex position-absolute w-100">#percentage#% coverage</span>
+									</li>
+								</cfloop>
+							</ol>
+						</li>
+					</cfif>
+					<cfif worstCoverageHasCoveredFiles >
+						<li class="list-group-item">
+							<h4>Files with worst coverage:</h4>
+							<ol class="list-group">
+								<cfloop query="stats.qryFilesWorstCoverage">
+									<cfset qTarget      	= stats.qryFilesWorstCoverage>
+									<cfset percentage 		= numberFormat( qTarget.percCoverage * 100, '9.9' )>
+									<cfset trimmedFilePath 	= replaceNoCase( qTarget.filePath, pathToCapture, '' )>
+									<li class="list-group-item">
+										<span class="col-9">#trimmedFilePath#</span>
+										<div class=" col-3 d-inline-flex float-right">
+											<div class="progress position-relative w-100">
+												<div class="progress-bar bg-#codeBrowser.percentToContextualClass( percentage )#" role="progressbar" style="width: #percentage#%" aria-valuenow="#percentage#" aria-valuemin="0" aria-valuemax="100"></div>
+												<div class="progress-bar bg-secondary" role="progressbar" style="width: #100-percentage#%" aria-valuenow="#100-percentage#" aria-valuemin="0" aria-valuemax="100"></div>
+												<span class="justify-content-center text-light d-flex position-absolute w-100">#percentage#% coverage</span>
+											</div>
 										</div>
-									</div>
-								</li>
-							</cfloop>
-						</ol>
-					</li>
+									</li>
+								</cfloop>
+							</ol>
+						</li>
+					</cfif>
 				</ul>
 			</div>
 		</div>

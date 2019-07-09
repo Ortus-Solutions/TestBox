@@ -206,34 +206,36 @@
 
 												<!--- Global Exception --->
 												<cfif !isSimpleValue( thisBundle.globalException )>
-													<li
-														class="list-group-item list-group-item-danger expand-collapse"
-														data-toggle="collapse"
-														data-target="##globalException_#thisBundle.id#"
-														aria-expanded="false"
-														aria-controls="globalException_#thisBundle.id#"
-														style="cursor: pointer;"
-													>
-														<span class="h5">
-															<strong>
-																<i class="fas fa-times"></i> Global Bundle Exception
-															</strong>(#numberFormat( thisBundle.totalDuration )# ms)
-														</span>
-														<button
-															class="btn btn-link float-right py-0"
-															style="text-decoration: none;"
-															id="btn_globalException_#thisBundle.id#"
-															title="Show more information"
+													<li>
+														<div
+															class="list-group-item list-group-item-danger py-3 expand-collapse"
+															data-toggle="collapse"
+															data-target="##globalException_#thisBundle.id#"
+															aria-expanded="false"
+															aria-controls="globalException_#thisBundle.id#"
+															style="cursor: pointer;"
 														>
-															<i class="fas fa-plus-square plus-minus"></i>
-														</button>
-														<div>#thisBundle.globalException.Message#</div>
-														<div class="pl-5 bg-light">
-															<cfif structKeyExists( thisBundle.globalException.TagContext[ 1 ], "codePrintHTML" )>
-																<code>#thisBundle.globalException.TagContext[ 1 ].codePrintHTML#</code>
-															</cfif>
+															<span class="h5">
+																<strong>
+																	<i class="fas fa-times"></i> Global Bundle Exception
+																</strong>(#numberFormat( thisBundle.totalDuration )# ms)
+															</span>
+															<button
+																class="btn btn-link float-right py-0"
+																style="text-decoration: none;"
+																id="btn_globalException_#thisBundle.id#"
+																title="Show more information"
+															>
+																<i class="fas fa-plus-square plus-minus"></i>
+															</button>
+															<div>#thisBundle.globalException.Message#</div>
+															<div class="bg-light p-2 ">
+																<cfif structKeyExists( thisBundle.globalException.TagContext[ 1 ], "codePrintHTML" )>
+																	<code>#thisBundle.globalException.TagContext[ 1 ].codePrintHTML#</code>
+																</cfif>
+															</div>
 														</div>
-														<div class="my-2 collapse details-panel" id="globalException_#thisBundle.id#" data-specid="globalException_#thisBundle.id#">
+														<div class="overflow-auto my-2 collapse details-panel" id="globalException_#thisBundle.id#" data-specid="globalException_#thisBundle.id#">
 															<cfdump var="#thisBundle.globalException#" />
 														</div>
 													</li>
@@ -246,29 +248,29 @@
 
 												<!--- Debug Panel --->
 												<cfif arrayLen( thisBundle.debugBuffer )>
-													<li
-														class="list-group-item list-group-item-primary pt-2 pb-1 mt-4 expand-collapse"
-														title="Toggle Debug Stream"
-														data-toggle="collapse"
-														data-target="##debugdata_#thisBundle.id#"
-														aria-expanded="false"
-														aria-controls="debugdata_#thisBundle.id#"
-														style="cursor: pointer;"
-													>
-														<span class="alert-link h5 text-info">
-															<strong><i class="fas fa-bug"></i> Debug Stream</strong>
-														</span>
-
-														<button
-															class="btn btn-link float-right py-0"
-															style="text-decoration: none;"
-															id="btn_#thisBundle.id#"
-															title="Toggle the test debug stream"
+													<li>
+														<div class="list-group-item list-group-item-primary py-3 expand-collapse"
+															title="Toggle Debug Stream"
+															data-toggle="collapse"
+															data-target="##debugdata_#thisBundle.id#"
+															aria-expanded="false"
+															aria-controls="debugdata_#thisBundle.id#"
+															style="cursor: pointer;"
 														>
-															<i class="fas fa-plus-square plus-minus"></i>
-														</button>
+															<span class="alert-link h5 text-info">
+																<strong><i class="fas fa-bug"></i> Debug Stream</strong>
+															</span>
 
-														<div id="debugdata_#thisBundle.id#" class="my-2 bg-light border border-success p-2 collapse" data-specid="#thisBundle.id#">
+															<button
+																class="btn btn-link float-right py-0"
+																style="text-decoration: none;"
+																id="btn_#thisBundle.id#"
+																title="Toggle the test debug stream"
+															>
+																<i class="fas fa-plus-square plus-minus"></i>
+															</button>
+														</div>
+														<div id="debugdata_#thisBundle.id#" class="overflow-auto bg-light p-2 collapse" data-specid="#thisBundle.id#">
 															<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
 															<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
 																<h6>#thisDebug.label#</h6>

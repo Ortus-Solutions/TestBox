@@ -12,7 +12,8 @@
 			<script src="#relPathToRoot#assets/js/bootstrap.min.js"></script>
 			<script src="#relPathToRoot#assets/js/stupidtable.min.js"></script>
 			<script src="#relPathToRoot#assets/js/syntaxhighlighter.js"></script>
-
+			<script src="#relPathToRoot#assets/js/fontawesome.js"></script>
+			
 			<script>
 				$( document ).ready( function(){
 					var lineNumbersBGColorsJSON = #lineNumbersBGColorsJSON#;
@@ -43,7 +44,7 @@
 					<tbody>
 						<tr>
 							<td>
-								<a href="javascript:history.back()"><button type="button" class="btn btn-secondary btn-sm my-1">« Back</button></a>
+								<a href="javascript:history.back()"><button type="button" class="btn btn-secondary btn-sm my-1"><i class="fas fa-angle-double-left"></i> Back</button></a>
 							</td>
 							<td>
 								&nbsp;
