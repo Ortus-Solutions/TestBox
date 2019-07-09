@@ -300,7 +300,7 @@ component serializable="false" accessors="true"{
 	/**
 	* Relocate the user to another location
 	* @event.hint The name of the event to run, if not passed, then it will use the default event found in your configuration file
-	* @URL.hint The full URL you would like to relocate to instead of an event: ex: URL='http://www.google.com'
+	* @URL.hint The full URL you would like to relocate to instead of an event: ex: URL='https://www.google.com'
 	* @URI.hint The relative URI you would like to relocate to instead of an event: ex: URI='/mypath/awesome/here'
 	* @queryString.hint The query string to append, if needed. If in SES mode it will be translated to convention name value pairs
 	* @persist.hint What request collection keys to persist in flash ram

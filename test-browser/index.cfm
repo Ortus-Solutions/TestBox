@@ -66,7 +66,7 @@
 <div id="tb-runner" class="container">
 	<div class="row">
 		<div class="col-md-4 text-center mx-auto">
-			<img class="mt-3" src="http://www.ortussolutions.com/__media/testbox-185.png" alt="TestBox" id="tb-logo"/>
+			<img class="mt-3" src="https://www.ortussolutions.com/__media/testbox-185.png" alt="TestBox" id="tb-logo"/>
 			<br>
 			v#testbox.getVersion()#
 			<br>
