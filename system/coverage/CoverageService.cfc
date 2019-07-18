@@ -169,13 +169,7 @@ component accessors="true" {
 
 		// If no path provided to capture
 		if( !len( opts.pathToCapture ) ) {
-
-			// Look for a /root mapping which is a common ColdBox convention
-			if( !isNull( getApplicationMetadata().mappings ) ) {
-				var mappings = getApplicationMetadata().mappings;
-			} else {
-				var mappings = {};	
-			}
+			var mappings = {};
 			if( mappings.keyExists( '/root' ) ) {
 				opts.pathToCapture = expandPath( '/root' );
 			// And default to entire web root
