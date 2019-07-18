@@ -15,7 +15,7 @@ component{
 	this.mappings[ "/testbox" ] = rootPath;
 	// Map resources
 	this.mappings[ "/coldbox" ] = this.mappings[ "/tests" ] & "resources/coldbox";
-	
+
 	// any orm definitions go here.
 
 	// request start

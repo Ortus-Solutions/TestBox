@@ -3,11 +3,11 @@
 * www.ortussolutions.com
 * ---
 * A simple HTML reporter
-*/ 
+*/
 component{
 
-	function init(){ 
-		return this; 
+	function init(){
+		return this;
 	}
 
 	/**
@@ -25,21 +25,21 @@ component{
 	* @testbox.hint The TestBox core object
 	* @options.hint A structure of options this reporter needs to build the report with
 	*/
-	any function runReport( 
+	any function runReport(
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
 		struct options={}
 	){
 		// content type
 		getPageContext().getResponse().setContentType( "text/html" );
-		
+
 		// bundle stats
 		variables.bundleStats = arguments.results.getBundleStats();
-		
+
 		// prepare base links
 		variables.baseURL = "?";
-		if( structKeyExists( url, "method") ){ variables.baseURL&= "method=#URLEncodedFormat( url.method )#"; }
-		if( structKeyExists( url, "output") ){ variables.baseURL&= "output=#URLEncodedFormat( url.output )#"; }
+		if( structKeyExists( url, "method" ) ){ variables.baseURL&= "method=#URLEncodedFormat( url.method )#"; }
+		if( structKeyExists( url, "output" ) ){ variables.baseURL&= "output=#URLEncodedFormat( url.output )#"; }
 
 		// prepare incoming params
 		if( !structKeyExists( url, "testMethod") ){ url.testMethod = ""; }
@@ -55,5 +55,4 @@ component{
 
 		return local.report;
 	}
-	
 }

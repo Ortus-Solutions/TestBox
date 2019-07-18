@@ -3,18 +3,18 @@
 * www.ortussolutions.com
 * ---
 * A simple Documentation style reporter
-*/ 
+*/
 component{
 
-	function init(){ 
-		return this; 
+	function init(){
+		return this;
 	}
 
 	/**
 	* Get the name of the reporter
 	*/
 	function getName(){
-		return "Documentation";
+		return "Doc";
 	}
 
 	/**
@@ -25,17 +25,17 @@ component{
 	* @testbox.hint The TestBox core object
 	* @options.hint A structure of options this reporter needs to build the report with
 	*/
-	any function runReport( 
+	any function runReport(
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
 		struct options={}
 	){
 		// content type
 		getPageContext().getResponse().setContentType( "text/html" );
-		
+
 		// bundle stats
 		variables.bundleStats = arguments.results.getBundleStats();
-		
+
 		// prepare base links
 		variables.baseURL = "?";
 		if( structKeyExists( url, "method") ){ variables.baseURL &= "method=#URLEncodedFormat( url.method )#"; }
@@ -53,5 +53,5 @@ component{
 		}
 		return local.report;
 	}
-	
+
 }

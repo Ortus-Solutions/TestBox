@@ -25,6 +25,8 @@ component accessors="true"{
 	property name="options";
 	// Last TestResult in case runner wants to inspect it
 	property name="result";
+	// Code Coverage Service
+	property name="coverageService";
 
 	/**
 	* Constructor
@@ -50,6 +52,10 @@ component accessors="true"{
 		variables.codename 	= "";
 		// init util
 		variables.utility = new testbox.system.util.Util();
+		if( !structKeyExists( arguments.options, 'coverage' ) ) {
+			arguments.options.coverage = {};
+		}
+		variables.coverageService = new testbox.system.coverage.CoverageService( arguments.options.coverage );
 
 		// reporter
 		variables.reporter = arguments.reporter;
@@ -230,6 +236,8 @@ component accessors="true"{
 			testSpecs   = arguments.testSpecs
 		);
 
+		coverageService.beginCapture();
+
 		// iterate and run the test bundles
 		for( var thisBundlePath in variables.bundles ){
 			// Skip interfaces, they are not testable
@@ -263,6 +271,10 @@ component accessors="true"{
 
 		// mark end of testing bundles
 		results.end();
+
+		coverageService.processCoverage( results=results, testbox=this );
+
+		coverageService.endCapture( true );
 
 		sendStatusHeaders( results );
 

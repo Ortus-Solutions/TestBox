@@ -1,5 +1,5 @@
 <cfoutput>
-= Global Stats (#results.getTotalDuration()# ms) =
+= Stats (#results.getTotalDuration()# ms) =
 
 * '''Bundles/Suites/Specs:''' #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#
 * '''Pass:''' #results.getTotalPass()#
@@ -8,6 +8,9 @@
 * '''Skipped:''' #results.getTotalSkipped()#
 <cfif !arrayLen( results.getLabels() )>
 * '''Labels Applied:''' #arrayToList( results.getLabels() )#
+</cfif>
+<cfif results.getCoverageEnabled()>
+* '''Coverage:''' #numberFormat( results.getCoverageData().stats.percTotalCoverage*100, '9.9' )#%
 </cfif>
 
 #chr(10)#
@@ -33,7 +36,7 @@
 <cfloop array="#thisBundle.suiteStats#" index="suiteStats">
 #genSuiteReport( suiteStats, thisBundle )#
 </cfloop>
-		
+
 </cfloop>
 
 <!--- Recursive Output --->
@@ -51,14 +54,14 @@
 
 <cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
 <p>#local.thisSpec.name# (#local.thisSpec.totalDuration# ms)</p>
-	
+
 <cfif local.thisSpec.status eq "failed">
-* '''#htmlEditFormat( local.thisSpec.failMessage )#'''
+* '''#encodeForHTML( local.thisSpec.failMessage )#'''
 <pre>#local.thisSpec.failOrigin.toString()#</pre>
 </cfif>
 
 <cfif local.thisSpec.status eq "error">
-* '''#htmlEditFormat( local.thisSpec.error.message )#'''
+* '''#encodeForHTML( local.thisSpec.error.message )#'''
 <pre>#local.thisSpec.error.stacktrace#</pre>
 </cfif>
 </cfloop>
@@ -68,7 +71,7 @@
 <cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
 #genSuiteReport( local.nestedSuite, arguments.bundleStats, arguments.level )#
 </cfloop>
-</cfif>	
+</cfif>
 
 </cfoutput>
 </cfsavecontent>
