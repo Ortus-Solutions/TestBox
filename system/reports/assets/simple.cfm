@@ -287,8 +287,7 @@
 						</div>
 					</div>
 				</div>
-</cfoutput>
-<script>
+	<script>
 $( document ).ready( function() {
 	// spec toggler
 	$( "span.spec-status" ).click( function( event ) {
@@ -305,7 +304,7 @@ $( document ).ready( function() {
 	});
 
 	// Filter Bundles
-	$( "#bundleFilter" ).keyup( debounce( function() {
+	$( "##bundleFilter" ).keyup( debounce( function() {
 		let targetText = $( this ).val().toLowerCase();
 		$( ".bundle" ).each( function( index ) {
 			let bundle = $( this ).data( "bundle" ).toLowerCase();
@@ -318,15 +317,15 @@ $( document ).ready( function() {
 		});
 	}, 100));
 
-	$( "#bundleFilter" ).focus();
+	$( "##bundleFilter" ).focus();
 
 	// Bootstrap Collapse
-	$("body").on("click", "#collapse-bundles", function() {
+	$("body").on("click", "##collapse-bundles", function() {
 		$(".details-panel").collapse("hide");
 		$(".bundle-btn > svg.plus-minus").attr("data-icon", "plus-square");
 	});
-		
-	$("body").on("click", "#expand-bundles", function() {
+
+	$("body").on("click", "##expand-bundles", function() {
 		$(".details-panel:not(.show)").collapse("show");
 		$(".bundle-btn > svg.plus-minus").attr("data-icon", "minus-square");
 	});
@@ -369,7 +368,7 @@ function resetSpecs(element) {
 	let selector = $( "li.spec, ul.suite, div.suite" );
 
 	if ( element.attr( 'data-bundleid' ) ) {
-		selector = $( `#details_${element.attr( 'data-bundleid' )}` );
+		selector = $( `##details_${element.attr( 'data-bundleid' )}` );
 		selector.find( "li.spec" ).each(function() {
 			$( this ).removeAttr('style');
 		});
@@ -430,6 +429,7 @@ code {
 	color: black !important;
 }
 </style>
+</cfoutput>
 <cfif url.fullPage>
 			</body>
 		</html>
