@@ -138,7 +138,6 @@
 						</cfif>
 					</cfloop>
 				</div>
-</cfoutput>
 <script>
 $( document ).ready( function() {
 	$(".expand-collapse").click(function (event) {
@@ -154,7 +153,7 @@ $( document ).ready( function() {
 } );
 
 function toggleDebug( specid ) {
-	$( `#btn_${specid}` ).toggleClass( "collapsed" );
+	$( `##btn_${specid}` ).toggleClass( "collapsed" );
 	$( "div.debugdata" ).each( function() {
 		var $this = $( this );
 		// if bundleid passed and not the same bundle
@@ -170,3 +169,4 @@ function toggleDebug( specid ) {
 			</body>
 		</html>
 </cfif>
+</cfoutput>
