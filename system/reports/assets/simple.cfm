@@ -429,11 +429,11 @@ code {
 	color: black !important;
 }
 </style>
-</cfoutput>
 <cfif url.fullPage>
 			</body>
 		</html>
 </cfif>
+</cfoutput>
 
 <cffunction name="statusToBootstrapClass" output="false">
 	<cfargument name="status">
