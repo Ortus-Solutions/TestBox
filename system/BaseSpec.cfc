@@ -62,11 +62,11 @@ component{
 	}
 
 	/**
-	* Fail an assertion
-	* @facade
-	*/
-	function fail( message="" ){
-		this.$assert.fail(argumentCollection=arguments);
+	 * Fail an assertion
+	 * @facade
+	 */
+	function fail( message="", detail="" ){
+		this.$assert.fail( argumentCollection=arguments );
 	}
 
 	/**
@@ -725,9 +725,12 @@ component{
 		// Catch assertion failures
 		catch( "TestBox.AssertionFailed" e ){
 			// store spec status and debug data
-			specStats.status 		= "Failed";
-			specStats.failMessage 	= e.message;
-			specStats.failOrigin 	= sliceTagContext( e.tagContext );
+			specStats.status 			= "Failed";
+			specStats.failMessage 		= e.message;
+			specStats.failDetail		= e.detail;
+			specStats.failExtendedInfo 	= e.extendedInfo;
+			specStats.failStacktrace 	= e.stackTrace;
+			specStats.failOrigin 		= sliceTagContext( e.tagContext );
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );
@@ -738,6 +741,7 @@ component{
 			specStats.status 		= "Error";
 			specStats.error 		= e;
 			specStats.failOrigin 	= sliceTagContext( e.tagContext );
+
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="error", stats=specStats );
 		}
@@ -1030,9 +1034,11 @@ component{
 		// Catch assertion failures
 		catch( "TestBox.AssertionFailed" e ){
 			// store spec status and debug data
-			specStats.status 		= "Failed";
-			specStats.failMessage 	= e.message;
-			specStats.failOrigin 	= sliceTagContext( e.tagContext );
+			specStats.status 			= "Failed";
+			specStats.failMessage 		= e.message;
+			specStats.failExtendedInfo 	= e.extendedInfo;
+			specStats.failStacktrace 	= e.stackTrace;
+			specStats.failOrigin 		= sliceTagContext( e.tagContext );
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );

@@ -55,7 +55,7 @@ component accessors="true"{
 		// internal id
 		variables.resultsID 	= createUUID();
 		// TestBox version
-		variables.version 		= "@build.version@+@build.number@";
+		variables.version 		= "3.1.0-snapshot";
 		// Global test durations
 		variables.startTime 	= getTickCount();
 		variables.endTime 		= 0;
@@ -325,23 +325,27 @@ component accessors="true"{
 			// spec stats
 			var stats = {
 				// suite id
-				"id" 				= hash( getTickCount() + randRange( 1, 10000000 ) ),
+				"id" 				: hash( getTickCount() + randRange( 1, 10000000 ) ),
 				// suite id
-				"suiteID"			= arguments.suiteStats.id,
+				"suiteID"			: arguments.suiteStats.id,
 				// name of the spec
-				"name"			= arguments.name,
+				"name"				: arguments.name,
 				// spec status
-				"status"			= "na",
+				"status"			: "na",
 				// durations
-				"startTime" 		= getTickCount(),
-				"endTime"			= 0,
-				"totalDuration" 	= 0,
+				"startTime" 		: getTickCount(),
+				"endTime"			: 0,
+				"totalDuration" 	: 0,
 				// exception structure
-				"error"		= {},
+				"error"				: {},
 				// the failure message
-				"failMessage"	= "",
+				"failMessage"		: "",
+				// the failure detail
+				"failDetail" 		: "",
+				// the failure extended info
+				"failExtendedInfo" 	: "",
 				// the failure origin
-				"failOrigin" = {}
+				"failOrigin" 		: {}
 			};
 
 			// append to the parent stats

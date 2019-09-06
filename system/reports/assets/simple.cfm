@@ -523,16 +523,35 @@ code {
 							</div>
 							<cfif structKeyExists( local.thisSpec, "message" )>
 								<div>
+									<!--- If we have a fail origin, show it nicely --->
 									<cfif isArray( local.thisSpec.failOrigin ) && arrayLen( local.thisSpec.failOrigin )>
-										<div><pre>#local.thisSpec.failOrigin[ 1 ].raw_trace#</pre></div>
-										<div class="pl-5 mb-2 bg-light">
-											<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
+
+										<!--- Raw Detail, show it first, usually the nested exception is here --->
+										<cfif len( local.thisSpec.failDetail )>
+											<div>
+												<pre>#left( local.thisSpec.failDetail, 2500 )#</pre>
+											</div>
+										<cfelse>
+											<!--- Raw Trace --->
+											<div>
+												<pre>#local.thisSpec.failOrigin[ 1 ].raw_trace#</pre>
+											</div>
+										</cfif>
+
+										<!--- Lucee Nice Code Print --->
+										<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
+											<div class="pl-5 mb-2 bg-light">
 												<code>#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</code>
-											</cfif>
-										</div>
+											</div>
+										</cfif>
 									</cfif>
+
+									<!--- Deep Insights into failures --->
 									<div id="failure_error_#local.thisSpec.id#" class="my-2 collapse" data-specid="#local.thisSpec.id#">
 										<cfdump var="#local.thisSpec.failorigin#" label="Failure Origin">
+										<cfdump var="#[ local.thisSpec.failDetail ]#" label="Failure Details">
+										<cfdump var="#[ local.thisSpec.failStackTrace ]#" label="Failure StackTrace">
+										<cfdump var="#[ local.thisSpec.failExtendedInfo ]#" label="Failure Extended Info">
 									</div>
 								</div>
 							</cfif>
