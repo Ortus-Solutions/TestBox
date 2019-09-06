@@ -82,6 +82,12 @@
 											<span>Excludes Applied: <span class="badge badge-info ml-1">#arrayToList( results.getExcludes() )#</u></span>
 										</h5>
 									</cfif>
+									<h5 class="mt-2 mb-0">
+										<span class="badge badge-info">
+											#server.coldfusion.productName#
+											#server.coldfusion.productVersion#
+										</span>
+									</h5>
 								</div>
 							</div>
 
@@ -517,7 +523,7 @@ code {
 							</div>
 							<cfif structKeyExists( local.thisSpec, "message" )>
 								<div>
-									<cfif arrayLen( local.thisSpec.failOrigin )>
+									<cfif isArray( local.thisSpec.failOrigin ) && arrayLen( local.thisSpec.failOrigin )>
 										<div><pre>#local.thisSpec.failOrigin[ 1 ].raw_trace#</pre></div>
 										<div class="pl-5 mb-2 bg-light">
 											<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
