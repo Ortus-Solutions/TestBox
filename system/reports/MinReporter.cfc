@@ -4,7 +4,7 @@
 * ---
 * A minimalistic reporter
 */ 
-component{
+component extends="BaseReporter"{
 
 	function init(){ 
 		return this; 
@@ -31,7 +31,7 @@ component{
 		struct options={}
 	){
 		// content type
-		getPageContext().getResponse().setContentType( "text/html" );
+		getPageContextResponse().setContentType( "text/html" );
 		
 		// bundle stats
 		variables.bundleStats = arguments.results.getBundleStats();

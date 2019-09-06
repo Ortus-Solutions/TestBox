@@ -4,7 +4,7 @@
 * ---
 * A JUnit reporter for use with the ANT junitreport task, which uses an old version of JUnit formatting.
 */
-component{
+component extends="BaseReporter"{
 
 	function init(){ return this; }
 
@@ -28,7 +28,7 @@ component{
 		required testbox.system.TestBox testbox,
 		struct options={}
 	){
-		getPageContext().getResponse().setContentType( "application/xml" );
+		getPageContextResponse().setContentType( "application/xml" );
 
 		return toJUnit( arguments.results );
 	}

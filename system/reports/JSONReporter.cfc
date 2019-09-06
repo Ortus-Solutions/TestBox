@@ -4,7 +4,7 @@
 * ---
 * A JSON reporter
 */ 
-component{
+component extends="BaseReporter"{
 
 	function init(){ return this; }
 
@@ -28,7 +28,8 @@ component{
 		required testbox.system.TestBox testbox,
 		struct options={}
 	){
-		getPageContext().getResponse().setContentType( "application/json" );
+		resetHTMLResponse();
+		getPageContextResponse().setContentType( "application/json" );
 		return serializeJSON( arguments.results.getMemento() );
 	}
 	
