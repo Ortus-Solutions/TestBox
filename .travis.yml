@@ -30,7 +30,7 @@ install:
   # Install Commandbox
   - sudo apt-get update && sudo apt-get --assume-yes install jq commandbox ant-optional
   # Install env dependencies
-  - ox install commandbox-cfconfig,commandbox-dotenv
+  - box install commandbox-docbox,commandbox-cfformat
   # If using auto-publish, you will need to provide your API token with this line:
   - box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN > /dev/null
 
