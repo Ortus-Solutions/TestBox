@@ -18,8 +18,10 @@
 			<body>
 	</cfif>
 				<div class="container-fluid my-3">
+
 					<!--- Filter--->
 					<div class="d-flex justify-content-between align-items-end">
+
 						<div>
 							<!--- Header --->
 							<div>
@@ -27,6 +29,7 @@
 								<span class="badge badge-info">v#testbox.getVersion()#</span>
 							</div>
 						</div>
+
 						<div>
 							<input class="d-inline col-7 ml-2 form-control float-right mb-1" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
 							<div class="buttonBar mb-1 float-right">
@@ -85,7 +88,7 @@
 									<h5 class="mt-2 mb-0">
 										<span class="badge badge-info">
 											#server.coldfusion.productName#
-											#server.coldfusion.productVersion#
+											#structKeyExists( server, "lucee" ) ? server.lucee.version : server.coldfusion.productVersion#
 										</span>
 									</h5>
 								</div>
