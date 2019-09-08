@@ -400,7 +400,9 @@ component accessors="true"{
 			"bundleStats"
 		];
 		var result 	= {
-			'coverage' : {}
+			"CFMLEngine"		: server.coldfusion.productName,
+			"CFMLEngineVersion"	: ( structKeyExists( server, "lucee" ) ? server.lucee.version : server.coldfusion.productVersion ),
+			"coverage" 			: {}
 		};
 
 		// Do simple properties only
