@@ -344,6 +344,8 @@ component accessors="true"{
 				"failDetail" 		: "",
 				// the failure extended info
 				"failExtendedInfo" 	: "",
+				// the failure stack trace
+				"failStacktrace" 	: "",
 				// the failure origin
 				"failOrigin" 		: {}
 			};
