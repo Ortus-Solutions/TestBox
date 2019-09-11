@@ -730,7 +730,7 @@ component{
 			specStats.failDetail		= e.detail;
 			specStats.failExtendedInfo 	= e.extendedInfo;
 			specStats.failStacktrace 	= e.stackTrace;
-			specStats.failOrigin 		= sliceTagContext( e.tagContext );
+			specStats.failOrigin 		= e.tagContext;
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );
@@ -738,9 +738,13 @@ component{
 		// Catch errors
 		catch( any e ){
 			// store spec status and debug data
-			specStats.status 		= "Error";
-			specStats.error 		= e;
-			specStats.failOrigin 	= sliceTagContext( e.tagContext );
+			specStats.status 			= "Error";
+			specStats.error 			= e;
+			specStats.failOrigin 		= e.tagContext;
+			specStats.failMessage 		= e.message;
+			specStats.failDetail		= e.detail;
+			specStats.failExtendedInfo 	= e.extendedInfo;
+			specStats.failStacktrace 	= e.stackTrace;
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="error", stats=specStats );
@@ -1038,7 +1042,7 @@ component{
 			specStats.failMessage 		= e.message;
 			specStats.failExtendedInfo 	= e.extendedInfo;
 			specStats.failStacktrace 	= e.stackTrace;
-			specStats.failOrigin 		= sliceTagContext( e.tagContext );
+			specStats.failOrigin 		= e.tagContext;
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="fail", stats=specStats );
@@ -1048,7 +1052,7 @@ component{
 			// store spec status and debug data
 			specStats.status 		= "Error";
 			specStats.error 		= e;
-			specStats.failOrigin 	= sliceTagContext( e.tagContext );
+			specStats.failOrigin 	= e.tagContext;
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type="error", stats=specStats );
 		} finally {
