@@ -239,7 +239,7 @@
 															</button>
 															<div>#thisBundle.globalException.Message#</div>
 															<div class="bg-light p-2 ">
-																<cfif structKeyExists( thisBundle.globalException.TagContext[ 1 ], "codePrintHTML" )>
+																<cfif arrayLen( thisBundle.globalException.TagContext ) && structKeyExists( thisBundle.globalException.TagContext[ 1 ], "codePrintHTML" )>
 																	<code>#thisBundle.globalException.TagContext[ 1 ].codePrintHTML#</code>
 																</cfif>
 															</div>
