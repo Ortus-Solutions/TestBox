@@ -23,7 +23,12 @@ component{
 	function resetHTMLResponse(){
 		// reset cfhtmlhead from integration tests
 		if( structKeyExists( server, "lucee" ) ){
-			getPageContext().getOut().resetHTMLHead();
+			try{
+				getPageContext().getOut().resetHTMLHead();
+			}catch( any e ){
+				// don't care, that lucee version doesn't support it.
+				writedump( var="resetHTMLHead() not supported #e.message#", output="console" );
+			}
 		}
 		// reset cfheader from integration tests
 		getPageContextResponse().reset();
