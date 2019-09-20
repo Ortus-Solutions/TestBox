@@ -151,7 +151,7 @@
 											<!--- bundle stats --->
 											<a
 												class="alert-link h5"
-												href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true"
+												href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true&coverageEnabled=false"
 												title="Run only this bundle"
 											>
 												#thisBundle.path# (#numberFormat( thisBundle.totalDuration )# ms)
@@ -485,7 +485,7 @@ code {
 				<a
 					class="alert-link text-#statusToBootstrapClass( suiteStats.status )#"
 					title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#"
-					href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true"
+					href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
 				>
 					#statusToIcon( arguments.suiteStats.status )# <strong>#arguments.suiteStats.name#</strong>
 					(#numberFormat( arguments.suiteStats.totalDuration )# ms)
@@ -498,7 +498,7 @@ code {
 							<div class="clearfix">
 								<a
 									class="alert-link text-#statusToBootstrapClass( local.thisSpec.status )#"
-									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true"
+									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
 								>
 									#statusToIcon( local.thisSpec.status )# #local.thisSpec.name# (#numberFormat( local.thisSpec.totalDuration )# ms)
 								</a>
