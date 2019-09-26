@@ -192,7 +192,7 @@ component displayName="TestBox xUnit suite for CF9" labels="lucee,cf" extends="t
 		$assert.typeOf( "string", "hello string" );
 		$assert.typeOf( "struct", { name="luis", awesome=true } );
 		$assert.typeOf( "uuid", createUUID() );
-		$assert.typeOf( "url", "http://www.coldbox.org" );
+		$assert.typeOf( "url", "https://www.coldbox.org" );
 	}
 
 	function testNotTypeOf() {

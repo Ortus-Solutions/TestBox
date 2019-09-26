@@ -58,10 +58,12 @@ component accessors="true"{
 	}
 
 	/**
-	* Fail an assertion
-	* @message The message to fail with.
-	*/
-	function fail( message="" ){
+	 * Fail an assertion
+	 *
+	 * @message The message to fail with.
+	 * @detail The detail to fail with.
+	 */
+	function fail( message="", detail="" ){
 		variables.assert.fail( argumentCollection=arguments );
 	}
 

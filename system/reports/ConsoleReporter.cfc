@@ -4,7 +4,7 @@
 * ---
 * A text reporter
 */ 
-component{
+component extends="BaseReporter"{
 
 	function init(){ 
 		variables.out = createObject("Java", "java.lang.System").out;
@@ -32,7 +32,7 @@ component{
 		struct options={}
 	){
 		// content type
-		getPageContext().getResponse().setContentType( "text/plain" );
+		getPageContextResponse().setContentType( "text/plain" );
 		// bundle stats
 		variables.bundleStats = arguments.results.getBundleStats();
 		

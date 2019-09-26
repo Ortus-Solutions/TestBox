@@ -15,6 +15,11 @@
 <cfparam name="url.coveragePathToCapture"			default="#expandPath( '/testbox/system/' )#">
 <cfparam name="url.coverageWhitelist"				default="">
 <cfparam name="url.coverageBlacklist"				default="/stubs/**,/modules/**,/coverage/**,Application.cfc">
+
+<!--- FYI the "coverageBrowserOutputDir" folder will be DELETED and RECREATED each time
+	  you generate the report. Don't point this setting to a folder that has other important
+	  files. Pick a blank, essentially "temp" folder somewhere. Brad may or may not have 
+	  learned this the hard way. Learn from his mistakes. :) --->
 <cfparam name="url.coverageBrowserOutputDir"		default="#expandPath( '/tests/results/coverageReport' )#">
 
 <!--- Include the TestBox HTML Runner --->

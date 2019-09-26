@@ -7,12 +7,18 @@
 component{
 
 	/**
-	* Fail assertion
-	* @message The message to send in the failure
-	*/
-	function fail( message="" ){
+	 * Fail assertion
+	 *
+	 * @message The message to send in the failure
+	 * @detail The detail to add in the exception
+	 */
+	function fail( message="", detail="" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "A test failure occurred" );
-		throw(type="TestBox.AssertionFailed", message=arguments.message);
+		throw(
+			type 	= "TestBox.AssertionFailed",
+			message = arguments.message,
+			detail 	= arguments.detail
+		);
 	}
 
 	/**
@@ -384,12 +390,13 @@ component{
 	* @message The message to send in the failure
 	*/
 	function throws( required any target, type="", regex=".*", message="" ){
+		var detail = "";
 
 		try{
 			arguments.target();
 			arguments.message = ( len( arguments.message ) ? arguments.message : "The incoming function did not throw an expected exception. Type=[#arguments.type#], Regex=[#arguments.regex#]" );
-		}
-		catch(Any e){
+
+		} catch( Any e ) {
 			// If no type, message expectations, just throw flag
 			if( !len( arguments.type ) && arguments.regex eq ".*" ){ return this; }
 
@@ -403,13 +410,13 @@ component{
 			if( typeMatches && regexMatches ){
 				return this;
 			}
-
 			// diff messsage types
 			arguments.message = ( len( arguments.message ) ? arguments.message : "The incoming function threw exception [#e.type#] [#e.message#] [#e.detail#] different than expected params type=[#arguments.type#], regex=[#arguments.regex#]" );
+			detail = e.stackTrace;
 		}
 
 		// found, so throw it
-		fail( arguments.message );
+		fail( arguments.message, detail );
 	}
 
 	/**
@@ -849,7 +856,5 @@ component{
 		var system = createObject("java", "java.lang.System");
 		return system.identityHashCode(arguments.target);
 	}
-
-
 
 }

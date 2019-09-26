@@ -4,7 +4,7 @@
 * ---
 * A dot matrix reporter
 */
-component{
+component extends="BaseReporter"{
 
 	function init(){
 		return this;
