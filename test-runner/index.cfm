@@ -25,7 +25,7 @@
 
 	if( url.opt_run ){
 	// Include the TestBox HTML Runner
-	include template="/testbox/system/runners/HTMLRunner.cfm";
+	include "/testbox/system/runners/HTMLRunner.cfm";
 	abort;
 	}
 </cfscript>
