@@ -4,7 +4,7 @@
 * ---
 * A JUnit reporter
 */
-component{
+component extends="BaseReporter"{
 
 	function init(){ return this; }
 
@@ -28,7 +28,8 @@ component{
 		required testbox.system.TestBox testbox,
 		struct options={}
 	){
-		getPageContext().getResponse().setContentType( "application/xml" );
+		resetHTMLResponse();
+		getPageContextResponse().setContentType( "application/xml" );
 
 		return toJUnit( arguments.results );
 	}

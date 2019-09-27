@@ -147,7 +147,6 @@
 						</cfif>
 					</cfloop>
 				</div>
-</cfoutput>
 <style>
 .dots {
 	font-size: 60px;
@@ -172,12 +171,12 @@ function showInfo( failMessage, specID, isError ) {
 	if ( failMessage.length ) {
 		alert( "Failure Message: " + failMessage );
 	} else if ( isError || isError == 'yes' || isError == 'true' ) {
-		$( "#error_" + specID ).slideToggle();
+		$( "##error_" + specID ).slideToggle();
 	}
 }
 
 function toggleDebug( specid ) {
-	$( `#btn_${specid}` ).toggleClass( "collapsed" );
+	$( `##btn_${specid}` ).toggleClass( "collapsed" );
 	$( "div.debugdata" ).each( function() {
 		var $this = $( this );
 		// if bundleid passed and not the same bundle
@@ -189,56 +188,55 @@ function toggleDebug( specid ) {
 	});
 }
 </script>
-<cfoutput>
-	<cfif url.fullPage>
-			</body>
-		</html>
-	</cfif>
-
-	<cffunction name="statusPlusBootstrapClass" output="false">
-		<cfargument name="status">
-		<cfif lcase( arguments.status ) eq "failed">
-			<cfset bootstrapClass = "text-warning failed">
-		<cfelseif lcase( arguments.status ) eq "error">
-			<cfset bootstrapClass = "text-danger error">
-		<cfelseif lcase( arguments.status ) eq "passed">
-			<cfset bootstrapClass = "text-success passed">
-		<cfelseif lcase( arguments.status ) eq "skipped">
-			<cfset bootstrapClass = "text-secondary skipped">
-		</cfif>
-		<cfreturn bootstrapClass>
-	</cffunction>
-
-	<!--- Recursive Output --->
-	<cffunction name="genSuiteReport" output="false">
-		<cfargument name="suiteStats">
-		<cfargument name="bundleStats">
-		<cfset var thisSpec = "">
-		<cfsavecontent variable="local.report">
-			<cfoutput>
-				<!--- Iterate over suite specs --->
-				<cfloop array="#arguments.suiteStats.specStats#" index="thisSpec">
-					<a href="javascript:
-							<cfif len( thisSpec.failMessage ) OR NOT structIsEmpty( thisSpec.error )>
-								showInfo( '#JSStringFormat( thisSpec.failMessage )#', '#thisSpec.id#', '#lcase( NOT structIsEmpty( thisSpec.error ) )#' )
-							<cfelse>
-								void( 0 )
-							</cfif>
-							" title="#encodeForHTML( thisSpec.name )# (#thisSpec.totalDuration# ms)" data-info="#encodeForHTML( thisSpec.failMessage )#">
-						<span class="#statusPlusBootstrapClass( thisSpec.status )#">&middot;</span>
-					</a>
-					<div style="display:none;" id="error_#thisSpec.id#">
-						<cfdump var="#thisSpec.error#">
-					</div>
-				</cfloop>
-				<!--- Do we have nested suites --->
-				<cfif arrayLen( arguments.suiteStats.suiteStats )>
-					<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
-						#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
-					</cfloop>
-				</cfif>
-			</cfoutput>
-		</cfsavecontent>
-		<cfreturn local.report>
-	</cffunction>
+<cfif url.fullPage>
+		</body>
+	</html>
+</cfif>
 </cfoutput>
+
+<cffunction name="statusPlusBootstrapClass" output="false">
+	<cfargument name="status">
+	<cfif lcase( arguments.status ) eq "failed">
+		<cfset bootstrapClass = "text-warning failed">
+	<cfelseif lcase( arguments.status ) eq "error">
+		<cfset bootstrapClass = "text-danger error">
+	<cfelseif lcase( arguments.status ) eq "passed">
+		<cfset bootstrapClass = "text-success passed">
+	<cfelseif lcase( arguments.status ) eq "skipped">
+		<cfset bootstrapClass = "text-secondary skipped">
+	</cfif>
+	<cfreturn bootstrapClass>
+</cffunction>
+
+<!--- Recursive Output --->
+<cffunction name="genSuiteReport" output="false">
+	<cfargument name="suiteStats">
+	<cfargument name="bundleStats">
+	<cfset var thisSpec = "">
+	<cfsavecontent variable="local.report">
+		<cfoutput>
+			<!--- Iterate over suite specs --->
+			<cfloop array="#arguments.suiteStats.specStats#" index="thisSpec">
+				<a href="javascript:
+						<cfif len( thisSpec.failMessage ) OR NOT structIsEmpty( thisSpec.error )>
+							showInfo( '#JSStringFormat( thisSpec.failMessage )#', '#thisSpec.id#', '#lcase( NOT structIsEmpty( thisSpec.error ) )#' )
+						<cfelse>
+							void( 0 )
+						</cfif>
+						" title="#encodeForHTML( thisSpec.name )# (#thisSpec.totalDuration# ms)" data-info="#encodeForHTML( thisSpec.failMessage )#">
+					<span class="#statusPlusBootstrapClass( thisSpec.status )#">&middot;</span>
+				</a>
+				<div style="display:none;" id="error_#thisSpec.id#">
+					<cfdump var="#thisSpec.error#">
+				</div>
+			</cfloop>
+			<!--- Do we have nested suites --->
+			<cfif arrayLen( arguments.suiteStats.suiteStats )>
+				<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
+					#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
+				</cfloop>
+			</cfif>
+		</cfoutput>
+	</cfsavecontent>
+	<cfreturn local.report>
+</cffunction>

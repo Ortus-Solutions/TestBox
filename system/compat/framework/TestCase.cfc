@@ -161,8 +161,8 @@ component extends="testbox.system.BaseSpec"{
 	* Fail assertion
 	* @message.hint The message to fail with
 	*/
-	function fail( message="" ){
-		this.$assert.fail( arguments.message );
+	function fail( message="", detail="" ){
+		this.$assert.fail( argumentCollection=arguments );
 	}
 
 	/**

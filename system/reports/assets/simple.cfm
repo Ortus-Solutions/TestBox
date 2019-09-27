@@ -18,8 +18,10 @@
 			<body>
 	</cfif>
 				<div class="container-fluid my-3">
+
 					<!--- Filter--->
 					<div class="d-flex justify-content-between align-items-end">
+
 						<div>
 							<!--- Header --->
 							<div>
@@ -27,6 +29,7 @@
 								<span class="badge badge-info">v#testbox.getVersion()#</span>
 							</div>
 						</div>
+
 						<div>
 							<input class="d-inline col-7 ml-2 form-control float-right mb-1" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
 							<div class="buttonBar mb-1 float-right">
@@ -82,6 +85,12 @@
 											<span>Excludes Applied: <span class="badge badge-info ml-1">#arrayToList( results.getExcludes() )#</u></span>
 										</h5>
 									</cfif>
+									<h5 class="mt-2 mb-0">
+										<span class="badge badge-info">
+											#server.coldfusion.productName#
+											#structKeyExists( server, "lucee" ) ? server.lucee.version : server.coldfusion.productVersion#
+										</span>
+									</h5>
 								</div>
 							</div>
 
@@ -142,7 +151,7 @@
 											<!--- bundle stats --->
 											<a
 												class="alert-link h5"
-												href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true"
+												href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true&coverageEnabled=false"
 												title="Run only this bundle"
 											>
 												#thisBundle.path# (#numberFormat( thisBundle.totalDuration )# ms)
@@ -206,34 +215,36 @@
 
 												<!--- Global Exception --->
 												<cfif !isSimpleValue( thisBundle.globalException )>
-													<li
-														class="list-group-item list-group-item-danger expand-collapse"
-														data-toggle="collapse"
-														data-target="##globalException_#thisBundle.id#"
-														aria-expanded="false"
-														aria-controls="globalException_#thisBundle.id#"
-														style="cursor: pointer;"
-													>
-														<span class="h5">
-															<strong>
-																<i class="fas fa-times"></i> Global Bundle Exception
-															</strong>(#numberFormat( thisBundle.totalDuration )# ms)
-														</span>
-														<button
-															class="btn btn-link float-right py-0"
-															style="text-decoration: none;"
-															id="btn_globalException_#thisBundle.id#"
-															title="Show more information"
+													<li>
+														<div
+															class="list-group-item list-group-item-danger py-3 expand-collapse"
+															data-toggle="collapse"
+															data-target="##globalException_#thisBundle.id#"
+															aria-expanded="false"
+															aria-controls="globalException_#thisBundle.id#"
+															style="cursor: pointer;"
 														>
-															<i class="fas fa-plus-square plus-minus"></i>
-														</button>
-														<div>#thisBundle.globalException.Message#</div>
-														<div class="pl-5 bg-light">
-															<cfif structKeyExists( thisBundle.globalException.TagContext[ 1 ], "codePrintHTML" )>
-																<code>#thisBundle.globalException.TagContext[ 1 ].codePrintHTML#</code>
-															</cfif>
+															<span class="h5">
+																<strong>
+																	<i class="fas fa-times"></i> Global Bundle Exception
+																</strong>(#numberFormat( thisBundle.totalDuration )# ms)
+															</span>
+															<button
+																class="btn btn-link float-right py-0"
+																style="text-decoration: none;"
+																id="btn_globalException_#thisBundle.id#"
+																title="Show more information"
+															>
+																<i class="fas fa-plus-square plus-minus"></i>
+															</button>
+															<div>#thisBundle.globalException.Message#</div>
+															<div class="bg-light p-2 ">
+																<cfif arrayLen( thisBundle.globalException.TagContext ) && structKeyExists( thisBundle.globalException.TagContext[ 1 ], "codePrintHTML" )>
+																	<code>#thisBundle.globalException.TagContext[ 1 ].codePrintHTML#</code>
+																</cfif>
+															</div>
 														</div>
-														<div class="my-2 collapse details-panel" id="globalException_#thisBundle.id#" data-specid="globalException_#thisBundle.id#">
+														<div class="overflow-auto my-2 collapse details-panel" id="globalException_#thisBundle.id#" data-specid="globalException_#thisBundle.id#">
 															<cfdump var="#thisBundle.globalException#" />
 														</div>
 													</li>
@@ -246,29 +257,29 @@
 
 												<!--- Debug Panel --->
 												<cfif arrayLen( thisBundle.debugBuffer )>
-													<li
-														class="list-group-item list-group-item-primary pt-2 pb-1 mt-4 expand-collapse"
-														title="Toggle Debug Stream"
-														data-toggle="collapse"
-														data-target="##debugdata_#thisBundle.id#"
-														aria-expanded="false"
-														aria-controls="debugdata_#thisBundle.id#"
-														style="cursor: pointer;"
-													>
-														<span class="alert-link h5 text-info">
-															<strong><i class="fas fa-bug"></i> Debug Stream</strong>
-														</span>
-
-														<button
-															class="btn btn-link float-right py-0"
-															style="text-decoration: none;"
-															id="btn_#thisBundle.id#"
-															title="Toggle the test debug stream"
+													<li>
+														<div class="list-group-item list-group-item-primary py-3 expand-collapse"
+															title="Toggle Debug Stream"
+															data-toggle="collapse"
+															data-target="##debugdata_#thisBundle.id#"
+															aria-expanded="false"
+															aria-controls="debugdata_#thisBundle.id#"
+															style="cursor: pointer;"
 														>
-															<i class="fas fa-plus-square plus-minus"></i>
-														</button>
+															<span class="alert-link h5 text-info">
+																<strong><i class="fas fa-bug"></i> Debug Stream</strong>
+															</span>
 
-														<div id="debugdata_#thisBundle.id#" class="my-2 bg-light border border-success p-2 collapse" data-specid="#thisBundle.id#">
+															<button
+																class="btn btn-link float-right py-0"
+																style="text-decoration: none;"
+																id="btn_#thisBundle.id#"
+																title="Toggle the test debug stream"
+															>
+																<i class="fas fa-plus-square plus-minus"></i>
+															</button>
+														</div>
+														<div id="debugdata_#thisBundle.id#" class="overflow-auto bg-light p-2 collapse" data-specid="#thisBundle.id#">
 															<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
 															<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
 																<h6>#thisDebug.label#</h6>
@@ -285,8 +296,7 @@
 						</div>
 					</div>
 				</div>
-</cfoutput>
-<script>
+	<script>
 $( document ).ready( function() {
 	// spec toggler
 	$( "span.spec-status" ).click( function( event ) {
@@ -303,7 +313,7 @@ $( document ).ready( function() {
 	});
 
 	// Filter Bundles
-	$( "#bundleFilter" ).keyup( debounce( function() {
+	$( "##bundleFilter" ).keyup( debounce( function() {
 		let targetText = $( this ).val().toLowerCase();
 		$( ".bundle" ).each( function( index ) {
 			let bundle = $( this ).data( "bundle" ).toLowerCase();
@@ -316,15 +326,15 @@ $( document ).ready( function() {
 		});
 	}, 100));
 
-	$( "#bundleFilter" ).focus();
+	$( "##bundleFilter" ).focus();
 
 	// Bootstrap Collapse
-	$("body").on("click", "#collapse-bundles", function() {
+	$("body").on("click", "##collapse-bundles", function() {
 		$(".details-panel").collapse("hide");
 		$(".bundle-btn > svg.plus-minus").attr("data-icon", "plus-square");
 	});
-		
-	$("body").on("click", "#expand-bundles", function() {
+
+	$("body").on("click", "##expand-bundles", function() {
 		$(".details-panel:not(.show)").collapse("show");
 		$(".bundle-btn > svg.plus-minus").attr("data-icon", "minus-square");
 	});
@@ -367,7 +377,7 @@ function resetSpecs(element) {
 	let selector = $( "li.spec, ul.suite, div.suite" );
 
 	if ( element.attr( 'data-bundleid' ) ) {
-		selector = $( `#details_${element.attr( 'data-bundleid' )}` );
+		selector = $( `##details_${element.attr( 'data-bundleid' )}` );
 		selector.find( "li.spec" ).each(function() {
 			$( this ).removeAttr('style');
 		});
@@ -432,6 +442,7 @@ code {
 			</body>
 		</html>
 </cfif>
+</cfoutput>
 
 <cffunction name="statusToBootstrapClass" output="false">
 	<cfargument name="status">
@@ -474,7 +485,7 @@ code {
 				<a
 					class="alert-link text-#statusToBootstrapClass( suiteStats.status )#"
 					title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#"
-					href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true"
+					href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
 				>
 					#statusToIcon( arguments.suiteStats.status )# <strong>#arguments.suiteStats.name#</strong>
 					(#numberFormat( arguments.suiteStats.totalDuration )# ms)
@@ -487,7 +498,7 @@ code {
 							<div class="clearfix">
 								<a
 									class="alert-link text-#statusToBootstrapClass( local.thisSpec.status )#"
-									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true"
+									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
 								>
 									#statusToIcon( local.thisSpec.status )# #local.thisSpec.name# (#numberFormat( local.thisSpec.totalDuration )# ms)
 								</a>
@@ -515,16 +526,35 @@ code {
 							</div>
 							<cfif structKeyExists( local.thisSpec, "message" )>
 								<div>
-									<cfif arrayLen( local.thisSpec.failOrigin )>
-										<div><pre>#local.thisSpec.failOrigin[ 1 ].raw_trace#</pre></div>
-										<div class="pl-5 mb-2 bg-light">
-											<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
+									<!--- If we have a fail origin, show it nicely --->
+									<cfif isArray( local.thisSpec.failOrigin ) && arrayLen( local.thisSpec.failOrigin )>
+
+										<!--- Raw Detail, show it first, usually the nested exception is here --->
+										<cfif len( local.thisSpec.failDetail )>
+											<div>
+												<pre>#left( local.thisSpec.failDetail, 2500 )#</pre>
+											</div>
+										<cfelse>
+											<!--- Raw Trace --->
+											<div>
+												<pre>#local.thisSpec.failOrigin[ 1 ].raw_trace#</pre>
+											</div>
+										</cfif>
+
+										<!--- Lucee Nice Code Print --->
+										<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
+											<div class="pl-5 mb-2 bg-light">
 												<code>#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</code>
-											</cfif>
-										</div>
+											</div>
+										</cfif>
 									</cfif>
+
+									<!--- Deep Insights into failures --->
 									<div id="failure_error_#local.thisSpec.id#" class="my-2 collapse" data-specid="#local.thisSpec.id#">
 										<cfdump var="#local.thisSpec.failorigin#" label="Failure Origin">
+										<cfdump var="#[ local.thisSpec.failDetail ]#" label="Failure Details">
+										<cfdump var="#[ local.thisSpec.failStackTrace ]#" label="Failure StackTrace">
+										<cfdump var="#[ local.thisSpec.failExtendedInfo ]#" label="Failure Extended Info">
 									</div>
 								</div>
 							</cfif>
@@ -532,13 +562,9 @@ code {
 					</cfloop>
 					<!--- Do we have nested suites --->
 					<cfif arrayLen( arguments.suiteStats.suiteStats )>
-						<li class="spec list-group-item" data-bundleid="#arguments.bundleStats.id#">
-							<ul class="suite list-group" data-bundleid="#arguments.bundleStats.id#">
-								<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
-									#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
-								</cfloop>
-							</ul>
-						</li>
+						<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
+							#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
+						</cfloop>
 					</cfif>
 				</ul>
 			</li>

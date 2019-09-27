@@ -2,12 +2,12 @@
 * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
 * www.ortussolutions.com
 * ---
-* A tap reporter http://testanything.org/
-*/ 
-component{
+* A tap reporter https://testanything.org/
+*/
+component extends="BaseReporter"{
 
-	function init(){ 
-		return this; 
+	function init(){
+		return this;
 	}
 
 	/**
@@ -25,16 +25,16 @@ component{
 	* @testbox.hint The TestBox core object
 	* @options.hint A structure of options this reporter needs to build the report with
 	*/
-	any function runReport( 
+	any function runReport(
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
 		struct options={}
 	){
 		// content type
-		getPageContext().getResponse().setContentType( "text/plain" );
+		getPageContextResponse().setContentType( "text/plain" );
 		// bundle stats
 		variables.bundleStats = arguments.results.getBundleStats();
-		
+
 		// prepare the report
 		savecontent variable="local.report"{
 			include "assets/tap.cfm";
@@ -42,5 +42,5 @@ component{
 
 		return local.report;
 	}
-	
+
 }
