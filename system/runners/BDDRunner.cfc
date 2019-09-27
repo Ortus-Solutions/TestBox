@@ -1,9 +1,9 @@
 /**
-* Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
-* www.ortussolutions.com
-* ---
-* This TestBox runner is used to run and report on BDD style test suites.
-*/
+ * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * This TestBox runner is used to run and report on BDD style test suites.
+ */
 component extends="testbox.system.runners.BaseRunner" implements="testbox.system.runners.IRunner" accessors="true"{
 
 	// runner options
@@ -12,10 +12,11 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 	property name="testbox";
 
 	/**
-	* Constructor
-	* @options The options for this runner
-	* @testbox The TestBox class reference
-	*/
+	 * Constructor
+	 *
+	 * @options The options for this runner
+	 * @testbox The TestBox class reference
+	 */
 	function init( required struct options, required testBox ){
 
 		variables.options = arguments.options;
@@ -159,7 +160,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 
 		// Verify we can execute the incoming suite via skipping or labels
 		if( !arguments.suite.skip &&
-			canRunSuite( arguments.suite, arguments.testResults )
+			canRunSuite( arguments.suite, arguments.testResults, arguments.target )
 		){
 
 			// prepare threaded names
