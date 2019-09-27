@@ -84,7 +84,7 @@ component{
 		if( arrayLen( arguments.target.$focusedTargets.suites ) ){
 
 			// Is this suite focused
-			if( arrayContainsNoCase( arguments.target.$focusedTargets.suites, arguments.suite.slug & "/" & arguments.suite.name ) ){
+			if( arrayFindNoCase( arguments.target.$focusedTargets.suites, arguments.suite.slug & "/" & arguments.suite.name ) ){
 				return true;
 			}
 
