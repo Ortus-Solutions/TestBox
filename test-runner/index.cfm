@@ -23,10 +23,10 @@
 	reporters = [ "ANTJunit", "Console", "Codexwiki", "Doc", "Dot", "JSON", "JUnit", "Min", "Raw", "Simple", "Tap", "Text", "XML" ];
 	ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
 
-	if( url.opt_run ){
-	// Include the TestBox HTML Runner
-	include template="/testbox/system/runners/HTMLRunner.cfm";
-	abort;
+	if ( url.opt_run ) {
+		// Include the TestBox HTML Runner
+		include "/testbox/system/runners/HTMLRunner.cfm";
+		abort;
 	}
 </cfscript>
 
