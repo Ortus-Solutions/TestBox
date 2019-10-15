@@ -49,7 +49,7 @@ component accessors="true"{
 	){
 
 		// TestBox version
-		variables.version 	= "@build.version@+@build.number@";
+		variables.version 	= "3.1.0+339";
 		variables.codename 	= "";
 		// init util
 		variables.utility = new testbox.system.util.Util();
@@ -152,7 +152,8 @@ component accessors="true"{
 		any testSuites=[],
 		any testSpecs=[],
 		any callbacks={},
-		boolean eagerFailure=false
+        boolean eagerFailure=false,
+        boolean asyncBundles=false
 	){
 
 		// reporter passed?
@@ -189,7 +190,8 @@ component accessors="true"{
 		any testSuites=[],
 		any testSpecs=[],
 		any callbacks={},
-		boolean eagerFailure=false
+        boolean eagerFailure=false,
+        boolean asyncBundles=false
 	){
 
 		// inflate options if passed
@@ -239,36 +241,42 @@ component accessors="true"{
 
 		coverageService.beginCapture();
 
-		// iterate and run the test bundles
-		for( var thisBundlePath in variables.bundles ){
-			// Skip interfaces, they are not testable
-			if( getComponentMetadata( thisBundlePath ).type eq "interface" ){
-				continue;
-			}
-			// Execute Bundle
-			testBundle(
-				bundlePath  = thisBundlePath,
-				testResults = results,
-				callbacks   = arguments.callbacks
-			);
-
-			// Eager Failures on Bundle?
-			if( arguments.eagerFailure ){
-				var failuresDetected = results.getBundleStats()
-					// Get stats for running bundle
-					.filter( function( item ){
-						return ( item.path == thisBundlePath ? true : false );
-					} )
-					.reduce( function( result, item ){
-						return ( item.totalError + item.totalFail ) > 0;
-					}, false );
-
-				if( failuresDetected ){
-					// Hard skip iterations
-					break;
-				}
-			}
-		}
+        // iterate and run the test bundles
+        var threadNames = [];
+        for ( var thisBundlePath in variables.bundles ) {
+            if ( arguments.asyncBundles ) {
+                var thisThreadName = getUtility().slugify( "tb-" & thisBundlePath & "-#hash( getTickCount() + randRange( 1, 10000000 ) )#" );
+                arrayAppend( threadNames, thisThreadName );
+                thread
+                    name = thisThreadName
+                    threadName = thisThreadName
+                    thisBundlePath = thisBundlePath
+                    results = results
+                    callbacks = arguments.callbacks
+                    options = variables.options
+                    eagerFailure = arguments.eagerFailure
+                {
+                    runTestBundle(
+                        attributes.thisBundlePath,
+                        attributes.results,
+                        attributes.callbacks,
+                        attributes.options,
+                        attributes.eagerFailure
+                    );
+                }
+            } else {
+                runTestBundle(
+                    thisBundlePath,
+                    results,
+                    arguments.callbacks,
+                    variables.options,
+                    arguments.eagerFailure
+                );
+            }
+        }
+        if ( arguments.asyncBundles ) {
+            thread action="join" name="#arrayToList( threadNames )#"{};
+        }
 
 		// mark end of testing bundles
 		results.end();
@@ -280,7 +288,44 @@ component accessors="true"{
 		sendStatusHeaders( results );
 
 		return results;
-	}
+    }
+
+    private function runTestBundle(
+        string bundlePath,
+        any results,
+        any callbacks,
+        struct options = {},
+        boolean eagerFailure = false
+    ) {
+        // Skip interfaces, they are not testable
+        if ( getComponentMetadata( arguments.bundlePath ).type eq "interface" ) {
+            return;
+        }
+        // Execute Bundle
+        testBundle(
+            bundlePath  = arguments.bundlePath,
+            testResults = arguments.results,
+            callbacks   = arguments.callbacks,
+            options = arguments.options
+        );
+
+        // Eager Failures on Bundle?
+        if ( eagerFailure ) {
+            var failuresDetected = arguments.results.getBundleStats()
+                // Get stats for running bundle
+                .filter( function( item ){
+                    return ( item.path == bundlePath ? true : false );
+                } )
+                .reduce( function( result, item ){
+                    return ( item.totalError + item.totalFail ) > 0;
+                }, false );
+
+            if ( failuresDetected ) {
+                // Hard skip iterations
+                return;
+            }
+        }
+    }
 
 	/**
 	 * Run me some testing goodness, remotely via SOAP, Flex, REST, URL
@@ -455,7 +500,8 @@ component accessors="true"{
 	private function testBundle(
 		required bundlePath,
 		required testResults,
-		required callbacks
+        required callbacks,
+        required options = {}
 	){
 
 		// create new target bundle and get its metadata
@@ -470,12 +516,12 @@ component accessors="true"{
 			// Discover type?
 			if( structKeyExists( target, "run" ) ){
 				// Run via BDD Style
-				new testbox.system.runners.BDDRunner( options=variables.options, testbox=this )
+				new testbox.system.runners.BDDRunner( options=arguments.options, testbox=this )
 					.run( target, arguments.testResults, arguments.callbacks );
 			}
 			else{
 				// Run via xUnit Style
-				new testbox.system.runners.UnitRunner( options=variables.options,testbox=this )
+				new testbox.system.runners.UnitRunner( options=arguments.options,testbox=this )
 					.run( target, arguments.testResults, arguments.callbacks );
 			}
 		} catch( Any e ){

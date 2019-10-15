@@ -18,6 +18,8 @@
 <cfparam name="url.coverageWhitelist"				default="">
 <cfparam name="url.coverageBlacklist"				default="/testbox">
 
+<cfparam name="url.asyncBundles"                    default="false">
+
 <cfscript>
 // prepare for tests for bundles or directories
 testbox = new testbox.system.TestBox(
@@ -46,7 +48,7 @@ if( len( url.directory ) ){
 }
 
 // Run Tests using correct reporter
-results = testbox.run( reporter=url.reporter );
+results = testbox.run( reporter=url.reporter, asyncBundles=url.asyncBundles );
 
 // Write TEST.properties in report destination path.
 if( url.propertiesSummary ){
