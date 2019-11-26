@@ -4,7 +4,7 @@
 * ---
 * A raw reporter
 */ 
-component{
+component extends="BaseReporter"{
 
 	function init(){ return this; }
 

@@ -1,6 +1,6 @@
 {
     "name":"TestBox",
-    "version":"@build.version@+@build.number@",
+    "version":"3.1.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/testbox/@build.version@/testbox-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com>",
     "slug":"testbox",
@@ -17,7 +17,7 @@
     "license":[
         {
             "type":"Apache2",
-            "url":"http://www.apache.org/licenses/LICENSE-2.0.html"
+            "url":"https://www.apache.org/licenses/LICENSE-2.0.html"
         }
     ],
     "contributors":[

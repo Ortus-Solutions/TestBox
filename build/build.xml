@@ -7,11 +7,9 @@
 		Build a new distribution of TestBox
 	</description>
 
-	<!-- Version: UPDATE ON EACH RELEASE AS NEEDED -->
-	<property name="groupID" value="ortussolutions" />
-	<property name="testbox.version" value="3.0.0"/>
-	<property name="testbox.slug" value="testbox"/>
-
+	<condition property="version" else="0.0.0">
+		<isset property="version"/>
+	</condition>
 	<condition property="isTravis" else="false">
 		<isset property="isTravis"/>
 	</condition>
@@ -30,12 +28,9 @@
 			<include name="**/*.jar" />
 		</fileset>
 	</path>
+
 	<!-- Define Tasks -->
 	<taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="cp" />
-	<!-- Import Box-Repo Tasks -->
-	<import>
-		<url url="https://raw.githubusercontent.com/Ortus-Solutions/box-tasks/master/box-repo.xml"/>
-	</import>
 
 	<!-- Init -->
 	<target name="init" description="Init the build" unless="src.isInit">
@@ -72,7 +67,7 @@
 		</if>
 
 		<!-- Build Label -->
-		<property name="build.label" value="testbox-${testbox.version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
+		<property name="build.label" value="testbox-${version}+${build.number}-${start.DSTAMP}${start.TSTAMP}"/>
 
 		<!-- Cleanup + Init -->
 		<delete dir="${dir.build}" />
@@ -85,26 +80,11 @@
 		<exec executable="box" dir="${basedir}">
 			<arg line="server stop" />
 		</exec>
+
 		<!-- Startup the testing server, wait for a few seconds for server to start -->
 		<exec executable="box" dir="${basedir}">
 			<arg line="server start name=${cfengine} cfengine=${cfengine} heapSize=1024" />
 		</exec>
-	</target>
-
-	<!-- update permissions on reports -->
-	<target name="update.permissions" description="Update staging server permissions">
-		<!-- Integration permissions -->
-		<if>
-			<equals arg1="${environment}" arg2="auto" />
-			<then>
-				<chmod file="${dir.build}/**" perm="go+wrs" type="both" verbose="true" />
-				<chown owner="stg-ortus" verbose="true">
-					<fileset dir="${dir.build}" />
-				</chown>
-			</then>
-			<else>
-			</else>
-		</if>
 	</target>
 
 	<!-- Build test reports -->
@@ -125,10 +105,8 @@
 	<!-- Build TestBox-->
 	<target name="build.testbox" description="Build a new TestBox Distribution" depends="init">
 		<!-- prepare dirs -->
-		<property name="dir.testbox.exports" value="${dir.exports}/${testbox.slug}/${testbox.version}" />
-		<property name="be.testbox.exports" value="${be.exports}/${testbox.slug}" />
-		<!-- Update Permissions -->
-		<antcall target="update.permissions" />
+		<property name="dir.testbox.exports" value="${dir.exports}/testbox/${version}" />
+		<property name="be.testbox.exports" value="${be.exports}/testbox" />
 
 		<!-- Copy build ID -->
 		<concat destfile="${dir.build}/testbox/${build.label}">Built on ${start.TODAY}</concat>
@@ -161,7 +139,7 @@
 		</copy>
 
 		<!-- Replace Version Number -->
-		<replaceregexp match='@build.version@' replace="${testbox.version}" flags="ig" byline="true" encoding="UTF-8">
+		<replaceregexp match='@build.version@' replace="${version}" flags="ig" byline="true" encoding="UTF-8">
 			<fileset dir="${dir.build}" />
 		</replaceregexp>
 
@@ -184,7 +162,7 @@
 		<antcall target="build.apidocs" />
 
 		<!-- Zip Bundle -->
-		<zip destfile="${dir.testbox.exports}/testbox-${testbox.version}.zip" basedir="${dir.build}" />
+		<zip destfile="${dir.testbox.exports}/testbox-${version}.zip" basedir="${dir.build}" />
 
 		<!-- Build Checksum -->
 		<checksum forceoverwrite="true" fileext=".md5">
@@ -203,13 +181,9 @@
 
 		<!-- Move Bleeding Edge to Root -->
 		<copy file="${dir.testbox.exports}/box.json" toFile="${be.testbox.exports}/box.json" overwrite="true" encoding="UTF-8"/>
-		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip" tofile="${be.testbox.exports}/${testbox.slug}-be.zip" overwrite="true" encoding="UTF-8"/>
-		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip.md5" tofile="${be.testbox.exports}/${testbox.slug}-be.zip.md5" overwrite="true" encoding="UTF-8"/>
-		<copy file="${dir.testbox.exports}/testbox-${testbox.version}.zip.sha512" tofile="${be.testbox.exports}/${testbox.slug}-be.zip.sha512" overwrite="true" encoding="UTF-8"/>
-
-		<!-- Create Box Repo From macrodef -->
-		<box-repo location="${dir.exports}/${testbox.slug}" artifactID="${testbox.slug}" groupID="${groupID}" buildID="${build.number}" latest="${testbox.version}" classifiers="apidocs"/>
-
+		<copy file="${dir.testbox.exports}/testbox-${version}.zip" tofile="${be.testbox.exports}/testbox-be.zip" overwrite="true" encoding="UTF-8"/>
+		<copy file="${dir.testbox.exports}/testbox-${version}.zip.md5" tofile="${be.testbox.exports}/testbox-be.zip.md5" overwrite="true" encoding="UTF-8"/>
+		<copy file="${dir.testbox.exports}/testbox-${version}.zip.sha512" tofile="${be.testbox.exports}/testbox-be.zip.sha512" overwrite="true" encoding="UTF-8"/>
 	</target>
 
 	<!-- Build API Docs -->
@@ -221,10 +195,10 @@
 			<arg line="install --force" />
 		</exec>
 		<!-- Get the apidocs now -->
-		<get dest="${dir.build}/docbox.html" src="${url.apidocs}?version=${testbox.version}&amp;path=${dir.build}/testbox/apidocs" verbose="true" retries="5"/>
+		<get dest="${dir.build}/docbox.html" src="${url.apidocs}?version=${version}&amp;path=${dir.build}/testbox/apidocs" verbose="true" retries="5"/>
 		<delete file="${dir.build}/docbox.html"/>
 		<!-- Zip API Docs -->
-		<zip destfile="${dir.testbox.exports}/${testbox.slug}-apidocs-${testbox.version}.zip" basedir="${dir.build}/testbox/apidocs"></zip>
+		<zip destfile="${dir.testbox.exports}/testbox-apidocs-${version}.zip" basedir="${dir.build}/testbox/apidocs"></zip>
 	</target>
 
 </project>

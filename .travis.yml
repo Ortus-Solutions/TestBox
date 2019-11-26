@@ -24,23 +24,27 @@ sudo: required
 before_install:
   # CommandBox Keys
   - curl -fsSl https://downloads.ortussolutions.com/debs/gpg | sudo apt-key add -
-  - sudo echo "deb http://downloads.ortussolutions.com/debs/noarch /" | sudo tee -a
+  - sudo echo "deb https://downloads.ortussolutions.com/debs/noarch /" | sudo tee -a
     /etc/apt/sources.list.d/commandbox.list
 
 install:
   # Install Commandbox
   - sudo apt-get update && sudo apt-get --assume-yes install jq commandbox ant-optional
-  # Install dependencies
-  - box install && box install commandbox-cfconfig,commandbox-dotenv
+  # Install env dependencies
+  - box install commandbox-docbox,commandbox-cfformat
   # If using auto-publish, you will need to provide your API token with this line:
   - box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN > /dev/null
 
 script:
-  # Execute build via ANT
-  - ant -DisTravis=true -Dcfengine=$ENGINE -Dbuild.number=$TRAVIS_BUILD_NUMBER -Dbuild.branch=$TRAVIS_BRANCH -f build/build.xml
   # Set Current Version
-  - BUILD_VERSION=`cat $TRAVIS_BUILD_DIR/artifacts/testbox/box.json | jq '.version' -r`
-  - echo "TestBox v$BUILD_VERSION"
+  - TARGET_VERSION=`cat $TRAVIS_BUILD_DIR/box.json | jq '.version' -r`
+  - echo "Starting build TestBox v${TARGET_VERSION}"
+  # Replace version so builder can issue it
+  - box package set version=@build.version@+@build.number@
+  # Install TestBox deps
+  - box install --production
+  # Execute build via ANT
+  - ant -DisTravis=true -Dversion=$TARGET_VERSION -Dcfengine=$ENGINE -Dbuild.number=$TRAVIS_BUILD_NUMBER -Dbuild.branch=$TRAVIS_BRANCH -f build/build.xml
 
 after_failure:
   - cd $TRAVIS_BUILD_DIR
@@ -48,9 +52,8 @@ after_failure:
   - curl http://localhost:49616/tests/runner.cfm?reporter=text
   # Display the contents of our root directory
   # Spit out our Commandbox log in case we need to debug
-  - box server log name=$ENGINE
+  - box server log name=server-${ENGINE}.json
   - cat `box system-log`
-  - ls -l $TRAVIS_BUILD_DIR/apidocs
 
 deploy:
   # Binary Deployments
@@ -82,7 +85,7 @@ deploy:
     secret_access_key: $AWS_ACCESS_SECRET
     bucket: "apidocs.ortussolutions.com"
     local-dir: $TRAVIS_BUILD_DIR/build-testbox/testbox/apidocs
-    upload-dir: testbox/$BUILD_VERSION
+    upload-dir: testbox/$TARGET_VERSION
     acl: public_read
 
 after_deploy:

@@ -158,7 +158,30 @@ component extends="testbox.system.BaseSpec"{
                 }catch( any e ){
                     expect( e.message ).toBe( "The actual [10] is not less than [10]" );
                 }
-            });
+			});
+
+
+			it( "can process structure key expectations", function(){
+				var s = {
+					"data" : {},
+					"error" : {},
+					"name" : {},
+					"age" : 0
+				};
+
+				expect( s ).toHaveKey( "error" );
+				expect( s ).notToHaveKey( "luis" );
+
+				// Multiple
+				expect( s ).toHaveKey( "data,error,name,age" );
+				expect( function(){
+					expect( s ).toHaveKey( "data,error,name,age2" );
+				}).toThrow();
+				expect( s ).notToHaveKey( "luis,joe,tom" );
+				expect( function(){
+					expect( s ).toHaveKey( "luis,joe,data" );
+				}).toThrow();
+			});
 
 		});
 

@@ -23,7 +23,7 @@
 	reporters = [ "ANTJunit", "Console", "Codexwiki", "Doc", "Dot", "JSON", "JUnit", "Min", "Raw", "Simple", "Tap", "Text", "XML" ];
 	ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
 
-	if ( url.opt_run ) {
+	if( url.opt_run ){
 		// Include the TestBox HTML Runner
 		include "/testbox/system/runners/HTMLRunner.cfm";
 		abort;
@@ -95,7 +95,7 @@
 			<div id="tb-runner" class="container">
 				<div class="row">
 					<div class="col-md-4 text-center mx-auto">
-						<img class="mt-3" src="http://www.ortussolutions.com/__media/testbox-185.png" alt="TestBox" id="tb-logo" />
+						<img class="mt-3" src="https://www.ortussolutions.com/__media/testbox-185.png" alt="TestBox" id="tb-logo" />
 					</div>
 				</div>
 				<div class="row">

@@ -4,7 +4,7 @@
 * ---
 * An XML reporter
 */ 
-component{
+component extends="BaseReporter"{
 
 	function init(){ 
 		variables.converter = new testbox.system.util.XMLConverter();
@@ -31,7 +31,8 @@ component{
 		required testbox.system.TestBox testbox,
 		struct options={} 
 	){
-		getPageContext().getResponse().setContentType( "application/xml" );
+		resetHTMLResponse();
+		getPageContextResponse().setContentType( "application/xml" );
 		return variables.converter.toXML( data=arguments.results.getMemento(), rootName="TestBox" );
 	}
 	
