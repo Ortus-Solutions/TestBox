@@ -363,7 +363,7 @@ component {
 			arguments.key
 				.listToArray()
 				.filter( function( thisKey ){
-					return !structKeyExists( target, arguments.thisKey );
+					return structKeyExists( target, arguments.thisKey );
 				} )
 				.len() > 0
 		){
