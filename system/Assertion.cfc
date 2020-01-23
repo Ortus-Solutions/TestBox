@@ -341,6 +341,7 @@ component {
 		){
 			fail( arguments.message );
 		}
+		return this;
 	}
 
 	/**
