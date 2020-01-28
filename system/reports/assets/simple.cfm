@@ -534,7 +534,7 @@ code {
 											<div>
 												<pre>#left( local.thisSpec.failDetail, 2500 )#</pre>
 											</div>
-										<cfelse>
+										<cfelseif structKeyExists( local.thisSpec.failOrigin[ 1 ], "raw_trace" )>
 											<!--- Raw Trace --->
 											<div>
 												<pre>#local.thisSpec.failOrigin[ 1 ].raw_trace#</pre>
