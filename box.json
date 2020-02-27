@@ -40,5 +40,9 @@
     },
     "installPaths":{
         "cbstreams":"system/modules/cbstreams/"
+	},
+	"scripts":{
+        "format":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,*.cfc --overwrite",
+        "format:check":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,*.cfc --check"
     }
 }
