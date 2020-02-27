@@ -341,6 +341,7 @@ component {
 		){
 			fail( arguments.message );
 		}
+		return this;
 	}
 
 	/**
@@ -363,7 +364,7 @@ component {
 			arguments.key
 				.listToArray()
 				.filter( function( thisKey ){
-					return !structKeyExists( target, arguments.thisKey );
+					return structKeyExists( target, arguments.thisKey );
 				} )
 				.len() > 0
 		){

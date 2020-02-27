@@ -193,6 +193,11 @@ component accessors=true {
 						covered = previousLineRan;
 					}
 
+					// Count as covered any closing parenthesis where the previous line ran.
+					if( !covered && previousLineRan && ( trim( line ) == ');' || trim( line ) == ')' ) ) {
+						covered = previousLineRan;
+					}
+
 					// Count as covered any cffunction or cfargument tag where the previous line ran.
 					if( !covered && reFindNoCase( '^<cf(function|argument)', trim( line) ) && previousLineRan ) {
 						covered = previousLineRan;

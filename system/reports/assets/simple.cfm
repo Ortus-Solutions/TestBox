@@ -534,7 +534,7 @@ code {
 											<div>
 												<pre>#left( local.thisSpec.failDetail, 2500 )#</pre>
 											</div>
-										<cfelse>
+										<cfelseif structKeyExists( local.thisSpec.failOrigin[ 1 ], "raw_trace" )>
 											<!--- Raw Trace --->
 											<div>
 												<pre>#local.thisSpec.failOrigin[ 1 ].raw_trace#</pre>
@@ -551,10 +551,14 @@ code {
 
 									<!--- Deep Insights into failures --->
 									<div id="failure_error_#local.thisSpec.id#" class="my-2 collapse" data-specid="#local.thisSpec.id#">
-										<cfdump var="#local.thisSpec.failorigin#" label="Failure Origin">
-										<cfdump var="#[ local.thisSpec.failDetail ]#" label="Failure Details">
-										<cfdump var="#[ local.thisSpec.failStackTrace ]#" label="Failure StackTrace">
-										<cfdump var="#[ local.thisSpec.failExtendedInfo ]#" label="Failure Extended Info">
+										<h4>Failure Origin</h4>
+										<cfdump var="#local.thisSpec.failorigin#">
+										<h4>Failure Details</h4>
+										<cfdump var="#local.thisSpec.failDetail#">
+										<h4>Failure StackTrace</h4>
+										<pre>#local.thisSpec.failStackTrace#</pre>
+										<h4>Failure Extended Info</h4>
+										<cfdump var="#local.thisSpec.failExtendedInfo#">
 									</div>
 								</div>
 							</cfif>
