@@ -45,6 +45,7 @@ Official Site
 - ColdFusion 11+ (xUnit + BDD)
 
 ## TESTBOX INSTALLATION
+
 You can visit the TestBox documentation page to view all of its features and 
 capabilities.  To install TestBox just drop it in your web root as `/testbox` or
 create a mapping in your CFML administrator or `Application.cfc` that points to the
@@ -64,10 +65,11 @@ Bleeding edge builds are updated automatically as code is committed.
 
 ********************************************************************************
 Copyright Since 2005 by Luis Majano and Ortus Solutions, Corp
-
 www.ortussolutions.com
 ********************************************************************************
-#### HONOR GOES TO GOD ABOVE ALL
+
+### HONOR GOES TO GOD ABOVE ALL
+
 Because of His grace, this project exists. If you don't like this, then don't read it, its not for you.
 
 >"Therefore being justified by faith, we have peace with God through our Lord Jesus Christ:
@@ -78,4 +80,5 @@ And hope maketh not ashamed; because the love of God is shed abroad in our heart
 Holy Ghost which is given unto us. ." Romans 5:5
 
 ### THE DAILY BREAD
+
  > "I am the way, and the truth, and the life; no one comes to the Father, but by me (JESUS)" Jn 14:1-12

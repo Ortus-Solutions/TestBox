@@ -71,6 +71,15 @@ component accessors="true" {
 			arguments.missingMethodName = right( arguments.missingMethodName, len( arguments.missingMethodName ) - 3 );
 			// set isNot pivot on this matcher
 			this.isNot                  = true;
+
+			// execute the dynamic method
+			var results = invoke( this, arguments.missingMethodName, arguments.missingMethodArguments );
+			if ( !isNull( results ) ) {
+				return results;
+			}
+			else {
+				return;
+			}
 		}
 
 		// detect toBeTypeOf dynamic shortcuts
@@ -93,14 +102,8 @@ component accessors="true" {
 			return toBeTypeOf( type = type, message = message );
 		}
 
-		// execute the dynamic method
-		var results = invoke( this, arguments.missingMethodName, arguments.missingMethodArguments );
-		if ( !isNull( results ) ) {
-			return results;
-		}
-
 		// throw exception
-		// throw(type="InvalidMethod", message="The dynamic/static method: #arguments.missingMethodName# does not exist in this CFC", detail="Available methods are #structKeyArray( this ).toString()#");
+		throw(type="InvalidMethod", message="The dynamic/static method: #arguments.missingMethodName# does not exist in this CFC", detail="Available methods are #structKeyArray( this ).toString()#");
 	}
 
 	/**

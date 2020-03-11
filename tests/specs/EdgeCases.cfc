@@ -64,6 +64,18 @@ component extends="testbox.system.BaseSpec" {
 			}
 		});
 
+		describe( "When testing a key does not exists", function(){
+			var data = {name="luis", awesome=true};
+			it( "should pass when the key does not exist", function(){
+				expect(	data ).notToHaveKey( "age" );
+			});
+			it( "should fail when the key does exist", function(){
+				expect( function(){ 
+					expect(	data ).notToHaveKey( "name" );
+				} ).toThrow( type = "TestBox.AssertionFailed" );
+			});
+		});
+
 	}
 
 	private function myFakeClosure(){	
