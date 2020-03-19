@@ -38,10 +38,10 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 * @bundleCount.hint the count to init the results for
-	 * @labels.hint The lables to use
+	 * @labels.hint The labels to use
 	 * @testBundles.hint The test bundles that should execute ONLY
 	 * @testSuites.hint The test suites that should execute ONLY
-	 * @testSpecs.hint The test specs that should execut ONLY
+	 * @testSpecs.hint The test specs that should execute ONLY
 	 */
 	TestResult function init(
 		numeric bundleCount = 0,

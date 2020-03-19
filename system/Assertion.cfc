@@ -523,7 +523,7 @@ component {
 			if ( typeMatches && regexMatches ) {
 				return this;
 			}
-			// diff messsage types
+			// diff message types
 			arguments.message = (
 				len( arguments.message ) ? arguments.message : "The incoming function threw exception [#e.type#] [#e.message#] [#e.detail#] different than expected params type=[#arguments.type#], regex=[#arguments.regex#]"
 			);

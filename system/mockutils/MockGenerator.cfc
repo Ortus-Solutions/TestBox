@@ -158,7 +158,7 @@ Description		:
 
 			// Returns Something according to metadata?
 			if ( fncMD["returntype"] neq "void" ){
-				/* Results Recyling Code, basically, state machine code */
+				/* Results Recycling Code, basically, state machine code */
 				udfOut.append('
 				if( resultsLen neq 0 ) {
 					if( internalCounter gt resultsLen ) {
@@ -190,7 +190,7 @@ Description		:
 			stubCode = trim( udfOUt.toString() );
 			tmpFile = hash( stubCode ) & ".cfm";
 
-			// This is neccessary for methods named after CF keywords like "contains"
+			// This is necessary for methods named after CF keywords like "contains"
 			var tmpMethodName = 'tmp_#arguments.method#_' & hash( stubCode );
 			stubCode = replaceNoCase( stubCode, '@@tmpMethodName@@', tmpMethodName, 'all' );
 

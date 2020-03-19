@@ -243,7 +243,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 	/**
 	* Get all the test suites in the passed in bundle
 	* @target.hint The target to get the suites from
-	* @targetMD.hint The metdata of the target
+	* @targetMD.hint The metadata of the target
 	* @testResults.hint The test results object
 	*/
 	private array function getTestSuites(

@@ -32,7 +32,7 @@ component accessors="true" {
 	property name="coverageGenerator" type="any";
 
 	/**
-	 * Boostrap the Code Coverage service and decide if we'll be enabled or not
+	 * Bootstrap the Code Coverage service and decide if we'll be enabled or not
 	 *
 	 * @coverageOptions struct of options to initialize with
 	 */

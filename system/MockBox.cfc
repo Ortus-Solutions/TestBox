@@ -581,7 +581,7 @@ Description		:
 				obj._mockGenerationPath = getGenerationPath();
 				// Original Metadata
 				obj._mockOriginalMD = getMetadata(obj);
-				// Chanining Properties
+				// Chaining Properties
 				obj._mockCurrentMethod = "";
 				obj._mockCurrentArgsHash = "";
 				// Mock Method
