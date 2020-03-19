@@ -78,9 +78,9 @@ component accessors=true {
 	}
 
 	/**
-	* @pathToCapture The full path to a folder of code.  Searched recursivley
-	* @whitelist Comma-delimeted list or array of file paths to include
-	* @blacklist Comma-delimeted list or array of file paths to exclude
+	* @pathToCapture The full path to a folder of code.  Searched recursively
+	* @whitelist Comma-delimited list or array of file paths to include
+	* @blacklist Comma-delimited list or array of file paths to exclude
 	*
 	* @Returns query of data
 	*/
@@ -160,7 +160,7 @@ component accessors=true {
 					var lineMetric = lineMetricMap.get(  javaCast( 'int', currentLineNum ) );
 					var covered = lineMetric.getCount();
 
-					// Overrides for bugginess ************************************************************************
+					// Overrides for buggyiness ************************************************************************
 
 
 					// On Adobe, the first line of CFCs seems to always report as being executable but not running whether it's a comment or a component declaration
@@ -222,7 +222,7 @@ component accessors=true {
 			if( strFiledata.numExecutableLines ) {
 				strFiledata.percCoverage = strFiledata.numCoveredLines/strFiledata.numExecutableLines;
 			} else {
-				// If there's no executable lines in the file, show it as 100% even thoguh we can't divide by zero
+				// If there's no executable lines in the file, show it as 100% even though we can't divide by zero
 				strFiledata.percCoverage = 1;
 			}
 			queryAddRow( qryData, strFiledata );

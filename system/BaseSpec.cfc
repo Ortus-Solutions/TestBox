@@ -179,7 +179,7 @@ component {
 			parent         : "",
 			// the parent ref
 			parentRef      : "",
-			// hiearachy slug
+			// hierarchy slug
 			slug           : ""
 		};
 
@@ -204,7 +204,7 @@ component {
 			suite.parent    = this.$suiteContext;
 			suite.parentRef = this.$suitesReverseLookup[ this.$suiteContext ];
 
-			// Build hiearachy slug separated by /
+			// Build hierarchy slug separated by /
 			suite.slug = this.$suitesReverseLookup[ this.$suiteContext ].slug & "/" & this.$suiteContext;
 			if ( left( suite.slug, 1 ) != "/" ) {
 				suite.slug = "/" & suite.slug;
@@ -503,7 +503,7 @@ component {
 			order  : this.$specOrderIndex++,
 			// the data binding
 			data   : arguments.data
-		};
+		}; 
 
 		// skip constraint for suite as a closure
 		if ( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ) {
@@ -737,8 +737,8 @@ component {
 	}
 
 	/**
-	 * Start a collection expectation expression. This returns an instance of CollectionExpection
-	 * so you can work with its collection-unrolling matches (delegating to Expection).
+	 * Start a collection expectation expression. This returns an instance of CollectionExpectation
+	 * so you can work with its collection-unrolling matches (delegating to Expectation).
 	 * @actual The actual value, it should be an array or a struct.
 	 */
 	CollectionExpectation function expectAll( required any actual ){
@@ -1367,7 +1367,7 @@ component {
 	}
 
 	/**
-	 * First line are the query columns separated by commas. Then do a consecuent rows separated by line breaks separated by | to denote columns.
+	 * First line are the query columns separated by commas. Then do a consequent rows separated by line breaks separated by | to denote columns.
 	 */
 	function querySim( required queryData ){
 		return this.$mockBox.querySim( arguments.queryData );

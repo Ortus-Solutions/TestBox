@@ -32,7 +32,7 @@ component accessors="true" singleton {
 	/**
 	* Match a single path to a single pattern.  Returns true if the path matches the pattern, otherwise false.
 	* @pattern.hint The pattern to match against the path
-	* @path.hint The file system path to test.  Can be a file or directory.  Direcories MUST end with a trailing slash
+	* @path.hint The file system path to test.  Can be a file or directory.  Directories MUST end with a trailing slash
 	*/
 	boolean function matchPattern( required string pattern, required string path ) {
 		// Normalize slashes
@@ -77,7 +77,7 @@ component accessors="true" singleton {
 	/**
 	* Match an array of patterns against a single path.  Returns true if at least one pattern matches, otherwise false.
 	* @patterns.hint An array of patterns to match against the path
-	* @path.hint The file system path to test.  Can be a file or directory.  Direcories MUST end with a trailing slash
+	* @path.hint The file system path to test.  Can be a file or directory.  Directories MUST end with a trailing slash
 	*/
 	boolean function matchPatterns( required array patterns, required string path ){
 		for( var pattern in arguments.patterns ) {

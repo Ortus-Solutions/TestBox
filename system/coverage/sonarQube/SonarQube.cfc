@@ -14,7 +14,7 @@ component accessors=true {
 	
 	function init() {
 	
-		// This transformation will format an XML documente to be indented with line breaks for readability
+		// This transformation will format an XML document to be indented with line breaks for readability
 		variables.xlt = '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 						<xsl:output method="xml" encoding="utf-8" indent="yes" xslt:indent-amount="2" xmlns:xslt="http://xml.apache.org/xslt" />
 						<xsl:strip-space elements="*"/>

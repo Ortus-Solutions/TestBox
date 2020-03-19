@@ -102,7 +102,7 @@ component{
 			// Go downstream little fish, check if you have children suites that are focused
 			if( arguments.checkChildren ){
 				for( var thisSuite in arguments.suite.suites ){
-					// go down the rabitt hole
+					// go down the rabbit hole
 					if( isSuiteFocused( suite=thisSuite, target=arguments.target, checkParent=false ) ){
 						return true;
 					}
@@ -143,7 +143,7 @@ component{
 			// Verify nested if no match, maybe it is an embedded suite that is trying to execute.
 			if( results == false && arrayLen( arguments.suite.suites ) ){
 				for( var thisSuite in arguments.suite.suites ){
-					// go down the rabitt hole
+					// go down the rabbit hole
 					if( canRunSuite( thisSuite, arguments.testResults, arguments.target ) ){
 						return true;
 					}

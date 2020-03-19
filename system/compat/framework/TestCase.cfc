@@ -47,7 +47,7 @@ component extends="testbox.system.BaseSpec"{
 
 	/**
 	* Utility for dynamically adding assertion behaviors at runtime
-	* @decoratorName.hint The fully qualied name of the assertion component to add; e.g., org.mycompany.MyAssertionComponent
+	* @decoratorName.hint The fully qualified name of the assertion component to add; e.g., org.mycompany.MyAssertionComponent
 	*/
 	function addAssertDecorator( required string decoratorName ){
 		var oDecorator = new "#arguments.decoratorName#"();
@@ -208,7 +208,7 @@ component extends="testbox.system.BaseSpec"{
 	}
 
 	/**
-	* Assert that an expected and actual objec is NOT the same instance
+	* Assert that an expected and actual object is NOT the same instance
 	* This only works on objects that are passed by reference, please remember that in Lucee
 	* arrays pass by reference and in Adobe CF they pass by value.
 	*/
@@ -224,7 +224,7 @@ component extends="testbox.system.BaseSpec"{
 	}
 
 	/**
-	* Assert that an expected and actual objec is the same instance
+	* Assert that an expected and actual object is the same instance
 	* This only works on objects that are passed by reference, please remember that in Lucee
 	* arrays pass by reference and in Adobe CF they pass by value.
 	*/
@@ -268,14 +268,14 @@ component extends="testbox.system.BaseSpec"{
 	}
 
 	/**
-	* Assert something is of a certrain object type
+	* Assert something is of a certain object type
 	*/
 	function assertIsTypeOf( required actual, required typeName, message="" ){
 		this.$assert.instanceOf( arguments.actual, arguments.typeName, arguments.message );
 	}
 
 	/**
-	* Assert something is of a certrain object type without any inheritance lookup
+	* Assert something is of a certain object type without any inheritance lookup
 	*/
 	function assertIsExactTypeOf( required o, required type, message="" ){
 		this.$assert.isEqual( arguments.type, getMetadata( arguments.o ).name, arguments.message );
