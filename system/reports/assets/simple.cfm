@@ -446,7 +446,7 @@ code {
 
 <cffunction name="statusToBootstrapClass" output="false">
 	<cfargument name="status">
-	<cfset bootstrapClass = "">
+	<cfset var bootstrapClass = "">
 	<cfif lcase( arguments.status ) eq "failed">
 		<cfset bootstrapClass = "warning">
 	<cfelseif lcase( arguments.status ) eq "error">
@@ -461,7 +461,7 @@ code {
 
 <cffunction name="statusToIcon" output="false">
 	<cfargument name="status">
-	<cfset icon = "">
+	<cfset var icon = "">
 	<cfif lcase( arguments.status ) eq "failed">
 		<cfset icon = '<i class="fas fa-exclamation-triangle"></i>'>
 	<cfelseif lcase( arguments.status ) eq "error">
@@ -480,10 +480,10 @@ code {
 	<cfargument name="bundleStats">
 	<cfsavecontent variable="local.report">
 		<cfoutput>
-			<li class="list-group-item #suiteStats.status#" data-bundleid="#suiteStats.bundleID#">
+			<li class="list-group-item #arguments.suiteStats.status#" data-bundleid="#arguments.suiteStats.bundleID#">
 				<!--- Suite Results --->
 				<a
-					class="alert-link text-#statusToBootstrapClass( suiteStats.status )#"
+					class="alert-link text-#statusToBootstrapClass( arguments.suiteStats.status )#"
 					title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#"
 					href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
 				>

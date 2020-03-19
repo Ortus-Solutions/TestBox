@@ -46,8 +46,8 @@ Description :
 		<cflock name="mixerUtil.#instance.system.identityHashCode(arguments.CFC)#" type="exclusive" timeout="15" throwontimeout="true">
 			<cfif NOT structKeyExists(arguments.CFC, "$mixed")>
 			<cfscript>
-				for( udf in instance.mixins ){
-					arguments.CFC[udf] = instance.mixins[udf];
+				for( udf in variables.instance.mixins ){
+					arguments.CFC[udf] = variables.instance.mixins[udf];
 				}
 				arguments.CFC.$mixed = true;
 			</cfscript>

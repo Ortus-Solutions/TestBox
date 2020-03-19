@@ -237,7 +237,7 @@ component accessors="true"{
 			testSpecs   = arguments.testSpecs
 		);
 
-		coverageService.beginCapture();
+		variables.coverageService.beginCapture();
 
 		// iterate and run the test bundles
 		for( var thisBundlePath in variables.bundles ){
@@ -371,14 +371,14 @@ component accessors="true"{
 		try{
 			var response = getPageContext().getResponse();
 
-			response.addHeader( "x-testbox-totalDuration", javaCast( "string", results.getTotalDuration() ) );
-			response.addHeader( "x-testbox-totalBundles", javaCast( "string", results.getTotalBundles() ) );
-			response.addHeader( "x-testbox-totalSuites", javaCast( "string", results.getTotalSuites() ) );
-			response.addHeader( "x-testbox-totalSpecs", javaCast( "string", results.getTotalSpecs() ) );
-			response.addHeader( "x-testbox-totalPass", javaCast( "string", results.getTotalPass() ) );
-			response.addHeader( "x-testbox-totalFail", javaCast( "string", results.getTotalFail() ) );
-			response.addHeader( "x-testbox-totalError", javaCast( "string", results.getTotalError() ) );
-			response.addHeader( "x-testbox-totalSkipped", javaCast( "string", results.getTotalSkipped() ) );
+			response.addHeader( "x-testbox-totalDuration", javaCast( "string", arguments.results.getTotalDuration() ) );
+			response.addHeader( "x-testbox-totalBundles", javaCast( "string", arguments.results.getTotalBundles() ) );
+			response.addHeader( "x-testbox-totalSuites", javaCast( "string", arguments.results.getTotalSuites() ) );
+			response.addHeader( "x-testbox-totalSpecs", javaCast( "string", arguments.results.getTotalSpecs() ) );
+			response.addHeader( "x-testbox-totalPass", javaCast( "string", arguments.results.getTotalPass() ) );
+			response.addHeader( "x-testbox-totalFail", javaCast( "string", arguments.results.getTotalFail() ) );
+			response.addHeader( "x-testbox-totalError", javaCast( "string", arguments.results.getTotalError() ) );
+			response.addHeader( "x-testbox-totalSkipped", javaCast( "string", arguments.results.getTotalSkipped() ) );
 		} catch( Any e ){
 			writeLog( type="error",
 					  text="Error sending TestBox headers: #e.message# #e.detail# #e.stackTrace#",

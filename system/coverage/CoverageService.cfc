@@ -39,13 +39,13 @@ component accessors="true" {
 	function init( coverageOptions={} ) {
 
 	  	// Default options
-	  	variables.coverageOptions = setDefaultOptions( coverageOptions );
-	  	variables.coverageEnabled = coverageOptions.enabled;
+	  	variables.coverageOptions = setDefaultOptions( arguments.coverageOptions );
+	  	variables.coverageEnabled = variables.coverageOptions.enabled;
 
 	  	// If disabled in config, go no further
-	  	if( coverageEnabled ) {
+	  	if( variables.coverageEnabled ) {
 			variables.coverageGenerator = new data.CoverageGenerator();
-			variables.coverageEnabled = coverageGenerator.configure();
+			variables.coverageEnabled = variables.coverageGenerator.configure();
 		}
 
 		return this;

@@ -516,7 +516,7 @@ component {
 		}
 
 		// Attach this spec to the incoming context array of specs
-		arrayAppend( this.$suitesReverseLookup[ this.$suiteContext ].specs, spec );
+		arrayAppend( variables.this.$suitesReverseLookup[ variables.this.$suiteContext ].specs, spec );
 
 		// Are we focused?
 		if( arguments.focused ){
@@ -1075,15 +1075,16 @@ component {
 		required spec,
 		closureIndex = 1
 	){
+		local.thread = {};
 		thread.closures = arguments.closures;
 		thread.suite    = arguments.suite;
 		thread.spec     = arguments.spec;
 
 		// Get closure data from stack and pop it
-		var nextClosure = thread.closures[ closureIndex ];
+		var nextClosure = thread.closures[ arguments.closureIndex ];
 
 		// Check if we have more in the stack or empty
-		if ( arrayLen( thread.closures ) == closureIndex ) {
+		if ( arrayLen( thread.closures ) == arguments.closureIndex ) {
 			// Return the closure of execution for a single spec ONLY
 			return function(){
 				// Execute the body of the spec
@@ -1092,8 +1093,9 @@ component {
 		}
 
 		// Get next Spec in stack
-		var nextSpecInfo = thread.closures[ ++closureIndex ];
+		var nextSpecInfo = thread.closures[ ++arguments.closureIndex ];
 		// Return generated closure
+		var _closureIndex = arguments.closureIndex;
 		return function(){
 			nextClosure.body(
 				spec = {
@@ -1102,7 +1104,7 @@ component {
 						thread.closures,
 						thread.suite,
 						thread.spec,
-						closureIndex
+						_closureIndex
 					),
 					data   : nextSpecInfo.data,
 					labels : nextSpecInfo.labels,
@@ -1435,7 +1437,7 @@ component {
 
 	// Around Stub
 	function aroundStub( spec ){
-		spec.body( spec.data );
+		arguments.spec.body( arguments.spec.data );
 	}
 
 	/**
