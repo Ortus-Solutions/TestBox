@@ -166,7 +166,7 @@ component extends="testbox.system.runners.BaseRunner" implements="testbox.system
 			// prepare threaded names
 			var threadNames = [];
 			// threaded variables just in case some suite is async and another is not.
-			local.thread = {};
+			// TODO note, this isn't actually the thread scope			
 			thread.testResults 	= arguments.testResults;
 			thread.suiteStats  	= suiteStats;
 			thread.target 		= arguments.target;

@@ -516,7 +516,7 @@ component {
 		}
 
 		// Attach this spec to the incoming context array of specs
-		arrayAppend( variables.this.$suitesReverseLookup[ variables.this.$suiteContext ].specs, spec );
+		arrayAppend( this.$suitesReverseLookup[ this.$suiteContext ].specs, spec );
 
 		// Are we focused?
 		if( arguments.focused ){
@@ -1075,7 +1075,7 @@ component {
 		required spec,
 		closureIndex = 1
 	){
-		local.thread = {};
+		// TODO note, this isn't actually the thread scope
 		thread.closures = arguments.closures;
 		thread.suite    = arguments.suite;
 		thread.spec     = arguments.spec;
