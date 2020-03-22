@@ -987,7 +987,7 @@ component {
 
 		// Execute it
 		arrayEach( reverseTree, function( item ){
-			item.beforeEach( currentSpec = spec.name, data = item.beforeEachData );
+			arguments.item.beforeEach( currentSpec = spec.name, data = arguments.item.beforeEachData );
 		} );
 
 		// execute beforeEach()

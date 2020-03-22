@@ -201,7 +201,7 @@ component{
 			return true;
 		}
 		// All xUnit test methods must start or end with the term, "test".
-		return( !! reFindNoCase( "(^test|test$)", methodName ) );
+		return( !! reFindNoCase( "(^test|test$)", arguments.methodName ) );
 	}
 
 	/**

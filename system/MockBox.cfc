@@ -565,7 +565,7 @@ Description		:
 		<cffunction name="decorateMock" access="private" returntype="void" hint="Decorate a mock object" output="false" >
 			<cfargument name="target"  type="any" required="true" hint="The target object">
 			<cfscript>
-				var obj = target;
+				var obj = arguments.target;
 
 				// Mock Method Results Holder
 				obj._mockResults 	= structnew();
