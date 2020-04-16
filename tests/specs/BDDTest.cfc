@@ -336,6 +336,14 @@ component extends="testbox.system.BaseSpec"{
 				exxpect();
 			});
 
+			it( "can mock any type of data", function(){
+				var data = mockData(
+					"name" : "name",
+					"age" : "age"
+				);
+				expect( data ).notToBeEmpty();
+			});
+
 		});
 
 	}

@@ -11,6 +11,8 @@ component {
 
 	// MockBox mocking framework
 	variables.$mockBox         = this.$mockBox = new testbox.system.MockBox();
+	// MockData CFC framework
+	variables.$mockData = this.$mockData = new testbox.system.modules.mockdatacfc.models.MockData();
 	// Assertions object
 	variables.$assert          = this.$assert = new testbox.system.Assertion();
 	// Custom Matchers
@@ -503,7 +505,7 @@ component {
 			order  : this.$specOrderIndex++,
 			// the data binding
 			data   : arguments.data
-		}; 
+		};
 
 		// skip constraint for suite as a closure
 		if ( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ) {
@@ -1371,6 +1373,15 @@ component {
 	 */
 	function querySim( required queryData ){
 		return this.$mockBox.querySim( arguments.queryData );
+	}
+
+	/**
+	 * Use MockDataCFC to mock whatever data you want.  This funnles to MocData.mock()
+	 *
+	 * @return The mock data you desire sir!
+	 */
+	function mockData(){
+		retur this.$mockData.mock( argumentCollection=arguments );
 	}
 
 	/**
