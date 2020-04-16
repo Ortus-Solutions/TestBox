@@ -1,9 +1,9 @@
 /**
-* My BDD Test
-*/
-component extends="testbox.system.BaseSpec"{
+ * My BDD Test
+ */
+component extends="testbox.system.BaseSpec" {
 
-/*********************************** LIFE CYCLE Methods ***********************************/
+	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	// executes before all suites+specs in the run() method
 	function beforeAll(){
@@ -13,7 +13,7 @@ component extends="testbox.system.BaseSpec"{
 	function afterAll(){
 	}
 
-/*********************************** BDD SUITES ***********************************/
+	/*********************************** BDD SUITES ***********************************/
 
 	function run(){
 		feature( "Given-When-Then test language support", function(){
@@ -22,11 +22,11 @@ component extends="testbox.system.BaseSpec"{
 					when( "I run this test suite", function(){
 						then( "it should be supported", function(){
 							expect( true ).toBe( true );
-						});
-					});
-				});
-			});
-		});
+						} );
+					} );
+				} );
+			} );
+		} );
 	}
 
 }

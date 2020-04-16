@@ -28,7 +28,11 @@ component accessors="true" {
 	 * @assertions The TestBox assertions object: testbox.system.Assertion
 	 * @mockbox A reference to MockBox
 	 */
-	function init( required any spec, required any assertions, required any mockBox ){
+	function init(
+		required any spec,
+		required any assertions,
+		required any mockBox
+	){
 		variables.spec    = arguments.spec;
 		variables.mockBox = arguments.mockbox;
 		variables.assert  = arguments.assertions;
@@ -73,11 +77,14 @@ component accessors="true" {
 			this.isNot                  = true;
 
 			// execute the dynamic method
-			var results = invoke( this, arguments.missingMethodName, arguments.missingMethodArguments );
+			var results = invoke(
+				this,
+				arguments.missingMethodName,
+				arguments.missingMethodArguments
+			);
 			if ( !isNull( results ) ) {
 				return results;
-			}
-			else {
+			} else {
 				return;
 			}
 		}
@@ -103,7 +110,11 @@ component accessors="true" {
 		}
 
 		// throw exception
-		throw(type="InvalidMethod", message="The dynamic/static method: #arguments.missingMethodName# does not exist in this CFC", detail="Available methods are #structKeyArray( this ).toString()#");
+		throw(
+			type    = "InvalidMethod",
+			message = "The dynamic/static method: #arguments.missingMethodName# does not exist in this CFC",
+			detail  = "Available methods are #structKeyArray( this ).toString()#"
+		);
 	}
 
 	/**
@@ -333,7 +344,11 @@ component accessors="true" {
 	 * @regex Match this regex against the message of the exception
 	 * @message The message to send in the failure
 	 */
-	function toThrow( type = "", regex = ".*", message = "" ){
+	function toThrow(
+		type    = "",
+		regex   = ".*",
+		message = ""
+	){
 		arguments.target = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notThrows( argumentCollection = arguments );
@@ -379,7 +394,11 @@ component accessors="true" {
 	 * @max The expected max number or date
 	 * @message The message to send in the failure
 	 */
-	function toBeBetween( required any min, required any max, message = "" ){
+	function toBeBetween(
+		required any min,
+		required any max,
+		message = ""
+	){
 		arguments.actual = this.actual;
 		if ( this.isNot ) {
 			try {
@@ -438,9 +457,17 @@ component accessors="true" {
 			len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not greater than [#arguments.target#]"
 		);
 		if ( this.isNot ) {
-			variables.assert.isLTE( this.actual, arguments.target, arguments.message );
+			variables.assert.isLTE(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		} else {
-			variables.assert.isGT( this.actual, arguments.target, arguments.message );
+			variables.assert.isGT(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		}
 		return this;
 	}
@@ -455,9 +482,17 @@ component accessors="true" {
 			len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not greater than or equal to [#arguments.target#]"
 		);
 		if ( this.isNot ) {
-			variables.assert.isLT( this.actual, arguments.target, arguments.message );
+			variables.assert.isLT(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		} else {
-			variables.assert.isGTE( this.actual, arguments.target, arguments.message );
+			variables.assert.isGTE(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		}
 		return this;
 	}
@@ -472,9 +507,17 @@ component accessors="true" {
 			len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not less than [#arguments.target#]"
 		);
 		if ( this.isNot ) {
-			variables.assert.isGTE( this.actual, arguments.target, arguments.message );
+			variables.assert.isGTE(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		} else {
-			variables.assert.isLT( this.actual, arguments.target, arguments.message );
+			variables.assert.isLT(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		}
 		return this;
 	}
@@ -489,9 +532,17 @@ component accessors="true" {
 			len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not less than or equal to [#arguments.target#]"
 		);
 		if ( this.isNot ) {
-			variables.assert.isGT( this.actual, arguments.target, arguments.message );
+			variables.assert.isGT(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		} else {
-			variables.assert.isLTE( this.actual, arguments.target, arguments.message );
+			variables.assert.isLTE(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		}
 		return this;
 	}

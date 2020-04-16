@@ -1,9 +1,9 @@
 /**
-* This tests the BDD functionality in TestBox.
-*/
-component extends="tests.utils.ExampleParentTestCase"{
+ * This tests the BDD functionality in TestBox.
+ */
+component extends="tests.utils.ExampleParentTestCase" {
 
-/*********************************** LIFE CYCLE Methods ***********************************/
+	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
 		variables.counter = 0;
@@ -22,29 +22,24 @@ component extends="tests.utils.ExampleParentTestCase"{
 		arguments.spec.body();
 	}
 
-/*********************************** BDD SUITES ***********************************/
+	/*********************************** BDD SUITES ***********************************/
 
 	function run(){
-
 		describe( "Lifecycle annotations", function(){
-
-			it("runs lifecycle annotation hooks just as if they were in the suite", function(){
+			it( "runs lifecycle annotation hooks just as if they were in the suite", function(){
 				expect( variables.counter ).toBe( 4 );
-			});
+			} );
 
-			describe( "Lifecycle Annotation Hooks with normal Lifecycle Methods", function() {
-				beforeEach(function() {
+			describe( "Lifecycle Annotation Hooks with normal Lifecycle Methods", function(){
+				beforeEach( function(){
 					variables.counter++;
-				});
+				} );
 
-				it("runs both types of methods", function() {
+				it( "runs both types of methods", function(){
 					expect( variables.counter ).toBe( 8 );
-				});
-			});
-
-		});
-
-
+				} );
+			} );
+		} );
 	}
 
 }

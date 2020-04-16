@@ -21,7 +21,11 @@ component accessors="true" {
 	 * @assertions The assertions library
 	 * @collection The collection target
 	 */
-	function init( required spec, required any assertions, required collection ){
+	function init(
+		required spec,
+		required any assertions,
+		required collection
+	){
 		variables.actual = arguments.collection;
 		variables.spec   = arguments.spec;
 		variables.assert = arguments.assertions;
