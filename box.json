@@ -41,7 +41,7 @@
     },
     "installPaths":{
         "cbstreams":"system/modules/cbstreams/",
-        "mockdatacfc":"system/modules/mockdatacfc/mockdatacfc/"
+        "mockdatacfc":"system/modules/mockdatacfc/"
     },
     "scripts":{
         "format":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,*.cfc --overwrite",

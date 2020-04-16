@@ -38,6 +38,17 @@ component {
 	// Focused Structures
 	this.$focusedTargets       = { "suites" : [], "specs" : [] };
 
+	// Setup Request Utilities
+	if( !request.keyExists( "testbox" ) ){
+		request.testbox = {
+			"console" : variables.console,
+			"debug" : variables.debug,
+			"clearDebugBuffer" : variables.clearDebugBuffer,
+			"print" : variables.print,
+			"println" : variables.println
+		};
+	}
+
 	/************************************** BDD & EXPECTATIONS METHODS *********************************************/
 
 	/**
@@ -1427,7 +1438,7 @@ component {
 	 * @return The mock data you desire sir!
 	 */
 	function mockData(){
-		retur this.$mockData.mock( argumentCollection = arguments );
+		return this.$mockData.mock( argumentCollection = arguments );
 	}
 
 	/**

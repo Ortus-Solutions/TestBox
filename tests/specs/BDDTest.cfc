@@ -357,6 +357,12 @@ component extends="testbox.system.BaseSpec" {
 				var data = mockData( "name" : "name", "age" : "age" );
 				expect( data ).notToBeEmpty();
 			} );
+
+
+			it( "can load the output utilities into request.testbox", function(){
+				expect( request.testbox )
+					.toHaveKey( "clearDebugBuffer,console,debug,print,println" );
+			});
 		} );
 	}
 
