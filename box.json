@@ -1,6 +1,6 @@
 {
     "name":"TestBox",
-    "version":"3.3.0",
+    "version":"4.0.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/testbox/@build.version@/testbox-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com>",
     "slug":"testbox",
@@ -36,12 +36,14 @@
         "watchDelay":"250"
     },
     "dependencies":{
-        "cbstreams":"^1.5.0"
+        "cbstreams":"^1.5.0",
+        "mockdatacfc":"^3.3.0+22"
     },
     "installPaths":{
-        "cbstreams":"system/modules/cbstreams/"
-	},
-	"scripts":{
+        "cbstreams":"system/modules/cbstreams/",
+        "mockdatacfc":"system/modules/mockdatacfc/mockdatacfc/"
+    },
+    "scripts":{
         "format":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,*.cfc --overwrite",
         "format:check":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,*.cfc --check"
     }
