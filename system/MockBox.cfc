@@ -81,10 +81,10 @@ Description		:
 				var obj = 0;
 
 				// class to mock
-				if ( structKeyExists(arguments, "className") ){
+				if ( structKeyExistsWithLoop(arguments, "className") ){
 					obj = createObject("component",arguments.className);
 				}
-				else if ( structKeyExists(arguments, "object") ){
+				else if ( structKeyExistsWithLoop(arguments, "object") ){
 					// Object to Mock
 					obj = arguments.object;
 				}
@@ -114,9 +114,10 @@ Description		:
 			<cfargument name="callLogging" 	type="boolean" 	required="false" default="true" hint="Add method call logging for all mocked methods"/>
 			<!--- ************************************************************* --->
 			<cfscript>
-				if ( structKeyExists( arguments.object, "mockbox" ) ) {
+				if (structKeyExistsWithLoop(arguments.object, 'mockbox')) {
 					return arguments.object;
 				}
+
 				return createMock(object=arguments.object);
 			</cfscript>
 		</cffunction>
@@ -159,11 +160,11 @@ Description		:
 			<cfscript>
 				var thisScope = evaluate( "#arguments.scope#" );
 
-				if( structKeyExists( thisScope, arguments.name ) ){
+				if( this.MockBox.structKeyExistsWithLoop( thisScope, arguments.name ) ){
 					return thisScope[ arguments.name ];
 				}
 
-				if( structKeyExists( arguments, "default" ) ){
+				if( this.MockBox.structKeyExistsWithLoop( arguments, "default" ) ){
 					return arguments.default;
 				}
 			</cfscript>
@@ -179,7 +180,7 @@ Description		:
 
 				// If method name used? Count only this method signatures
 				if( len(arguments.methodName) ){
-					if( structKeyExists(this._mockMethodCallCounters, arguments.methodName) ){
+					if( this.MockBox.structKeyExistsWithLoop(this._mockMethodCallCounters, arguments.methodName) ){
 						return this._mockMethodCallCounters[arguments.methodName];
 					}
 					return -1;
@@ -300,10 +301,10 @@ Description		:
 					var args = arguments;
 					return this.$callback( function(){
 						throw(
-							type  		= structKeyExists( args, "type" ) ? args.type : "",
-							message  	= structKeyExists( args, "message" ) ? args.message : "",
-							detail  	= structKeyExists( args, "detail" ) ? args.detail : "",
-							errorCode 	= structKeyExists( args, "errorCode" ) ? args.errorCode : "0"
+							type  		= this.MockBox.structKeyExistsWithLoop( args, "type" ) ? args.type : "",
+							message  	= this.MockBox.structKeyExistsWithLoop( args, "message" ) ? args.message : "",
+							detail  	= this.MockBox.structKeyExistsWithLoop( args, "detail" ) ? args.detail : "",
+							errorCode 	= this.MockBox.structKeyExistsWithLoop( args, "errorCode" ) ? args.errorCode : "0"
 						);
 					} );
 				}
@@ -357,23 +358,22 @@ Description		:
 				var genFile = "";
 				var oMockGenerator = this.MockBox.getmockGenerator();
 
+				var keyFound = false;
 				// Check if the method is existent in public scope
-				if ( structKeyExists(this,arguments.method) ){
+				if ( this.MockBox.structKeyExistsWithLoop(this,arguments.method) ) {
 					fncMD = getMetadata(this[arguments.method]);
-				}
-				// Else check in private scope
-				else if( structKeyExists(variables,arguments.method) ){
+				} else if( this.MockBox.structKeyExistsWithLoop(variables,arguments.method) ){
 					fncMD = getMetadata(variables[arguments.method]);
 				}
 
 				// Prepare Metadata Existence, works on virtual methods also
-				if ( not structKeyExists(fncMD,"returntype") ){
+				if ( not this.MockBox.structKeyExistsWithLoop(fncMD,"returntype") ){
 					fncMD["returntype"] = "any";
 				}
-				if ( not structKeyExists(fncMD,"access") ){
+				if ( not this.MockBox.structKeyExistsWithLoop(fncMD,"access") ){
 					fncMD["access"] = "public";
 				}
-				if( not structKeyExists(fncMD,"output") ){
+				if( not this.MockBox.structKeyExistsWithLoop(fncMD,"output") ){
 					fncMD["output"] = true;
 				}
 				// Preserve Return Type?
@@ -391,7 +391,7 @@ Description		:
 				oMockGenerator.generate( argumentCollection=arguments );
 
 				// Results Setup For No Argument Definitions or base results
-				if( structKeyExists( arguments, "returns" ) ){
+				if( this.MockBox.structKeyExistsWithLoop( arguments, "returns" ) ){
 					this._mockResults[ arguments.method ] = ArrayNew( 1 );
 					this._mockResults[ arguments.method ][ 1 ] = arguments.returns;
 				}
@@ -400,7 +400,7 @@ Description		:
 				}
 
 				// Callbacks Setup For No Argument Definitions or base results
-				if( structKeyExists( arguments, "callback" ) ){
+				if( this.MockBox.structKeyExistsWithLoop( arguments, "callback" ) ){
 					this._mockCallbacks[ arguments.method ] = ArrayNew( 1 );
 					this._mockCallbacks[ arguments.method ][ 1 ] = arguments.callback;
 				}
@@ -515,7 +515,7 @@ Description		:
 				var serializedArgs = "";
 
 				for( var arg in argOrderedTree ){
-					if( NOT structKeyExists( argOrderedTree, arg ) ){
+					if( NOT structKeyExistsWithLoop( argOrderedTree, arg ) ){
 						/* we aren't going to be able to serialize an undefined variable, this might occur if an arguments structure
 						 * containing optional parameters is passed by argumentCollection=arguments to the mocked method.
 						 */
@@ -536,7 +536,7 @@ Description		:
 					else if(
 						isObject( argOrderedTree[ arg ] ) and
 						// Find out if object, sometimes of course, on Adobe, is instance does not work, so sucky
-						( isInstanceOf( argOrderedTree[ arg ], "Component" ) OR structKeyExists( getMetadata( argOrderedTree[ arg ] ), "extends" ) )
+						( isInstanceOf( argOrderedTree[ arg ], "Component" ) OR structKeyExistsWithLoop( getMetadata( argOrderedTree[ arg ] ), "extends" ) )
 					){
 						// If an object and CFC, just use serializeJSON
 						serializedArgs &= serializeJSON( getMetadata( argOrderedTree[ arg ] ) );
@@ -617,5 +617,19 @@ Description		:
 		<cffunction name="getUtil" access="private" output="false" returntype="testbox.system.util.Util" hint="Create and return a util object">
 			<cfreturn createObject("component","testbox.system.util.Util")/>
 		</cffunction>
+
+		<cffunction name="structKeyExistsWithLoop" access="public" output="false" returntype="boolean" hint="structKeyExists is very slow when objects mocked are large due to inheritance and the key is not in the struct">
+			<cfargument name="object" 		type="any" required="true"  hint="The object taken as the struct for the key to be searched in"/>
+			<cfargument name="searchKey" 	type="string"  required="false" default="" hint="The key to search for" />
+			<cfscript>
+				for (key in object) {
+					if (key == searchKey) {
+						return structKeyExists(object, searchKey);
+					}
+				}
+				return false;
+			</cfscript>
+		</cffunction>
+
 
 	</cfcomponent>
