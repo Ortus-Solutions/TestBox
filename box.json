@@ -45,9 +45,9 @@
     },
     "scripts":{
         "format":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,*.cfc --overwrite",
-		"format:check":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,*.cfc --check",
-		"start:lucee" : "server start serverConfigFile=server-lucee@5.json",
-		"start:2016" : "server start serverConfigFile=server-adobe@2016.json",
-		"start:2018" : "server start serverConfigFile=server-adobe@2018.json"
+        "format:check":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,*.cfc --check",
+        "start:lucee":"server start serverConfigFile=server-lucee@5.json",
+        "start:2016":"server start serverConfigFile=server-adobe@2016.json",
+        "start:2018":"server start serverConfigFile=server-adobe@2018.json"
     }
 }
