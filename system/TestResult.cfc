@@ -7,41 +7,41 @@
 component accessors="true" {
 
 	// Global Durations
-	property name="startTime" type="numeric";
-	property name="endTime" type="numeric";
+	property name="startTime"     type="numeric";
+	property name="endTime"       type="numeric";
 	property name="totalDuration" type="numeric";
 
 	// Global Stats
 	property name="totalBundles" type="numeric";
-	property name="totalSuites" type="numeric";
-	property name="totalSpecs" type="numeric";
-	property name="totalPass" type="numeric";
-	property name="totalFail" type="numeric";
-	property name="totalError" type="numeric";
+	property name="totalSuites"  type="numeric";
+	property name="totalSpecs"   type="numeric";
+	property name="totalPass"    type="numeric";
+	property name="totalFail"    type="numeric";
+	property name="totalError"   type="numeric";
 	property name="totalSkipped" type="numeric";
-	property name="labels" type="array";
-	property name="excludes" type="array";
+	property name="labels"       type="array";
+	property name="excludes"     type="array";
 
 	// bundle stats
 	property name="bundleStats" type="struct";
 
 	// bundles, suites and specs only values that can execute
 	property name="testBundles" type="array";
-	property name="testSuites" type="array";
-	property name="testSpecs" type="array";
+	property name="testSuites"  type="array";
+	property name="testSpecs"   type="array";
 
 	// Code Coverage
 	property name="coverageEnabled" type="boolean";
-	property name="coverageData" type="struct";
+	property name="coverageData"    type="struct";
 
 
 	/**
 	 * Constructor
 	 * @bundleCount.hint the count to init the results for
-	 * @labels.hint The lables to use
+	 * @labels.hint The labels to use
 	 * @testBundles.hint The test bundles that should execute ONLY
 	 * @testSuites.hint The test suites that should execute ONLY
-	 * @testSpecs.hint The test specs that should execut ONLY
+	 * @testSpecs.hint The test specs that should execute ONLY
 	 */
 	TestResult function init(
 		numeric bundleCount = 0,
@@ -251,7 +251,11 @@ component accessors="true" {
 	 * @bundleStats.hint The bundle stats reference this belongs to.
 	 * @parentStats.hint If passed, the parent stats this suite belongs to
 	 */
-	struct function startSuiteStats( required string name, required struct bundleStats, struct parentStats = {} ){
+	struct function startSuiteStats(
+		required string name,
+		required struct bundleStats,
+		struct parentStats = {}
+	){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
 			// setup stats data for incoming suite
 			var stats = {
@@ -422,7 +426,10 @@ component accessors="true" {
 			}
 		}
 
-		result.coverage = { "enabled" : coverageEnabled, "data" : {} };
+		result.coverage = {
+			"enabled" : coverageEnabled,
+			"data"    : {}
+		};
 
 		if ( coverageEnabled ) {
 			result.coverage.data = {

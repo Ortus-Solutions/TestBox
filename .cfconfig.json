@@ -1,0 +1,13 @@
+{
+	"systemErr":"System",
+    "systemOut":"System",
+	"adminPassword" : "testbox",
+	"debuggingEnabled": true,
+	"debuggingShowDatabase":true,
+	"debuggingShowException":true,
+	"debuggingShowGeneral":true,
+    "ajaxDebugWindowEnabled": false,
+    "debuggingReportExecutionTimes": false,
+	"maxCFThreads":100,
+	"whitespaceManagement":"smart"
+}

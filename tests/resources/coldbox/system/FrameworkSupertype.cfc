@@ -47,7 +47,7 @@ component serializable="false" accessors="true"{
 
 	/**
 	* Populate a model object from the request Collection
-	* @model.hint The name of the model to get and populate or the acutal model object. If you already have an instance of a model, then use the populateBean() method
+	* @model.hint The name of the model to get and populate or the actual model object. If you already have an instance of a model, then use the populateBean() method
 	* @scope.hint Use scope injection instead of setters population. Ex: scope=variables.instance.
 	* @trustedSetter.hint If set to true, the setter method will be called even if it does not exist in the object
 	* @include.hint A list of keys to include in the population

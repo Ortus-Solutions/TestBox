@@ -1,50 +1,77 @@
-﻿
-[![Build Status](https://travis-ci.org/Ortus-Solutions/TestBox.svg?branch=development)](https://travis-ci.org/Ortus-Solutions/TestBox)
+﻿<p align="center">
+	<img src="https://www.ortussolutions.com/__media/testbox-185.png">
+	<img src="https://www.ortussolutions.com/__media/mockbox-185.png">
+</p>
 
-```
-  _____         _   ____            
- |_   _|__  ___| |_| __ )  _____  __
-   | |/ _ \/ __| __|  _ \ / _ \ \/ /
-   | |  __/\__ \ |_| |_) | (_) >  < 
-   |_|\___||___/\__|____/ \___/_/\_\
-```
+<p align="center">
+	<a href="https://travis-ci.org/ortus-solutions/testbox"><img src="https://travis-ci.org/ortus-solutions/testbox.svg?branch=development" alt="Build Status"></a>
+	<a href="https://forgebox.io/view/testbox"><img src="https://forgebox.io/api/v1/entry/testbox/badges/downloads" alt="Total Downloads" /></a>
+	<a href="https://forgebox.io/view/testbox"><img src="https://forgebox.io/api/v1/entry/testbox/badges/version" alt="Latest Stable Version" /></a>
+	<a href="https://forgebox.io/view/testbox"><img src="https://img.shields.io/badge/License-Apache2-brightgreen" alt="Apache2 License" /></a>
+</p>
+
+<p align="center">
+	Copyright Since 2005 TestBox by Luis Majano and Ortus Solutions, Corp
+	<br>
+	<a href="https://www.ortussolutions.com/products/testbox">www.ortussolutions.com</a>
+</p>
+
+----
 
 TestBox is a Behavior Driven Development (BDD) and Test Driven Development (TDD) framework for ColdFusion (CFML). It also includes mocking and stubbing capabilities via its internal MockBox library.
 
-## LICENSE
+## License
 
 Apache License, Version 2.0.
 
-## IMPORTANT LINKS
+## Versioning
 
-Source
+TestBox is maintained under the Semantic Versioning guidelines as much as possible.
 
-- https://github.com/Ortus-Solutions/TestBox
+Releases will be numbered with the following format:
 
-Bug Tracking
+```html
+<major>.<minor>.<patch>
+```
 
-- https://ortussolutions.atlassian.net/browse/TESTBOX
+And constructed with the following guidelines:
 
-Support Forum
+* Breaking backward compatibility bumps the major (and resets the minor and patch)
+* New additions without breaking backward compatibility bumps the minor (and resets the patch)
+* Bug fixes and misc changes bumps the patch
 
-- https://groups.google.com/a/ortussolutions.com/forum/#!forum/testbox
+## Important Links
 
-Documentation
+### Source Code
 
-- https://testbox.ortusbooks.com
-- https://testbox.ortusbooks.com/content/primers/bdd/index.html
-- https://testbox.ortusbooks.com/content/primers/xunit/index.html
+* https://github.com/Ortus-Solutions/TestBox
 
-Official Site
+### Bug Tracking
 
-- https://www.ortussolutions.com/products/testbox
+* https://ortussolutions.atlassian.net/browse/TESTBOX
 
-## SYSTEM REQUIREMENTS
+### Support
 
-- Lucee 5+ (xUnit + BDD)
-- ColdFusion 11+ (xUnit + BDD)
+* https://groups.google.com/a/ortussolutions.com/forum/#!forum/testbox
+* [Join BoxTeam Slack](https://boxteam.herokuapp.com)
 
-## TESTBOX INSTALLATION
+### Documentation
+
+* https://testbox.ortusbooks.com
+* https://testbox.ortusbooks.com/content/primers/bdd/index.html
+* https://testbox.ortusbooks.com/content/primers/xunit/index.html
+
+### Official Site
+
+* https://www.ortussolutions.com/products/testbox
+
+## Requirements
+
+<img src="https://cfmlbadges.monkehworks.com/images/badges/compatibility-coldfusion-2018.svg"><br>
+<img src="https://cfmlbadges.monkehworks.com/images/badges/compatibility-coldfusion-2016.svg"><br>
+<img src="https://cfmlbadges.monkehworks.com/images/badges/compatibility-lucee-5.svg">
+
+## Installation
 
 You can visit the TestBox documentation page to view all of its features and 
 capabilities.  To install TestBox just drop it in your web root as `/testbox` or
@@ -63,10 +90,7 @@ You can also use [CommandBox](https://www.ortussolutions.com/products/commandbox
 
 Bleeding edge builds are updated automatically as code is committed.
 
-********************************************************************************
-Copyright Since 2005 by Luis Majano and Ortus Solutions, Corp
-www.ortussolutions.com
-********************************************************************************
+----
 
 ### HONOR GOES TO GOD ABOVE ALL
 

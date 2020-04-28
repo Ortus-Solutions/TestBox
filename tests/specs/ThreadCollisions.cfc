@@ -1,9 +1,9 @@
 /**
-* My BDD Test
-*/
-component extends="testbox.system.BaseSpec"{
+ * My BDD Test
+ */
+component extends="testbox.system.BaseSpec" {
 
-/*********************************** LIFE CYCLE Methods ***********************************/
+	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	// executes before all suites+specs in the run() method
 	function beforeAll(){
@@ -13,17 +13,22 @@ component extends="testbox.system.BaseSpec"{
 	function afterAll(){
 	}
 
-/*********************************** BDD SUITES ***********************************/
+	/*********************************** BDD SUITES ***********************************/
 
 	function run(){
 		// The following should NOT fail
-		describe("Thread Collisions", function(){
+		describe(
+			"Thread Collisions",
+			function(){
+				it( "will NOT fail on the second spec due to identical spec name based thread name", function(){
+				} );
 
-			it("will NOT fail on the second spec due to identical spec name based thread name", function(){});
-
-			it("will NOT fail on the second spec due to identical spec name based thread name", function(){});
-
-		}, "async", true);
+				it( "will NOT fail on the second spec due to identical spec name based thread name", function(){
+				} );
+			},
+			"async",
+			true
+		);
 	}
 
 }

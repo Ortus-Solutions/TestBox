@@ -11,6 +11,8 @@ component {
 
 	// MockBox mocking framework
 	variables.$mockBox         = this.$mockBox = new testbox.system.MockBox();
+	// MockData CFC framework
+	variables.$mockData        = this.$mockData = new testbox.system.modules.mockdatacfc.models.MockData();
 	// Assertions object
 	variables.$assert          = this.$assert = new testbox.system.Assertion();
 	// Custom Matchers
@@ -34,10 +36,18 @@ component {
 	// Current Executing Spec
 	this.$currentExecutingSpec = "";
 	// Focused Structures
-	this.$focusedTargets 		= {
-		"suites" 	: [],
-		"specs"		: []
-	};
+	this.$focusedTargets       = { "suites" : [], "specs" : [] };
+
+	// Setup Request Utilities
+	if( !request.keyExists( "testbox" ) ){
+		request.testbox = {
+			"console" : variables.console,
+			"debug" : variables.debug,
+			"clearDebugBuffer" : variables.clearDebugBuffer,
+			"print" : variables.print,
+			"println" : variables.println
+		};
+	}
 
 	/************************************** BDD & EXPECTATIONS METHODS *********************************************/
 
@@ -124,7 +134,7 @@ component {
 		any skip         = false
 	){
 		arguments.focused = true;
-		return this.describe( argumentCollection=arguments );
+		return this.describe( argumentCollection = arguments );
 	}
 
 	/**
@@ -143,7 +153,7 @@ component {
 		any labels       = [],
 		boolean asyncAll = false,
 		any skip         = false,
-		boolean focused = false
+		boolean focused  = false
 	){
 		// closure checks
 		if ( !isClosure( arguments.body ) && !isCustomFunction( arguments.body ) ) {
@@ -179,7 +189,7 @@ component {
 			parent         : "",
 			// the parent ref
 			parentRef      : "",
-			// hiearachy slug
+			// hierarchy slug
 			slug           : ""
 		};
 
@@ -204,7 +214,7 @@ component {
 			suite.parent    = this.$suiteContext;
 			suite.parentRef = this.$suitesReverseLookup[ this.$suiteContext ];
 
-			// Build hiearachy slug separated by /
+			// Build hierarchy slug separated by /
 			suite.slug = this.$suitesReverseLookup[ this.$suiteContext ].slug & "/" & this.$suiteContext;
 			if ( left( suite.slug, 1 ) != "/" ) {
 				suite.slug = "/" & suite.slug;
@@ -235,7 +245,7 @@ component {
 		}
 
 		// Are we focused?
-		if( arguments.focused ){
+		if ( arguments.focused ) {
 			arrayAppend( this.$focusedTargets.suites, suite.slug & "/" & suite.name );
 		}
 
@@ -452,7 +462,7 @@ component {
 		struct data = {}
 	){
 		arguments.focused = true;
-		return this.it( argumentCollection=arguments );
+		return this.it( argumentCollection = arguments );
 	}
 
 	/**
@@ -468,9 +478,9 @@ component {
 	any function it(
 		required string title,
 		required any body,
-		any labels  = [],
-		any skip    = false,
-		struct data = {},
+		any labels      = [],
+		any skip        = false,
+		struct data     = {},
 		boolean focused = false
 	){
 		// closure checks
@@ -519,7 +529,7 @@ component {
 		arrayAppend( this.$suitesReverseLookup[ this.$suiteContext ].specs, spec );
 
 		// Are we focused?
-		if( arguments.focused ){
+		if ( arguments.focused ) {
 			var thisSuite = this.$suitesReverseLookup[ this.$suiteContext ];
 			arrayAppend( this.$focusedTargets.specs, thisSuite.slug & "/" & thisSuite.name & "/" & spec.name );
 		}
@@ -717,7 +727,11 @@ component {
 	 */
 	Expectation function expect( any actual ){
 		// build an expectation
-		var oExpectation = new Expectation( spec = this, assertions = this.$assert, mockbox = this.$mockbox );
+		var oExpectation = new Expectation(
+			spec       = this,
+			assertions = this.$assert,
+			mockbox    = this.$mockbox
+		);
 
 		// Store the actual data
 		if ( !isNull( arguments.actual ) ) {
@@ -737,12 +751,16 @@ component {
 	}
 
 	/**
-	 * Start a collection expectation expression. This returns an instance of CollectionExpection
-	 * so you can work with its collection-unrolling matches (delegating to Expection).
+	 * Start a collection expectation expression. This returns an instance of CollectionExpectation
+	 * so you can work with its collection-unrolling matches (delegating to Expectation).
 	 * @actual The actual value, it should be an array or a struct.
 	 */
 	CollectionExpectation function expectAll( required any actual ){
-		return new CollectionExpectation( spec = this, assertions = this.$assert, collection = arguments.actual );
+		return new CollectionExpectation(
+			spec       = this,
+			assertions = this.$assert,
+			collection = arguments.actual
+		);
 	}
 
 	/**
@@ -753,7 +771,11 @@ component {
 		// register structure
 		if ( isStruct( arguments.matchers ) ) {
 			// register the custom matchers with override
-			structAppend( this.$customMatchers, arguments.matchers, true );
+			structAppend(
+				this.$customMatchers,
+				arguments.matchers,
+				true
+			);
 			return this;
 		}
 
@@ -787,7 +809,11 @@ component {
 		// register structure
 		if ( isStruct( arguments.assertions ) ) {
 			// register the custom matchers with override
-			structAppend( this.$assert, arguments.assertions, true );
+			structAppend(
+				this.$assert,
+				arguments.assertions,
+				true
+			);
 			return this;
 		}
 
@@ -827,9 +853,7 @@ component {
 		string testSuites = "",
 		string reporter   = "simple",
 		string labels     = ""
-	)
-		output=true
-	{
+	) output=true{
 		// content type defaulted, to avoid dreaded wddx default
 		getPageContext().getResponse().setContentType( "text/html" );
 		// run tests
@@ -887,7 +911,11 @@ component {
 						arrayLen( this.$focusedTargets.specs ) && arrayFindNoCase( this.$focusedTargets.specs, name )
 						||
 						// Are we in the focused Suite?
-						arrayLen( this.$focusedTargets.suites ) && runner.isSuiteFocused( suite=suite, target=this, checkChildren=false )
+						arrayLen( this.$focusedTargets.suites ) && runner.isSuiteFocused(
+							suite         = suite,
+							target        = this,
+							checkChildren = false
+						)
 					)
 				);
 			};
@@ -970,14 +998,23 @@ component {
 		while ( !isSimpleValue( parentSuite ) ) {
 			arrayAppend(
 				reverseTree,
-				{ beforeEach : parentSuite.beforeEach, beforeEachData : parentSuite.beforeEachData }
+				{
+					beforeEach     : parentSuite.beforeEach,
+					beforeEachData : parentSuite.beforeEachData
+				}
 			);
 			parentSuite = parentSuite.parentRef;
 		}
 
 		// Incorporate annotated methods
 		arrayEach( this.$utility.getAnnotatedMethods( annotation = "beforeEach", metadata = getMetadata( this ) ), function( item ){
-			arrayAppend( reverseTree, { beforeEach : this[ arguments.item.name ], beforeEachData : {} } );
+			arrayAppend(
+				reverseTree,
+				{
+					beforeEach     : this[ arguments.item.name ],
+					beforeEachData : {}
+				}
+			);
 		} );
 
 		// sort tree backwards
@@ -1087,7 +1124,11 @@ component {
 			// Return the closure of execution for a single spec ONLY
 			return function(){
 				// Execute the body of the spec
-				nextClosure.body( spec = thread.spec, suite = thread.suite, data = nextClosure.data );
+				nextClosure.body(
+					spec  = thread.spec,
+					suite = thread.suite,
+					data  = nextClosure.data
+				);
 			};
 		}
 
@@ -1132,7 +1173,11 @@ component {
 		}
 
 		arrayEach( this.$utility.getAnnotatedMethods( annotation = "afterEach", metadata = getMetadata( this ) ), function( item ){
-			invoke( this, item.name, { currentSpec : spec.name, data : {} } );
+			invoke(
+				this,
+				item.name,
+				{ currentSpec : spec.name, data : {} }
+			);
 		} );
 
 		return this;
@@ -1191,7 +1236,13 @@ component {
 						rethrow;
 					}
 					// if not the expected exception, then fail it
-					if ( !isExpectedException( e, arguments.spec.name, arguments.runner ) ) {
+					if (
+						!isExpectedException(
+							e,
+							arguments.spec.name,
+							arguments.runner
+						)
+					) {
 						$assert.fail(
 							"Method did not throw expected exception: [#this.$expectedException.toString()#], actual exception [type:#e.type#][message:#e.message#]"
 						);
@@ -1250,7 +1301,11 @@ component {
 	 * @top Apply a top to the dump, by default it does 9999 levels
 	 */
 	any function console( required var, top = 9999 ){
-		writeDump( var = arguments.var, output = "console", top = arguments.top );
+		writeDump(
+			var    = arguments.var,
+			output = "console",
+			top    = arguments.top
+		);
 		return this;
 	}
 
@@ -1337,7 +1392,11 @@ component {
 	 * @method The private method to expose
 	 * @newName If passed, it will expose the method with this name, else just uses the same name
 	 */
-	any function makePublic( required any target, required string method, string newName = "" ){
+	any function makePublic(
+		required any target,
+		required string method,
+		string newName = ""
+	){
 		// decorate it
 		this.$utility.getMixerUtil().start( arguments.target );
 		// expose it
@@ -1367,10 +1426,19 @@ component {
 	}
 
 	/**
-	 * First line are the query columns separated by commas. Then do a consecuent rows separated by line breaks separated by | to denote columns.
+	 * First line are the query columns separated by commas. Then do a consequent rows separated by line breaks separated by | to denote columns.
 	 */
 	function querySim( required queryData ){
 		return this.$mockBox.querySim( arguments.queryData );
+	}
+
+	/**
+	 * Use MockDataCFC to mock whatever data you want.  This funnles to MocData.mock()
+	 *
+	 * @return The mock data you desire sir!
+	 */
+	function mockData(){
+		return this.$mockData.mock( argumentCollection = arguments );
 	}
 
 	/**
@@ -1390,7 +1458,11 @@ component {
 	 * @object The object to mock, already instantiated
 	 * @callLogging Add method call logging for all mocked methods. Defaults to true
 	 */
-	function createEmptyMock( string className, any object, boolean callLogging = true ){
+	function createEmptyMock(
+		string className,
+		any object,
+		boolean callLogging = true
+	){
 		return this.$mockBox.createEmptyMock( argumentCollection = arguments );
 	}
 
@@ -1405,7 +1477,7 @@ component {
 		string className,
 		any object,
 		boolean clearMethods = false
-		boolean callLogging =true
+		boolean callLogging  =true
 	){
 		return this.$mockBox.createMock( argumentCollection = arguments );
 	}
@@ -1425,7 +1497,11 @@ component {
 	 * @extends Make the stub extend from certain CFC
 	 * @implements Make the stub adhere to an interface
 	 */
-	function createStub( boolean callLogging = true, string extends = "", string implements = "" ){
+	function createStub(
+		boolean callLogging = true,
+		string extends      = "",
+		string implements   = ""
+	){
 		return this.$mockBox.createStub( argumentCollection = arguments );
 	}
 
@@ -1462,7 +1538,11 @@ component {
 	/**
 	 * Check if the incoming exception is expected or not.
 	 */
-	boolean function isExpectedException( required exception, required specName, required runner ){
+	boolean function isExpectedException(
+		required exception,
+		required specName,
+		required runner
+	){
 		var results = false;
 
 		// normalize expected exception

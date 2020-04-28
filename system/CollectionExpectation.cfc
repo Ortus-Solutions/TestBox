@@ -21,7 +21,11 @@ component accessors="true" {
 	 * @assertions The assertions library
 	 * @collection The collection target
 	 */
-	function init( required spec, required any assertions, required collection ){
+	function init(
+		required spec,
+		required any assertions,
+		required collection
+	){
 		variables.actual = arguments.collection;
 		variables.spec   = arguments.spec;
 		variables.assert = arguments.assertions;
@@ -32,7 +36,7 @@ component accessors="true" {
 	function onMissingMethod( string missingMethodName, any missingMethodArguments ){
 		if ( isArray( variables.actual ) ) {
 			for ( var e in variables.actual ) {
-				// Using evaluate since invoke looses track of positiona argument collections
+				// Using evaluate since invoke looses track of positional argument collections
 				evaluate(
 					"variables.spec.expect( e ).#arguments.missingMethodName#( argumentCollection=arguments.missingMethodArguments )"
 				);
