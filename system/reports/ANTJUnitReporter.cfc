@@ -101,6 +101,25 @@ component extends="BaseReporter" {
 		var stats = arguments.suiteStats;
 		var index = 1;
 
+		// Do we have a global exception?
+		if( !isSimpleValue( arguments.bundleStats.globalException ) ){
+			// build test case
+			out.append(
+			"<testcase
+				name     =""#xmlFormat( arguments.bundleStats.name )#""
+				time     =""#arguments.bundleStats.totalDuration / 1000#""
+				classname=""#arguments.bundleStats.path#""
+				>
+					<error
+						type=""globalException""
+						message=""#xmlFormat( arguments.bundleStats.globalException.message )#""><![CDATA[
+						#arguments.bundleStats.globalException.stackTrace.toString()#
+					]]></error>
+			</testcase>
+			");
+			return;
+		}
+
 		// iterate over
 		for ( var thisSuite in arguments.suiteStats ) {
 			// build out full suite name

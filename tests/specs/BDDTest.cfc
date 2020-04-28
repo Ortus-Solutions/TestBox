@@ -6,6 +6,7 @@ component extends="testbox.system.BaseSpec" {
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
+		throw();
 		// print( "<h2>BDD Testing is Awesome!</h2>" );
 		console( "Executed beforeAll() at #now()# " );
 		application.salvador = 1;
