@@ -44,6 +44,7 @@
         "mockdatacfc":"system/modules/mockdatacfc/"
     },
     "scripts":{
+        "toMaster":"recipe build/toMaster.boxr",
         "format":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,*.cfc --overwrite",
         "format:check":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,*.cfc --check",
         "start:lucee":"server start serverConfigFile=server-lucee@5.json",
