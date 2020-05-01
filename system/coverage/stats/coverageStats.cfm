@@ -66,8 +66,8 @@
 				</div>
 			</div>
 
-			<cfset bestCoverageHasCoveredFiles = ArraySum(ValueArray(stats.qryFilesBestCoverage, "percCoverage")) GT 0 >
-			<cfset worstCoverageHasCoveredFiles = ArraySum(ValueArray(stats.qryFilesWorstCoverage, "percCoverage")) GT 0 >
+			<cfset bestCoverageHasCoveredFiles = ArraySum(listToArray(valueList(stats.qryFilesBestCoverage.percCoverage))) GT 0 >
+			<cfset worstCoverageHasCoveredFiles = ArraySum(listToArray(valueList(stats.qryFilesWorstCoverage.percCoverage))) GT 0 >
 
 			<div id="coverage-stats" class="debugdata mt-2 collapse" data-specid="coverageStats">
 				<ul class="list-group">
