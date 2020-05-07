@@ -23,7 +23,7 @@ component accessors="true" {
 	property name="excludes"     type="array";
 
 	// bundle stats
-	property name="bundleStats" type="struct";
+	property name="bundleStats" type="array";
 
 	// bundles, suites and specs only values that can execute
 	property name="testBundles" type="array";
@@ -34,14 +34,19 @@ component accessors="true" {
 	property name="coverageEnabled" type="boolean";
 	property name="coverageData"    type="struct";
 
+	// CFML Engine Information
+	property name="CFMLEngine";
+	property name="CFMLEngineVersion";
+
 
 	/**
 	 * Constructor
-	 * @bundleCount.hint the count to init the results for
-	 * @labels.hint The labels to use
-	 * @testBundles.hint The test bundles that should execute ONLY
-	 * @testSuites.hint The test suites that should execute ONLY
-	 * @testSpecs.hint The test specs that should execute ONLY
+	 *
+	 * @bundleCount the count to init the results for
+	 * @labels The labels to use
+	 * @testBundles The test bundles that should execute ONLY
+	 * @testSuites The test suites that should execute ONLY
+	 * @testSpecs The test specs that should execute ONLY
 	 */
 	TestResult function init(
 		numeric bundleCount = 0,
@@ -86,6 +91,12 @@ component accessors="true" {
 		// Coverage Data
 		variables.coverageEnabled = false;
 		variables.coverageData    = {};
+
+		// CFML Engine + Version
+		variables.CFMLEngine = server.coldfusion.productName;
+		variables.CFMLEngineVersion = (
+			structKeyExists( server, "lucee" ) ? server.lucee.version : server.coldfusion.productVersion
+		);
 
 		return this;
 	}
@@ -135,7 +146,7 @@ component accessors="true" {
 
 	/**
 	 * Increment a global stat
-	 * @type.hint The type of stat to increment: fail,pass,error or skipped
+	 * @type The type of stat to increment: fail,pass,error or skipped
 	 */
 	TestResult function incrementStat( required type = "pass", numeric count = 1 ){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
@@ -210,7 +221,7 @@ component accessors="true" {
 
 	/**
 	 * End processing of a bundle stats reference
-	 * @stats.hint The bundle stats structure reference to complete
+	 * @stats The bundle stats structure reference to complete
 	 */
 	TestResult function endStats( required struct stats ){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
@@ -222,7 +233,7 @@ component accessors="true" {
 
 	/**
 	 * Get a bundle stats by path as a struct or the entire stats array if no path passed.
-	 * @id.hint If passed, then retrieve by id
+	 * @id If passed, then retrieve by id
 	 */
 	any function getBundleStats( string id ){
 		lock name="tb-results-#variables.resultsID#" type="readonly" timeout="10" {
@@ -247,9 +258,9 @@ component accessors="true" {
 
 	/**
 	 * Start a new suite stats and return its reference
-	 * @name.hint The name of the suite
-	 * @bundleStats.hint The bundle stats reference this belongs to.
-	 * @parentStats.hint If passed, the parent stats this suite belongs to
+	 * @name The name of the suite
+	 * @bundleStats The bundle stats reference this belongs to.
+	 * @parentStats If passed, the parent stats this suite belongs to
 	 */
 	struct function startSuiteStats(
 		required string name,
@@ -310,7 +321,7 @@ component accessors="true" {
 
 	/**
 	 * Get a suite stats by id from the reverse lookup
-	 * @id.hint Retrieve by id
+	 * @id Retrieve by id
 	 */
 	any function getSuiteStats( required string id ){
 		lock name="tb-results-#variables.resultsID#" type="readonly" timeout="10" {
@@ -320,8 +331,8 @@ component accessors="true" {
 
 	/**
 	 * Start a new spec stats and return its reference
-	 * @name.hint The name of the suite
-	 * @suiteStats.hint The suite stats reference this belongs to.
+	 * @name The name of the suite
+	 * @suiteStats The suite stats reference this belongs to.
 	 */
 	struct function startSpecStats( required string name, required struct suiteStats ){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
@@ -363,8 +374,8 @@ component accessors="true" {
 
 	/**
 	 * Record a spec stat with its recursive chain
-	 * @type.hint The type of stat to store: skipped,fail,error,pass
-	 * @specStats.hint The spec stats to increment
+	 * @type The type of stat to store: skipped,fail,error,pass
+	 * @specStats The spec stats to increment
 	 */
 	function incrementSpecStat( required string type, required struct stats ){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
@@ -400,13 +411,12 @@ component accessors="true" {
 			"totalFail",
 			"totalError",
 			"totalSkipped",
-			"bundleStats"
+			"bundleStats",
+			"CFMLEngine",
+			"CFMLEngineVersion"
 		];
+
 		var result = {
-			"CFMLEngine"        : server.coldfusion.productName,
-			"CFMLEngineVersion" : (
-				structKeyExists( server, "lucee" ) ? server.lucee.version : server.coldfusion.productVersion
-			),
 			"coverage" : {}
 		};
 
