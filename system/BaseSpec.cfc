@@ -47,6 +47,7 @@ component {
 			"print" : variables.print,
 			"println" : variables.println
 		};
+		request.$testID = this.$testID;
 	}
 
 	/************************************** BDD & EXPECTATIONS METHODS *********************************************/
@@ -1329,7 +1330,7 @@ component {
 		}
 
 		// lock and add
-		lock name="tb-debug-#this.$testID#" type="exclusive" timeout="10" {
+		lock name="tb-debug-#request.$testID#" type="exclusive" timeout="10" {
 			// duplication control
 			var newVar = ( arguments.deepCopy ? duplicate( arguments.var ) : arguments.var );
 			// compute label?
@@ -1354,7 +1355,7 @@ component {
 	 *  Clear the debug array buffer
 	 */
 	any function clearDebugBuffer(){
-		lock name="tb-debug-#this.$testID#" type="exclusive" timeout="10" {
+		lock name="tb-debug-#request.$testID#" type="exclusive" timeout="10" {
 			arrayClear( this.$debugBuffer );
 		}
 		return this;
@@ -1364,7 +1365,7 @@ component {
 	 *  Get the debug array buffer from scope
 	 */
 	array function getDebugBuffer(){
-		lock name="tb-debug-#this.$testID#" type="readonly" timeout="10" {
+		lock name="tb-debug-#request.$testID#" type="readonly" timeout="10" {
 			return this.$debugBuffer;
 		}
 	}
