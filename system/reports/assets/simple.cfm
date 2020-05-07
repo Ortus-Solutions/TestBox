@@ -256,7 +256,7 @@
 												</cfloop>
 
 												<!--- Debug Panel --->
-												<cfif arrayLen( thisBundle.debugBuffer )>
+												<cfif thisBundle.keyExists( "debugBuffer" ) && arrayLen( thisBundle.debugBuffer )>
 													<li>
 														<div class="list-group-item list-group-item-primary py-3 expand-collapse"
 															title="Toggle Debug Stream"
