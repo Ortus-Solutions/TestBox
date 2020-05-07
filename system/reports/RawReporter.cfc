@@ -28,7 +28,7 @@ component extends="BaseReporter" {
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
 		struct options = {},
-		boolean arguments.justReport = false
+		boolean justReturn = false
 	){
 		return arguments.results.getMemento();
 	}

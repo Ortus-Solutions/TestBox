@@ -27,9 +27,9 @@ component extends="BaseReporter" {
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
 		struct options = {},
-		boolean arguments.justReport = false
+		boolean justReturn = false
 	){
-		if( !arguments.justReport ){
+		if( !arguments.justReturn ){
 			// content type
 			getPageContextResponse().setContentType( "text/html" );
 		}
