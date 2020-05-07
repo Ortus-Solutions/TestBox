@@ -454,9 +454,10 @@ component accessors="true" {
 
 	/**
 	 * Build a reporter according to passed in reporter type or class path
+	 *
 	 * @reporter The reporter type to build.
 	 */
-	private any function buildReporter( required reporter ){
+	any function buildReporter( required reporter ){
 		switch ( arguments.reporter ) {
 			case "json": {
 				return new "testbox.system.reports.JSONReporter"( );
