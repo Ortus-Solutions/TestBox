@@ -423,14 +423,16 @@ component accessors="true" {
 		// Do simple properties only
 		for ( var thisProp in pList ) {
 			if ( structKeyExists( variables, thisProp ) ) {
+
+				result[ thisProp ] = variables[ thisProp ];
+
 				// Do we need to strip out the buffer?
 				if ( thisProp == "bundleStats" && !arguments.includeDebugBuffer ) {
-					for ( var thisKey in variables[ thisProp ] ) {
-						structDelete( thisKey, "debugBuffer" );
+					for( var thisStat in result.bundleStats ){
+						thisStat.debugBuffer = [];
 					}
 				}
 
-				result[ thisProp ] = variables[ thisProp ];
 			} else {
 				result[ thisProp ] = "";
 			}
