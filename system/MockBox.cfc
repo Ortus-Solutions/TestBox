@@ -3,8 +3,8 @@
 Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
 ********************************************************************************
-Author      	 		: Luis Majano
-Date            		: April 20, 2009
+Author           	 		: Luis Majano
+Date                   		: April 20, 2009
 Description		:
 The Official ColdBox Mocking Factory
 ----------------------------------------------------------------------->
@@ -38,10 +38,10 @@ The Official ColdBox Mocking Factory
 			instance.generationPath = instance.generationPath & "/";
 		}
 
-		instance.mockGenerator = createObject( "component", "testbox.system.mockutils.MockGenerator" ).init(
-			this,
-			false
-		);
+		instance.mockGenerator = createObject(
+			"component",
+			"testbox.system.mockutils.MockGenerator"
+		).init( this, false );
 
 		return this;
 		</cfscript>
@@ -232,7 +232,10 @@ The Official ColdBox Mocking Factory
 		<cfscript>
 		// No implements or inheritance
 		if ( NOT len( trim( arguments.implements ) ) AND NOT len( trim( arguments.extends ) ) ) {
-			return createMock( className = "testbox.system.mockutils.Stub", callLogging = arguments.callLogging );
+			return createMock(
+				className   = "testbox.system.mockutils.Stub",
+				callLogging = arguments.callLogging
+			);
 		}
 		// Generate the CFC + Create it + Remove it
 		return prepareMock( instance.mockGenerator.generateCFC( argumentCollection = arguments ) );
@@ -319,7 +322,12 @@ The Official ColdBox Mocking Factory
 
 		// If method name used? Count only this method signatures
 		if ( len( arguments.methodName ) ) {
-			if ( structKeyExists( this._mockMethodCallCounters, arguments.methodName ) ) {
+			if (
+				structKeyExists(
+					this._mockMethodCallCounters,
+					arguments.methodName
+				)
+			) {
 				return this._mockMethodCallCounters[ arguments.methodName ];
 			}
 			return -1;
@@ -943,6 +951,9 @@ The Official ColdBox Mocking Factory
 		returntype="testbox.system.util.Util"
 		hint      ="Create and return a util object"
 	>
-		<cfreturn createObject( "component", "testbox.system.util.Util" )/>
+		<cfreturn createObject(
+			"component",
+			"testbox.system.util.Util"
+		)/>
 	</cffunction>
 </cfcomponent>

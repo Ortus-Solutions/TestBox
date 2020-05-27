@@ -68,13 +68,19 @@ component accessors="true" {
 	/**
 	 * Process dynamic expectations like any matcher starting with the word "not" is negated
 	 */
-	function onMissingMethod( required missingMethodName, required missingMethodArguments ){
+	function onMissingMethod(
+		required missingMethodName,
+		required missingMethodArguments
+	){
 		// detect negation
 		if ( left( arguments.missingMethodName, 3 ) eq "not" ) {
 			// remove NOT
-			arguments.missingMethodName = right( arguments.missingMethodName, len( arguments.missingMethodName ) - 3 );
+			arguments.missingMethodName = right(
+				arguments.missingMethodName,
+				len( arguments.missingMethodName ) - 3
+			);
 			// set isNot pivot on this matcher
-			this.isNot                  = true;
+			this.isNot = true;
 
 			// execute the dynamic method
 			var results = invoke(
@@ -97,13 +103,22 @@ component accessors="true" {
 			)
 		) {
 			// remove the toBe to get the type.
-			var type    = right( arguments.missingMethodName, len( arguments.missingMethodName ) - 4 );
+			var type = right(
+				arguments.missingMethodName,
+				len( arguments.missingMethodName ) - 4
+			);
 			// detect incoming message
 			var message = (
-				structKeyExists( arguments.missingMethodArguments, "message" ) ? arguments.missingMethodArguments.message : ""
+				structKeyExists(
+					arguments.missingMethodArguments,
+					"message"
+				) ? arguments.missingMethodArguments.message : ""
 			);
 			message = (
-				structKeyExists( arguments.missingMethodArguments, "1" ) ? arguments.missingMethodArguments[ 1 ] : message
+				structKeyExists(
+					arguments.missingMethodArguments,
+					"1"
+				) ? arguments.missingMethodArguments[ 1 ] : message
 			);
 			// execute the method
 			return toBeTypeOf( type = type, message = message );
@@ -183,7 +198,10 @@ component accessors="true" {
 	 * @expected The expected data
 	 * @message The message to send in the failure
 	 */
-	function toBeWithCase( required string expected, message = "" ){
+	function toBeWithCase(
+		required string expected,
+		message = ""
+	){
 		arguments.actual = this.actual;
 		if ( this.isNot ) {
 			variables.assert.isNotEqual( argumentCollection = arguments );
@@ -222,7 +240,10 @@ component accessors="true" {
 	 * @typeName The typename to check
 	 * @message The message to send in the failure
 	 */
-	function toBeInstanceOf( required string typeName, message = "" ){
+	function toBeInstanceOf(
+		required string typeName,
+		message = ""
+	){
 		arguments.actual = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notInstanceOf( argumentCollection = arguments );

@@ -87,8 +87,8 @@
 									</cfif>
 									<h5 class="mt-2 mb-0">
 										<span class="badge badge-info">
-											#server.coldfusion.productName#
-											#structKeyExists( server, "lucee" ) ? server.lucee.version : server.coldfusion.productVersion#
+											#results.getCFMLEngine()#
+											#results.getCFMLEngineVersion()#
 										</span>
 									</h5>
 								</div>
@@ -256,7 +256,7 @@
 												</cfloop>
 
 												<!--- Debug Panel --->
-												<cfif arrayLen( thisBundle.debugBuffer )>
+												<cfif thisBundle.keyExists( "debugBuffer" ) && arrayLen( thisBundle.debugBuffer )>
 													<li>
 														<div class="list-group-item list-group-item-primary py-3 expand-collapse"
 															title="Toggle Debug Stream"

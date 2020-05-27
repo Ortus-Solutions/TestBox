@@ -3,7 +3,7 @@
 Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
 ********************************************************************************
-Author      	    : Luis Majano
+Author           	    : Luis Majano
 Description :
 A stub object
 ---------------------------------------------------------------------->

@@ -17,20 +17,35 @@ component accessors="true" {
 		return this;
 	}
 
-	remote function addTest( required componentName, required method ){
-		arrayAppend( variables.bundles, arguments.componentName );
+	remote function addTest(
+		required componentName,
+		required method
+	){
+		arrayAppend(
+			variables.bundles,
+			arguments.componentName
+		);
 		variables.testSpecs.addAll( listToArray( arguments.method ) );
 		return this;
 	}
 
-	remote function add( required componentName, required methods ){
-		arrayAppend( variables.bundles, arguments.componentName );
+	remote function add(
+		required componentName,
+		required methods
+	){
+		arrayAppend(
+			variables.bundles,
+			arguments.componentName
+		);
 		variables.testSpecs.addAll( listToArray( arguments.methods ) );
 		return this;
 	}
 
 	remote function addAll( required componentName ){
-		arrayAppend( variables.bundles, arguments.componentName );
+		arrayAppend(
+			variables.bundles,
+			arguments.componentName
+		);
 		return this;
 	}
 
@@ -38,7 +53,10 @@ component accessors="true" {
 		if ( len( arguments.testMethod ) ) {
 			variables.testSpecs.addAll( listToArray( arguments.testMethod ) );
 		}
-		return new Results( variables.bundles, variables.testSpecs );
+		return new Results(
+			variables.bundles,
+			variables.testSpecs
+		);
 	}
 
 	/**
@@ -52,7 +70,10 @@ component accessors="true" {
 		boolean debug  = false,
 		output         = "simple"
 	) output=true{
-		var runner = new testbox.system.TestBox( bundles = "#getMetadata( this ).name#", reporter = arguments.output );
+		var runner = new testbox.system.TestBox(
+			bundles  = "#getMetadata( this ).name#",
+			reporter = arguments.output
+		);
 
 		// Produce report
 		writeOutput( runner.run( testSpecs = arguments.testMethod ) );

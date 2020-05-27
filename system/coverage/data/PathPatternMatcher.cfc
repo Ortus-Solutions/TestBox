@@ -34,7 +34,10 @@ component accessors="true" singleton {
 	 * @pattern.hint The pattern to match against the path
 	 * @path.hint The file system path to test.  Can be a file or directory.  Directories MUST end with a trailing slash
 	 */
-	boolean function matchPattern( required string pattern, required string path ){
+	boolean function matchPattern(
+		required string pattern,
+		required string path
+	){
 		// Normalize slashes
 		arguments.pattern = replace( arguments.pattern, "\", "/", "all" );
 		arguments.path    = replace( arguments.path, "\", "/", "all" );
@@ -99,7 +102,10 @@ component accessors="true" singleton {
 	 * @patterns.hint An array of patterns to match against the path
 	 * @path.hint The file system path to test.  Can be a file or directory.  Directories MUST end with a trailing slash
 	 */
-	boolean function matchPatterns( required array patterns, required string path ){
+	boolean function matchPatterns(
+		required array patterns,
+		required string path
+	){
 		for ( var pattern in arguments.patterns ) {
 			if ( matchPattern( pattern, arguments.path ) ) {
 				return true;

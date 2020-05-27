@@ -26,8 +26,14 @@ component {
 	 * @expression The expression to test
 	 * @message The message to send in the failure
 	 */
-	function assert( required boolean expression, message = "" ){
-		return isTrue( arguments.expression, arguments.message );
+	function assert(
+		required boolean expression,
+		message = ""
+	){
+		return isTrue(
+			arguments.expression,
+			arguments.message
+		);
 	}
 
 	/**
@@ -35,7 +41,10 @@ component {
 	 * @actual The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isTrue( required boolean actual, message = "" ){
+	function isTrue(
+		required boolean actual,
+		message = ""
+	){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be true" );
 		if ( NOT arguments.actual ) {
 			fail( arguments.message );
@@ -48,7 +57,10 @@ component {
 	 * @actual The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isFalse( required boolean actual, message = "" ){
+	function isFalse(
+		required boolean actual,
+		message = ""
+	){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be false" );
 		if ( arguments.actual ) {
 			fail( arguments.message );
@@ -688,7 +700,12 @@ component {
 				return this;
 			}
 		} else if ( isDate( arguments.actual ) ) {
-			if ( !listFindNoCase( "yyyy,q,m,ww,w,y,d,h,n,s,l", arguments.datePart ) ) {
+			if (
+				!listFindNoCase(
+					"yyyy,q,m,ww,w,y,d,h,n,s,l",
+					arguments.datePart
+				)
+			) {
 				fail( "The passed in datepart [#arguments.datepart#] is not valid." );
 			}
 
@@ -1021,8 +1038,14 @@ component {
 			}
 
 			// Get both column lists and sort them the same
-			var actualColumnList   = listSort( arguments.actual.columnList, "textNoCase" );
-			var expectedColumnList = listSort( arguments.expected.columnList, "textNoCase" );
+			var actualColumnList = listSort(
+				arguments.actual.columnList,
+				"textNoCase"
+			);
+			var expectedColumnList = listSort(
+				arguments.expected.columnList,
+				"textNoCase"
+			);
 
 			// Check column lists
 			if ( actualColumnList != expectedColumnList ) {
@@ -1081,7 +1104,12 @@ component {
 						return false;
 					}
 					// And make sure they match
-					if ( !equalize( arguments.actual[ i ], arguments.expected[ i ] ) ) {
+					if (
+						!equalize(
+							arguments.actual[ i ],
+							arguments.expected[ i ]
+						)
+					) {
 						return false;
 					}
 					continue;
@@ -1100,9 +1128,15 @@ component {
 
 		// Structs / Object
 		if ( isStruct( arguments.actual ) && isStruct( arguments.expected ) ) {
-			var actualKeys   = listSort( structKeyList( arguments.actual ), "textNoCase" );
-			var expectedKeys = listSort( structKeyList( arguments.expected ), "textNoCase" );
-			var key          = "";
+			var actualKeys = listSort(
+				structKeyList( arguments.actual ),
+				"textNoCase"
+			);
+			var expectedKeys = listSort(
+				structKeyList( arguments.expected ),
+				"textNoCase"
+			);
+			var key = "";
 
 			// Confirm both structs have the same keys
 			if ( actualKeys neq expectedKeys ) {
@@ -1120,7 +1154,12 @@ component {
 					return false;
 				}
 				// And make sure they match when actual values exist
-				if ( !equalize( arguments.actual[ key ], arguments.expected[ key ] ) ) {
+				if (
+					!equalize(
+						arguments.actual[ key ],
+						arguments.expected[ key ]
+					)
+				) {
 					return false;
 				}
 			}
@@ -1150,7 +1189,10 @@ component {
 
 		if ( listFirst( server.coldfusion.productversion ) lt 10 ) {
 			if ( isCustomFunction( arguments.target ) ) {
-				throw( type = "InvalidType", message = "You sent an invalid type for length checking (function)" );
+				throw(
+					type    = "InvalidType",
+					message = "You sent an invalid type for length checking (function)"
+				);
 			}
 		} else {
 			if ( isCustomFunction( arguments.target ) or isClosure( arguments.target ) ) {

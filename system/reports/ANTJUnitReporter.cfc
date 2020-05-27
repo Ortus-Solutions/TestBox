@@ -6,10 +6,6 @@
  */
 component extends="BaseReporter" {
 
-	function init(){
-		return this;
-	}
-
 	/**
 	 * Get the name of the reporter
 	 */
@@ -21,16 +17,21 @@ component extends="BaseReporter" {
 	 * Do the reporting thing here using the incoming test results
 	 * The report should return back in whatever format they desire and should set any
 	 * Specifc browser types if needed.
-	 * @results.hint The instance of the TestBox TestResult object to build a report on
-	 * @testbox.hint The TestBox core object
-	 * @options.hint A structure of options this reporter needs to build the report with
+	 *
+	 * @results The instance of the TestBox TestResult object to build a report on
+	 * @testbox The TestBox core object
+	 * @options A structure of options this reporter needs to build the report with
+	 * @justReturn Boolean flag that if set just returns the content with no content type and buffer reset
 	 */
 	any function runReport(
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
-		struct options = {}
+		struct options     = {},
+		boolean justReturn = false
 	){
-		getPageContextResponse().setContentType( "application/xml" );
+		if ( !arguments.justReturn ) {
+			getPageContextResponse().setContentType( "application/xml" );
+		}
 
 		return toJUnit( arguments.results );
 	}
@@ -57,15 +58,15 @@ component extends="BaseReporter" {
 			// build test suite header
 			buffer.append(
 				"<testsuite
-			tests    =""#thisBundle.totalSpecs#""
-			failures =""#thisBundle.totalFail#""
-			errors   =""#thisBundle.totalError#""
-			skipped  =""#thisBundle.totalSkipped#""
-			time     =""#thisBundle.totalDuration / 1000#""
+			tests        =""#thisBundle.totalSpecs#""
+			failures  =""#thisBundle.totalFail#""
+			errors      =""#thisBundle.totalError#""
+			skipped    =""#thisBundle.totalSkipped#""
+			time          =""#thisBundle.totalDuration / 1000#""
 			timestamp=""#dateFormat( now(), "yyyy-mm-dd" )#T#timeFormat( now(), "HH:mm:ss" )#""
-			hostname =""#xmlFormat( cgi.remote_host )#""
-			package  =""#xmlFormat( thisBundle.path )#""
-			name     =""#xmlFormat( thisBundle.name )#""
+			hostname  =""#xmlFormat( cgi.remote_host )#""
+			package    =""#xmlFormat( thisBundle.path )#""
+			name          =""#xmlFormat( thisBundle.name )#""
 			>"
 			);
 
@@ -102,21 +103,22 @@ component extends="BaseReporter" {
 		var index = 1;
 
 		// Do we have a global exception?
-		if( !isSimpleValue( arguments.bundleStats.globalException ) ){
+		if ( !isSimpleValue( arguments.bundleStats.globalException ) ) {
 			// build test case
 			out.append(
-			"<testcase
-				name     =""#xmlFormat( arguments.bundleStats.name )#""
-				time     =""#arguments.bundleStats.totalDuration / 1000#""
+				"<testcase
+				name          =""#xmlFormat( arguments.bundleStats.name )#""
+				time          =""#arguments.bundleStats.totalDuration / 1000#""
 				classname=""#arguments.bundleStats.path#""
 				>
 					<error
-						type=""globalException""
+						type   =""globalException""
 						message=""#xmlFormat( arguments.bundleStats.globalException.message )#""><![CDATA[
 						#arguments.bundleStats.globalException.stackTrace.toString()#
 					]]></error>
 			</testcase>
-			");
+			"
+			);
 			return;
 		}
 
@@ -163,8 +165,8 @@ component extends="BaseReporter" {
 		// build test case
 		out.append(
 			"<testcase
-			name     =""#xmlFormat( fullName & " " & stats.name )#""
-			time     =""#stats.totalDuration / 1000#""
+			name          =""#xmlFormat( fullName & " " & stats.name )#""
+			time          =""#stats.totalDuration / 1000#""
 			classname=""#arguments.bundleStats.path#""
 			>"
 		);

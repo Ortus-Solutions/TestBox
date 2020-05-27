@@ -3,8 +3,8 @@
 Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
 ********************************************************************************
-Author      	 		: Luis Majano
-Date            		: April 20, 2009
+Author           	 		: Luis Majano
+Date                   		: April 20, 2009
 Description		:
 A mock generator
 ----------------------------------------------------------------------->
@@ -119,7 +119,7 @@ A mock generator
 		udfOut.append(
 			"<cfsc" & "ript>
 			variables[ ""#safeMethodName#"" ] = variables[ ""@@tmpMethodName@@"" ];
-			this[ ""#safeMethodName#"" ]      = variables[ ""@@tmpMethodName@@"" ];
+			this[ ""#safeMethodName#"" ]           = variables[ ""@@tmpMethodName@@"" ];
 			// Clean up
 			structDelete( variables, ""@@tmpMethodName@@"" );
 			structDelete( this, ""@@tmpMethodName@@"" );
@@ -166,14 +166,14 @@ A mock generator
 		// Continue Method Generation
 		udfOut.append(
 			"
-			var results         = this._mockResults;
-			var resultsKey      = ""#arguments.method#"";
-			var resultsCounter  = 0;
+			var results                 = this._mockResults;
+			var resultsKey           = ""#arguments.method#"";
+			var resultsCounter   = 0;
 			var internalCounter = 0;
-			var resultsLen      = 0;
-			var callbackLen     = 0;
-			var argsHashKey     = resultsKey & ""|"" & this.mockBox.normalizeArguments( arguments );
-			var fCallBack       = """";
+			var resultsLen           = 0;
+			var callbackLen         = 0;
+			var argsHashKey         = resultsKey & ""|"" & this.mockBox.normalizeArguments( arguments );
+			var fCallBack             = """";
 
 			// If Method & argument Hash Results, switch the results struct
 			if( structKeyExists( this._mockArgResults, argsHashKey ) ) {
@@ -184,7 +184,7 @@ A mock generator
 					fCallBack = this._mockArgResults[ argsHashKey ].target;
 				} else {
 					// switch context and key
-					results    = this._mockArgResults;
+					results       = this._mockArgResults;
 					resultsKey = argsHashKey;
 				}
 			}
@@ -369,7 +369,10 @@ A mock generator
 		// iterate over implementations
 		for ( local.x = 1; local.x lte listLen( arguments.implements ); local.x++ ) {
 			// generate interface methods
-			generateMethodsFromMD( udfOut, getComponentMetadata( listGetAt( arguments.implements, x ) ) );
+			generateMethodsFromMD(
+				udfOut,
+				getComponentMetadata( listGetAt( arguments.implements, x ) )
+			);
 		}
 
 		// close it
@@ -458,7 +461,10 @@ A mock generator
 		// Check extends and recurse
 		if ( structKeyExists( arguments.md, "extends" ) ) {
 			for ( var thisKey in arguments.md.extends ) {
-				generateMethodsFromMD( udfOut, arguments.md.extends[ thisKey ] );
+				generateMethodsFromMD(
+					udfOut,
+					arguments.md.extends[ thisKey ]
+				);
 			}
 		}
 		</cfscript>

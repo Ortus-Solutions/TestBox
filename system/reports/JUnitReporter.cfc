@@ -6,10 +6,6 @@
  */
 component extends="BaseReporter" {
 
-	function init(){
-		return this;
-	}
-
 	/**
 	 * Get the name of the reporter
 	 */
@@ -21,17 +17,22 @@ component extends="BaseReporter" {
 	 * Do the reporting thing here using the incoming test results
 	 * The report should return back in whatever format they desire and should set any
 	 * Specific browser types if needed.
-	 * @results.hint The instance of the TestBox TestResult object to build a report on
-	 * @testbox.hint The TestBox core object
-	 * @options.hint A structure of options this reporter needs to build the report with
+	 *
+	 * @results The instance of the TestBox TestResult object to build a report on
+	 * @testbox The TestBox core object
+	 * @options A structure of options this reporter needs to build the report with
+	 * @justReturn Boolean flag that if set just returns the content with no content type and buffer reset
 	 */
 	any function runReport(
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
-		struct options = {}
+		struct options     = {},
+		boolean justReturn = false
 	){
-		resetHTMLResponse();
-		getPageContextResponse().setContentType( "application/xml" );
+		if ( !arguments.justReturn ) {
+			resetHTMLResponse();
+			getPageContextResponse().setContentType( "application/xml" );
+		}
 
 		return toJUnit( arguments.results );
 	}
@@ -45,13 +46,13 @@ component extends="BaseReporter" {
 		// build top level test suites container
 		buffer.append(
 			"<testsuites
-			name    =""ColdBox.TestBox.TestResults""
-			time    =""#r.getTotalDuration() / 1000#""
-			tests   =""#r.getTotalSpecs()#""
+			name        =""ColdBox.TestBox.TestResults""
+			time        =""#r.getTotalDuration() / 1000#""
+			tests      =""#r.getTotalSpecs()#""
 			failures=""#r.getTotalFail()#""
 			disabled=""#r.getTotalSkipped()#""
-			errors  =""#r.getTotalError()#""
-			labels  =""#arrayToList( r.getLabels() )#""
+			errors    =""#r.getTotalError()#""
+			labels    =""#arrayToList( r.getLabels() )#""
 			>"
 		);
 
@@ -89,15 +90,15 @@ component extends="BaseReporter" {
 			// build test suite header
 			out.append(
 				"<testsuite
-				name     =""#fullName#""
-				tests    =""#thisSuite.totalSpecs#""
-				failures =""#thisSuite.totalFail#""
-				errors   =""#thisSuite.totalError#""
-				time     =""#thisSuite.totalDuration / 1000#""
-				skipped  =""#thisSuite.totalSkipped#""
+				name          =""#fullName#""
+				tests        =""#thisSuite.totalSpecs#""
+				failures  =""#thisSuite.totalFail#""
+				errors      =""#thisSuite.totalError#""
+				time          =""#thisSuite.totalDuration / 1000#""
+				skipped    =""#thisSuite.totalSkipped#""
 				timestamp=""#dateFormat( now(), "mm/dd/yy" )# #timeFormat( now(), "medium" )#""
-				hostname =""#xmlFormat( cgi.remote_host )#""
-				package  =""#xmlFormat( arguments.bundleStats.path )#""
+				hostname  =""#xmlFormat( cgi.remote_host )#""
+				package    =""#xmlFormat( arguments.bundleStats.path )#""
 				>"
 			);
 
@@ -147,10 +148,10 @@ component extends="BaseReporter" {
 		// build test case
 		out.append(
 			"<testcase
-			name     =""#xmlFormat( stats.name )#""
-			time     =""#stats.totalDuration / 1000#""
+			name          =""#xmlFormat( stats.name )#""
+			time          =""#stats.totalDuration / 1000#""
 			classname=""#arguments.bundleStats.path#""
-			status   =""#stats.status#""
+			status      =""#stats.status#""
 			>"
 		);
 

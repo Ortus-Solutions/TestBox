@@ -7,6 +7,13 @@
 component {
 
 	/**
+	 * Constructor
+	 */
+	function init(){
+		return this;
+	}
+
+	/**
 	 * Helper method to deal with ACF2016's overload of the page context response, come on Adobe, get your act together!
 	 */
 	function getPageContextResponse(){
@@ -27,7 +34,10 @@ component {
 				getPageContext().getOut().resetHTMLHead();
 			} catch ( any e ) {
 				// don't care, that lucee version doesn't support it.
-				writeDump( var = "resetHTMLHead() not supported #e.message#", output = "console" );
+				writeDump(
+					var    = "resetHTMLHead() not supported #e.message#",
+					output = "console"
+				);
 			}
 		}
 		// reset cfheader from integration tests

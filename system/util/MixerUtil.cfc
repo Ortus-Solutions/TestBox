@@ -3,7 +3,7 @@
 Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
 www.ortussolutions.com
 ********************************************************************************
-Author          :	Luis Majano
+Author               :	Luis Majano
 Description :
 A utility object that provides runtime mixins
 ----------------------------------------------------------------------->
@@ -174,7 +174,12 @@ A utility object that provides runtime mixins
 		<cfargument name="scope" required="false" default="variables" hint="The scope to which inject the property to."/>
 		<cfscript>
 		// Validate Property
-		if ( structKeyExists( evaluate( arguments.scope ), arguments.propertyName ) ) {
+		if (
+			structKeyExists(
+				evaluate( arguments.scope ),
+				arguments.propertyName
+			)
+		) {
 			"#arguments.scope#.#arguments.propertyName#" = arguments.propertyValue;
 		}
 		</cfscript>
@@ -235,7 +240,10 @@ A utility object that provides runtime mixins
 		<cfargument name="propertyName" required="true" hint="The name of the property to remove."/>
 		<cfargument name="scope" required="false" default="variables" hint="The scope to which inject the property to."/>
 		<cfscript>
-		structDelete( evaluate( arguments.scope ), arguments.propertyName );
+		structDelete(
+			evaluate( arguments.scope ),
+			arguments.propertyName
+		);
 		</cfscript>
 	</cffunction>
 

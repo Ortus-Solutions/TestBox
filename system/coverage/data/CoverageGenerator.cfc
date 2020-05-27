@@ -26,9 +26,12 @@ component accessors=true {
 	 */
 	boolean function configure(){
 		try {
-			variables.fragentClass = createObject( "java", "com.intergral.fusionreactor.agent.Agent" );
+			variables.fragentClass = createObject(
+				"java",
+				"com.intergral.fusionreactor.agent.Agent"
+			);
 			// Do a quick test to ensure the line performance instrumentation is loaded.  This will return null for non-supported versions of FR
-			var instrumentation    = fragentClass.getAgentInstrumentation().get( "cflpi" );
+			var instrumentation = fragentClass.getAgentInstrumentation().get( "cflpi" );
 		} catch ( Any e ) {
 			return false;
 		}
@@ -41,7 +44,12 @@ component accessors=true {
 		variables.pathPatternMatcher = new PathPatternMatcher();
 
 		// Detect server
-		if ( listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ) {
+		if (
+			listFindNoCase(
+				"Railo,Lucee",
+				server.coldfusion.productname
+			)
+		) {
 			variables.templateCompiler = new TemplateCompiler_Lucee();
 		} else {
 			variables.templateCompiler = new TemplateCompiler_Adobe();
@@ -237,7 +245,12 @@ component accessors=true {
 					}
 
 					// Count as covered any cffunction or cfargument tag where the previous line ran.
-					if ( !covered && reFindNoCase( "^<cf(function|argument)", trim( line ) ) && previousLineRan ) {
+					if (
+						!covered && reFindNoCase(
+							"^<cf(function|argument)",
+							trim( line )
+						) && previousLineRan
+					) {
 						covered = previousLineRan;
 					}
 

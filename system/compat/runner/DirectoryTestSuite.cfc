@@ -38,10 +38,13 @@
 	>
 		<cfargument name="path" type="string" required="true"/>
 		<cfscript>
-		var explorer = createObject( "component", "CFIDE.componentutils.cfcexplorer" );
-		var target   = explorer.normalizePath( arguments.path );
-		var cfcs     = explorer.getcfcs( true ); // true == refresh cache
-		var package  = "";
+		var explorer = createObject(
+			"component",
+			"CFIDE.componentutils.cfcexplorer"
+		);
+		var target  = explorer.normalizePath( arguments.path );
+		var cfcs    = explorer.getcfcs( true ); // true == refresh cache
+		var package = "";
 
 		for ( var i = 1; i lte arrayLen( cfcs ); i++ ) {
 			var cfc     = cfcs[ i ];

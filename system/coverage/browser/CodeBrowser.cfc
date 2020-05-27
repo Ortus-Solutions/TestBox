@@ -56,7 +56,10 @@ component accessors=true {
 		savecontent variable="local.index" {
 			include "templates/index.cfm";
 		}
-		fileWrite( browserOutputDir & "/index.html", local.index );
+		fileWrite(
+			browserOutputDir & "/index.html",
+			local.index
+		);
 
 		// Create directory skeletons
 		var dataStream = variables.streamBuilder

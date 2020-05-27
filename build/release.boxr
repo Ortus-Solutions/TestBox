@@ -2,7 +2,7 @@
 
 # Check out master
 !git checkout -f master
-!git pull
+!git pull origin master
 # Merge development into it
 !git merge --no-ff development
 # Tag the master repo with the version in box.json
