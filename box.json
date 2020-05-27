@@ -1,6 +1,6 @@
 {
     "name":"TestBox",
-    "version":"4.1.0",
+    "version":"4.2.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/testbox/@build.version@/testbox-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com>",
     "slug":"testbox",
@@ -46,8 +46,8 @@
     "scripts":{
         "release":"recipe build/release.boxr",
         "format":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,*.cfc --overwrite",
-		"format:check":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,*.cfc --check",
-		"format:watch":"cfformat watch system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,*.cfc ./.cfformat.json",
+        "format:check":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,*.cfc --check",
+        "format:watch":"cfformat watch system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,*.cfc ./.cfformat.json",
         "start:lucee":"server start serverConfigFile=server-lucee@5.json",
         "start:2016":"server start serverConfigFile=server-adobe@2016.json",
         "start:2018":"server start serverConfigFile=server-adobe@2018.json"
