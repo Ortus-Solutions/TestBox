@@ -39,7 +39,10 @@ component
 		var message = "exception_message";
 
 		var target = function(){
-			throw( type = "actual_type", message = message );
+			throw(
+				type    = "actual_type",
+				message = message
+			);
 		};
 
 		var assertionFailed = false;

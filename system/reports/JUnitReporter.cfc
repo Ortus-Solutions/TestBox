@@ -26,10 +26,10 @@ component extends="BaseReporter" {
 	any function runReport(
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
-		struct options = {},
+		struct options     = {},
 		boolean justReturn = false
 	){
-		if( !arguments.justReturn ){
+		if ( !arguments.justReturn ) {
 			resetHTMLResponse();
 			getPageContextResponse().setContentType( "application/xml" );
 		}
@@ -46,13 +46,13 @@ component extends="BaseReporter" {
 		// build top level test suites container
 		buffer.append(
 			"<testsuites
-			name    =""ColdBox.TestBox.TestResults""
-			time    =""#r.getTotalDuration() / 1000#""
-			tests   =""#r.getTotalSpecs()#""
+			name        =""ColdBox.TestBox.TestResults""
+			time        =""#r.getTotalDuration() / 1000#""
+			tests      =""#r.getTotalSpecs()#""
 			failures=""#r.getTotalFail()#""
 			disabled=""#r.getTotalSkipped()#""
-			errors  =""#r.getTotalError()#""
-			labels  =""#arrayToList( r.getLabels() )#""
+			errors    =""#r.getTotalError()#""
+			labels    =""#arrayToList( r.getLabels() )#""
 			>"
 		);
 
@@ -90,15 +90,15 @@ component extends="BaseReporter" {
 			// build test suite header
 			out.append(
 				"<testsuite
-				name     =""#fullName#""
-				tests    =""#thisSuite.totalSpecs#""
-				failures =""#thisSuite.totalFail#""
-				errors   =""#thisSuite.totalError#""
-				time     =""#thisSuite.totalDuration / 1000#""
-				skipped  =""#thisSuite.totalSkipped#""
+				name          =""#fullName#""
+				tests        =""#thisSuite.totalSpecs#""
+				failures  =""#thisSuite.totalFail#""
+				errors      =""#thisSuite.totalError#""
+				time          =""#thisSuite.totalDuration / 1000#""
+				skipped    =""#thisSuite.totalSkipped#""
 				timestamp=""#dateFormat( now(), "mm/dd/yy" )# #timeFormat( now(), "medium" )#""
-				hostname =""#xmlFormat( cgi.remote_host )#""
-				package  =""#xmlFormat( arguments.bundleStats.path )#""
+				hostname  =""#xmlFormat( cgi.remote_host )#""
+				package    =""#xmlFormat( arguments.bundleStats.path )#""
 				>"
 			);
 
@@ -148,10 +148,10 @@ component extends="BaseReporter" {
 		// build test case
 		out.append(
 			"<testcase
-			name     =""#xmlFormat( stats.name )#""
-			time     =""#stats.totalDuration / 1000#""
+			name          =""#xmlFormat( stats.name )#""
+			time          =""#stats.totalDuration / 1000#""
 			classname=""#arguments.bundleStats.path#""
-			status   =""#stats.status#""
+			status      =""#stats.status#""
 			>"
 		);
 

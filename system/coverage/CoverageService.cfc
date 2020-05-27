@@ -89,7 +89,10 @@ component accessors="true" {
 			var qryCoverageData = generateCoverageData( getCoverageOptions() );
 
 			// SonarQube Integration
-			var sonarQubeResults = processSonarQube( qryCoverageData, getCoverageOptions() );
+			var sonarQubeResults = processSonarQube(
+				qryCoverageData,
+				getCoverageOptions()
+			);
 
 			// Generate Stats
 			var stats = processStats( qryCoverageData );
@@ -116,7 +119,10 @@ component accessors="true" {
 	/**
 	 * Render HTML representation of statistics
 	 */
-	function renderStats( required struct coverageData, boolean fullPage = true ){
+	function renderStats(
+		required struct coverageData,
+		boolean fullPage = true
+	){
 		var stats         = coverageData.stats;
 		var pathToCapture = getCoverageOptions().pathToCapture;
 
@@ -240,7 +246,10 @@ component accessors="true" {
 	/**
 	 * Write out SonarQube generic coverage XML file
 	 */
-	private function processSonarQube( required query qryCoverageData, required struct opts ){
+	private function processSonarQube(
+		required query qryCoverageData,
+		required struct opts
+	){
 		if ( len( opts.sonarQube.XMLOutputPath ) ) {
 			// Create XML generator
 			var sonarQube = new sonarqube.SonarQube();
@@ -248,7 +257,10 @@ component accessors="true" {
 			sonarQube.setFormatXML( true );
 
 			// Generate XML (writes file and returns string
-			sonarQube.generateXML( qryCoverageData, opts.sonarQube.XMLOutputPath );
+			sonarQube.generateXML(
+				qryCoverageData,
+				opts.sonarQube.XMLOutputPath
+			);
 			return opts.sonarQube.XMLOutputPath;
 		}
 		return "";

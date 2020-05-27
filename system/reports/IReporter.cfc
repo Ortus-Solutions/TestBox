@@ -24,8 +24,8 @@ interface {
 	any function runReport(
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
-		struct options = {},
-		boolean justReturn=false
+		struct options     = {},
+		boolean justReturn = false
 	);
 
 }

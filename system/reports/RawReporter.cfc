@@ -6,7 +6,6 @@
  */
 component extends="BaseReporter" {
 
-
 	/**
 	 * Get the name of the reporter
 	 */
@@ -27,7 +26,7 @@ component extends="BaseReporter" {
 	any function runReport(
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
-		struct options = {},
+		struct options     = {},
 		boolean justReturn = false
 	){
 		return arguments.results.getMemento();

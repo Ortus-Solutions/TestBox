@@ -33,14 +33,17 @@ component extends="BaseReporter" {
 	any function runReport(
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
-		struct options = {},
+		struct options     = {},
 		boolean justReturn = false
 	){
-		if( !arguments.justReturn ){
+		if ( !arguments.justReturn ) {
 			resetHTMLResponse();
 			getPageContextResponse().setContentType( "application/xml" );
 		}
-		return variables.converter.toXML( data = arguments.results.getMemento(), rootName = "TestBox" );
+		return variables.converter.toXML(
+			data     = arguments.results.getMemento(),
+			rootName = "TestBox"
+		);
 	}
 
 }

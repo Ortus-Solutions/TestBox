@@ -82,7 +82,10 @@ component accessors="true" {
 	 * Constructor
 	 * @directory A directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	 */
-	any function addDirectory( required any directory, boolean recurse = true ){
+	any function addDirectory(
+		required any directory,
+		boolean recurse = true
+	){
 		// inflate directory?
 		if ( isSimpleValue( arguments.directory ) ) {
 			arguments.directory = {
@@ -103,7 +106,10 @@ component accessors="true" {
 	 * Constructor
 	 * @directories A set of directories to test which can be a list of simple mapping paths or an array of structs with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	 */
-	any function addDirectories( required any directories, boolean recurse = true ){
+	any function addDirectories(
+		required any directories,
+		boolean recurse = true
+	){
 		if ( isSimpleValue( arguments.directories ) ) {
 			arguments.directories = listToArray( arguments.directories );
 		}
@@ -395,14 +401,38 @@ component accessors="true" {
 		try {
 			var response = getPageContext().getResponse();
 
-			response.addHeader( "x-testbox-totalDuration", javacast( "string", results.getTotalDuration() ) );
-			response.addHeader( "x-testbox-totalBundles", javacast( "string", results.getTotalBundles() ) );
-			response.addHeader( "x-testbox-totalSuites", javacast( "string", results.getTotalSuites() ) );
-			response.addHeader( "x-testbox-totalSpecs", javacast( "string", results.getTotalSpecs() ) );
-			response.addHeader( "x-testbox-totalPass", javacast( "string", results.getTotalPass() ) );
-			response.addHeader( "x-testbox-totalFail", javacast( "string", results.getTotalFail() ) );
-			response.addHeader( "x-testbox-totalError", javacast( "string", results.getTotalError() ) );
-			response.addHeader( "x-testbox-totalSkipped", javacast( "string", results.getTotalSkipped() ) );
+			response.addHeader(
+				"x-testbox-totalDuration",
+				javacast( "string", results.getTotalDuration() )
+			);
+			response.addHeader(
+				"x-testbox-totalBundles",
+				javacast( "string", results.getTotalBundles() )
+			);
+			response.addHeader(
+				"x-testbox-totalSuites",
+				javacast( "string", results.getTotalSuites() )
+			);
+			response.addHeader(
+				"x-testbox-totalSpecs",
+				javacast( "string", results.getTotalSpecs() )
+			);
+			response.addHeader(
+				"x-testbox-totalPass",
+				javacast( "string", results.getTotalPass() )
+			);
+			response.addHeader(
+				"x-testbox-totalFail",
+				javacast( "string", results.getTotalFail() )
+			);
+			response.addHeader(
+				"x-testbox-totalError",
+				javacast( "string", results.getTotalError() )
+			);
+			response.addHeader(
+				"x-testbox-totalSkipped",
+				javacast( "string", results.getTotalSkipped() )
+			);
 		} catch ( Any e ) {
 			writeLog(
 				type = "error",
@@ -533,14 +563,20 @@ component accessors="true" {
 			// Discover type?
 			if ( structKeyExists( target, "run" ) ) {
 				// Run via BDD Style
-				new testbox.system.runners.BDDRunner( options = variables.options, testbox = this ).run(
+				new testbox.system.runners.BDDRunner(
+					options = variables.options,
+					testbox = this
+				).run(
 					target,
 					arguments.testResults,
 					arguments.callbacks
 				);
 			} else {
 				// Run via xUnit Style
-				new testbox.system.runners.UnitRunner( options = variables.options, testbox = this ).run(
+				new testbox.system.runners.UnitRunner(
+					options = variables.options,
+					testbox = this
+				).run(
 					target,
 					arguments.testResults,
 					arguments.callbacks
@@ -570,7 +606,10 @@ component accessors="true" {
 	 * @bundlePath The path to the Bundle CFC
 	 */
 	private any function getBundle( required bundlePath ){
-		var bundle     = createObject( "component", "#arguments.bundlePath#" );
+		var bundle = createObject(
+			"component",
+			"#arguments.bundlePath#"
+		);
 		var familyPath = "testbox.system.BaseSpec";
 
 		// check if base spec assigned

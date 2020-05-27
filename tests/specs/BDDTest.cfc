@@ -354,15 +354,14 @@ component extends="testbox.system.BaseSpec" {
 			} );
 
 			it( "can mock any type of data", function(){
-				var data = mockData( name : "name", age : "age", id : "uuid" );
+				var data = mockData( name: "name", age: "age", id: "uuid" );
 				debug( data );
 				expect( data ).notToBeEmpty();
 			} );
 
 			it( "can load the output utilities into request.testbox", function(){
-				expect( request.testbox )
-					.toHaveKey( "clearDebugBuffer,console,debug,print,println" );
-			});
+				expect( request.testbox ).toHaveKey( "clearDebugBuffer,console,debug,print,println" );
+			} );
 		} );
 	}
 

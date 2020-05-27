@@ -10,7 +10,10 @@ component accessors=true {
 
 	function init(){
 		// Create this class for some static helper methods
-		variables.PageSourceImpl = createObject( "java", "lucee.runtime.PageSourceImpl" );
+		variables.PageSourceImpl = createObject(
+			"java",
+			"lucee.runtime.PageSourceImpl"
+		);
 		return this;
 	}
 

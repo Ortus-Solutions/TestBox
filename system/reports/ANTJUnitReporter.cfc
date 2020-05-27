@@ -26,10 +26,10 @@ component extends="BaseReporter" {
 	any function runReport(
 		required testbox.system.TestResult results,
 		required testbox.system.TestBox testbox,
-		struct options = {},
-		boolean justReturn=false
+		struct options     = {},
+		boolean justReturn = false
 	){
-		if( !arguments.justReturn ){
+		if ( !arguments.justReturn ) {
 			getPageContextResponse().setContentType( "application/xml" );
 		}
 
@@ -58,15 +58,15 @@ component extends="BaseReporter" {
 			// build test suite header
 			buffer.append(
 				"<testsuite
-			tests    =""#thisBundle.totalSpecs#""
-			failures =""#thisBundle.totalFail#""
-			errors   =""#thisBundle.totalError#""
-			skipped  =""#thisBundle.totalSkipped#""
-			time     =""#thisBundle.totalDuration / 1000#""
+			tests        =""#thisBundle.totalSpecs#""
+			failures  =""#thisBundle.totalFail#""
+			errors      =""#thisBundle.totalError#""
+			skipped    =""#thisBundle.totalSkipped#""
+			time          =""#thisBundle.totalDuration / 1000#""
 			timestamp=""#dateFormat( now(), "yyyy-mm-dd" )#T#timeFormat( now(), "HH:mm:ss" )#""
-			hostname =""#xmlFormat( cgi.remote_host )#""
-			package  =""#xmlFormat( thisBundle.path )#""
-			name     =""#xmlFormat( thisBundle.name )#""
+			hostname  =""#xmlFormat( cgi.remote_host )#""
+			package    =""#xmlFormat( thisBundle.path )#""
+			name          =""#xmlFormat( thisBundle.name )#""
 			>"
 			);
 
@@ -103,21 +103,22 @@ component extends="BaseReporter" {
 		var index = 1;
 
 		// Do we have a global exception?
-		if( !isSimpleValue( arguments.bundleStats.globalException ) ){
+		if ( !isSimpleValue( arguments.bundleStats.globalException ) ) {
 			// build test case
 			out.append(
-			"<testcase
-				name     =""#xmlFormat( arguments.bundleStats.name )#""
-				time     =""#arguments.bundleStats.totalDuration / 1000#""
+				"<testcase
+				name          =""#xmlFormat( arguments.bundleStats.name )#""
+				time          =""#arguments.bundleStats.totalDuration / 1000#""
 				classname=""#arguments.bundleStats.path#""
 				>
 					<error
-						type=""globalException""
+						type   =""globalException""
 						message=""#xmlFormat( arguments.bundleStats.globalException.message )#""><![CDATA[
 						#arguments.bundleStats.globalException.stackTrace.toString()#
 					]]></error>
 			</testcase>
-			");
+			"
+			);
 			return;
 		}
 
@@ -164,8 +165,8 @@ component extends="BaseReporter" {
 		// build test case
 		out.append(
 			"<testcase
-			name     =""#xmlFormat( fullName & " " & stats.name )#""
-			time     =""#stats.totalDuration / 1000#""
+			name          =""#xmlFormat( fullName & " " & stats.name )#""
+			time          =""#stats.totalDuration / 1000#""
 			classname=""#arguments.bundleStats.path#""
 			>"
 		);

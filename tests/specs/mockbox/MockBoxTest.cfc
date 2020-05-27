@@ -20,8 +20,7 @@
 		$assert.isEqual( 2, test.$count( "getData" ) );
 
 		// With DSL
-		test
-			.$reset()
+		test.$reset()
 			.$( "getData" )
 			.$results( 1000 );
 		$assert.isEqual( 0, test.$count( "getData" ) );
@@ -35,7 +34,10 @@
 		Test = getMockBox().createMock( "testbox.tests.resources.Test" );
 		test.$( "virtualReturn" ).$results( "Virtual Called Baby!!" );
 		$assert.isEqual( 0, test.$count( "virtualReturn" ) );
-		$assert.isEqual( "Virtual Called Baby!!", test.virtualReturn() );
+		$assert.isEqual(
+			"Virtual Called Baby!!",
+			test.virtualReturn()
+		);
 		debug( test.$callLog() );
 		$assert.isTrue( structKeyExists( test.$callLog(), "virtualReturn" ) );
 	}
@@ -61,7 +63,10 @@
 	}
 
 	function testSpys(){
-		Test = createObject( "component", "testbox.tests.resources.Test" );
+		Test = createObject(
+			"component",
+			"testbox.tests.resources.Test"
+		);
 		getMockBox().prepareMock( test );
 		// mock un-spy methods
 		$assert.isEqual( 5, test.getData() );
@@ -75,24 +80,43 @@
 	function testMockWithArguments(){
 		Test = getMockBox().createMock( "testbox.tests.resources.Test" );
 		// unmocked
-		$assert.isEqual( "/mockFactory", test.getSetting( "AppMapping" ) );
-		$assert.isEqual( "NOT FOUND", test.getSetting( "DebugMode" ) );
+		$assert.isEqual(
+			"/mockFactory",
+			test.getSetting( "AppMapping" )
+		);
+		$assert.isEqual(
+			"NOT FOUND",
+			test.getSetting( "DebugMode" )
+		);
 
 		// Mock
-		test
-			.$( method = "getSetting", callLogging = true )
+		test.$(
+				method      = "getSetting",
+				callLogging = true
+			)
 			.$args( "AppMapping" )
 			.$results( "mockbox.testing" );
-		test
-			.$( method = "getSetting", callLogging = true )
+		test.$(
+				method      = "getSetting",
+				callLogging = true
+			)
 			.$args( "DebugMode" )
 			.$results( "true" );
-		$assert.isEqual( "mockbox.testing", test.getSetting( "AppMapping" ) );
-		$assert.isEqual( "true", test.getSetting( "DebugMode" ) );
+		$assert.isEqual(
+			"mockbox.testing",
+			test.getSetting( "AppMapping" )
+		);
+		$assert.isEqual(
+			"true",
+			test.getSetting( "DebugMode" )
+		);
 	}
 
 	function testCollaborator(){
-		Test             = createObject( "component", "testbox.tests.resources.Test" );
+		Test = createObject(
+			"component",
+			"testbox.tests.resources.Test"
+		);
 		mockCollaborator = getMockBox().createMock(
 			className   = "testbox.tests.resources.Collaborator",
 			callLogging = true
@@ -176,7 +200,10 @@
 		test.displayData();
 		test.displayData();
 		$assert.isEqual( true, test.$verifyCallCount( 4 ) );
-		$assert.isEqual( true, test.$verifyCallCount( 4, "displayData" ) );
+		$assert.isEqual(
+			true,
+			test.$verifyCallCount( 4, "displayData" )
+		);
 	}
 
 	function testMockMethodCallCount(){
@@ -217,8 +244,7 @@
 		};
 
 		// 1: Mock with positional and all calls should validate.
-		test
-			.$( "getSetting" )
+		test.$( "getSetting" )
 			.$args(
 				args.string,
 				args.integer,
@@ -283,8 +309,7 @@
 		args.integer = 23;
 
 		// 2. Mock with named values and all calls should validate.
-		test
-			.$( "getSetting" )
+		test.$( "getSetting" )
 			.$args(
 				string     = args.string,
 				integer    = args.integer,
@@ -409,11 +434,29 @@
 		mock.luis = "Majano";
 		mock.$property( "cool", "variables", true ).$property( "number", "variables.instance", 7 );
 
-		$assert.isEqual( "Majano", mock.$getProperty( name = "luis", scope = "this" ) );
-		$assert.isEqual( true, mock.$getProperty( name = "cool" ) );
-		$assert.isEqual( true, mock.$getProperty( name = "cool", scope = "variables" ) );
-		$assert.isEqual( 7, mock.$getProperty( name = "number", scope = "variables.instance" ) );
-		$assert.isEqual( 7, mock.$getProperty( name = "number", scope = "instance" ) );
+		$assert.isEqual(
+			"Majano",
+			mock.$getProperty( name = "luis", scope = "this" )
+		);
+		$assert.isEqual(
+			true,
+			mock.$getProperty( name = "cool" )
+		);
+		$assert.isEqual(
+			true,
+			mock.$getProperty( name = "cool", scope = "variables" )
+		);
+		$assert.isEqual(
+			7,
+			mock.$getProperty(
+				name  = "number",
+				scope = "variables.instance"
+			)
+		);
+		$assert.isEqual(
+			7,
+			mock.$getProperty( name = "number", scope = "instance" )
+		);
 	}
 
 	function testStubWithInheritance(){
@@ -423,7 +466,12 @@
 
 	function testStubWithImplements(){
 		mock = getMockBox().createStub( implements = "coldbox.system.cache.ICacheProvider" );
-		$assert.isTrue( isInstanceOf( mock, "coldbox.system.cache.ICacheProvider" ) );
+		$assert.isTrue(
+			isInstanceOf(
+				mock,
+				"coldbox.system.cache.ICacheProvider"
+			)
+		);
 	}
 
 	function testContainsCFKeyword(){
@@ -438,19 +486,40 @@
 		mock = getMockBox().createStub();
 		mock.$( "mockMe", "Mocked" );
 
-		$assert.isEqual( "Mocked", mock.mockMe( variables.testFunction ) );
-		$assert.isEqual( "Mocked", mock.mockMe( test = variables.testFunction ) );
-		$assert.isEqual( "Mocked", mock.mockMe( [ variables.testFunction ] ) );
-		$assert.isEqual( "Mocked", mock.mockMe( test = [ variables.testFunction ] ) );
-		$assert.isEqual( "Mocked", mock.mockMe( { mockData : variables.testFunction } ) );
-		$assert.isEqual( "Mocked", mock.mockMe( test = { mockData : variables.testFunction } ) );
+		$assert.isEqual(
+			"Mocked",
+			mock.mockMe( variables.testFunction )
+		);
+		$assert.isEqual(
+			"Mocked",
+			mock.mockMe( test = variables.testFunction )
+		);
+		$assert.isEqual(
+			"Mocked",
+			mock.mockMe( [ variables.testFunction ] )
+		);
+		$assert.isEqual(
+			"Mocked",
+			mock.mockMe( test = [ variables.testFunction ] )
+		);
+		$assert.isEqual(
+			"Mocked",
+			mock.mockMe( { mockData : variables.testFunction } )
+		);
+		$assert.isEqual(
+			"Mocked",
+			mock.mockMe( test = { mockData : variables.testFunction } )
+		);
 	}
 
 	function testInterfaceContracts(){
 		mock = getMockBox().createMock( "testbox.tests.resources.MyInterfaceMock" );
 		mock.$( "testThis", "mocked!" );
 
-		$assert.isEqual( "mocked!", mock.testThis( "name", 35 ) );
+		$assert.isEqual(
+			"mocked!",
+			mock.testThis( "name", 35 )
+		);
 	}
 
 	function testCFUDF(){
@@ -460,7 +529,12 @@
 
 	function testCallbacks(){
 		// shortcut
-		var mocked = getMockBox().createStub().$( method = "getAmigo", callback = variables.testFunction );
+		var mocked = getMockBox()
+			.createStub()
+			.$(
+				method   = "getAmigo",
+				callback = variables.testFunction
+			);
 		$assert.isEqual( mocked.getAmigo(), testFunction() );
 
 		// no arguments
@@ -470,7 +544,10 @@
 			.$callback( variables.testFunction );
 		$assert.isEqual( mocked.getAmigo(), testFunction() );
 		// test argument passing
-		$assert.isEqual( mocked.getAmigo( "luis" ), testFunction( "luis" ) );
+		$assert.isEqual(
+			mocked.getAmigo( "luis" ),
+			testFunction( "luis" )
+		);
 
 		// with arguments
 		var mocked = getMockBox()
@@ -478,7 +555,10 @@
 			.$( "getAmigo" )
 			.$args( "luis" )
 			.$callback( variables.testFunction );
-		$assert.isEqual( mocked.getAmigo( "luis" ), testFunction( "luis" ) );
+		$assert.isEqual(
+			mocked.getAmigo( "luis" ),
+			testFunction( "luis" )
+		);
 	}
 
 	function test$Throws(){

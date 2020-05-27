@@ -33,7 +33,10 @@ component accessors="true" {
 		return this;
 	}
 
-	function onMissingMethod( string missingMethodName, any missingMethodArguments ){
+	function onMissingMethod(
+		string missingMethodName,
+		any missingMethodArguments
+	){
 		if ( isArray( variables.actual ) ) {
 			for ( var e in variables.actual ) {
 				// Using evaluate since invoke looses track of positional argument collections

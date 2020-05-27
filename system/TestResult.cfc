@@ -93,7 +93,7 @@ component accessors="true" {
 		variables.coverageData    = {};
 
 		// CFML Engine + Version
-		variables.CFMLEngine = server.coldfusion.productName;
+		variables.CFMLEngine        = server.coldfusion.productName;
 		variables.CFMLEngineVersion = (
 			structKeyExists( server, "lucee" ) ? server.lucee.version : server.coldfusion.productVersion
 		);
@@ -107,7 +107,10 @@ component accessors="true" {
 	TestResult function end(){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
 			if ( isComplete() ) {
-				throw( type = "InvalidState", message = "Testing is already complete." );
+				throw(
+					type    = "InvalidState",
+					message = "Testing is already complete."
+				);
 			}
 			variables.endTime       = getTickCount();
 			variables.totalDuration = variables.endTime - variables.startTime;
@@ -148,7 +151,10 @@ component accessors="true" {
 	 * Increment a global stat
 	 * @type The type of stat to increment: fail,pass,error or skipped
 	 */
-	TestResult function incrementStat( required type = "pass", numeric count = 1 ){
+	TestResult function incrementStat(
+		required type = "pass",
+		numeric count = 1
+	){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
 			switch ( arguments.type ) {
 				case "fail": {
@@ -175,7 +181,10 @@ component accessors="true" {
 	/**
 	 * Start a new bundle stats and return its reference
 	 */
-	struct function startBundleStats( required string bundlePath, required string name ){
+	struct function startBundleStats(
+		required string bundlePath,
+		required string name
+	){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
 			// setup stats data for incoming bundle
 			var stats = {
@@ -305,10 +314,16 @@ component accessors="true" {
 				// link parent
 				stats.parentID = arguments.parentStats.id;
 				// store it in the nested suite
-				arrayAppend( arguments.parentStats.suiteStats, stats );
+				arrayAppend(
+					arguments.parentStats.suiteStats,
+					stats
+				);
 			} else {
 				// store it in the bundle stats
-				arrayAppend( arguments.bundleStats.suiteStats, stats );
+				arrayAppend(
+					arguments.bundleStats.suiteStats,
+					stats
+				);
 			}
 
 			// store in the reverse lookup for faster access
@@ -334,7 +349,10 @@ component accessors="true" {
 	 * @name The name of the suite
 	 * @suiteStats The suite stats reference this belongs to.
 	 */
-	struct function startSpecStats( required string name, required struct suiteStats ){
+	struct function startSpecStats(
+		required string name,
+		required struct suiteStats
+	){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
 			// spec stats
 			var stats = {
@@ -365,7 +383,10 @@ component accessors="true" {
 			};
 
 			// append to the parent stats
-			arrayAppend( arguments.suiteStats.specStats, stats );
+			arrayAppend(
+				arguments.suiteStats.specStats,
+				stats
+			);
 		}
 		// end lock
 
@@ -377,7 +398,10 @@ component accessors="true" {
 	 * @type The type of stat to store: skipped,fail,error,pass
 	 * @specStats The spec stats to increment
 	 */
-	function incrementSpecStat( required string type, required struct stats ){
+	function incrementSpecStat(
+		required string type,
+		required struct stats
+	){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
 			// increment suite stat
 			variables.suiteReverseLookup[ arguments.stats.suiteID ][ "total#arguments.type#" ]++;
@@ -416,23 +440,19 @@ component accessors="true" {
 			"CFMLEngineVersion"
 		];
 
-		var result = {
-			"coverage" : {}
-		};
+		var result = { "coverage" : {} };
 
 		// Do simple properties only
 		for ( var thisProp in pList ) {
 			if ( structKeyExists( variables, thisProp ) ) {
-
 				result[ thisProp ] = variables[ thisProp ];
 
 				// Do we need to strip out the buffer?
 				if ( thisProp == "bundleStats" && !arguments.includeDebugBuffer ) {
-					for( var thisStat in result.bundleStats ){
+					for ( var thisStat in result.bundleStats ) {
 						thisStat.debugBuffer = [];
 					}
 				}
-
 			} else {
 				result[ thisProp ] = "";
 			}

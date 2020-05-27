@@ -13,7 +13,10 @@ component {
 	 * @incomingLabels The incoming labels to test against this runner's labels.
 	 * @testResults The testing results object
 	 */
-	boolean function canRunLabel( required array incomingLabels, required testResults ){
+	boolean function canRunLabel(
+		required array incomingLabels,
+		required testResults
+	){
 		var labels   = arguments.testResults.getLabels();
 		var excludes = arguments.testResults.getExcludes();
 
@@ -211,7 +214,12 @@ component {
 	 */
 	boolean function isValidTestMethod( required methodName, required target ){
 		// True if annotation "test" exists
-		if ( structKeyExists( getMetadata( arguments.target[ arguments.methodName ] ), "test" ) ) {
+		if (
+			structKeyExists(
+				getMetadata( arguments.target[ arguments.methodName ] ),
+				"test"
+			)
+		) {
 			return true;
 		}
 		// All xUnit test methods must start or end with the term, "test".

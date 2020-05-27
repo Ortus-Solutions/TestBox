@@ -20,7 +20,10 @@ component
 	 * @options.hint The options for this runner
 	 * @testbox.hint The TestBox class reference
 	 */
-	function init( required struct options, required testBox ){
+	function init(
+		required struct options,
+		required testBox
+	){
 		variables.options = arguments.options;
 		variables.testbox = arguments.testbox;
 
@@ -73,10 +76,16 @@ component
 				// find any methods annotated 'beforeAll' and execute them
 				var beforeAllAnnotationMethods = variables.testbox
 					.getUtility()
-					.getAnnotatedMethods( annotation = "beforeAll", metadata = getMetadata( arguments.target ) );
+					.getAnnotatedMethods(
+						annotation = "beforeAll",
+						metadata   = getMetadata( arguments.target )
+					);
 
 				for ( var beforeAllMethod in beforeAllAnnotationMethods ) {
-					invoke( arguments.target, "#beforeAllMethod.name#" );
+					invoke(
+						arguments.target,
+						"#beforeAllMethod.name#"
+					);
 				}
 
 				if ( structKeyExists( arguments.target, "beforeTests" ) ) {
@@ -121,10 +130,16 @@ component
 				// find any methods annotated 'afterAll' and execute them
 				var afterAllAnnotationMethods = variables.testbox
 					.getUtility()
-					.getAnnotatedMethods( annotation = "afterAll", metadata = getMetadata( arguments.target ) );
+					.getAnnotatedMethods(
+						annotation = "afterAll",
+						metadata   = getMetadata( arguments.target )
+					);
 
 				for ( var afterAllMethod in afterAllAnnotationMethods ) {
-					invoke( arguments.target, "#afterAllMethod.name#" );
+					invoke(
+						arguments.target,
+						"#afterAllMethod.name#"
+					);
 				}
 
 				if ( structKeyExists( arguments.target, "afterTests" ) ) {
@@ -135,7 +150,10 @@ component
 				// For a righteous man falls seven times, and rises (tests) again :)
 				// The amount doesn't matter, nothing can run at this point, failure with before/after aspects that need fixing
 				bundleStats.totalError      = 7;
-				arguments.testResults.incrementStat( type = "error", count = bundleStats.totalError );
+				arguments.testResults.incrementStat(
+					type  = "error",
+					count = bundleStats.totalError
+				);
 			}
 		}
 
@@ -327,7 +345,10 @@ component
 			// labels attached to the suite for execution
 			labels : ( structKeyExists( arguments.targetMD, "labels" ) ? listToArray( arguments.targetMD.labels ) : [] ),
 			// the specs attached to this suite.
-			specs  : getTestMethods( arguments.target, arguments.testResults ),
+			specs  : getTestMethods(
+				arguments.target,
+				arguments.testResults
+			),
 			// the recursive suites
 			suites : []
 		};
@@ -348,7 +369,10 @@ component
 	 * Retrieve the testing methods/specs from a given target.
 	 * @target.hint The target to get the methods from
 	 */
-	private array function getTestMethods( required any target, required any testResults ){
+	private array function getTestMethods(
+		required any target,
+		required any testResults
+	){
 		var mResults    = [];
 		var methodArray = structKeyArray( arguments.target );
 		var index       = 1;
