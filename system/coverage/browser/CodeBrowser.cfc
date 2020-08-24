@@ -93,7 +93,7 @@ component accessors=true {
 				return ( value > 0 ) ? "success" : "danger";
 			} );
 			var percentage              = numberFormat( fileData.percCoverage * 100, "9.9" );
-			var lineNumbersBGColorsJSON = serializeJSON( lineNumbersBGColors );
+			var lineNumbersBGColorsJSON = serializeJSON( lineNumbersBGColors, false, false );
 			var fileContents            = fileRead( fileData.filePath );
 			var levelsFromRoot          = fileData.relativeFilePath.listLen( "/" );
 			var relPathToRoot           = repeatString( "../", levelsFromRoot - 1 );
