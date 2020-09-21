@@ -15,9 +15,8 @@ branches:
   - development
   - master
 
-dist: trusty
-
 sudo: required
+dist: xenial
 
 before_install:
   # CommandBox Keys
@@ -98,7 +97,7 @@ deploy:
     edge: true
     file_glob: true
     file: $TRAVIS_BUILD_DIR/artifacts/testbox/**/*
-    release_notes_file: changelog.md
+    release_notes_file: $TRAVIS_BUILD_DIR/changelog.md
     name: v${TRAVIS_TAG}
     tag_name: v${TRAVIS_TAG}
     overwrite: true
