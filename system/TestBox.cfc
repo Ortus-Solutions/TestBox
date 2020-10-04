@@ -170,8 +170,14 @@ component accessors="true" {
 		var results      = runRaw( argumentCollection = arguments );
 		// store latest results
 		variables.result = results;
+
+		var report = produceReport( results );
+
+		// set status headers again incase they were removed by one of the reporters
+		sendStatusHeaders( results );
+
 		// return report
-		return produceReport( results );
+		return report;
 	}
 
 	/**
