@@ -1438,26 +1438,23 @@ component {
 			return;
 		}
 
-		// lock and add
-		lock name="tb-debug-#request.$testID#" type="exclusive" timeout="10" {
-			// duplication control
-			var newVar = ( arguments.deepCopy ? duplicate( arguments.var ) : arguments.var );
-			// compute label?
-			if ( !len( trim( arguments.label ) ) ) {
-				// Check if executing spec is set, else most likely this is called from a request scoped debug method
-				arguments.label = !isNull( this.$currentExecutingSpec ) ? this.$currentExecutingSpec : 'request';
-			}
-			// add to debug output
-			arrayAppend(
-				this.$debugBuffer,
-				{
-					data      : newVar,
-					label     : arguments.label,
-					timestamp : now(),
-					top       : arguments.top
-				}
-			);
+		// duplication control
+		var newVar = ( arguments.deepCopy ? duplicate( arguments.var ) : arguments.var );
+		// compute label?
+		if ( !len( trim( arguments.label ) ) ) {
+			// Check if executing spec is set, else most likely this is called from a request scoped debug method
+			arguments.label = !isNull( this.$currentExecutingSpec ) ? this.$currentExecutingSpec : 'request';
 		}
+		// add to debug output
+		arrayAppend(
+			this.$debugBuffer,
+			{
+				data      : newVar,
+				label     : arguments.label,
+				timestamp : now(),
+				top       : arguments.top
+			}
+		);
 		return this;
 	}
 
@@ -1465,9 +1462,7 @@ component {
 	 *  Clear the debug array buffer
 	 */
 	any function clearDebugBuffer(){
-		lock name="tb-debug-#request.$testID#" type="exclusive" timeout="10" {
-			arrayClear( this.$debugBuffer );
-		}
+		arrayClear( this.$debugBuffer );
 		return this;
 	}
 
@@ -1475,9 +1470,7 @@ component {
 	 *  Get the debug array buffer from scope
 	 */
 	array function getDebugBuffer(){
-		lock name="tb-debug-#request.$testID#" type="readonly" timeout="10" {
-			return this.$debugBuffer;
-		}
+		return this.$debugBuffer;
 	}
 
 	/**
