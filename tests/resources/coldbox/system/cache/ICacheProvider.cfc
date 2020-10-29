@@ -193,7 +193,6 @@ Please note that all cache providers have a reference back to the CacheBox Facto
 		access    ="public"
 		returntype="any"
 		hint      ="Returns a list of all elements in the cache, whether or not they are expired."
-		colddoc   :generic="array"
 	></cffunction>
 
 	<!--- getCachedObjectMetadata --->

@@ -75,7 +75,6 @@ The main interface to produce a ColdBox Application cache.
 			name   ="async"
 			type   ="any"
 			hint   ="Run command asynchronously or not"
-			colddoc:generic="boolean"
 		/>
 	</cffunction>
 
