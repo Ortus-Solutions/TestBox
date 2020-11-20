@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [4.2.1] => 2020-NOV-19
+
+### Fixed
+
+* [TESTBOX-294](https://ortussolutions.atlassian.net/browse/TESTBOX-294) - root path in test browser not enforced
+
+----
+
 ## [4.2.0] => 2020-NOV-19
 
 ### Fixed
