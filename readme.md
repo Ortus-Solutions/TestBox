@@ -52,7 +52,7 @@ And constructed with the following guidelines:
 
 ### Support
 
-* https://groups.google.com/a/ortussolutions.com/forum/#!forum/testbox
+* https://community.ortussolutions.com/c/communities/testbox/11
 * [Join BoxTeam Slack](https://boxteam.herokuapp.com)
 
 ### Documentation
@@ -60,6 +60,9 @@ And constructed with the following guidelines:
 * https://testbox.ortusbooks.com
 * https://testbox.ortusbooks.com/content/primers/bdd/index.html
 * https://testbox.ortusbooks.com/content/primers/xunit/index.html
+
+### Community and Support
+Join us in our Ortus Community and become a valuable member of this project [TestBox BDD](https://community.ortussolutions.com/c/communities/testbox/11). We are looking forward to hearing from you!!
 
 ### Official Site
 
@@ -102,6 +105,7 @@ And not only so, but we glory in tribulations also: knowing that tribulation wor
 And patience, experience; and experience, hope:
 And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the 
 Holy Ghost which is given unto us. ." Romans 5:5
+
 
 ### THE DAILY BREAD
 
