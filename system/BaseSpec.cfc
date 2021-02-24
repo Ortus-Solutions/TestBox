@@ -1618,7 +1618,7 @@ component {
 
 	// Around Stub
 	function aroundStub( spec ){
-		spec.body( spec.data );
+		arguments.spec.body( arguments.spec.data );
 	}
 
 	/**
