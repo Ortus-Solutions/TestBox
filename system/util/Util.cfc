@@ -157,7 +157,7 @@ component {
 
 		if ( structKeyExists( arguments.metadata, "functions" ) ) {
 			for ( var thisFunction in arguments.metadata.functions ) {
-				if ( structKeyExists( thisFunction, annotation ) ) {
+				if ( structKeyExists( thisFunction, arguments.annotation ) ) {
 					arrayAppend( lifecycleMethods, thisFunction );
 				}
 			}
