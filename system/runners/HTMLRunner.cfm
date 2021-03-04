@@ -49,8 +49,9 @@ if( len( url.directory ) ){
 results = testbox.run( reporter=url.reporter );
 
 function escapePropertyValue( required string value ) {
-	if (len(arguments.value) eq 0)
+	if ( len( arguments.value ) == 0 ) {
 		return arguments.value;
+	}
 	local.value = replaceNoCase( arguments.value, '\', '\\', 'all' );
 	value = replaceNoCase( value, chr(13), '\r', 'all' );
 	value = replaceNoCase( value, chr(10), '\n', 'all' );
