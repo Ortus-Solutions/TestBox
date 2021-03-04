@@ -42,14 +42,15 @@ component accessors=true {
 			SELECT	sum( numCoveredLines ) as sumCoveredLines ,
 					sum( numExecutableLines ) as sumExecutableLines
 			FROM qryData
+			GROUP BY filePath
 			",
 			{},
 			{ dbtype : "query" }
 		);
 
 		if ( qryPerc.recordCount ) {
-			stats.totalExecutableLines += qryPerc.sumExecutableLines;
-			stats.totalCoveredLines += qryPerc.sumCoveredLines;
+			stats.totalExecutableLines += val( qryPerc.sumExecutableLines );
+			stats.totalCoveredLines += val( qryPerc.sumCoveredLines );
 		}
 
 		// Avoid divide-by-zero errors on the % calculation
