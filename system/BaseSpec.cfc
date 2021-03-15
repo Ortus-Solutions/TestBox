@@ -907,6 +907,7 @@ component {
 		string reporter   = "simple",
 		string labels     = ""
 	) output=true{
+		setting requesttimeout=99999999;
 		// content type defaulted, to avoid dreaded wddx default
 		getPageContext().getResponse().setContentType( "text/html" );
 		// run tests
