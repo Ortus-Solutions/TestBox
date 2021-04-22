@@ -30,6 +30,7 @@ component extends="BaseReporter" {
 		boolean justReturn = false
 	){
 		if ( !arguments.justReturn ) {
+			resetHTMLResponse();
 			getPageContextResponse().setContentType( "application/xml" );
 		}
 
@@ -55,31 +56,29 @@ component extends="BaseReporter" {
 			) {
 				continue;
 			}
+
 			// build test suite header
+			// cfformat-ignore-start
 			buffer.append(
 				"<testsuite
-			tests        =""#thisBundle.totalSpecs#""
-			failures  =""#thisBundle.totalFail#""
-			errors      =""#thisBundle.totalError#""
-			skipped    =""#thisBundle.totalSkipped#""
-			time          =""#thisBundle.totalDuration / 1000#""
-			timestamp=""#dateFormat( now(), "yyyy-mm-dd" )#T#timeFormat( now(), "HH:mm:ss" )#""
-			hostname  =""#xmlFormat( cgi.remote_host )#""
-			package    =""#xmlFormat( thisBundle.path )#""
-			name          =""#xmlFormat( thisBundle.name )#""
-			>"
+				tests=""#thisBundle.totalSpecs#""
+				failures=""#thisBundle.totalFail#""
+				errors=""#thisBundle.totalError#""
+				skipped=""#thisBundle.totalSkipped#""
+				time=""#thisBundle.totalDuration / 1000#""
+				timestamp=""#dateFormat( now(), "yyyy-mm-dd" )#T#timeFormat( now(), "HH:mm:ss" )#""
+				hostname=""#encodeForXMLAttribute( cgi.remote_host )#""
+				package=""#encodeForXMLAttribute( thisBundle.path )#""
+				name=""#encodeForXMLAttribute( thisBundle.name )#""
+				>"
 			);
+			// cfformat-ignore-end
 
 			// build out properties
-			buildProperties( buffer );
+			// buildProperties( buffer );
 
 			// build out tests, even if nested, treat as single threaded
-			buildTestSuites(
-				buffer,
-				r,
-				thisBundle,
-				thisBundle.suiteStats
-			);
+			buildTestSuites( buffer, r, thisBundle, thisBundle.suiteStats );
 
 			// close header
 			buffer.append( "</testsuite>" );
@@ -105,27 +104,29 @@ component extends="BaseReporter" {
 		// Do we have a global exception?
 		if ( !isSimpleValue( arguments.bundleStats.globalException ) ) {
 			// build test case
+			// cfformat-ignore-start
 			out.append(
 				"<testcase
-				name          =""#xmlFormat( arguments.bundleStats.name )#""
-				time          =""#arguments.bundleStats.totalDuration / 1000#""
+				name=""#encodeForXMLAttribute( arguments.bundleStats.name )#""
+				time=""#arguments.bundleStats.totalDuration / 1000#""
 				classname=""#arguments.bundleStats.path#""
 				>
 					<error
-						type   =""globalException""
-						message=""#xmlFormat( arguments.bundleStats.globalException.message )#""><![CDATA[
+						type=""globalException""
+						message=""#encodeForXMLAttribute( arguments.bundleStats.globalException.message )#""><![CDATA[
 						#arguments.bundleStats.globalException.stackTrace.toString()#
 					]]></error>
 			</testcase>
 			"
 			);
-			return;
+			// cfformat-ignore-end
+return;
 		}
 
 		// iterate over
 		for ( var thisSuite in arguments.suiteStats ) {
 			// build out full suite name
-			var fullName = xmlFormat( arguments.parentName & thisSuite.name );
+			var fullName = encodeForXMLAttribute( arguments.parentName & thisSuite.name );
 
 			// build out test cases
 			for ( var thisSpecStat in thisSuite.specStats ) {
@@ -145,7 +146,7 @@ component extends="BaseReporter" {
 					r,
 					arguments.bundlestats,
 					thisSuite.suiteStats,
-					xmlFormat( fullName & " " )
+					encodeForXMLAttribute( fullName & " " )
 				);
 			}
 		}
@@ -163,10 +164,11 @@ component extends="BaseReporter" {
 		var stats = arguments.specStats;
 
 		// build test case
+		// cfformat-ignore-start
 		out.append(
 			"<testcase
-			name          =""#xmlFormat( fullName & " " & stats.name )#""
-			time          =""#stats.totalDuration / 1000#""
+			name=""#encodeForXMLAttribute( fullName & " " & stats.name )#""
+			time=""#stats.totalDuration / 1000#""
 			classname=""#arguments.bundleStats.path#""
 			>"
 		);
@@ -174,7 +176,7 @@ component extends="BaseReporter" {
 		switch ( stats.status ) {
 			case "failed": {
 				out.append(
-					"<failure message=""#xmlFormat( stats.failMessage )#""><![CDATA[
+					"<failure message=""#encodeForXMLAttribute( stats.failMessage )#""><![CDATA[
 					#stats.failorigin.toString()#
 					]]></failure>"
 				);
@@ -186,13 +188,14 @@ component extends="BaseReporter" {
 			}
 			case "error": {
 				out.append(
-					"<error type=""#xmlFormat( stats.error.type )#"" message=""#xmlFormat( stats.error.message )#""><![CDATA[
+					"<error type=""#encodeForXMLAttribute( stats.error.type )#"" message=""#encodeForXMLAttribute( stats.error.message )#""><![CDATA[
 					#stats.error.stackTrace.toString()#
 					]]></error>"
 				);
 				break;
 			}
 		}
+		// cfformat-ignore-end
 
 		out.append( "</testcase>" );
 	}
@@ -224,11 +227,11 @@ component extends="BaseReporter" {
 				// Regression known to exist in Lucee 5.2.8.50
 				try {
 					arguments.buffer.append(
-						"<property name=""#xmlFormat( lCase( thisProp ) )#"" value=""#xmlFormat( arguments.collection[ thisProp ] )#"" />"
+						"<property name=""#encodeForXMLAttribute( lCase( thisProp ) )#"" value=""#encodeForXMLAttribute( arguments.collection[ thisProp ] )#"" />"
 					);
 				} catch ( any e ) {
 					arguments.buffer.append(
-						"<property name=""#xmlFormat( lCase( thisProp ) )#"" value="""" />"
+						"<property name=""#encodeForXMLAttribute( lCase( thisProp ) )#"" value="""" />"
 					);
 				}
 			} else if (
@@ -237,7 +240,7 @@ component extends="BaseReporter" {
 				isQuery( arguments.collection[ thisProp ] )
 			) {
 				arguments.buffer.append(
-					"<property name=""#xmlFormat( lCase( thisProp ) )#"" value=""#xmlFormat( arguments.collection[ thisProp ].toString() )#"" />"
+					"<property name=""#encodeForXMLAttribute( lCase( thisProp ) )#"" value=""#encodeForXMLAttribute( arguments.collection[ thisProp ].toString() )#"" />"
 				);
 			}
 		}

@@ -44,27 +44,24 @@ component extends="BaseReporter" {
 		var r = arguments.results;
 
 		// build top level test suites container
+		// cfformat-ignore-start
 		buffer.append(
 			"<testsuites
-			name        =""ColdBox.TestBox.TestResults""
-			time        =""#r.getTotalDuration() / 1000#""
-			tests      =""#r.getTotalSpecs()#""
+			name=""ColdBox.TestBox.TestResults""
+			time=""#r.getTotalDuration() / 1000#""
+			tests=""#r.getTotalSpecs()#""
 			failures=""#r.getTotalFail()#""
 			disabled=""#r.getTotalSkipped()#""
-			errors    =""#r.getTotalError()#""
-			labels    =""#arrayToList( r.getLabels() )#""
+			errors=""#r.getTotalError()#""
+			labels=""#arrayToList( r.getLabels() )#""
 			>"
 		);
+		// cfformat-ignore-end
 
 		// iterate over bundles
 		var bundlestats = r.getBundleStats();
 		for ( var thisBundle in bundleStats ) {
-			buildTestSuites(
-				buffer,
-				r,
-				thisBundle,
-				thisBundle.suiteStats
-			);
+			buildTestSuites( buffer, r, thisBundle, thisBundle.suiteStats );
 		}
 
 		buffer.append( "</testsuites>" );
@@ -86,38 +83,32 @@ component extends="BaseReporter" {
 		// iterate over
 		for ( var thisSuite in arguments.suiteStats ) {
 			// build out full suite name
-			var fullName = xmlFormat( arguments.parentName & thisSuite.name );
+			var fullName = encodeForXMLAttribute( arguments.parentName & thisSuite.name );
+
 			// build test suite header
+			// cfformat-ignore-start
 			out.append(
 				"<testsuite
-				name          =""#fullName#""
-				tests        =""#thisSuite.totalSpecs#""
-				failures  =""#thisSuite.totalFail#""
-				errors      =""#thisSuite.totalError#""
-				time          =""#thisSuite.totalDuration / 1000#""
-				skipped    =""#thisSuite.totalSkipped#""
+				name=""#fullName#""
+				tests=""#thisSuite.totalSpecs#""
+				failures=""#thisSuite.totalFail#""
+				errors=""#thisSuite.totalError#""
+				time=""#thisSuite.totalDuration / 1000#""
+				skipped=""#thisSuite.totalSkipped#""
 				timestamp=""#dateFormat( now(), "mm/dd/yy" )# #timeFormat( now(), "medium" )#""
-				hostname  =""#xmlFormat( cgi.remote_host )#""
-				package    =""#xmlFormat( arguments.bundleStats.path )#""
+				hostname=""#encodeForXMLAttribute( cgi.remote_host )#""
+				package=""#encodeForXMLAttribute( arguments.bundleStats.path )#""
 				>"
 			);
+			// cfformat-ignore-end
 
+			// Note: Too verbose, reconsider for future iterations on how to make this useful.
 			// build out properties
-			buildProperties(
-				out,
-				r,
-				thisSuite,
-				arguments.bundleStats
-			);
+			// buildProperties( out, r, thisSuite, arguments.bundleStats );
 
 			// build out test cases
 			for ( var thisSpecStat in thisSuite.specStats ) {
-				buildTestCase(
-					out,
-					r,
-					thisSpecStat,
-					arguments.bundleStats
-				);
+				buildTestCase( out, r, thisSpecStat, arguments.bundleStats );
 			}
 			// close header
 			out.append( "</testsuite>" );
@@ -129,7 +120,7 @@ component extends="BaseReporter" {
 					r,
 					arguments.bundlestats,
 					thisSuite.suiteStats,
-					xmlFormat( fullName & "##" )
+					encodeForXMLAttribute( fullName & "##" )
 				);
 			}
 		}
@@ -146,19 +137,20 @@ component extends="BaseReporter" {
 		var stats = arguments.specStats;
 
 		// build test case
+		// cfformat-ignore-start
 		out.append(
 			"<testcase
-			name          =""#xmlFormat( stats.name )#""
-			time          =""#stats.totalDuration / 1000#""
+			name=""#encodeForXMLAttribute( stats.name )#""
+			time=""#stats.totalDuration / 1000#""
 			classname=""#arguments.bundleStats.path#""
-			status      =""#stats.status#""
+			status=""#stats.status#""
 			>"
 		);
 
 		switch ( stats.status ) {
 			case "failed": {
 				out.append(
-					"<failure message=""#xmlFormat( stats.failMessage )#""><![CDATA[
+					"<failure message=""#encodeForXMLAttribute( stats.failMessage )#""><![CDATA[
 					#stats.failorigin.toString()#
 					]]></failure>"
 				);
@@ -170,13 +162,14 @@ component extends="BaseReporter" {
 			}
 			case "error": {
 				out.append(
-					"<error type=""#xmlFormat( stats.error.type )#"" message=""#xmlFormat( stats.error.message )#""><![CDATA[
+					"<error type=""#encodeForXMLAttribute( stats.error.type )#"" message=""#encodeForXMLAttribute( stats.error.message )#""><![CDATA[
 					#stats.error.stackTrace.toString()#
 					]]></error>"
 				);
 				break;
 			}
 		}
+		// cfformat-ignore-end
 
 		out.append( "</testcase>" );
 	}
@@ -193,11 +186,6 @@ component extends="BaseReporter" {
 
 		out.append( "<properties>" );
 
-		genPropsFromCollection( out, server.coldfusion );
-		genPropsFromCollection( out, server.os );
-		if ( structKeyExists( server, "lucee" ) ) {
-			genPropsFromCollection( out, server.lucee );
-		}
 		genPropsFromCollection( out, cgi );
 
 		out.append( "</properties>" );
@@ -211,7 +199,7 @@ component extends="BaseReporter" {
 			}
 			if ( isSimpleValue( arguments.collection[ thisProp ] ) ) {
 				arguments.buffer.append(
-					"<property name=""#xmlFormat( lCase( thisProp ) )#"" value=""#xmlFormat( arguments.collection[ thisProp ] )#"" />"
+					"<property name=""#encodeForXMLAttribute( lCase( thisProp ) )#"" value=""#encodeForXMLAttribute( arguments.collection[ thisProp ] )#"" />"
 				);
 			} else if (
 				isArray( arguments.collection[ thisProp ] ) OR
@@ -219,7 +207,7 @@ component extends="BaseReporter" {
 				isQuery( arguments.collection[ thisProp ] )
 			) {
 				arguments.buffer.append(
-					"<property name=""#xmlFormat( lCase( thisProp ) )#"" value=""#xmlFormat( arguments.collection[ thisProp ].toString() )#"" />"
+					"<property name=""#encodeForXMLAttribute( lCase( thisProp ) )#"" value=""#encodeForXMLAttribute( arguments.collection[ thisProp ].toString() )#"" />"
 				);
 			}
 		}
