@@ -4,17 +4,6 @@
    | |  __/\__ \ |_| |_) | (_) >  <
    |_|\___||___/\__|____/ \___/_/\_\ v#testBox.getVersion()#
 
-=============================================================
-Stats (#results.getTotalDuration()# ms)
-=============================================================
-->[Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#]
-->[Pass: #results.getTotalPass()#]
-->[Failures: #results.getTotalFail()#]
-->[Errors: #results.getTotalError()#]
-->[Skipped: #results.getTotalSkipped()#]
-->[Labels Applied: #arrayToList( results.getLabels() )#] <cfif results.getCoverageEnabled()>
-->[Coverage: #numberFormat( results.getCoverageData().stats.percTotalCoverage*100, '9.9' )#%]
-</cfif>
 <cfloop array="#variables.bundleStats#" index="thisBundle">
 =============================================================
 #thisBundle.path# (#thisBundle.totalDuration# ms)
@@ -24,6 +13,7 @@ Stats (#results.getTotalDuration()# ms)
 ->[Failures: #thisBundle.totalFail#]
 ->[Errors: #thisBundle.totalError#]
 ->[Skipped: #thisBundle.totalSkipped#]
+
 <cfif !isSimpleValue( thisBundle.globalException )>
 GLOBAL BUNDLE EXCEPTION
 -> #thisBundle.globalException.type#:#thisBundle.globalException.message#:#thisBundle.globalException.detail#
@@ -42,12 +32,16 @@ END STACKTRACE
 </cfloop>
 
 =============================================================
-Legend:
+Stats (#results.getTotalDuration()# ms)
 =============================================================
-(P) = Passed
-(-) = Skipped
-(X) = Exception/Error
-(!) = Failure
+->[Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#]
+->[Total Pass: #results.getTotalPass()#]
+->[Total Failures: #results.getTotalFail()#]
+->[Total Errors: #results.getTotalError()#]
+->[Total Skipped: #results.getTotalSkipped()#]
+->[Labels Applied: #arrayToList( results.getLabels() )#] <cfif results.getCoverageEnabled()>
+->[Total Coverage: #numberFormat( results.getCoverageData().stats.percTotalCoverage*100, '9.9' )#%]
+</cfif>
 <cffunction name="getStatusBit" output="false">
 	<cfargument name="status">
 	<cfscript>

@@ -1,20 +1,9 @@
-<cfoutput>  _____         _   ____            
+<cfoutput>  _____         _   ____
  |_   _|__  ___| |_| __ )  _____  __
    | |/ _ \/ __| __|  _ \ / _ \ \/ /
-   | |  __/\__ \ |_| |_) | (_) >  < 
+   | |  __/\__ \ |_| |_) | (_) >  <
    |_|\___||___/\__|____/ \___/_/\_\ v#testBox.getVersion()#
 
-=============================================================                                    
-Stats (#results.getTotalDuration()# ms)
-=============================================================
-->[Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#]
-->[Pass: #results.getTotalPass()#]
-->[Failures: #results.getTotalFail()#]
-->[Errors: #results.getTotalError()#]
-->[Skipped: #results.getTotalSkipped()#]
-->[Labels Applied: #arrayToList( results.getLabels() )#]<cfif results.getCoverageEnabled()>
-->[Coverage: #numberFormat( results.getCoverageData().stats.percTotalCoverage*100, '9.9' )#%]
-</cfif>
 <cfloop array="#variables.bundleStats#" index="thisBundle">
 =============================================================
 #thisBundle.path# (#thisBundle.totalDuration# ms)
@@ -42,6 +31,18 @@ END STACKTRACE
 </cfloop>
 
 =============================================================
+Stats (#results.getTotalDuration()# ms)
+=============================================================
+->[Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#]
+->[Total Pass: #results.getTotalPass()#]
+->[Total Failures: #results.getTotalFail()#]
+->[Total Errors: #results.getTotalError()#]
+->[Total Skipped: #results.getTotalSkipped()#]
+->[Labels Applied: #arrayToList( results.getLabels() )#]<cfif results.getCoverageEnabled()>
+->[Total Coverage: #numberFormat( results.getCoverageData().stats.percTotalCoverage*100, '9.9' )#%]
+</cfif>
+
+=============================================================
 Legend:
 =============================================================
 (P) = Passed
@@ -56,7 +57,7 @@ Legend:
 			case "error" : { return "X"; }
 			case "skipped" : { return "-"; }
 			default : { return "+"; }
-		}		
+		}
 	</cfscript>
 </cffunction>
 <!--- Recursive Output --->
@@ -82,7 +83,7 @@ Legend:
 	-> Failure: #local.thisSpec.failMessage##chr(13)#
 	<!--- -> Failure Origin: #local.thisSpec.failorigin.toString()# #chr(13)##chr(13)# --->
 </cfif>
-	
+
 <cfif local.thisSpec.status eq "error">
 	-> Error: #local.thisSpec.error.message##chr(13)#
 	-> Exception Trace: #local.thisSpec.error.stackTrace# #chr(13)##chr(13)#
@@ -91,7 +92,7 @@ Legend:
 
 <cfif arrayLen( arguments.suiteStats.suiteStats )>
 <cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">#genSuiteReport( local.nestedSuite, arguments.bundleStats, arguments.level++ )#</cfloop>
-</cfif>	
+</cfif>
 
 </cfoutput>
 </cfsavecontent>
