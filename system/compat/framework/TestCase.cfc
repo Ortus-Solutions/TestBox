@@ -251,7 +251,7 @@ component extends="testbox.system.BaseSpec" {
 		required any actual,
 		message = ""
 	){
-		this.$assert.isEqual(
+		variables.$assert.isEqual(
 			arguments.expected,
 			arguments.actual,
 			arguments.message
