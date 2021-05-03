@@ -28,17 +28,17 @@ The Official ColdBox Mocking Factory
 		// Setup the generation Path
 		if ( len( trim( arguments.generationPath ) ) neq 0 ) {
 			// Default to coldbox tmp path
-			instance.generationPath = arguments.generationPath;
+			variables.instance.generationPath = arguments.generationPath;
 		} else {
-			instance.generationPath = tempDir;
+			variables.instance.generationPath = tempDir;
 		}
 
 		// Cleanup of paths.
-		if ( right( instance.generationPath, 1 ) neq "/" ) {
-			instance.generationPath = instance.generationPath & "/";
+		if ( right( variables.instance.generationPath, 1 ) neq "/" ) {
+			variables.instance.generationPath = variables.instance.generationPath & "/";
 		}
 
-		instance.mockGenerator = createObject(
+		variables.instance.mockGenerator = createObject(
 			"component",
 			"testbox.system.mockutils.MockGenerator"
 		).init( this, false );
