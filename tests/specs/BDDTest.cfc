@@ -363,6 +363,24 @@ component extends="testbox.system.BaseSpec" {
 				expect( request.testbox ).toHaveKey( "clearDebugBuffer,console,debug,print,println" );
 			} );
 		} );
+
+		describe( "In depth throwing exceptions", function(){
+			it("throws a FooException", function() {
+				expect(function() {
+					throw(type="FooException");
+				}).toThrow("FooException");
+			});
+			it("won't throw a FooException because nothing is thrown", function() {
+				expect(function() {
+
+				}).notToThrow("FooException");
+			});
+			it("won't throw a FooException because a different exception is thrown", function() {
+				expect(function() {
+					throw(type="DifferentException");
+				}).notToThrow("FooException");
+			});
+		});
 	}
 
 	private function isLucee(){
