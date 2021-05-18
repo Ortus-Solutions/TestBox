@@ -278,7 +278,7 @@ component {
 		message = ""
 	){
 		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The actual data is not of type [#arguments.typeName#]"
+			len( arguments.message ) ? arguments.message : "The actual is of type [#getMetadata( actual ).name ?: 'n/a'#] which is not the expected type of [#arguments.typeName#]"
 		);
 		if ( isInstanceOf( arguments.actual, arguments.typeName ) ) {
 			return this;
@@ -298,7 +298,7 @@ component {
 		message = ""
 	){
 		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The actual data is actually of type [#arguments.typeName#]"
+			len( arguments.message ) ? arguments.message : "The actual is of type [#getMetadata( actual ).name ?: 'n/a'#] which is the expected type of [#arguments.typeName#]"
 		);
 		if ( !isInstanceOf( arguments.actual, arguments.typeName ) ) {
 			return this;
