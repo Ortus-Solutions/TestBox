@@ -17,9 +17,9 @@ A mock generator
 		<cfargument name="mockBox" required="true"/>
 		<cfargument name="removeStubs" required="false" default="true" hint="Always remove stubs unless we are debugging"/>
 		<cfscript>
-		instance.lb          = "#chr( 13 )##chr( 10 )#";
-		instance.mockBox     = arguments.mockBox;
-		instance.removeStubs = arguments.removeStubs;
+		variables.instance.lb          = "#chr( 13 )##chr( 10 )#";
+		variables.instance.mockBox     = arguments.mockBox;
+		variables.instance.removeStubs = arguments.removeStubs;
 
 		return this;
 		</cfscript>

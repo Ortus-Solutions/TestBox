@@ -1,10 +1,7 @@
 # Config Files
 .DS_Store
 /settings.xml
-.project
 .settings/
-.vscode
-.idea
 .engine/
 cpu.json
 

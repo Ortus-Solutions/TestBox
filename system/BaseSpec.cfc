@@ -907,6 +907,7 @@ component {
 		string reporter   = "simple",
 		string labels     = ""
 	) output=true{
+		setting requesttimeout=99999999;
 		// content type defaulted, to avoid dreaded wddx default
 		getPageContext().getResponse().setContentType( "text/html" );
 		// run tests
@@ -1199,10 +1200,10 @@ component {
 		thread.spec     = arguments.spec;
 
 		// Get closure data from stack and pop it
-		var nextClosure = thread.closures[ closureIndex ];
+		var nextClosure = thread.closures[ arguments.closureIndex ];
 
 		// Check if we have more in the stack or empty
-		if ( arrayLen( thread.closures ) == closureIndex ) {
+		if ( arrayLen( thread.closures ) == arguments.closureIndex ) {
 			// Return the closure of execution for a single spec ONLY
 			return function(){
 				// Execute the body of the spec
@@ -1215,7 +1216,7 @@ component {
 		}
 
 		// Get next Spec in stack
-		var nextSpecInfo = thread.closures[ ++closureIndex ];
+		var nextSpecInfo = thread.closures[ ++arguments.closureIndex ];
 		// Return generated closure
 		return function(){
 			nextClosure.body(
@@ -1618,7 +1619,7 @@ component {
 
 	// Around Stub
 	function aroundStub( spec ){
-		spec.body( spec.data );
+		arguments.spec.body( arguments.spec.data );
 	}
 
 	/**

@@ -45,6 +45,9 @@ component extends="BaseReporter" {
 		if ( structKeyExists( url, "output" ) ) {
 			variables.baseURL &= "output=#urlEncodedFormat( url.output )#";
 		}
+		if ( !structKeyExists( url, "directory" ) ) {
+			url.directory = "";
+		}
 
 		// prepare incoming params
 		if ( !structKeyExists( url, "testMethod" ) ) {
