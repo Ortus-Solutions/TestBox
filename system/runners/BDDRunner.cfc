@@ -143,7 +143,7 @@ component
 				bundleStats.globalException = e;
 				// For a righteous man falls seven times, and rises (tests) again :)
 				// The amount doesn't matter, nothing can run at this point, failure with before/after aspects that need fixing
-				bundleStats.totalError      = 7;
+				bundleStats.totalError      = -1;
 				arguments.testResults.incrementStat(
 					type  = "error",
 					count = bundleStats.totalError
