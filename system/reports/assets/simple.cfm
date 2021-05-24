@@ -568,6 +568,10 @@ code {
 												<code>#thisContext.codePrintHTML#</code>
 											</div>
 										</cfif>
+										<!--- Stacktrace mini snapshot --->
+										<div class="pl-5 mb-2 bg-light">
+											<pre>#left( local.thisSpec.error.stackTrace, 1000 )#</pre>
+										</div>
 									</cfif>
 
 									<!--- Deep Insights into failures, hidden by default --->
