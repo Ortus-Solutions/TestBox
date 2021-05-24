@@ -28,6 +28,11 @@ component extends="testbox.system.compat.framework.TestCase" {
 		throw( type="InvalidException", message="This test method should pass with an expected exception" );
 	}
 
+	function testShouldThrowException(){
+		var c = new tests.resources.Collaborator();
+		c.getDataFromDB();
+	}
+
 	/**
 	* @mxunit:expectedException InvalidException
 	*/

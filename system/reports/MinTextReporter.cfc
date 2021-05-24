@@ -4,7 +4,7 @@
  * ---
  * A minimalistic reporter
  */
-component extends="BaseReporter" {
+component extends="TextReporter" {
 
 	/**
 	 * Get the name of the reporter
@@ -33,21 +33,13 @@ component extends="BaseReporter" {
 			// content type
 			getPageContextResponse().setContentType( "text/plain" );
 		}
-
 		// bundle stats
 		variables.bundleStats = arguments.results.getBundleStats();
-
 		// prepare the report
 		savecontent variable="local.report" {
 			include "assets/mintext.cfm";
 		}
-
-		return reReplace(
-			local.report,
-			"[\r\n]+",
-			chr( 10 ),
-			"all"
-		);
+		return trim( local.report );
 	}
 
 }

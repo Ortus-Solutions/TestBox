@@ -33,21 +33,49 @@ component extends="BaseReporter" {
 			// content type
 			getPageContextResponse().setContentType( "text/plain" );
 		}
-
 		// bundle stats
 		variables.bundleStats = arguments.results.getBundleStats();
-
 		// prepare the report
 		savecontent variable="local.report" {
 			include "assets/text.cfm";
 		}
+		return trim( local.report );
+	}
 
-		return reReplace(
-			trim( local.report ),
-			"[\r\n]+",
-			chr( 10 ),
-			"all"
-		);
+	/**
+	 * Get the indicator status text
+	 *
+	 * @status The status to get back: error, failed, skipped, passed
+	 */
+	function getStatusIndicator( required status ){
+		if( arguments.status == "error" ){
+			return "!! ";
+		} else if ( arguments.status == "failed" ) {
+			return "X ";
+		} else if ( arguments.status == "skipped" ) {
+			return "- ";
+		} else {
+			return "√ ";
+		}
+	}
+
+	function getBundleIndicator( required bundle ){
+		var thisStatus = "pass";
+		if( arguments.bundle.totalFail > 0 || arguments.bundle.totalError > 0 ){
+			thisStatus = "error";
+		}
+		if( arguments.bundle.totalSkipped == arguments.bundle.totalSpecs ){
+			thisStatus = "skipped";
+		}
+		return getStatusIndicator( thisStatus );
+	}
+
+	function space( count = 1 ){
+		return repeatString( "#chr( 160 )#", arguments.count );
+	}
+
+	function tab(){
+		return space( 4 );
 	}
 
 }
