@@ -62,6 +62,9 @@ component extends="BaseReporter" {
 		if ( !structKeyExists( url, "directory" ) ) {
 			url.directory = "";
 		}
+		if ( !structKeyExists( url, "editor" ) ) {
+			url.editor = "vscode";
+		}
 
 		// prepare the report
 		savecontent variable="local.report" {
