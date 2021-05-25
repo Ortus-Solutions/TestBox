@@ -60,7 +60,7 @@ Code Coverage
 TestBox: #space( 6 )# v#testbox.getVersion()#
 Duration: #space( 5 )# #results.getTotalDuration()# ms
 CFML Engine: #space( 2 )# #results.getCFMLEngine()# #results.getCFMLEngineVersion()#
-Labels: #space( 7 )# #arrayToList( results.getLabels() )#<cfif !len( results.getLabels() )>None</cfif>
+Labels: #space( 7 )# #arrayToList( results.getLabels() )#<cfif !arrayLen( results.getLabels() )>None</cfif>
 #space()#
 
 <!--- Legend --->
