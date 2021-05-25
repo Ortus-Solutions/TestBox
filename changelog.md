@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [4.3.1] => 2021-MAY-25
+
+### Fixed
+
+- [TESTBOX-310](https://ortussolutions.atlassian.net/browse/TESTBOX-310) acf regression on caluclating length of arrays with len()
+
+----
+
 ## [4.3.0] => 2021-MAY-24
 
 ### Bugs
