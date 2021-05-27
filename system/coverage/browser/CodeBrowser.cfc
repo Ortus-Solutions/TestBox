@@ -99,6 +99,9 @@ component accessors=true {
 			var relPathToRoot           = repeatString( "../", levelsFromRoot - 1 );
 			var brush                   = right( fileData.relativeFilePath, 4 ) == ".cfm" ? "coldfusion" : "javascript";
 
+			// Escape closing script tags to avoid breaking out of code display early
+			fileContents = REReplace(fileContents, '</script>', '&lt;/script>', 'all');
+
 			savecontent variable="local.fileTemplate" {
 				include "templates/file.cfm";
 			}
