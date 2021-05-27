@@ -39,7 +39,12 @@ component extends="TextReporter" {
 		savecontent variable="local.report" {
 			include "assets/mintext.cfm";
 		}
-		return trim( local.report );
+		return reReplace(
+			trim( local.report ),
+			"[\r\n]+",
+			chr( 10 ),
+			"all"
+		);
 	}
 
 }
