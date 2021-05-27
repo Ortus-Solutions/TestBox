@@ -536,7 +536,7 @@ code {
 									<!--- Failure Snapshot --->
 									<cfif local.thisSpec.status eq "failed" && isArray( local.thisSpec.failOrigin ) && arrayLen( local.thisSpec.failOrigin )>
 										<cfloop array="#local.thisSpec.failOrigin#" item="thisContext">
-											<cfif findNoCase( thisBundle.path, reReplace( thisContext.template, "(/|\\)", ".", "all" ) )>
+											<cfif findNoCase( arguments.bundleStats.path, reReplace( thisContext.template, "(/|\\)", ".", "all" ) )>
 												<!--- Template --->
 												<div style="margin-bottom: 5px">
 													<a href="#openInEditorURL( thisContext.template, thisContext.line, url.editor )#">
