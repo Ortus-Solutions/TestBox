@@ -196,10 +196,9 @@ component
 			.incrementSuites()
 			.incrementSpecs( suiteStats.totalSpecs );
 
+		var skip = arguments.suite.skip;
 		if ( structKeyExists( arguments.callbacks, "skipHandler" ) ) {
-			var skip = arguments.callbacks.skipHandler(arguments.suite.skip);
-		} else {
-			var skip = arguments.suite.skip;
+			skip = arguments.callbacks.skipHandler( arguments.suite.skip );
 		}
 
 		// Verify we can execute the incoming suite via skipping or labels
@@ -364,7 +363,7 @@ component
 
 		// skip constraint for suite?
 		if ( structKeyExists( arguments.callbacks, "skipHandler" ) ) {
-			suite.skip = arguments.callbacks.skipHandler(suite.skip);
+			suite.skip = arguments.callbacks.skipHandler( suite.skip );
 		} else if ( !isBoolean( suite.skip ) && isCustomFunction( arguments.target[ suite.skip ] ) ) {
 			suite.skip = invoke( arguments.target, "#suite.skip#" );
 		}
@@ -408,7 +407,7 @@ component
 
 				// skip constraint?
 				if ( structKeyExists( arguments.callbacks, "skipHandler" ) ) {
-					spec.skip = arguments.callbacks.skipHandler(spec.skip);
+					spec.skip = arguments.callbacks.skipHandler( spec.skip );
 				} else if ( !isBoolean( spec.skip ) && isCustomFunction( arguments.target[ spec.skip ] ) ) {
 					spec.skip = invoke( arguments.target, "#spec.skip#" );
 				}

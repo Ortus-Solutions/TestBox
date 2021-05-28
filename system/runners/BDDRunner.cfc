@@ -201,12 +201,11 @@ component
 			.incrementSuites()
 			.incrementSpecs( suiteStats.totalSpecs );
 
+		var skip = arguments.suite.skip;
 		if ( structKeyExists( arguments.callbacks, "skipHandler" ) ) {
-			var skip = arguments.callbacks.skipHandler(arguments.suite.skip);
-		} else {
-			var skip = arguments.suite.skip;
+			var skip = arguments.callbacks.skipHandler( arguments.suite.skip );
 		}
-		
+
 		// Verify we can execute the incoming suite via skipping or labels
 		if (
 			!skip &&
