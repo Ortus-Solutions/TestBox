@@ -49,7 +49,8 @@ component
 		var testSuites = getTestSuites(
 			arguments.target,
 			targetMD,
-			arguments.testResults
+			arguments.testResults,
+			arguments.callbacks
 		);
 		var testSuitesCount = arrayLen( testSuites );
 
@@ -195,9 +196,15 @@ component
 			.incrementSuites()
 			.incrementSpecs( suiteStats.totalSpecs );
 
+		if ( structKeyExists( arguments.callbacks, "skipHandler" ) ) {
+			var skip = arguments.callbacks.skipHandler(arguments.suite.skip);
+		} else {
+			var skip = arguments.suite.skip;
+		}
+
 		// Verify we can execute the incoming suite via skipping or labels
 		if (
-			!arguments.suite.skip &&
+			!skip &&
 			canRunSuite(
 				arguments.suite,
 				arguments.testResults,
@@ -327,7 +334,8 @@ component
 	private array function getTestSuites(
 		required target,
 		required targetMD,
-		required testResults
+		required testResults,
+		required callbacks
 	){
 		var suite = {
 			// suite name
@@ -347,14 +355,17 @@ component
 			// the specs attached to this suite.
 			specs  : getTestMethods(
 				arguments.target,
-				arguments.testResults
+				arguments.testResults,
+				arguments.callbacks
 			),
 			// the recursive suites
 			suites : []
 		};
 
 		// skip constraint for suite?
-		if ( !isBoolean( suite.skip ) && isCustomFunction( arguments.target[ suite.skip ] ) ) {
+		if ( structKeyExists( arguments.callbacks, "skipHandler" ) ) {
+			suite.skip = arguments.callbacks.skipHandler(suite.skip);
+		} else if ( !isBoolean( suite.skip ) && isCustomFunction( arguments.target[ suite.skip ] ) ) {
 			suite.skip = invoke( arguments.target, "#suite.skip#" );
 		}
 
@@ -371,7 +382,8 @@ component
 	 */
 	private array function getTestMethods(
 		required any target,
-		required any testResults
+		required any testResults,
+		required any callbacks
 	){
 		var mResults    = [];
 		var methodArray = structKeyArray( arguments.target );
@@ -395,7 +407,9 @@ component
 				};
 
 				// skip constraint?
-				if ( !isBoolean( spec.skip ) && isCustomFunction( arguments.target[ spec.skip ] ) ) {
+				if ( structKeyExists( arguments.callbacks, "skipHandler" ) ) {
+					spec.skip = arguments.callbacks.skipHandler(spec.skip);
+				} else if ( !isBoolean( spec.skip ) && isCustomFunction( arguments.target[ spec.skip ] ) ) {
 					spec.skip = invoke( arguments.target, "#spec.skip#" );
 				}
 
