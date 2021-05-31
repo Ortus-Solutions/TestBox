@@ -282,8 +282,10 @@
 														<div id="debugdata_#thisBundle.id#" class="overflow-auto bg-light p-2 collapse" data-specid="#thisBundle.id#">
 															<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
 															<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
-																<h6>#thisDebug.label#</h6>
-																<cfdump var="#thisDebug.data#" label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#" top="#thisDebug.top#" />
+																<cfif !IsNull(thisDebug)>
+																	<h6>#thisDebug.label#</h6>
+																	<cfdump var="#thisDebug.data#" label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#" top="#thisDebug.top#" />
+																</cfif>
 															</cfloop>
 														</div>
 													</li>
