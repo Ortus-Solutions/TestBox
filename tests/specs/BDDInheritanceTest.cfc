@@ -62,6 +62,14 @@ component extends="testbox.system.BaseSpec" {
 				expect( coldbox ).notToBe( 4 );
 			} );
 
+			it( "can chain expectations", function(){
+				expect( 8 )
+					.toBeTypeOf( "numeric" )
+					.toBeNumeric()
+					.notToBe( 4 )
+					.toBeCloseTo( expected = 10, delta = 2 );
+			} );
+
 			// negations
 			it( "can have negative expectations", function(){
 				coldbox = coldbox * 8;
