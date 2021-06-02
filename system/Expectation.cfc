@@ -68,10 +68,7 @@ component accessors="true" {
 	/**
 	 * Process dynamic expectations like any matcher starting with the word "not" is negated
 	 */
-	function onMissingMethod(
-		required missingMethodName,
-		required missingMethodArguments
-	){
+	function onMissingMethod( required missingMethodName, required missingMethodArguments ){
 		// detect negation
 		if ( left( arguments.missingMethodName, 3 ) eq "not" ) {
 			// remove NOT
@@ -80,18 +77,22 @@ component accessors="true" {
 				len( arguments.missingMethodName ) - 3
 			);
 			// set isNot pivot on this matcher
-			this.isNot = true;
+			try {
+				this.isNot = true;
 
-			// execute the dynamic method
-			var results = invoke(
-				this,
-				arguments.missingMethodName,
-				arguments.missingMethodArguments
-			);
-			if ( !isNull( results ) ) {
-				return results;
-			} else {
-				return;
+				// execute the dynamic method
+				var results = invoke(
+					this,
+					arguments.missingMethodName,
+					arguments.missingMethodArguments
+				);
+				if ( !isNull( results ) ) {
+					return results;
+				} else {
+					return;
+				}
+			} finally {
+				this.isNot = false;
 			}
 		}
 
