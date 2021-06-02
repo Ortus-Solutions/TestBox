@@ -167,11 +167,15 @@ component accessors="true" {
 			variables.reporter = arguments.reporter;
 		}
 		// run it and get results
-		var results      = runRaw( argumentCollection = arguments );
+		var results = runRaw( argumentCollection = arguments );
 		// store latest results
 		variables.result = results;
 		// return report
-		return produceReport( results );
+		var report = produceReport( results );
+		// set response headers
+		sendStatusHeaders( results );
+
+		return report;
 	}
 
 	/**
@@ -305,8 +309,6 @@ component accessors="true" {
 
 		coverageService.endCapture( true );
 
-		sendStatusHeaders( results );
-
 		return results;
 	}
 
@@ -382,11 +384,10 @@ component accessors="true" {
 		// run it and get results
 		var results = runRaw( argumentCollection = arguments );
 
-		// check if reporter is "raw" and if raw, just return it
+		// check if reporter is "raw" and if raw, just return it else output the results
 		if ( variables.reporter.type == "raw" ) {
 			return produceReport( results );
 		} else {
-			// return report
 			writeOutput( produceReport( results ) );
 		}
 
