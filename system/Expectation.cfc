@@ -410,7 +410,7 @@ component accessors="true" {
 			try {
 				variables.assert.between( argumentCollection = arguments );
 			} catch ( Any e ) {
-				pass = true
+				pass = true;
 			}
 			if ( !pass ) {
 				arguments.message = (
