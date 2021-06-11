@@ -496,7 +496,11 @@ code {
 					<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
 						<!--- Spec Results --->
 
-						<li class="spec list-group-item #local.thisSpec.status#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
+						<li
+							class="spec list-group-item #local.thisSpec.status#"
+							data-bundleid="#arguments.bundleStats.id#"
+							data-specid="#local.thisSpec.id#"
+						>
 							<div class="clearfix">
 								<a
 									class="alert-link text-#statusToBootstrapClass( local.thisSpec.status )#"

@@ -141,7 +141,8 @@ component extends="testbox.system.BaseSpec" {
 					body  = function(){
 						fail( "Skipped programmatically, this should fail" );
 					},
-					skip = function(){
+					skip = function( spec ){
+						spec.name &= " - skipping this because I can!!!";
 						return true;
 					}
 				);
