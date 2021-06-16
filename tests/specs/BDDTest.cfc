@@ -44,6 +44,11 @@ component extends="testbox.system.BaseSpec" {
 					foo = 0;
 				} );
 
+				describe( "A nice /suite/with/slashes", function(){
+					it( "can have slashes/inthe/it", function(){
+						expect(	true ).toBeTrue();
+					});
+				});
 
 				it( "can match strings with no case sensitivity", function(){
 					expect( "Luis" ).toMatch( "^luis" );
