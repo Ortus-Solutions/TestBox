@@ -276,6 +276,7 @@ component accessors="true" {
 			if ( getComponentMetadata( thisBundlePath ).type eq "interface" ) {
 				continue;
 			}
+
 			// Execute Bundle
 			testBundle(
 				bundlePath  = thisBundlePath,
@@ -546,6 +547,8 @@ component accessors="true" {
 	 * @bundlePath The path of the Bundle CFC to test.
 	 * @testResults The testing results object to keep track of results
 	 * @callbacks The callbacks struct or CFC
+	 *
+	 * @throws BundleRunnerMajorException
 	 */
 	private function testBundle(
 		required bundlePath,
@@ -553,7 +556,12 @@ component accessors="true" {
 		required callbacks
 	){
 		// create new target bundle and get its metadata
-		var target = getBundle( arguments.bundlePath );
+		try{
+			var target = getBundle( arguments.bundlePath );
+		} catch( "AbstractComponentException" e ){
+			// Skip abstract components
+			return this;
+		}
 
 		// verify call backs
 		if ( structKeyExists( arguments.callbacks, "onBundleStart" ) ) {
@@ -604,13 +612,26 @@ component accessors="true" {
 
 	/**
 	 * Creates and returns a bundle CFC with spec capabilities if not inherited.
+	 *
 	 * @bundlePath The path to the Bundle CFC
+	 *
+	 * @throws AbstractComponentException - When an abstract component exists as a spec
 	 */
 	private any function getBundle( required bundlePath ){
-		var bundle = createObject(
-			"component",
-			"#arguments.bundlePath#"
-		);
+		try{
+			var bundle = createObject(
+				"component",
+				"#arguments.bundlePath#"
+			);
+		} catch( "Application" e ){
+			if( findNoCase( "abstract component", e.message ) ){
+				throw(
+					type : "AbstractComponentException",
+					message : "Skip abstract components"
+				);
+			}
+			rethrow;
+		}
 		var familyPath = "testbox.system.BaseSpec";
 
 		// check if base spec assigned
