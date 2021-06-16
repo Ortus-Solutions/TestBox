@@ -282,8 +282,10 @@
 														<div id="debugdata_#thisBundle.id#" class="overflow-auto bg-light p-2 collapse" data-specid="#thisBundle.id#">
 															<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
 															<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
-																<h6>#thisDebug.label#</h6>
-																<cfdump var="#thisDebug.data#" label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#" top="#thisDebug.top#" />
+																<cfif !IsNull(thisDebug)>
+																	<h6>#thisDebug.label#</h6>
+																	<cfdump var="#thisDebug.data#" label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#" top="#thisDebug.top#" />
+																</cfif>
 															</cfloop>
 														</div>
 													</li>
@@ -494,7 +496,11 @@ code {
 					<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
 						<!--- Spec Results --->
 
-						<li class="spec list-group-item #local.thisSpec.status#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
+						<li
+							class="spec list-group-item #local.thisSpec.status#"
+							data-bundleid="#arguments.bundleStats.id#"
+							data-specid="#local.thisSpec.id#"
+						>
 							<div class="clearfix">
 								<a
 									class="alert-link text-#statusToBootstrapClass( local.thisSpec.status )#"
@@ -536,7 +542,7 @@ code {
 									<!--- Failure Snapshot --->
 									<cfif local.thisSpec.status eq "failed" && isArray( local.thisSpec.failOrigin ) && arrayLen( local.thisSpec.failOrigin )>
 										<cfloop array="#local.thisSpec.failOrigin#" item="thisContext">
-											<cfif findNoCase( thisBundle.path, reReplace( thisContext.template, "(/|\\)", ".", "all" ) )>
+											<cfif findNoCase( arguments.bundleStats.path, reReplace( thisContext.template, "(/|\\)", ".", "all" ) )>
 												<!--- Template --->
 												<div style="margin-bottom: 5px">
 													<a href="#openInEditorURL( thisContext.template, thisContext.line, url.editor )#">

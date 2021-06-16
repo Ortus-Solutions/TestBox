@@ -2,9 +2,9 @@
  * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * A text reporter
+ * A text reporter that emits to the console via java System out.
  */
-component extends="BaseReporter" {
+component extends="TextReporter" {
 
 	function init(){
 		variables.out = createObject( "Java", "java.lang.System" ).out;
@@ -41,14 +41,18 @@ component extends="BaseReporter" {
 
 		// bundle stats
 		variables.bundleStats = arguments.results.getBundleStats();
-
 		// prepare the report
 		savecontent variable="local.report" {
 			include "assets/text.cfm";
 		}
 
 		// send to console
-		variables.out.printLn( local.report );
+		variables.out.printLn( reReplace(
+			trim( local.report ),
+			"[\r\n]+",
+			chr( 10 ),
+			"all"
+		) );
 
 		return "Report Sent To Console";
 	}

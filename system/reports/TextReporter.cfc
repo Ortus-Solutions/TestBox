@@ -39,7 +39,12 @@ component extends="BaseReporter" {
 		savecontent variable="local.report" {
 			include "assets/text.cfm";
 		}
-		return trim( local.report );
+		return reReplace(
+			trim( local.report ),
+			"[\r\n]+",
+			chr( 10 ),
+			"all"
+		);
 	}
 
 	/**
@@ -49,13 +54,13 @@ component extends="BaseReporter" {
 	 */
 	function getStatusIndicator( required status ){
 		if( arguments.status == "error" ){
-			return "!! ";
+			return "!!";
 		} else if ( arguments.status == "failed" ) {
-			return "X ";
+			return "X";
 		} else if ( arguments.status == "skipped" ) {
-			return "- ";
+			return "-";
 		} else {
-			return "√ ";
+			return "√";
 		}
 	}
 
