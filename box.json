@@ -1,6 +1,6 @@
 {
     "name":"TestBox",
-    "version":"4.4.0",
+    "version":"4.5.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/testbox/@build.version@/testbox-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com>",
     "slug":"testbox",
