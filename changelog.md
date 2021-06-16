@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ----
 
+## [4.4.0] => 2021-JUN-16
+
+### Fixed
+
+- [TESTBOX-320](https://ortussolutions.atlassian.net/browse/TESTBOX-320) Runner tries to instantiate abstract classes
+- [TESTBOX-319](https://ortussolutions.atlassian.net/browse/TESTBOX-319) Fix HTTP Status Headers Being Removed By Reporters when resetting html head
+- [TESTBOX-318](https://ortussolutions.atlassian.net/browse/TESTBOX-318) Chaining "not" matchers before regular matchers doesn't work correctly
+- [TESTBOX-316](https://ortussolutions.atlassian.net/browse/TESTBOX-316) Coverage output doesn't escape ending script tag
+- [TESTBOX-315](https://ortussolutions.atlassian.net/browse/TESTBOX-315) ConsoleReporter fails with missing functions in assets/text
+- [TESTBOX-313](https://ortussolutions.atlassian.net/browse/TESTBOX-313) No matching function \[SPACE\] found
+- [TESTBOX-311](https://ortussolutions.atlassian.net/browse/TESTBOX-311) CF error variable \[THISBUNDLE\] doesn't exist when running tests
+
+### Changed
+
+- [TESTBOX-317](https://ortussolutions.atlassian.net/browse/TESTBOX-317) Full Null Support Some items of array can be NULL
+- [TESTBOX-314](https://ortussolutions.atlassian.net/browse/TESTBOX-314) text and min text whitespace management
+- [TESTBOX-301](https://ortussolutions.atlassian.net/browse/TESTBOX-301) notToBeBetween seems to be the same as toBeBetween
+
+----
+
 ## [4.3.1] => 2021-MAY-25
 
 ### Fixed
@@ -43,7 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* [TESTBOX-294](https://ortussolutions.atlassian.net/browse/TESTBOX-294) - root path in test browser not enforced
+- [TESTBOX-294](https://ortussolutions.atlassian.net/browse/TESTBOX-294) - root path in test browser not enforced
 
 ----
 
@@ -51,13 +71,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* [TESTBOX-281](https://ortussolutions.atlassian.net/browse/TESTBOX-281) - request.testbox:  Component ... has no accessible Member with name [$TESTID]
-* [TESTBOX-290](https://ortussolutions.atlassian.net/browse/TESTBOX-290) - Turning on &quot;Prefix serialized JSON with&quot; in ACF causes issues in code coverage report
-* [TESTBOX-293](https://ortussolutions.atlassian.net/browse/TESTBOX-293) - Force properties file to have properties extension and escape special chars
+- [TESTBOX-281](https://ortussolutions.atlassian.net/browse/TESTBOX-281) - request.testbox:  Component ... has no accessible Member with name [$TESTID]
+- [TESTBOX-290](https://ortussolutions.atlassian.net/browse/TESTBOX-290) - Turning on &quot;Prefix serialized JSON with&quot; in ACF causes issues in code coverage report
+- [TESTBOX-293](https://ortussolutions.atlassian.net/browse/TESTBOX-293) - Force properties file to have properties extension and escape special chars
 
 ### Added
 
-* [TESTBOX-291](https://ortussolutions.atlassian.net/browse/TESTBOX-291) - refactor usage of locks for debug utility in specs
+- [TESTBOX-291](https://ortussolutions.atlassian.net/browse/TESTBOX-291) - refactor usage of locks for debug utility in specs
 
 ----
 
@@ -65,12 +85,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-* [TESTBOX-283] - Fix type on test results for bundlestats
-* [TESTBOX-286] - `DebugBuffer` was being removed instead of resetting to empty for `getMemento`
-* [TESTBOX-281] - `request.testbox`  Component ... has no accessible Member with name [$TESTID]
+- [TESTBOX-283] - Fix type on test results for bundlestats
+- [TESTBOX-286] - `DebugBuffer` was being removed instead of resetting to empty for `getMemento`
+- [TESTBOX-281] - `request.testbox`  Component ... has no accessible Member with name [$TESTID]
 
 ### Added
 
-* [TESTBOX-282] - Added cfml engine and version as part of the test results as properties
-* [TESTBOX-284] - Update all reporters so they can just build and return the report with no content type or context repsonse resets
-* [TESTBOX-285] - make `buildReporter` public in the testbox core
+- [TESTBOX-282] - Added cfml engine and version as part of the test results as properties
+- [TESTBOX-284] - Update all reporters so they can just build and return the report with no content type or context repsonse resets
+- [TESTBOX-285] - make `buildReporter` public in the testbox core
