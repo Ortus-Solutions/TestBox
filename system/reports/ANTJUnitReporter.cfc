@@ -126,7 +126,7 @@ return;
 		// iterate over
 		for ( var thisSuite in arguments.suiteStats ) {
 			// build out full suite name
-			var fullName = encodeForXMLAttribute( arguments.parentName & thisSuite.name );
+			var fullName = arguments.parentName & thisSuite.name;
 
 			// build out test cases
 			for ( var thisSpecStat in thisSuite.specStats ) {
@@ -146,7 +146,7 @@ return;
 					r,
 					arguments.bundlestats,
 					thisSuite.suiteStats,
-					encodeForXMLAttribute( fullName & " " )
+					fullName & " "
 				);
 			}
 		}
