@@ -42,7 +42,6 @@ component accessors=true {
 			SELECT	sum( numCoveredLines ) as sumCoveredLines ,
 					sum( numExecutableLines ) as sumExecutableLines
 			FROM qryData
-			GROUP BY filePath
 			",
 			{},
 			{ dbtype : "query" }
