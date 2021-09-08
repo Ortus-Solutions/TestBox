@@ -1663,10 +1663,13 @@ component {
 			else if (
 				len( this.$expectedException.type ) &&
 				arguments.exception.type eq this.$expectedException.type &&
-				arrayLen(
-					reMatchNoCase(
-						this.$expectedException.regex,
-						arguments.exception.message
+				(
+					this.$expectedException.regex == '.*'
+					|| arrayLen(
+						reMatchNoCase(
+							this.$expectedException.regex,
+							arguments.exception.message
+						)
 					)
 				)
 			) {
