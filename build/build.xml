@@ -10,12 +10,6 @@
 	<condition property="version" else="0.0.0">
 		<isset property="version"/>
 	</condition>
-	<condition property="isTravis" else="false">
-      <isset property="isTravis"/>
-    </condition>
-	<condition property="cfengine" else="lucee@5">
-      <isset property="cfengine"/>
-    </condition>
     <condition property="build.branch" else="development">
       <isset property="build.branch"/>
     </condition>
@@ -75,31 +69,19 @@
 		<chmod file="${dir.build}/**" perm="og+wrs" type="both" />
 		<!-- Mark as init -->
 		<property name="src.isInit" value="true" />
-
-		<!-- Make sure server is stopped -->
-		<exec executable="box" dir="${basedir}">
-			<arg line="server stop" />
-		</exec>
-
-		<!-- Startup the testing server, wait for a few seconds for server to start -->
-		<exec executable="box" dir="${basedir}">
-			<arg line="server start name=${cfengine} cfengine=${cfengine} heapSize=1024" />
-		</exec>
 	</target>
 
-	<!-- Build test reports -->
+	<!-- Run tests -->
 	<target name="run-tests" depends="init">
+		<mkdir dir="tests/results" />
 		<!-- Execute tests -->
 		<exec executable="box" dir="${basedir}" failonerror="true">
-			<arg line="testbox run --noVerbose" />
+			<arg line="testbox run verbose=false outputFile='tests/results/test-results' outputFormats='json,antjunit'" />
 		</exec>
 	</target>
 
 	<!-- Build All Releases -->
-	<target name="build.all" description="Builds TestBox" depends="run-tests,build.testbox">
-		<exec executable="box" dir="${basedir}">
-			<arg line="server stop" />
-		</exec>
+	<target name="build.all" description="Builds TestBox" depends="build.testbox">
 	</target>
 
 	<!-- Build TestBox-->
@@ -202,10 +184,6 @@
 	<target name="build.apidocs" description="Builds the api docs" depends="init">
 		<!-- Create API apidocs dir -->
 		<mkdir dir="${dir.build}/testbox/apidocs"/>
-		<!-- Install dependencies for docs -->
-		<exec executable="box" dir="${dir.apidocs}">
-			<arg line="install --force" />
-		</exec>
 		<!-- Get the apidocs now -->
 		<get dest="${dir.build}/docbox.html"
 			 src="${url.apidocs}?version=${version}&amp;path=${dir.build}/testbox/apidocs"

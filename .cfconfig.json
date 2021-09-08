@@ -9,5 +9,5 @@
     "ajaxDebugWindowEnabled": false,
     "debuggingReportExecutionTimes": false,
 	"maxCFThreads":100,
-	"whitespaceManagement":"smart"
+	"whitespaceManagement":"white-space-pref"
 }
