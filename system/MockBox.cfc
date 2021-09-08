@@ -146,9 +146,9 @@ The Official ColdBox Mocking Factory
 		var obj = 0;
 
 		// class to mock
-		if ( structKeyExists( arguments, "className" ) ) {
+		if ( !isNull( arguments.className ) ) {
 			obj = createObject( "component", arguments.className );
-		} else if ( structKeyExists( arguments, "object" ) ) {
+		} else if ( !isNull( arguments.object ) ) {
 			// Object to Mock
 			obj = arguments.object;
 		} else {
