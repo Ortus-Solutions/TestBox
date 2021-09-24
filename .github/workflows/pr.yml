@@ -24,6 +24,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
+      - name: Delete AbstractClass for adobe@2016
+        if: contains(matrix.cfengine, 'adobe@2016')
+        run: rm tests/specs/AbstractClass.cfc
+
       - name: Setup Java
         uses: actions/setup-java@v2
         with:
