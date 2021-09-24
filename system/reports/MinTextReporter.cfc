@@ -34,9 +34,9 @@ component extends="TextReporter" {
 			getPageContextResponse().setContentType( "text/plain" );
 		}
 		// bundle stats
-		variables.bundleStats = arguments.results.getBundleStats();
+		variables.bundleStats= arguments.results.getBundleStats();
 		// prepare the report
-		savecontent variable="local.report" {
+		savecontent variable ="local.report" {
 			include "assets/mintext.cfm";
 		}
 		return reReplace(

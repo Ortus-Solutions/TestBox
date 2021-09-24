@@ -110,9 +110,7 @@ component accessors="true" {
 				structKeyExists( arguments.missingMethodArguments, "message" ) ? arguments.missingMethodArguments.message : ""
 			);
 			message = (
-				structKeyExists( arguments.missingMethodArguments, "1" ) ? arguments.missingMethodArguments[
-					1
-				] : message
+				structKeyExists( arguments.missingMethodArguments, "1" ) ? arguments.missingMethodArguments[ 1 ] : message
 			);
 			// execute the method
 			return toBeTypeOf( type = type, message = message );

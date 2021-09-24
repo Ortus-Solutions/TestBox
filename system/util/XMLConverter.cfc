@@ -250,7 +250,9 @@ Luis Majano
 					<cfset buffer.append( "<#lCase( col )#>#value#</#lCase( col )#>" )>
 
 					<cfcatch type="any">
-						<cfdump var="#cfcatch#"><cfdump var="#arguments#"><cfdump var="#currentRow#"><cfdump var="#col#"><cfabort>
+						<cfdump var="#cfcatch#"><cfdump var="#arguments#"><cfdump var="#currentRow#"><cfdump
+							var="#col#"
+						><cfabort>
 					</cfcatch>
 				</cftry>
 			</cfloop>
@@ -269,12 +271,7 @@ Luis Majano
 		output    ="false"
 		hint      ="Converts a struct into XML with no headers."
 	>
-		<cfargument
-			name    ="data"
-			type    ="any"
-			required="true"
-			hint    ="The structure, object, any to convert."
-		>
+		<cfargument name="data" type="any" required="true" hint="The structure, object, any to convert.">
 		<cfargument
 			name    ="useCDATA"
 			type    ="boolean"
@@ -340,12 +337,7 @@ Luis Majano
 		output    ="false"
 		hint      ="Converts an object(entity) into XML by inspecting its properties and then calling the appropriate getters on it."
 	>
-		<cfargument
-			name    ="data"
-			type    ="any"
-			required="true"
-			hint    ="The structure, object, any to convert."
-		>
+		<cfargument name="data" type="any" required="true" hint="The structure, object, any to convert.">
 		<cfargument
 			name    ="useCDATA"
 			type    ="boolean"
@@ -440,13 +432,7 @@ Luis Majano
 
 	<!--- This line taken from Nathan Dintenfas' SafeText UDF --->
 	<!--- www.cflib.org/udf.cfm/safetext --->
-	<cffunction
-		name      ="safeText"
-		returnType="string"
-		access    ="private"
-		output    ="false"
-		hint      ="Create a safe xml text"
-	>
+	<cffunction name="safeText" returnType="string" access="private" output="false" hint="Create a safe xml text">
 		<cfargument name="txt" type="string" required="true">
 		<cfargument
 			name    ="useCDATA"

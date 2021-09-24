@@ -10,10 +10,7 @@ component accessors=true {
 
 	function init(){
 		// Create this class for some static helper methods
-		variables.PageSourceImpl = createObject(
-			"java",
-			"lucee.runtime.PageSourceImpl"
-		);
+		variables.PageSourceImpl = createObject( "java", "lucee.runtime.PageSourceImpl" );
 		return this;
 	}
 
@@ -87,9 +84,7 @@ component accessors=true {
 				"/\"
 			);
 			// everything after server/share
-			var path = arguments.absolutePath
-				.listDeleteAt( 1, "/\" )
-				.listDeleteAt( 1, "/\" );
+			var path    = arguments.absolutePath.listDeleteAt( 1, "/\" ).listDeleteAt( 1, "/\" );
 			var mapping = locateUNCMapping( UNCShare );
 			return mapping & "/" & path;
 
@@ -130,9 +125,7 @@ component accessors=true {
 	 * Creates the mapping if it doesn't exist
 	 */
 	string function locateUNCMapping( required string UNCShare ){
-		var mappingName = "/" & arguments.UNCShare
-			.replace( "/", "_" )
-			.replace( ".", "_", "all" ) & "_UNC";
+		var mappingName = "/" & arguments.UNCShare.replace( "/", "_" ).replace( ".", "_", "all" ) & "_UNC";
 		var mappingPath = "\\" & arguments.UNCShare & "/";
 		createMapping( mappingName, mappingPath );
 		return mappingName;
@@ -141,7 +134,7 @@ component accessors=true {
 	function createMapping( mappingName, mappingPath ){
 		var mappings = getApplicationSettings().mappings;
 		if ( !structKeyExists( mappings, mappingName ) || mappings[ mappingName ] != mappingPath ) {
-			mappings[ mappingName ] = mappingPath;
+			mappings[ mappingName ]= mappingPath;
 			application action     ="update" mappings="#mappings#";
 		}
 	}

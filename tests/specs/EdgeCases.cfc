@@ -9,14 +9,8 @@ component extends="testbox.system.BaseSpec" {
 				expect( expected ).toBe( actual ); // this is line 10
 			} );
 
-			it(
-				"can handle private UDFs",
-				variables.myFakeClosure
-			);
-			it(
-				"can handle public UDFs",
-				variables.myFakePublicClosure
-			);
+			it( "can handle private UDFs", variables.myFakeClosure );
+			it( "can handle public UDFs", variables.myFakePublicClosure );
 		} );
 
 		describe( "Ability to bind data to life-cycle methods", function(){

@@ -46,9 +46,9 @@ component extends="testbox.system.BaseSpec" {
 
 				describe( "A nice /suite/with/slashes", function(){
 					it( "can have slashes/inthe/it", function(){
-						expect(	true ).toBeTrue();
-					});
-				});
+						expect( true ).toBeTrue();
+					} );
+				} );
 
 				it( "can match strings with no case sensitivity", function(){
 					expect( "Luis" ).toMatch( "^luis" );
@@ -191,12 +191,7 @@ component extends="testbox.system.BaseSpec" {
 
 
 				it( "can process structure key expectations", function(){
-					var s = {
-						"data"  : {},
-						"error" : {},
-						"name"  : {},
-						"age"   : 0
-					};
+					var s = { "data" : {}, "error" : {}, "name" : {}, "age" : 0 };
 
 					expect( s ).toHaveKey( "error" );
 					expect( s ).notToHaveKey( "luis" );
@@ -371,22 +366,21 @@ component extends="testbox.system.BaseSpec" {
 		} );
 
 		describe( "In depth throwing exceptions", function(){
-			it("throws a FooException", function() {
-				expect(function() {
-					throw(type="FooException");
-				}).toThrow("FooException");
-			});
-			it("won't throw a FooException because nothing is thrown", function() {
-				expect(function() {
-
-				}).notToThrow("FooException");
-			});
-			it("won't throw a FooException because a different exception is thrown", function() {
-				expect(function() {
-					throw(type="DifferentException");
-				}).notToThrow("FooException");
-			});
-		});
+			it( "throws a FooException", function(){
+				expect( function(){
+					throw( type = "FooException" );
+				} ).toThrow( "FooException" );
+			} );
+			it( "won't throw a FooException because nothing is thrown", function(){
+				expect( function(){
+				} ).notToThrow( "FooException" );
+			} );
+			it( "won't throw a FooException because a different exception is thrown", function(){
+				expect( function(){
+					throw( type = "DifferentException" );
+				} ).notToThrow( "FooException" );
+			} );
+		} );
 	}
 
 	private function isLucee(){

@@ -42,10 +42,7 @@ component {
 	 */
 	function fileLastModified( required filename ){
 		var objFile = createObject( "java", "java.io.File" ).init(
-			javacast(
-				"string",
-				getAbsolutePath( arguments.filename )
-			)
+			javacast( "string", getAbsolutePath( arguments.filename ) )
 		);
 		// Calculate adjustments fot timezone and daylightsavindtime
 		var offset = ( ( getTimezoneInfo().utcHourOffset ) + 1 ) * -3600;
@@ -149,10 +146,7 @@ component {
 	 * @annotation The annotation name to look for on methods
 	 * @metadata The metadata to search (recursively) for the provided annotation
 	 */
-	public array function getAnnotatedMethods(
-		required string annotation,
-		required struct metadata
-	){
+	public array function getAnnotatedMethods( required string annotation, required struct metadata ){
 		var lifecycleMethods = [];
 
 		if ( structKeyExists( arguments.metadata, "functions" ) ) {
@@ -164,15 +158,9 @@ component {
 		}
 
 		if ( structKeyExists( arguments.metadata, "extends" ) ) {
-			arrayEach(
-				getAnnotatedMethods(
-					arguments.annotation,
-					arguments.metadata.extends
-				),
-				function( item ){
-					arrayAppend( lifecycleMethods, arguments.item );
-				}
-			);
+			arrayEach( getAnnotatedMethods( arguments.annotation, arguments.metadata.extends ), function( item ){
+				arrayAppend( lifecycleMethods, arguments.item );
+			} );
 		}
 
 		return lifecycleMethods;

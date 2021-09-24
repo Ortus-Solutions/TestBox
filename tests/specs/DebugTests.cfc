@@ -21,10 +21,7 @@ component extends="testbox.system.BaseSpec" {
 			title = "Debug",
 			body  = function(){
 				it( "can have custom labels", function(){
-					debug(
-						var   = [ 1, 2, 3, 4 ],
-						label = "My Custom Label"
-					);
+					debug( var = [ 1, 2, 3, 4 ], label = "My Custom Label" );
 					var buffer = getDebugBuffer();
 					expect( buffer[ 1 ].label ).toBe( "My Custom Label" );
 				} );
@@ -36,13 +33,7 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "can do top functionality", function(){
-					var nested = [
-						1,
-						2,
-						3,
-						4,
-						[ 1, 2, 3, 4, [ 1, 2, 3, 4 ] ]
-					];
+					var nested = [ 1, 2, 3, 4, [ 1, 2, 3, 4, [ 1, 2, 3, 4 ] ] ];
 					debug( var = nested, top = 1 );
 				} );
 

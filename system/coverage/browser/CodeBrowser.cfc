@@ -56,10 +56,7 @@ component accessors=true {
 		savecontent variable="local.index" {
 			include "templates/index.cfm";
 		}
-		fileWrite(
-			browserOutputDir & "/index.html",
-			local.index
-		);
+		fileWrite( browserOutputDir & "/index.html", local.index );
 
 		// Create directory skeletons
 		var dataStream = variables.streamBuilder
@@ -100,7 +97,12 @@ component accessors=true {
 			var brush                   = right( fileData.relativeFilePath, 4 ) == ".cfm" ? "coldfusion" : "javascript";
 
 			// Escape closing script tags to avoid breaking out of code display early
-			fileContents = REReplace(fileContents, '</script>', '&lt;/script>', 'all');
+			fileContents = reReplace(
+				fileContents,
+				"</script>",
+				"&lt;/script>",
+				"all"
+			);
 
 			savecontent variable="local.fileTemplate" {
 				include "templates/file.cfm";

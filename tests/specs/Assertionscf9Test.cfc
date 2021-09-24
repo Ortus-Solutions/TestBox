@@ -133,33 +133,17 @@ component
 
 		$assert.isEqual( f1, f1 );
 
-		$assert.isEqual(
-			new testbox.system.MockBox(),
-			new testbox.system.MockBox()
-		);
+		$assert.isEqual( new testbox.system.MockBox(), new testbox.system.MockBox() );
 
 		var xmlString = "<root><item attr=""value"" /><item attr=""again"" /></root>";
-		$assert.isEqual(
-			xmlParse( xmlString ),
-			xmlParse( xmlString )
-		);
+		$assert.isEqual( xmlParse( xmlString ), xmlParse( xmlString ) );
 
 		$assert.isEqual( 0, 0 );
 		$assert.isEqual( "hello", "HEllO" );
 		$assert.isEqual( [], [] );
 		$assert.isEqual(
-			[
-				1,
-				2,
-				3,
-				{ name : "hello", test : "this" }
-			],
-			[
-				1,
-				2,
-				3,
-				{ test : "this", name : "hello" }
-			]
+			[ 1, 2, 3, { name : "hello", test : "this" } ],
+			[ 1, 2, 3, { test : "this", name : "hello" } ]
 		);
 	}
 
@@ -223,10 +207,7 @@ component
 			)
 		);
 		$assert.typeOf( "string", "hello string" );
-		$assert.typeOf(
-			"struct",
-			{ name : "luis", awesome : true }
-		);
+		$assert.typeOf( "struct", { name : "luis", awesome : true } );
 		$assert.typeOf( "uuid", createUUID() );
 		$assert.typeOf( "url", "https://www.coldbox.org" );
 	}
@@ -247,10 +228,7 @@ component
 	}
 
 	function testInstanceOf(){
-		$assert.instanceOf(
-			new testbox.system.MockBox(),
-			"testbox.system.MockBox"
-		);
+		$assert.instanceOf( new testbox.system.MockBox(), "testbox.system.MockBox" );
 	}
 
 	function testNotInstanceOf(){
@@ -270,46 +248,23 @@ component
 	}
 
 	function testNotMatch(){
-		$assert.notMatch(
-			"This testing is my test",
-			"(hello)$"
-		);
+		$assert.notMatch( "This testing is my test", "(hello)$" );
 	}
 
 	function testKey(){
-		$assert.key(
-			{ name : "luis", awesome : true },
-			"awesome"
-		);
+		$assert.key( { name : "luis", awesome : true }, "awesome" );
 	}
 
 	function testNotKey(){
-		$assert.notKey(
-			{ name : "luis", awesome : true },
-			"test"
-		);
+		$assert.notKey( { name : "luis", awesome : true }, "test" );
 	}
 
 	function testDeepKey(){
-		$assert.deepKey(
-			{
-				name    : "luis",
-				awesome : true,
-				parent  : { age : 70 }
-			},
-			"age"
-		);
+		$assert.deepKey( { name : "luis", awesome : true, parent : { age : 70 } }, "age" );
 	}
 
 	function testNotDeepKey(){
-		$assert.notDeepKey(
-			{
-				name    : "luis",
-				awesome : true,
-				parent  : { age : 70 }
-			},
-			"luis"
-		);
+		$assert.notDeepKey( { name : "luis", awesome : true, parent : { age : 70 } }, "luis" );
 	}
 
 	function testLengthOf(){
@@ -343,10 +298,7 @@ component
 	 */
 	function testExpectedExceptionNoValue(){
 		// This method should throw an invalid exception and pass
-		throw(
-			type    = "InvalidException",
-			message = "This test method should pass with an expected exception"
-		);
+		throw( type = "InvalidException", message = "This test method should pass with an expected exception" );
 	}
 
 	/**
@@ -374,28 +326,19 @@ component
 	function testExpectedExceptionFromMethod(){
 		expectedException();
 		// This method should throw an invalid exception and pass
-		throw(
-			type    = "InvalidException",
-			message = "This test method should pass with an expected exception"
-		);
+		throw( type = "InvalidException", message = "This test method should pass with an expected exception" );
 	}
 
 	function testExpectedExceptionFromMethodWithType(){
 		expectedException( "InvalidException" );
 		// This method should throw an invalid exception and pass
-		throw(
-			type    = "InvalidException",
-			message = "This test method should pass with an expected exception"
-		);
+		throw( type = "InvalidException", message = "This test method should pass with an expected exception" );
 	}
 
 	function testExpectedExceptionFromMethodWithTypeAndRegex(){
 		expectedException( "InvalidException", "(pass with an)" );
 		// This method should throw an invalid exception and pass
-		throw(
-			type    = "InvalidException",
-			message = "This test method should pass with an expected exception"
-		);
+		throw( type = "InvalidException", message = "This test method should pass with an expected exception" );
 	}
 
 	function testIsGT(){
@@ -414,10 +357,7 @@ component
 		$assert.isLT( "a", "d" );
 		$assert.isLT( 5, 30 );
 		$assert.isLT( "01/01/2013", "01/02/2013" );
-		$assert.isLT(
-			"01/01/2013 08:00:00",
-			"01/01/2013 12:00:00"
-		);
+		$assert.isLT( "01/01/2013 08:00:00", "01/01/2013 12:00:00" );
 	}
 
 	function testIsLTE(){

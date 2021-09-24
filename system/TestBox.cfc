@@ -82,10 +82,7 @@ component accessors="true" {
 	 * Constructor
 	 * @directory A directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	 */
-	any function addDirectory(
-		required any directory,
-		boolean recurse = true
-	){
+	any function addDirectory( required any directory, boolean recurse = true ){
 		// inflate directory?
 		if ( isSimpleValue( arguments.directory ) ) {
 			arguments.directory = {
@@ -106,10 +103,7 @@ component accessors="true" {
 	 * Constructor
 	 * @directories A set of directories to test which can be a list of simple mapping paths or an array of structs with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	 */
-	any function addDirectories(
-		required any directories,
-		boolean recurse = true
-	){
+	any function addDirectories( required any directories, boolean recurse = true ){
 		if ( isSimpleValue( arguments.directories ) ) {
 			arguments.directories = listToArray( arguments.directories );
 		}
@@ -167,11 +161,11 @@ component accessors="true" {
 			variables.reporter = arguments.reporter;
 		}
 		// run it and get results
-		var results = runRaw( argumentCollection = arguments );
+		var results      = runRaw( argumentCollection = arguments );
 		// store latest results
 		variables.result = results;
 		// return report
-		var report = produceReport( results );
+		var report       = produceReport( results );
 		// set response headers
 		sendStatusHeaders( results );
 
@@ -210,10 +204,7 @@ component accessors="true" {
 		}
 		// inflate directory?
 		if ( !isNull( arguments.directory ) && isSimpleValue( arguments.directory ) ) {
-			arguments.directory = {
-				mapping : arguments.directory,
-				recurse : true
-			};
+			arguments.directory = { mapping : arguments.directory, recurse : true };
 		}
 		// inflate test bundles, suites and specs from incoming variables.
 		arguments.testBundles = (
@@ -403,38 +394,14 @@ component accessors="true" {
 		try {
 			var response = getPageContext().getResponse();
 
-			response.addHeader(
-				"x-testbox-totalDuration",
-				javacast( "string", results.getTotalDuration() )
-			);
-			response.addHeader(
-				"x-testbox-totalBundles",
-				javacast( "string", results.getTotalBundles() )
-			);
-			response.addHeader(
-				"x-testbox-totalSuites",
-				javacast( "string", results.getTotalSuites() )
-			);
-			response.addHeader(
-				"x-testbox-totalSpecs",
-				javacast( "string", results.getTotalSpecs() )
-			);
-			response.addHeader(
-				"x-testbox-totalPass",
-				javacast( "string", results.getTotalPass() )
-			);
-			response.addHeader(
-				"x-testbox-totalFail",
-				javacast( "string", results.getTotalFail() )
-			);
-			response.addHeader(
-				"x-testbox-totalError",
-				javacast( "string", results.getTotalError() )
-			);
-			response.addHeader(
-				"x-testbox-totalSkipped",
-				javacast( "string", results.getTotalSkipped() )
-			);
+			response.addHeader( "x-testbox-totalDuration", javacast( "string", results.getTotalDuration() ) );
+			response.addHeader( "x-testbox-totalBundles", javacast( "string", results.getTotalBundles() ) );
+			response.addHeader( "x-testbox-totalSuites", javacast( "string", results.getTotalSuites() ) );
+			response.addHeader( "x-testbox-totalSpecs", javacast( "string", results.getTotalSpecs() ) );
+			response.addHeader( "x-testbox-totalPass", javacast( "string", results.getTotalPass() ) );
+			response.addHeader( "x-testbox-totalFail", javacast( "string", results.getTotalFail() ) );
+			response.addHeader( "x-testbox-totalError", javacast( "string", results.getTotalError() ) );
+			response.addHeader( "x-testbox-totalSkipped", javacast( "string", results.getTotalSkipped() ) );
 		} catch ( Any e ) {
 			writeLog(
 				type = "error",
@@ -457,17 +424,11 @@ component accessors="true" {
 
 		// If the type is a simple value then inflate it
 		if ( isSimpleValue( variables.reporter ) ) {
-			iData = {
-				type    : buildReporter( variables.reporter ),
-				options : {}
-			};
+			iData = { type : buildReporter( variables.reporter ), options : {} };
 		}
 		// If the incoming reporter is an object.
 		else if ( isObject( variables.reporter ) ) {
-			iData = {
-				type    : variables.reporter,
-				options : {}
-			};
+			iData = { type : variables.reporter, options : {} };
 		}
 		// Do we have reporter type and options
 		else if ( isStruct( variables.reporter ) ) {
@@ -477,11 +438,7 @@ component accessors="true" {
 			}
 		}
 		// build the report from the reporter
-		return iData.type.runReport(
-			arguments.results,
-			this,
-			iData.options
-		);
+		return iData.type.runReport( arguments.results, this, iData.options );
 	}
 
 	/**
@@ -556,9 +513,9 @@ component accessors="true" {
 		required callbacks
 	){
 		// create new target bundle and get its metadata
-		try{
+		try {
 			var target = getBundle( arguments.bundlePath );
-		} catch( "AbstractComponentException" e ){
+		} catch ( "AbstractComponentException" e ) {
 			// Skip abstract components
 			return this;
 		}
@@ -572,20 +529,14 @@ component accessors="true" {
 			// Discover type?
 			if ( structKeyExists( target, "run" ) ) {
 				// Run via BDD Style
-				new testbox.system.runners.BDDRunner(
-					options = variables.options,
-					testbox = this
-				).run(
+				new testbox.system.runners.BDDRunner( options = variables.options, testbox = this ).run(
 					target,
 					arguments.testResults,
 					arguments.callbacks
 				);
 			} else {
 				// Run via xUnit Style
-				new testbox.system.runners.UnitRunner(
-					options = variables.options,
-					testbox = this
-				).run(
+				new testbox.system.runners.UnitRunner( options = variables.options, testbox = this ).run(
 					target,
 					arguments.testResults,
 					arguments.callbacks
@@ -618,17 +569,11 @@ component accessors="true" {
 	 * @throws AbstractComponentException - When an abstract component exists as a spec
 	 */
 	private any function getBundle( required bundlePath ){
-		try{
-			var bundle = createObject(
-				"component",
-				"#arguments.bundlePath#"
-			);
-		} catch( "Application" e ){
-			if( findNoCase( "abstract component", e.message ) ){
-				throw(
-					type : "AbstractComponentException",
-					message : "Skip abstract components"
-				);
+		try {
+			var bundle = createObject( "component", "#arguments.bundlePath#" );
+		} catch ( "Application" e ) {
+			if ( findNoCase( "abstract component", e.message ) ) {
+				throw( type: "AbstractComponentException", message: "Skip abstract components" );
 			}
 			rethrow;
 		}
@@ -672,17 +617,10 @@ component accessors="true" {
 			structKeyExists( arguments.directory, "recurse" ) ? arguments.directory.recurse : true
 		);
 		// clean up paths
-		var bundleExpandedPath = expandPath(
-			"/" & replace(
-				arguments.directory.mapping,
-				".",
-				"/",
-				"all"
-			)
-		);
-		bundleExpandedPath = replace( bundleExpandedPath, "\", "/", "all" );
+		var bundleExpandedPath = expandPath( "/" & replace( arguments.directory.mapping, ".", "/", "all" ) );
+		bundleExpandedPath     = replace( bundleExpandedPath, "\", "/", "all" );
 		// search directory with filters
-		var bundlesFound   = directoryList(
+		var bundlesFound       = directoryList(
 			bundleExpandedPath,
 			arguments.directory.recurse,
 			"path",
@@ -709,18 +647,9 @@ component accessors="true" {
 				"all"
 			);
 			// clean base out of them
-			bundlesFound[ x ] = replace(
-				bundlesFound[ x ],
-				bundleExpandedPath,
-				""
-			);
+			bundlesFound[ x ] = replace( bundlesFound[ x ], bundleExpandedPath, "" );
 			// Clean out slashes and append the mapping.
-			bundlesFound[ x ] = arguments.directory.mapping & reReplace(
-				bundlesFound[ x ],
-				"(\\|/)",
-				".",
-				"all"
-			);
+			bundlesFound[ x ] = arguments.directory.mapping & reReplace( bundlesFound[ x ], "(\\|/)", ".", "all" );
 
 			arrayAppend( results, bundlesFound[ x ] );
 		}
@@ -748,7 +677,9 @@ component accessors="true" {
 	 * Inflate incoming bundles from a simple string as a standard array
 	 */
 	private function inflateBundles( required any bundles ){
-		variables.bundles = ( isSimpleValue( arguments.bundles ) ? listToArray( arguments.bundles ) : arguments.bundles );
+		variables.bundles = (
+			isSimpleValue( arguments.bundles ) ? listToArray( arguments.bundles ) : arguments.bundles
+		);
 	}
 
 }

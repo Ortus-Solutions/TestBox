@@ -20,10 +20,7 @@ component
 	 * @options.hint The options for this runner
 	 * @testbox.hint The TestBox class reference
 	 */
-	function init(
-		required struct options,
-		required testBox
-	){
+	function init( required struct options, required testBox ){
 		variables.options = arguments.options;
 		variables.testbox = arguments.testbox;
 
@@ -54,10 +51,7 @@ component
 		var testSuitesCount = arrayLen( testSuites );
 
 		// Start recording stats for this bundle
-		var bundleStats = arguments.testResults.startBundleStats(
-			bundlePath = targetMD.name,
-			name       = bundleName
-		);
+		var bundleStats = arguments.testResults.startBundleStats( bundlePath = targetMD.name, name = bundleName );
 
 		// Verify we can run this bundle
 		if (
@@ -76,16 +70,10 @@ component
 				// find any methods annotated 'beforeAll' and execute them
 				var beforeAllAnnotationMethods = variables.testbox
 					.getUtility()
-					.getAnnotatedMethods(
-						annotation = "beforeAll",
-						metadata   = getMetadata( arguments.target )
-					);
+					.getAnnotatedMethods( annotation = "beforeAll", metadata = getMetadata( arguments.target ) );
 
 				for ( var beforeAllMethod in beforeAllAnnotationMethods ) {
-					invoke(
-						arguments.target,
-						"#beforeAllMethod.name#"
-					);
+					invoke( arguments.target, "#beforeAllMethod.name#" );
 				}
 
 				if ( structKeyExists( arguments.target, "beforeTests" ) ) {
@@ -130,16 +118,10 @@ component
 				// find any methods annotated 'afterAll' and execute them
 				var afterAllAnnotationMethods = variables.testbox
 					.getUtility()
-					.getAnnotatedMethods(
-						annotation = "afterAll",
-						metadata   = getMetadata( arguments.target )
-					);
+					.getAnnotatedMethods( annotation = "afterAll", metadata = getMetadata( arguments.target ) );
 
 				for ( var afterAllMethod in afterAllAnnotationMethods ) {
-					invoke(
-						arguments.target,
-						"#afterAllMethod.name#"
-					);
+					invoke( arguments.target, "#afterAllMethod.name#" );
 				}
 
 				if ( structKeyExists( arguments.target, "afterTests" ) ) {
@@ -150,10 +132,7 @@ component
 				// For a righteous man falls seven times, and rises (tests) again :)
 				// The amount doesn't matter, nothing can run at this point, failure with before/after aspects that need fixing
 				bundleStats.totalError      = 7;
-				arguments.testResults.incrementStat(
-					type  = "error",
-					count = bundleStats.totalError
-				);
+				arguments.testResults.incrementStat( type = "error", count = bundleStats.totalError );
 			}
 		}
 
@@ -181,19 +160,14 @@ component
 		required callbacks = {}
 	){
 		// Start suite stats
-		var suiteStats = arguments.testResults.startSuiteStats(
-			arguments.suite.name,
-			arguments.bundleStats
-		);
+		var suiteStats = arguments.testResults.startSuiteStats( arguments.suite.name, arguments.bundleStats );
 
 		// Record bundle + suite + global initial stats
 		suiteStats.totalSpecs = arrayLen( arguments.suite.specs );
 		arguments.bundleStats.totalSpecs += suiteStats.totalSpecs;
 		arguments.bundleStats.totalSuites++;
 		// increment global suites + specs
-		arguments.testResults
-			.incrementSuites()
-			.incrementSpecs( suiteStats.totalSpecs );
+		arguments.testResults.incrementSuites().incrementSpecs( suiteStats.totalSpecs );
 
 		// Verify we can execute the incoming suite via skipping or labels
 		if (
@@ -343,12 +317,11 @@ component
 				) : false
 			),
 			// labels attached to the suite for execution
-			labels : ( structKeyExists( arguments.targetMD, "labels" ) ? listToArray( arguments.targetMD.labels ) : [] ),
-			// the specs attached to this suite.
-			specs  : getTestMethods(
-				arguments.target,
-				arguments.testResults
+			labels : (
+				structKeyExists( arguments.targetMD, "labels" ) ? listToArray( arguments.targetMD.labels ) : []
 			),
+			// the specs attached to this suite.
+			specs  : getTestMethods( arguments.target, arguments.testResults ),
 			// the recursive suites
 			suites : []
 		};
@@ -369,10 +342,7 @@ component
 	 * Retrieve the testing methods/specs from a given target.
 	 * @target.hint The target to get the methods from
 	 */
-	private array function getTestMethods(
-		required any target,
-		required any testResults
-	){
+	private array function getTestMethods( required any target, required any testResults ){
 		var mResults    = [];
 		var methodArray = structKeyArray( arguments.target );
 		var index       = 1;
@@ -391,7 +361,9 @@ component
 					skip              : ( structKeyExists( specMD, "skip" ) ? ( len( specMD.skip ) ? specMD.skip : true ) : false ),
 					labels            : ( structKeyExists( specMD, "labels" ) ? listToArray( specMD.labels ) : [] ),
 					order             : ( structKeyExists( specMD, "order" ) ? listToArray( specMD.order ) : index++ ),
-					expectedException : ( structKeyExists( specMD, "expectedException" ) ? specMD.expectedException : "" )
+					expectedException : (
+						structKeyExists( specMD, "expectedException" ) ? specMD.expectedException : ""
+					)
 				};
 
 				// skip constraint?

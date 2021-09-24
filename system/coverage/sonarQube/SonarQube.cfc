@@ -29,10 +29,7 @@ component accessors=true {
 	 *
 	 * @Returns generated XML string
 	 */
-	string function generateXML(
-		required query qryCoverageData,
-		string XMLOutputPath = ""
-	){
+	string function generateXML( required query qryCoverageData, string XMLOutputPath = "" ){
 		var coverageXML                     = xmlNew();
 		var rootNode                        = xmlElemNew( coverageXML, "coverage" );
 		rootNode.XMLAttributes[ "version" ] = 1;
@@ -65,10 +62,7 @@ component accessors=true {
 
 		// If there is an output path, write it to a file
 		if ( len( XMLOutputPath ) ) {
-			fileWrite(
-				arguments.XMLOutputPath,
-				coverageXMLString
-			);
+			fileWrite( arguments.XMLOutputPath, coverageXMLString );
 		}
 
 		// Return the XML string

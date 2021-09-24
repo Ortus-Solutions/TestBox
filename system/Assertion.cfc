@@ -26,14 +26,8 @@ component {
 	 * @expression The expression to test
 	 * @message The message to send in the failure
 	 */
-	function assert(
-		required boolean expression,
-		message = ""
-	){
-		return isTrue(
-			arguments.expression,
-			arguments.message
-		);
+	function assert( required boolean expression, message = "" ){
+		return isTrue( arguments.expression, arguments.message );
 	}
 
 	/**
@@ -41,11 +35,10 @@ component {
 	 * @actual The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isTrue(
-		required boolean actual,
-		message = ""
-	){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be true" );
+	function isTrue( required boolean actual, message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be true"
+		);
 		if ( NOT arguments.actual ) {
 			fail( arguments.message );
 		}
@@ -57,11 +50,10 @@ component {
 	 * @actual The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isFalse(
-		required boolean actual,
-		message = ""
-	){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be false" );
+	function isFalse( required boolean actual, message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be false"
+		);
 		if ( arguments.actual ) {
 			fail( arguments.message );
 		}
@@ -74,11 +66,7 @@ component {
 	 * @actual The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isEqual(
-		any expected,
-		any actual,
-		message = ""
-	){
+	function isEqual( any expected, any actual, message = "" ){
 		// validate equality
 		if ( equalize( argumentCollection = arguments ) ) {
 			return this;
@@ -96,11 +84,7 @@ component {
 	 * @actual The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isNotEqual(
-		any expected,
-		any actual,
-		message = ""
-	){
+	function isNotEqual( any expected, any actual, message = "" ){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" : "Expected [#getStringName( arguments.expected )#] to not be [#getStringName( arguments.actual )#]"
 		);
@@ -168,11 +152,7 @@ component {
 	 * @actual The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isEqualWithCase(
-		string expected,
-		string actual,
-		message = ""
-	){
+	function isEqualWithCase( string expected, string actual, message = "" ){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]"
 		);
@@ -278,7 +258,7 @@ component {
 		message = ""
 	){
 		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The actual is of type [#getMetadata( actual ).name ?: 'n/a'#] which is not the expected type of [#arguments.typeName#]"
+			len( arguments.message ) ? arguments.message : "The actual is of type [#getMetadata( actual ).name ?: "n/a"#] which is not the expected type of [#arguments.typeName#]"
 		);
 		if ( isInstanceOf( arguments.actual, arguments.typeName ) ) {
 			return this;
@@ -298,7 +278,7 @@ component {
 		message = ""
 	){
 		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The actual is of type [#getMetadata( actual ).name ?: 'n/a'#] which is the expected type of [#arguments.typeName#]"
+			len( arguments.message ) ? arguments.message : "The actual is of type [#getMetadata( actual ).name ?: "n/a"#] which is the expected type of [#arguments.typeName#]"
 		);
 		if ( !isInstanceOf( arguments.actual, arguments.typeName ) ) {
 			return this;
@@ -700,12 +680,7 @@ component {
 				return this;
 			}
 		} else if ( isDate( arguments.actual ) ) {
-			if (
-				!listFindNoCase(
-					"yyyy,q,m,ww,w,y,d,h,n,s,l",
-					arguments.datePart
-				)
-			) {
+			if ( !listFindNoCase( "yyyy,q,m,ww,w,y,d,h,n,s,l", arguments.datePart ) ) {
 				fail( "The passed in datepart [#arguments.datepart#] is not valid." );
 			}
 
@@ -995,7 +970,9 @@ component {
 	 * @message The message to send in the failure
 	 */
 	function isJSON( required any actual, message = "" ){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be json" );
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be json"
+		);
 		if ( !isJSON( arguments.actual ) ) {
 			fail( arguments.message );
 		}
@@ -1038,14 +1015,8 @@ component {
 			}
 
 			// Get both column lists and sort them the same
-			var actualColumnList = listSort(
-				arguments.actual.columnList,
-				"textNoCase"
-			);
-			var expectedColumnList = listSort(
-				arguments.expected.columnList,
-				"textNoCase"
-			);
+			var actualColumnList   = listSort( arguments.actual.columnList, "textNoCase" );
+			var expectedColumnList = listSort( arguments.expected.columnList, "textNoCase" );
 
 			// Check column lists
 			if ( actualColumnList != expectedColumnList ) {
@@ -1104,12 +1075,7 @@ component {
 						return false;
 					}
 					// And make sure they match
-					if (
-						!equalize(
-							arguments.actual[ i ],
-							arguments.expected[ i ]
-						)
-					) {
+					if ( !equalize( arguments.actual[ i ], arguments.expected[ i ] ) ) {
 						return false;
 					}
 					continue;
@@ -1128,15 +1094,9 @@ component {
 
 		// Structs / Object
 		if ( isStruct( arguments.actual ) && isStruct( arguments.expected ) ) {
-			var actualKeys = listSort(
-				structKeyList( arguments.actual ),
-				"textNoCase"
-			);
-			var expectedKeys = listSort(
-				structKeyList( arguments.expected ),
-				"textNoCase"
-			);
-			var key = "";
+			var actualKeys   = listSort( structKeyList( arguments.actual ), "textNoCase" );
+			var expectedKeys = listSort( structKeyList( arguments.expected ), "textNoCase" );
+			var key          = "";
 
 			// Confirm both structs have the same keys
 			if ( actualKeys neq expectedKeys ) {
@@ -1154,12 +1114,7 @@ component {
 					return false;
 				}
 				// And make sure they match when actual values exist
-				if (
-					!equalize(
-						arguments.actual[ key ],
-						arguments.expected[ key ]
-					)
-				) {
+				if ( !equalize( arguments.actual[ key ], arguments.expected[ key ] ) ) {
 					return false;
 				}
 			}
@@ -1189,10 +1144,7 @@ component {
 
 		if ( listFirst( server.coldfusion.productversion ) lt 10 ) {
 			if ( isCustomFunction( arguments.target ) ) {
-				throw(
-					type    = "InvalidType",
-					message = "You sent an invalid type for length checking (function)"
-				);
+				throw( type = "InvalidType", message = "You sent an invalid type for length checking (function)" );
 			}
 		} else {
 			if ( isCustomFunction( arguments.target ) or isClosure( arguments.target ) ) {

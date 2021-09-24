@@ -15,7 +15,12 @@ A mock generator
 
 	<cffunction name="init" access="public" output="false" returntype="MockGenerator" hint="Constructor">
 		<cfargument name="mockBox" required="true"/>
-		<cfargument name="removeStubs" required="false" default="true" hint="Always remove stubs unless we are debugging"/>
+		<cfargument
+			name    ="removeStubs"
+			required="false"
+			default ="true"
+			hint    ="Always remove stubs unless we are debugging"
+		/>
 		<cfscript>
 		variables.instance.lb          = "#chr( 13 )##chr( 10 )#";
 		variables.instance.mockBox     = arguments.mockBox;
@@ -55,7 +60,13 @@ A mock generator
 			default ="false"
 			hint    ="If you want the method call to throw an exception"
 		/>
-		<cfargument name="throwType" type="string" required="false" default="" hint="The type of the exception to throw"/>
+		<cfargument
+			name    ="throwType"
+			type    ="string"
+			required="false"
+			default =""
+			hint    ="The type of the exception to throw"
+		/>
 		<cfargument
 			name    ="throwDetail"
 			type    ="string"
@@ -302,7 +313,13 @@ A mock generator
 	</cffunction>
 
 	<!--- writeStub --->
-	<cffunction name="writeStub" output="false" access="public" returntype="void" hint="Write a method generator stub">
+	<cffunction
+		name      ="writeStub"
+		output    ="false"
+		access    ="public"
+		returntype="void"
+		hint      ="Write a method generator stub"
+	>
 		<cfargument name="genPath" type="string" required="true"/>
 		<cfargument name="code" type="string" required="true"/>
 
@@ -369,10 +386,7 @@ A mock generator
 		// iterate over implementations
 		for ( local.x = 1; local.x lte listLen( arguments.implements ); local.x++ ) {
 			// generate interface methods
-			generateMethodsFromMD(
-				udfOut,
-				getComponentMetadata( listGetAt( arguments.implements, x ) )
-			);
+			generateMethodsFromMD( udfOut, getComponentMetadata( listGetAt( arguments.implements, x ) ) );
 		}
 
 		// close it
@@ -448,7 +462,9 @@ A mock generator
 				udfOut.append( "<cfargument" );
 				// do attributes
 				for ( local.fncKey in local.oMD[ x ].parameters[ y ] ) {
-					udfOut.append( " #lCase( local.fncKey )#=""#local.oMD[ x ].parameters[ y ][ local.fncKey ]#""" );
+					udfOut.append(
+						" #lCase( local.fncKey )#=""#local.oMD[ x ].parameters[ y ][ local.fncKey ]#"""
+					);
 				}
 				// close argument
 				udfOut.append( ">#instance.lb#" );
@@ -461,10 +477,7 @@ A mock generator
 		// Check extends and recurse
 		if ( structKeyExists( arguments.md, "extends" ) ) {
 			for ( var thisKey in arguments.md.extends ) {
-				generateMethodsFromMD(
-					udfOut,
-					arguments.md.extends[ thisKey ]
-				);
+				generateMethodsFromMD( udfOut, arguments.md.extends[ thisKey ] );
 			}
 		}
 		</cfscript>

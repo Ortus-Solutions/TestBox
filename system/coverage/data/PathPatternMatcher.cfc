@@ -34,10 +34,7 @@ component accessors="true" singleton {
 	 * @pattern.hint The pattern to match against the path
 	 * @path.hint The file system path to test.  Can be a file or directory.  Directories MUST end with a trailing slash
 	 */
-	boolean function matchPattern(
-		required string pattern,
-		required string path
-	){
+	boolean function matchPattern( required string pattern, required string path ){
 		// Normalize slashes
 		arguments.pattern = replace( arguments.pattern, "\", "/", "all" );
 		arguments.path    = replace( arguments.path, "\", "/", "all" );
@@ -52,35 +49,15 @@ component accessors="true" singleton {
 		regex = replace( regex, ".", "\.", "all" );
 
 		// /**/ matches zero or more directories (at least one /)
-		regex = replace(
-			regex,
-			"/**/",
-			"__zeroOrMoreDirs_",
-			"all"
-		);
+		regex = replace( regex, "/**/", "__zeroOrMoreDirs_", "all" );
 		// Double ** matches anything
 		regex = replace( regex, "**", "__anything_", "all" );
 		// Single * matches anything BUT slash
-		regex = replace(
-			regex,
-			"*",
-			"__anythingButSlash__",
-			"all"
-		);
+		regex = replace( regex, "*", "__anythingButSlash__", "all" );
 		// Switch placeholders for actual regex
-		regex = replace(
-			regex,
-			"__zeroOrMoreDirs_",
-			"/.*",
-			"all"
-		);
+		regex = replace( regex, "__zeroOrMoreDirs_", "/.*", "all" );
 		regex = replace( regex, "__anything_", ".*", "all" );
-		regex = replace(
-			regex,
-			"__anythingButSlash__",
-			"[^/]*",
-			"all"
-		);
+		regex = replace( regex, "__anythingButSlash__", "[^/]*", "all" );
 
 		// If pattern starts with slash
 		if ( regex.startsWith( "/" ) ) {
@@ -102,10 +79,7 @@ component accessors="true" singleton {
 	 * @patterns.hint An array of patterns to match against the path
 	 * @path.hint The file system path to test.  Can be a file or directory.  Directories MUST end with a trailing slash
 	 */
-	boolean function matchPatterns(
-		required array patterns,
-		required string path
-	){
+	boolean function matchPatterns( required array patterns, required string path ){
 		for ( var pattern in arguments.patterns ) {
 			if ( matchPattern( pattern, arguments.path ) ) {
 				return true;

@@ -11,10 +11,7 @@ interface {
 	 * @options The options for a runner
 	 * @testbox The TestBox class reference
 	 */
-	function init(
-		required struct options,
-		required testbox
-	);
+	function init( required struct options, required testbox );
 
 	/**
 	 * Execute a test run on a target bundle CFC

@@ -40,10 +40,7 @@ component extends="BaseReporter" {
 			resetHTMLResponse();
 			getPageContextResponse().setContentType( "application/xml" );
 		}
-		return variables.converter.toXML(
-			data     = arguments.results.getMemento(),
-			rootName = "TestBox"
-		);
+		return variables.converter.toXML( data = arguments.results.getMemento(), rootName = "TestBox" );
 	}
 
 }

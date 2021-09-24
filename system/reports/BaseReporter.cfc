@@ -34,10 +34,7 @@ component {
 				getPageContext().getOut().resetHTMLHead();
 			} catch ( any e ) {
 				// don't care, that lucee version doesn't support it.
-				writeDump(
-					var    = "resetHTMLHead() not supported #e.message#",
-					output = "console"
-				);
+				writeDump( var = "resetHTMLHead() not supported #e.message#", output = "console" );
 			}
 		}
 		// reset cfheader from integration tests
