@@ -701,7 +701,7 @@ The Official ColdBox Mocking Factory
 		oMockGenerator.generate( argumentCollection = arguments );
 
 		// Results Setup For No Argument Definitions or base results
-		if ( structKeyExists( arguments, "returns" ) ) {
+		if ( !isNull( arguments.returns ) ) {
 			this._mockResults[ arguments.method ]      = arrayNew( 1 );
 			this._mockResults[ arguments.method ][ 1 ] = arguments.returns;
 		} else {
@@ -709,7 +709,7 @@ The Official ColdBox Mocking Factory
 		}
 
 		// Callbacks Setup For No Argument Definitions or base results
-		if ( structKeyExists( arguments, "callback" ) ) {
+		if ( !isNull( arguments.callback ) ) {
 			this._mockCallbacks[ arguments.method ]      = arrayNew( 1 );
 			this._mockCallbacks[ arguments.method ][ 1 ] = arguments.callback;
 		} else {
@@ -857,7 +857,7 @@ The Official ColdBox Mocking Factory
 		var serializedArgs = "";
 
 		for ( var arg in argOrderedTree ) {
-			if ( NOT structKeyExists( argOrderedTree, arg ) ) {
+			if ( NOT structKeyExists( argOrderedTree, arg ) || isNull( argOrderedTree[ arg ] ) ) {
 				/* we aren't going to be able to serialize an undefined variable, this might occur if an arguments structure
 				 * containing optional parameters is passed by argumentCollection=arguments to the mocked method.
 				 */
