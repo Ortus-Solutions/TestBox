@@ -2,12 +2,11 @@
 abstract component{
 // cfformat-ignore-end
 
-	function init(){
-		// This is an abstract class
-	}
+function init(){
+	// This is an abstract class
+}
 
-	function run(){
-
-	}
+function run(){
+}
 
 }
