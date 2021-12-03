@@ -1,0 +1,9 @@
+{
+	"cfml.mappings": [
+		{
+			"logicalPath": "/testbox",
+			"directoryPath": "./",
+			"isPhysicalDirectoryPath" :false
+		}
+	]
+}

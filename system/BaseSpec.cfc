@@ -11,6 +11,8 @@ component {
 
 	// MockBox mocking framework
 	variables.$mockBox         = this.$mockBox = new testbox.system.MockBox();
+	// MockData CFC framework
+	variables.$mockData        = this.$mockData = new testbox.system.modules.mockdatacfc.models.MockData();
 	// Assertions object
 	variables.$assert          = this.$assert = new testbox.system.Assertion();
 	// Custom Matchers
@@ -34,10 +36,20 @@ component {
 	// Current Executing Spec
 	this.$currentExecutingSpec = "";
 	// Focused Structures
-	this.$focusedTargets 		= {
-		"suites" 	: [],
-		"specs"		: []
-	};
+	this.$focusedTargets       = { "suites" : [], "specs" : [] };
+
+	// Setup Request Utilities
+	if ( !request.keyExists( "testbox" ) ) {
+		request.testbox = {
+			"console"          : variables.console,
+			"debug"            : variables.debug,
+			"clearDebugBuffer" : variables.clearDebugBuffer,
+			"print"            : variables.print,
+			"println"          : variables.println
+		};
+	}
+	// Setup request lookbacks for debugging purposes.
+	request.$testID = this.$testID;
 
 	/************************************** BDD & EXPECTATIONS METHODS *********************************************/
 
@@ -124,7 +136,7 @@ component {
 		any skip         = false
 	){
 		arguments.focused = true;
-		return this.describe( argumentCollection=arguments );
+		return this.describe( argumentCollection = arguments );
 	}
 
 	/**
@@ -143,7 +155,7 @@ component {
 		any labels       = [],
 		boolean asyncAll = false,
 		any skip         = false,
-		boolean focused = false
+		boolean focused  = false
 	){
 		// closure checks
 		if ( !isClosure( arguments.body ) && !isCustomFunction( arguments.body ) ) {
@@ -179,7 +191,7 @@ component {
 			parent         : "",
 			// the parent ref
 			parentRef      : "",
-			// hiearachy slug
+			// hierarchy slug
 			slug           : ""
 		};
 
@@ -197,14 +209,17 @@ component {
 		// Are we in a nested describe() block
 		if ( len( this.$suiteContext ) and this.$suiteContext neq arguments.title ) {
 			// Append this suite to the nested suite.
-			arrayAppend( this.$suitesReverseLookup[ this.$suiteContext ].suites, suite );
+			arrayAppend(
+				this.$suitesReverseLookup[ this.$suiteContext ].suites,
+				suite
+			);
 			this.$suitesReverseLookup[ arguments.title ] = suite;
 
 			// Setup parent reference
 			suite.parent    = this.$suiteContext;
 			suite.parentRef = this.$suitesReverseLookup[ this.$suiteContext ];
 
-			// Build hiearachy slug separated by /
+			// Build hierarchy slug separated by /
 			suite.slug = this.$suitesReverseLookup[ this.$suiteContext ].slug & "/" & this.$suiteContext;
 			if ( left( suite.slug, 1 ) != "/" ) {
 				suite.slug = "/" & suite.slug;
@@ -235,8 +250,11 @@ component {
 		}
 
 		// Are we focused?
-		if( arguments.focused ){
-			arrayAppend( this.$focusedTargets.suites, suite.slug & "/" & suite.name );
+		if ( arguments.focused ) {
+			arrayAppend(
+				this.$focusedTargets.suites,
+				suite.slug & "/" & suite.name
+			);
 		}
 
 		// Restart spec index
@@ -261,7 +279,10 @@ component {
 		boolean asyncAll = false,
 		any skip         = false
 	){
-		return describe( argumentCollection = arguments, title = "Story: " & arguments.story );
+		return describe(
+			argumentCollection = arguments,
+			title              = "Story: " & arguments.story
+		);
 	}
 
 	/**
@@ -280,7 +301,10 @@ component {
 		boolean asyncAll = false,
 		any skip         = false
 	){
-		return fdescribe( argumentCollection = arguments, title = "Story: " & arguments.story );
+		return fdescribe(
+			argumentCollection = arguments,
+			title              = "Story: " & arguments.story
+		);
 	}
 
 	/**
@@ -299,7 +323,10 @@ component {
 		boolean asyncAll = false,
 		any skip         = false
 	){
-		return describe( argumentCollection = arguments, title = "Feature: " & arguments.feature );
+		return describe(
+			argumentCollection = arguments,
+			title              = "Feature: " & arguments.feature
+		);
 	}
 
 	/**
@@ -318,7 +345,10 @@ component {
 		boolean asyncAll = false,
 		any skip         = false
 	){
-		return fdescribe( argumentCollection = arguments, title = "Feature: " & arguments.feature );
+		return fdescribe(
+			argumentCollection = arguments,
+			title              = "Feature: " & arguments.feature
+		);
 	}
 
 	/**
@@ -337,7 +367,10 @@ component {
 		boolean asyncAll = false,
 		any skip         = false
 	){
-		return describe( argumentCollection = arguments, title = "Given " & arguments.given );
+		return describe(
+			argumentCollection = arguments,
+			title              = "Given " & arguments.given
+		);
 	}
 
 	/**
@@ -356,7 +389,10 @@ component {
 		boolean asyncAll = false,
 		any skip         = false
 	){
-		return fdescribe( argumentCollection = arguments, title = "Given " & arguments.given );
+		return fdescribe(
+			argumentCollection = arguments,
+			title              = "Given " & arguments.given
+		);
 	}
 
 	/**
@@ -375,7 +411,10 @@ component {
 		boolean asyncAll = false,
 		any skip         = false
 	){
-		return describe( argumentCollection = arguments, title = "Scenario: " & arguments.scenario );
+		return describe(
+			argumentCollection = arguments,
+			title              = "Scenario: " & arguments.scenario
+		);
 	}
 
 	/**
@@ -394,7 +433,10 @@ component {
 		boolean asyncAll = false,
 		any skip         = false
 	){
-		return fdescribe( argumentCollection = arguments, title = "Scenario: " & arguments.scenario );
+		return fdescribe(
+			argumentCollection = arguments,
+			title              = "Scenario: " & arguments.scenario
+		);
 	}
 
 	/**
@@ -413,7 +455,10 @@ component {
 		boolean asyncAll = false,
 		any skip         = false
 	){
-		return describe( argumentCollection = arguments, title = "When " & arguments.when );
+		return describe(
+			argumentCollection = arguments,
+			title              = "When " & arguments.when
+		);
 	}
 
 	/**
@@ -432,7 +477,10 @@ component {
 		boolean asyncAll = false,
 		any skip         = false
 	){
-		return fdescribe( argumentCollection = arguments, title = "When " & arguments.when );
+		return fdescribe(
+			argumentCollection = arguments,
+			title              = "When " & arguments.when
+		);
 	}
 
 	/**
@@ -452,7 +500,7 @@ component {
 		struct data = {}
 	){
 		arguments.focused = true;
-		return this.it( argumentCollection=arguments );
+		return this.it( argumentCollection = arguments );
 	}
 
 	/**
@@ -468,9 +516,9 @@ component {
 	any function it(
 		required string title,
 		required any body,
-		any labels  = [],
-		any skip    = false,
-		struct data = {},
+		any labels      = [],
+		any skip        = false,
+		struct data     = {},
 		boolean focused = false
 	){
 		// closure checks
@@ -516,12 +564,18 @@ component {
 		}
 
 		// Attach this spec to the incoming context array of specs
-		arrayAppend( this.$suitesReverseLookup[ this.$suiteContext ].specs, spec );
+		arrayAppend(
+			this.$suitesReverseLookup[ this.$suiteContext ].specs,
+			spec
+		);
 
 		// Are we focused?
-		if( arguments.focused ){
+		if ( arguments.focused ) {
 			var thisSuite = this.$suitesReverseLookup[ this.$suiteContext ];
-			arrayAppend( this.$focusedTargets.specs, thisSuite.slug & "/" & thisSuite.name & "/" & spec.name );
+			arrayAppend(
+				this.$focusedTargets.specs,
+				thisSuite.slug & "/" & thisSuite.name & "/" & spec.name
+			);
 		}
 
 		return this;
@@ -543,7 +597,10 @@ component {
 		any skip    = false,
 		struct data = {}
 	){
-		return it( argumentCollection = arguments, title = "Then " & arguments.then );
+		return it(
+			argumentCollection = arguments,
+			title              = "Then " & arguments.then
+		);
 	}
 
 	/**
@@ -562,7 +619,10 @@ component {
 		any skip    = false,
 		struct data = {}
 	){
-		return fit( argumentCollection = arguments, title = "Then " & arguments.then );
+		return fit(
+			argumentCollection = arguments,
+			title              = "Then " & arguments.then
+		);
 	}
 
 	/**
@@ -717,7 +777,11 @@ component {
 	 */
 	Expectation function expect( any actual ){
 		// build an expectation
-		var oExpectation = new Expectation( spec = this, assertions = this.$assert, mockbox = this.$mockbox );
+		var oExpectation = new Expectation(
+			spec       = this,
+			assertions = this.$assert,
+			mockbox    = this.$mockbox
+		);
 
 		// Store the actual data
 		if ( !isNull( arguments.actual ) ) {
@@ -729,7 +793,10 @@ component {
 		// Do we have any custom matchers to add to this expectation?
 		if ( !structIsEmpty( this.$customMatchers ) ) {
 			for ( var thisMatcher in this.$customMatchers ) {
-				oExpectation.registerMatcher( thisMatcher, this.$customMatchers[ thisMatcher ] );
+				oExpectation.registerMatcher(
+					thisMatcher,
+					this.$customMatchers[ thisMatcher ]
+				);
 			}
 		}
 
@@ -737,12 +804,16 @@ component {
 	}
 
 	/**
-	 * Start a collection expectation expression. This returns an instance of CollectionExpection
-	 * so you can work with its collection-unrolling matches (delegating to Expection).
+	 * Start a collection expectation expression. This returns an instance of CollectionExpectation
+	 * so you can work with its collection-unrolling matches (delegating to Expectation).
 	 * @actual The actual value, it should be an array or a struct.
 	 */
 	CollectionExpectation function expectAll( required any actual ){
-		return new CollectionExpectation( spec = this, assertions = this.$assert, collection = arguments.actual );
+		return new CollectionExpectation(
+			spec       = this,
+			assertions = this.$assert,
+			collection = arguments.actual
+		);
 	}
 
 	/**
@@ -753,7 +824,11 @@ component {
 		// register structure
 		if ( isStruct( arguments.matchers ) ) {
 			// register the custom matchers with override
-			structAppend( this.$customMatchers, arguments.matchers, true );
+			structAppend(
+				this.$customMatchers,
+				arguments.matchers,
+				true
+			);
 			return this;
 		}
 
@@ -787,7 +862,11 @@ component {
 		// register structure
 		if ( isStruct( arguments.assertions ) ) {
 			// register the custom matchers with override
-			structAppend( this.$assert, arguments.assertions, true );
+			structAppend(
+				this.$assert,
+				arguments.assertions,
+				true
+			);
 			return this;
 		}
 
@@ -827,9 +906,8 @@ component {
 		string testSuites = "",
 		string reporter   = "simple",
 		string labels     = ""
-	)
-		output=true
-	{
+	) output=true{
+		setting requesttimeout=99999999;
 		// content type defaulted, to avoid dreaded wddx default
 		getPageContext().getResponse().setContentType( "text/html" );
 		// run tests
@@ -840,7 +918,12 @@ component {
 			options  = { coverage : { enabled : false } }
 		);
 		// Produce report
-		writeOutput( runner.run( testSuites = arguments.testSuites, testSpecs = arguments.testSpecs ) );
+		writeOutput(
+			runner.run(
+				testSuites = arguments.testSuites,
+				testSpecs  = arguments.testSpecs
+			)
+		);
 	}
 
 	/**
@@ -887,7 +970,11 @@ component {
 						arrayLen( this.$focusedTargets.specs ) && arrayFindNoCase( this.$focusedTargets.specs, name )
 						||
 						// Are we in the focused Suite?
-						arrayLen( this.$focusedTargets.suites ) && runner.isSuiteFocused( suite=suite, target=this, checkChildren=false )
+						arrayLen( this.$focusedTargets.suites ) && runner.isSuiteFocused(
+							suite         = suite,
+							target        = this,
+							checkChildren = false
+						)
 					)
 				);
 			};
@@ -896,8 +983,14 @@ component {
 			if (
 				!arguments.spec.skip && // Not skipping
 				isSpecFocused( arguments.suite.slug & "/" & arguments.suite.name & "/" & arguments.spec.name ) && // Is the spec focused
-				arguments.runner.canRunLabel( consolidatedLabels, arguments.testResults ) && // In label or no labels
-				arguments.runner.canRunSpec( arguments.spec.name, arguments.testResults ) // In test results
+				arguments.runner.canRunLabel(
+					consolidatedLabels,
+					arguments.testResults
+				) && // In label or no labels
+				arguments.runner.canRunSpec(
+					arguments.spec.name,
+					arguments.testResults
+				) // In test results
 			) {
 				// setup the current executing spec for debug purposes
 				this.$currentExecutingSpec = arguments.suite.slug & "/" & arguments.suite.name & "/" & arguments.spec.name;
@@ -970,15 +1063,30 @@ component {
 		while ( !isSimpleValue( parentSuite ) ) {
 			arrayAppend(
 				reverseTree,
-				{ beforeEach : parentSuite.beforeEach, beforeEachData : parentSuite.beforeEachData }
+				{
+					beforeEach     : parentSuite.beforeEach,
+					beforeEachData : parentSuite.beforeEachData
+				}
 			);
 			parentSuite = parentSuite.parentRef;
 		}
 
 		// Incorporate annotated methods
-		arrayEach( this.$utility.getAnnotatedMethods( annotation = "beforeEach", metadata = getMetadata( this ) ), function( item ){
-			arrayAppend( reverseTree, { beforeEach : this[ arguments.item.name ], beforeEachData : {} } );
-		} );
+		arrayEach(
+			this.$utility.getAnnotatedMethods(
+				annotation = "beforeEach",
+				metadata   = getMetadata( this )
+			),
+			function( item ){
+				arrayAppend(
+					reverseTree,
+					{
+						beforeEach     : this[ arguments.item.name ],
+						beforeEachData : {}
+					}
+				);
+			}
+		);
 
 		// sort tree backwards
 		arraySort( reverseTree, function( a, b ){
@@ -987,11 +1095,17 @@ component {
 
 		// Execute it
 		arrayEach( reverseTree, function( item ){
-			item.beforeEach( currentSpec = spec.name, data = item.beforeEachData );
+			item.beforeEach(
+				currentSpec = spec.name,
+				data        = item.beforeEachData
+			);
 		} );
 
 		// execute beforeEach()
-		arguments.suite.beforeEach( currentSpec = arguments.spec.name, data = arguments.suite.beforeEachData );
+		arguments.suite.beforeEach(
+			currentSpec = arguments.spec.name,
+			data        = arguments.suite.beforeEachData
+		);
 
 		return this;
 	}
@@ -1032,19 +1146,25 @@ component {
 		}
 
 		// Discover annotated methods and add to reverseTree
-		arrayEach( this.$utility.getAnnotatedMethods( annotation = "aroundEach", metadata = getMetadata( this ) ), function( item ){
-			arrayAppend(
-				reverseTree,
-				{
-					name   : arguments.item.name,
-					body   : this[ arguments.item.name ],
-					data   : {},
-					labels : {},
-					order  : 0,
-					skip   : false
-				}
-			);
-		} );
+		arrayEach(
+			this.$utility.getAnnotatedMethods(
+				annotation = "aroundEach",
+				metadata   = getMetadata( this )
+			),
+			function( item ){
+				arrayAppend(
+					reverseTree,
+					{
+						name   : arguments.item.name,
+						body   : this[ arguments.item.name ],
+						data   : {},
+						labels : {},
+						order  : 0,
+						skip   : false
+					}
+				);
+			}
+		);
 
 		// Sort the closures from the oldest parent down to the current spec
 		arraySort( reverseTree, function( a, b ){
@@ -1080,19 +1200,23 @@ component {
 		thread.spec     = arguments.spec;
 
 		// Get closure data from stack and pop it
-		var nextClosure = thread.closures[ closureIndex ];
+		var nextClosure = thread.closures[ arguments.closureIndex ];
 
 		// Check if we have more in the stack or empty
-		if ( arrayLen( thread.closures ) == closureIndex ) {
+		if ( arrayLen( thread.closures ) == arguments.closureIndex ) {
 			// Return the closure of execution for a single spec ONLY
 			return function(){
 				// Execute the body of the spec
-				nextClosure.body( spec = thread.spec, suite = thread.suite, data = nextClosure.data );
+				nextClosure.body(
+					spec  = thread.spec,
+					suite = thread.suite,
+					data  = nextClosure.data
+				);
 			};
 		}
 
 		// Get next Spec in stack
-		var nextSpecInfo = thread.closures[ ++closureIndex ];
+		var nextSpecInfo = thread.closures[ ++arguments.closureIndex ];
 		// Return generated closure
 		return function(){
 			nextClosure.body(
@@ -1122,18 +1246,34 @@ component {
 	 */
 	BaseSpec function runAfterEachClosures( required suite, required spec ){
 		// execute nearest afterEach()
-		arguments.suite.afterEach( currentSpec = arguments.spec.name, data = arguments.suite.afterEachData );
+		arguments.suite.afterEach(
+			currentSpec = arguments.spec.name,
+			data        = arguments.suite.afterEachData
+		);
 
 		// do we have nested suites? If so, traverse and execute life-cycle methods up the tree backwards
 		var parentSuite = arguments.suite.parentRef;
 		while ( !isSimpleValue( parentSuite ) ) {
-			parentSuite.afterEach( currentSpec = arguments.spec.name, data = parentSuite.afterEachData );
+			parentSuite.afterEach(
+				currentSpec = arguments.spec.name,
+				data        = parentSuite.afterEachData
+			);
 			parentSuite = parentSuite.parentRef;
 		}
 
-		arrayEach( this.$utility.getAnnotatedMethods( annotation = "afterEach", metadata = getMetadata( this ) ), function( item ){
-			invoke( this, item.name, { currentSpec : spec.name, data : {} } );
-		} );
+		arrayEach(
+			this.$utility.getAnnotatedMethods(
+				annotation = "afterEach",
+				metadata   = getMetadata( this )
+			),
+			function( item ){
+				invoke(
+					this,
+					item.name,
+					{ currentSpec : spec.name, data : {} }
+				);
+			}
+		);
 
 		return this;
 	}
@@ -1161,8 +1301,14 @@ component {
 			// Verify we can execute
 			if (
 				!arguments.spec.skip &&
-				arguments.runner.canRunLabel( arguments.spec.labels, arguments.testResults ) &&
-				arguments.runner.canRunSpec( arguments.spec.name, arguments.testResults )
+				arguments.runner.canRunLabel(
+					arguments.spec.labels,
+					arguments.testResults
+				) &&
+				arguments.runner.canRunSpec(
+					arguments.spec.name,
+					arguments.testResults
+				)
 			) {
 				// Reset expected exceptions: Only works on synchronous testing.
 				this.$expectedException    = {};
@@ -1179,7 +1325,12 @@ component {
 					invoke( this, arguments.spec.name );
 
 					// Where we expecting an exception and it did not throw?
-					if ( hasExpectedException( arguments.spec.name, arguments.runner ) ) {
+					if (
+						hasExpectedException(
+							arguments.spec.name,
+							arguments.runner
+						)
+					) {
 						$assert.fail(
 							"Method did not throw expected exception: [#this.$expectedException.toString()#]"
 						);
@@ -1187,11 +1338,22 @@ component {
 					// else all good.
 				} catch ( Any e ) {
 					// do we have expected exception? else rethrow it
-					if ( !hasExpectedException( arguments.spec.name, arguments.runner ) ) {
+					if (
+						!hasExpectedException(
+							arguments.spec.name,
+							arguments.runner
+						)
+					) {
 						rethrow;
 					}
 					// if not the expected exception, then fail it
-					if ( !isExpectedException( e, arguments.spec.name, arguments.runner ) ) {
+					if (
+						!isExpectedException(
+							e,
+							arguments.spec.name,
+							arguments.runner
+						)
+					) {
 						$assert.fail(
 							"Method did not throw expected exception: [#this.$expectedException.toString()#], actual exception [type:#e.type#][message:#e.message#]"
 						);
@@ -1250,7 +1412,11 @@ component {
 	 * @top Apply a top to the dump, by default it does 9999 levels
 	 */
 	any function console( required var, top = 9999 ){
-		writeDump( var = arguments.var, output = "console", top = arguments.top );
+		writeDump(
+			var    = arguments.var,
+			output = "console",
+			top    = arguments.top
+		);
 		return this;
 	}
 
@@ -1273,25 +1439,23 @@ component {
 			return;
 		}
 
-		// lock and add
-		lock name="tb-debug-#this.$testID#" type="exclusive" timeout="10" {
-			// duplication control
-			var newVar = ( arguments.deepCopy ? duplicate( arguments.var ) : arguments.var );
-			// compute label?
-			if ( !len( trim( arguments.label ) ) ) {
-				arguments.label = this.$currentExecutingSpec;
-			}
-			// add to debug output
-			arrayAppend(
-				this.$debugBuffer,
-				{
-					data      : newVar,
-					label     : arguments.label,
-					timestamp : now(),
-					top       : arguments.top
-				}
-			);
+		// duplication control
+		var newVar = ( arguments.deepCopy ? duplicate( arguments.var ) : arguments.var );
+		// compute label?
+		if ( !len( trim( arguments.label ) ) ) {
+			// Check if executing spec is set, else most likely this is called from a request scoped debug method
+			arguments.label = !isNull( this.$currentExecutingSpec ) ? this.$currentExecutingSpec : 'request';
 		}
+		// add to debug output
+		arrayAppend(
+			this.$debugBuffer,
+			{
+				data      : newVar,
+				label     : arguments.label,
+				timestamp : now(),
+				top       : arguments.top
+			}
+		);
 		return this;
 	}
 
@@ -1299,9 +1463,7 @@ component {
 	 *  Clear the debug array buffer
 	 */
 	any function clearDebugBuffer(){
-		lock name="tb-debug-#this.$testID#" type="exclusive" timeout="10" {
-			arrayClear( this.$debugBuffer );
-		}
+		arrayClear( this.$debugBuffer );
 		return this;
 	}
 
@@ -1309,9 +1471,7 @@ component {
 	 *  Get the debug array buffer from scope
 	 */
 	array function getDebugBuffer(){
-		lock name="tb-debug-#this.$testID#" type="readonly" timeout="10" {
-			return this.$debugBuffer;
-		}
+		return this.$debugBuffer;
 	}
 
 	/**
@@ -1337,7 +1497,11 @@ component {
 	 * @method The private method to expose
 	 * @newName If passed, it will expose the method with this name, else just uses the same name
 	 */
-	any function makePublic( required any target, required string method, string newName = "" ){
+	any function makePublic(
+		required any target,
+		required string method,
+		string newName = ""
+	){
 		// decorate it
 		this.$utility.getMixerUtil().start( arguments.target );
 		// expose it
@@ -1367,10 +1531,19 @@ component {
 	}
 
 	/**
-	 * First line are the query columns separated by commas. Then do a consecuent rows separated by line breaks separated by | to denote columns.
+	 * First line are the query columns separated by commas. Then do a consequent rows separated by line breaks separated by | to denote columns.
 	 */
 	function querySim( required queryData ){
 		return this.$mockBox.querySim( arguments.queryData );
+	}
+
+	/**
+	 * Use MockDataCFC to mock whatever data you want.  This funnles to MocData.mock()
+	 *
+	 * @return The mock data you desire sir!
+	 */
+	function mockData(){
+		return this.$mockData.mock( argumentCollection = arguments );
 	}
 
 	/**
@@ -1390,7 +1563,11 @@ component {
 	 * @object The object to mock, already instantiated
 	 * @callLogging Add method call logging for all mocked methods. Defaults to true
 	 */
-	function createEmptyMock( string className, any object, boolean callLogging = true ){
+	function createEmptyMock(
+		string className,
+		any object,
+		boolean callLogging = true
+	){
 		return this.$mockBox.createEmptyMock( argumentCollection = arguments );
 	}
 
@@ -1405,7 +1582,7 @@ component {
 		string className,
 		any object,
 		boolean clearMethods = false
-		boolean callLogging =true
+		boolean callLogging   =true
 	){
 		return this.$mockBox.createMock( argumentCollection = arguments );
 	}
@@ -1415,7 +1592,10 @@ component {
 	 * @object The object to mock, already instantiated
 	 * @callLogging Add method call logging for all mocked methods. Defaults to true
 	 */
-	function prepareMock( any object, boolean callLogging = true ){
+	function prepareMock(
+		any object,
+		boolean callLogging = true
+	){
 		return this.$mockBox.prepareMock( argumentCollection = arguments );
 	}
 
@@ -1425,7 +1605,11 @@ component {
 	 * @extends Make the stub extend from certain CFC
 	 * @implements Make the stub adhere to an interface
 	 */
-	function createStub( boolean callLogging = true, string extends = "", string implements = "" ){
+	function createStub(
+		boolean callLogging = true,
+		string extends      = "",
+		string implements   = ""
+	){
 		return this.$mockBox.createStub( argumentCollection = arguments );
 	}
 
@@ -1435,7 +1619,7 @@ component {
 
 	// Around Stub
 	function aroundStub( spec ){
-		spec.body( spec.data );
+		arguments.spec.body( arguments.spec.data );
 	}
 
 	/**
@@ -1462,7 +1646,11 @@ component {
 	/**
 	 * Check if the incoming exception is expected or not.
 	 */
-	boolean function isExpectedException( required exception, required specName, required runner ){
+	boolean function isExpectedException(
+		required exception,
+		required specName,
+		required runner
+	){
 		var results = false;
 
 		// normalize expected exception
@@ -1475,14 +1663,24 @@ component {
 			else if (
 				len( this.$expectedException.type ) &&
 				arguments.exception.type eq this.$expectedException.type &&
-				arrayLen( reMatchNoCase( this.$expectedException.regex, arguments.exception.message ) )
+				arrayLen(
+					reMatchNoCase(
+						this.$expectedException.regex,
+						arguments.exception.message
+					)
+				)
 			) {
 				results = true;
 			}
 			// Message regex then only
 			else if (
 				this.$expectedException.regex neq ".*" &&
-				arrayLen( reMatchNoCase( this.$expectedException.regex, arguments.exception.message ) )
+				arrayLen(
+					reMatchNoCase(
+						this.$expectedException.regex,
+						arguments.exception.message
+					)
+				)
 			) {
 				results = true;
 			}

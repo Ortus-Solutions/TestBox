@@ -87,8 +87,8 @@
 									</cfif>
 									<h5 class="mt-2 mb-0">
 										<span class="badge badge-info">
-											#server.coldfusion.productName#
-											#structKeyExists( server, "lucee" ) ? server.lucee.version : server.coldfusion.productVersion#
+											#results.getCFMLEngine()#
+											#results.getCFMLEngineVersion()#
 										</span>
 									</h5>
 								</div>
@@ -256,7 +256,7 @@
 												</cfloop>
 
 												<!--- Debug Panel --->
-												<cfif arrayLen( thisBundle.debugBuffer )>
+												<cfif thisBundle.keyExists( "debugBuffer" ) && arrayLen( thisBundle.debugBuffer )>
 													<li>
 														<div class="list-group-item list-group-item-primary py-3 expand-collapse"
 															title="Toggle Debug Stream"
@@ -282,8 +282,10 @@
 														<div id="debugdata_#thisBundle.id#" class="overflow-auto bg-light p-2 collapse" data-specid="#thisBundle.id#">
 															<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
 															<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
-																<h6>#thisDebug.label#</h6>
-																<cfdump var="#thisDebug.data#" label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#" top="#thisDebug.top#" />
+																<cfif !IsNull(thisDebug)>
+																	<h6>#thisDebug.label#</h6>
+																	<cfdump var="#thisDebug.data#" label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#" top="#thisDebug.top#" />
+																</cfif>
 															</cfloop>
 														</div>
 													</li>
@@ -494,7 +496,11 @@ code {
 					<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
 						<!--- Spec Results --->
 
-						<li class="spec list-group-item #local.thisSpec.status#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
+						<li
+							class="spec list-group-item #local.thisSpec.status#"
+							data-bundleid="#arguments.bundleStats.id#"
+							data-specid="#local.thisSpec.id#"
+						>
 							<div class="clearfix">
 								<a
 									class="alert-link text-#statusToBootstrapClass( local.thisSpec.status )#"
@@ -502,12 +508,16 @@ code {
 								>
 									#statusToIcon( local.thisSpec.status )# #local.thisSpec.name# (#numberFormat( local.thisSpec.totalDuration )# ms)
 								</a>
+
+								<!--- Compose message according to status --->
 								<cfif local.thisSpec.status eq "failed">
 									<cfset local.thisSpec.message = local.thisSpec.failMessage>
 								</cfif>
 								<cfif local.thisSpec.status eq "error">
-									<cfset local.thisSpec.message = local.thisSpec.error.message>
+									<cfset local.thisSpec.message = local.thisSpec.error.message & local.thisSpec.error.detail>
 								</cfif>
+
+								<!--- Show it with expanding button --->
 								<cfif structKeyExists( local.thisSpec, "message" )>
 									- <strong>#encodeForHTML( local.thisSpec.message )#</strong></a>
 									<button
@@ -524,46 +534,95 @@ code {
 									</button>
 								</cfif>
 							</div>
+
+							<!--- Show failed data snapshot --->
 							<cfif structKeyExists( local.thisSpec, "message" )>
 								<div>
-									<!--- If we have a fail origin, show it nicely --->
-									<cfif isArray( local.thisSpec.failOrigin ) && arrayLen( local.thisSpec.failOrigin )>
 
-										<!--- Raw Detail, show it first, usually the nested exception is here --->
-										<cfif len( local.thisSpec.failDetail )>
-											<div>
-												<pre>#left( local.thisSpec.failDetail, 2500 )#</pre>
-											</div>
-										<cfelseif structKeyExists( local.thisSpec.failOrigin[ 1 ], "raw_trace" )>
-											<!--- Raw Trace --->
-											<div>
-												<pre>#local.thisSpec.failOrigin[ 1 ].raw_trace#</pre>
-											</div>
-										</cfif>
-
-										<!--- Lucee Nice Code Print --->
-										<cfif structKeyExists( local.thisSpec.failOrigin[ 1 ], "codePrintHTML" )>
-											<div class="pl-5 mb-2 bg-light">
-												<code>#local.thisSpec.failOrigin[ 1 ].codePrintHTML#</code>
-											</div>
-										</cfif>
+									<!--- Failure Snapshot --->
+									<cfif local.thisSpec.status eq "failed" && isArray( local.thisSpec.failOrigin ) && arrayLen( local.thisSpec.failOrigin )>
+										<cfloop array="#local.thisSpec.failOrigin#" item="thisContext">
+											<cfif findNoCase( arguments.bundleStats.path, reReplace( thisContext.template, "(/|\\)", ".", "all" ) )>
+												<!--- Template --->
+												<div style="margin-bottom: 5px">
+													<a href="#openInEditorURL( thisContext.template, thisContext.line, url.editor )#">
+														#thisContext.template#:#thisContext.line#
+													</a>
+												</div>
+												<!--- Lucee Nice Code Print --->
+												<cfif structKeyExists( thisContext, "codePrintHTML" )>
+													<div class="pl-5 mb-2 bg-light">
+														<code>#thisContext.codePrintHTML#</code>
+													</div>
+												</cfif>
+											</cfif>
+										</cfloop>
 									</cfif>
 
-									<!--- Deep Insights into failures --->
+									<!--- If it's an error, show the last snapshot --->
+									<cfif !isNull( local.thisSpec.error.tagContext ) >
+										<cfset var thisContext = local.thisSpec.error.tagContext[ 1 ]>
+										<!--- Template --->
+										<div style="margin-bottom: 5px">
+											<a href="#openInEditorURL( thisContext.template, thisContext.line, url.editor )#">
+												#thisContext.template#:#thisContext.line#
+											</a>
+										</div>
+										<!--- Lucee Nice Code Print --->
+										<cfif structKeyExists( thisContext, "codePrintHTML" )>
+											<div class="pl-5 mb-2 bg-light">
+												<code>#thisContext.codePrintHTML#</code>
+											</div>
+										</cfif>
+										<!--- Stacktrace mini snapshot --->
+										<div class="pl-5 mb-2 bg-light">
+											<pre>#left( local.thisSpec.error.stackTrace, 1000 )#</pre>
+										</div>
+									</cfif>
+
+									<!--- Deep Insights into failures, hidden by default --->
 									<div id="failure_error_#local.thisSpec.id#" class="my-2 collapse" data-specid="#local.thisSpec.id#">
+										<!--- Origin --->
 										<h4>Failure Origin</h4>
-										<cfdump var="#local.thisSpec.failorigin#">
-										<h4>Failure Details</h4>
-										<cfdump var="#local.thisSpec.failDetail#">
+										<cfloop array="#local.thisSpec.failOrigin#" index="thisStack">
+											<div
+												style="border: 1px solid blue; padding: 5px; margin: 5px 0px; border-radius: 5px; cursor: pointer"
+												title="Open in Editor"
+												onClick="window.location='#openInEditorURL( thisStack.template, thisStack.line, url.editor )#'"
+											>
+												#thisStack.template#:#thisStack.line#
+												<cfif !isNull( thisStack.codePrintPlain )>
+													<pre>#thisStack.codePrintPlain#</pre>
+												</cfif>
+											</div>
+										</cfloop>
+
+										<!--- Fail Detail --->
+										<cfif len( local.thisSpec.failDetail )>
+											<h4>Failure Details</h4>
+											<cfdump var="#local.thisSpec.failDetail#">
+										</cfif>
+
+										<!--- StackTrace --->
 										<h4>Failure StackTrace</h4>
-										<pre>#local.thisSpec.failStackTrace#</pre>
-										<h4>Failure Extended Info</h4>
-										<cfdump var="#local.thisSpec.failExtendedInfo#">
+										<cfif len( local.thisSpec.failStackTrace )>
+											<pre>#local.thisSpec.failStackTrace#</pre>
+										</cfif>
+										<cfif !isNull( local.thisSpec.error.stackTrace )>
+											<pre>#local.thisSpec.error.stackTrace#</pre>
+										</cfif>
+
+										<!--- Extended Info --->
+										<cfif len( local.thisSpec.failExtendedInfo )>
+											<h4>Failure Extended Info</h4>
+											<cfdump var="#local.thisSpec.failExtendedInfo#">
+										</cfif>
 									</div>
 								</div>
 							</cfif>
 						</li>
 					</cfloop>
+
 					<!--- Do we have nested suites --->
 					<cfif arrayLen( arguments.suiteStats.suiteStats )>
 						<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">

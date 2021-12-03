@@ -1,19 +1,13 @@
 # Config Files
 .DS_Store
 /settings.xml
-.project
 .settings/
-.vscode
-.idea
 .engine/
 cpu.json
 
 # Test Results
 tests/results
 tests/results-mb
-
-# Dependencies
-system/modules/**
 
 # Build Process
 WEB-INF

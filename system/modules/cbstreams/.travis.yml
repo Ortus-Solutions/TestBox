@@ -1,0 +1,108 @@
+language: java
+
+notifications:
+  slack:
+    secure: FIHlTn/YO7Wgumm1uIqmoEsqjQA7fV0AE94Rjc5yKzM3AquQa8HicgDVVk0d2GrKRnl0xt3j4ZJV//VJyIjlCd/QVKuj48R2ChjEY2im3+99HFPafCUI5/S2uyowKU6mJTFonH9v6p41eqxdbiAxJdDGOT0V2Gpt3UBSNuHz8ED9/aIHqv+P7M+VD6Xd2XYwctPniWlaSWx57sWcnG/VkFG45qFQAyha64uxOOe4M3ZmG/n5FfauZ8cBVLiRKEIr+CyNhh1ujfzi7+4uzMlSNL5t/BbZamAQuZzqGzGQ9RVvIlyPgUGNJtDEE/hWS09aagXF5T6EMj00szizErh4J1/x4qZwml5+TcBN31E0QmAhCtZe85sr3tYgic+hEz9XX1yymQzf/C7n4to2yNvq0r4g51xDk8IuP95WEh7zaqLlvFZvBFgxpHZBMYlRvhytjOYDeIFRMcGwHZcXosaG2ejqDwcGq/LC4oeG4sSwmg9sdRrtcmcanrNqrBka86WYO6LntI3JdZ86/1ACEUHzhCCwvrKELc9Ji1xxGAgS7QKH+s2/hnJuiMyv73gOVLKYC+wPMLt+fvOmPLSEl+PJiAIlToBq1KUBg03RSQLfPOLD7OrJ8VvDZsEPwejqlGDyc4wRglS9OTi7SnN5LYHSDNDdGdREegWqq9qDHEYEVLI=
+
+env:
+  # Fill out these global variables for build process
+  global:
+    - MODULE_ID=cbstreams
+  matrix:
+    - ENGINE=lucee@5
+    - ENGINE=adobe@2016
+    - ENGINE=adobe@2018
+
+branches:
+  only:
+  - development
+  - master
+
+dist: trusty
+
+sudo: required
+
+before_install:
+  # CommandBox Keys
+  - curl -fsSl https://downloads.ortussolutions.com/debs/gpg | sudo apt-key add -
+  - sudo echo "deb https://downloads.ortussolutions.com/debs/noarch /" | sudo tee -a
+    /etc/apt/sources.list.d/commandbox.list
+
+install:
+  # Install Commandbox
+  - sudo apt-get update && sudo apt-get --assume-yes install rsync jq commandbox
+  # Install CommandBox Supporting Librarires
+  - box install commandbox-cfconfig,commandbox-dotenv,commandbox-docbox
+  # If using auto-publish, you will need to provide your API token with this line:
+  - box config set endpoints.forgebox.APIToken=$FORGEBOX_API_TOKEN > /dev/null
+
+script:
+  # Set Current Version
+  - TARGET_VERSION=`cat $TRAVIS_BUILD_DIR/box.json | jq '.version' -r`
+  - echo "Starting build for ${MODULE_ID} v${TARGET_VERSION}"
+  # Replace version so builder can issue it
+  - box package set version=@build.version@+@build.number@
+  # Startup the harness
+  - cd test-harness
+  # run our dependency install to ensure the workbench is in place
+  - box install
+  # run our matrix server
+  - box server start serverConfigFile="server-${ENGINE}.json"
+  # Startup the app
+  - curl http://localhost:60299
+  # Debugging of tests
+  #- curl http://localhost:60299/tests/runner.cfm?reporter=json -o testresults.json && cat testresults.json
+  # move back to build dir to build it
+  - cd $TRAVIS_BUILD_DIR
+  # Build Project
+  - box task run taskfile=build/Build target=run :version=${TARGET_VERSION} :projectName=${MODULE_ID} :buildID=${TRAVIS_BUILD_NUMBER} :branch=${TRAVIS_BRANCH}
+  # Cat results for debugging
+  - cat build/results.json
+
+after_failure:
+  - cd $TRAVIS_BUILD_DIR/test-harness
+  # Display the contents of our root directory
+  # Spit out our Commandbox log in case we need to debug
+  - box server log server-${ENGINE}.json
+  - cat `box system-log`
+
+deploy:
+  # Module Deployment
+  - provider: s3
+    on:
+      branch:
+        - master
+        - development
+      condition: "$ENGINE = lucee@5"
+    skip_cleanup: true
+    #AWS Credentials need to be set in Travis
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_ACCESS_SECRET
+    # Destination
+    bucket: "downloads.ortussolutions.com"
+    local-dir: $TRAVIS_BUILD_DIR/.artifacts/$MODULE_ID
+    upload-dir: ortussolutions/coldbox-modules/$MODULE_ID
+    acl: public_read
+
+  # API Docs Deployment
+  - provider: s3
+    on:
+      branch:
+        - master
+        - development
+      condition: "$ENGINE = lucee@5"
+    skip_cleanup: true
+    #AWS Credentials need to be set in Travis
+    access_key_id: $AWS_ACCESS_KEY
+    secret_access_key: $AWS_ACCESS_SECRET
+    bucket: "apidocs.ortussolutions.com"
+    local-dir: $TRAVIS_BUILD_DIR/.tmp/apidocs
+    upload-dir: coldbox-modules/$MODULE_ID/$TARGET_VERSION
+    acl: public_read
+
+after_deploy:
+  # Move to build out artifact
+  - cd ${TRAVIS_BUILD_DIR}/.tmp/${MODULE_ID}
+  - cat box.json
+  # Only publish once
+  - if [ ${ENGINE} = 'lucee@5' ]; then box forgebox publish; fi

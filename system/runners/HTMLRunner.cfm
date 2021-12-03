@@ -48,28 +48,45 @@ if( len( url.directory ) ){
 // Run Tests using correct reporter
 results = testbox.run( reporter=url.reporter );
 
+function escapePropertyValue( required string value ) {
+	if ( len( arguments.value ) == 0 ) {
+		return arguments.value;
+	}
+	local.value = replaceNoCase( arguments.value, '\', '\\', 'all' );
+	value = replaceNoCase( value, chr(13), '\r', 'all' );
+	value = replaceNoCase( value, chr(10), '\n', 'all' );
+	value = replaceNoCase( value, chr(9), '\t', 'all' );
+	value = replaceNoCase( value, chr(60), '\u003c', 'all' );
+	value = replaceNoCase( value, chr(62), '\u003e', 'all' );
+	value = replaceNoCase( value, chr(47), '\u002f', 'all' );
+	return replaceNoCase( value, chr(32), '\u0020', 'all' );
+}
+
 // Write TEST.properties in report destination path.
 if( url.propertiesSummary ){
 	testResult = testbox.getResult();
 	errors = testResult.getTotalFail() + testResult.getTotalError();
 	savecontent variable="propertiesReport"{
 writeOutput( ( errors ? "test.failed=true" : "test.passed=true" ) & chr( 10 ) );
-writeOutput( "test.labels=#arrayToList( testResult.getLabels() )#
-test.bundles=#URL.bundles#
-test.directory=#url.directory#
-total.bundles=#testResult.getTotalBundles()#
-total.suites=#testResult.getTotalSuites()#
-total.specs=#testResult.getTotalSpecs()#
-total.pass=#testResult.getTotalPass()#
-total.fail=#testResult.getTotalFail()#
-total.error=#testResult.getTotalError()#
-total.skipped=#testResult.getTotalSkipped()#" );
+writeOutput( "test.labels=#escapePropertyValue( arrayToList( testResult.getLabels() ) )#
+test.bundles=#escapePropertyValue( URL.bundles )#
+test.directory=#escapePropertyValue( url.directory )#
+total.bundles=#escapePropertyValue( testResult.getTotalBundles() )#
+total.suites=#escapePropertyValue( testResult.getTotalSuites() )#
+total.specs=#escapePropertyValue( testResult.getTotalSpecs() )#
+total.pass=#escapePropertyValue( testResult.getTotalPass() )#
+total.fail=#escapePropertyValue( testResult.getTotalFail() )#
+total.error=#escapePropertyValue( testResult.getTotalError() )#
+total.skipped=#escapePropertyValue( testResult.getTotalSkipped() )#" );
 	}
 
 	//ACF Compatibility - check for and expand to absolute path
 	if( !directoryExists( url.reportpath ) ) url.reportpath = expandPath( url.reportpath );
 
-	fileWrite( url.reportpath & "/" & url.propertiesFilename, propertiesReport );
+	if( !trim( lcase( url.propertiesfilename ) ).endsWith( '.properties' ) ) {
+		url.propertiesfilename &= '.properties';
+	}
+	fileWrite( url.reportpath & "/" & url.propertiesfilename, propertiesReport );
 }
 
 // do stupid JUnitReport task processing, if the report is ANTJunit

@@ -14,7 +14,11 @@ component {
 	 */
 	function fail( message = "", detail = "" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "A test failure occurred" );
-		throw( type = "TestBox.AssertionFailed", message = arguments.message, detail = arguments.detail );
+		throw(
+			type    = "TestBox.AssertionFailed",
+			message = arguments.message,
+			detail  = arguments.detail
+		);
 	}
 
 	/**
@@ -22,8 +26,14 @@ component {
 	 * @expression The expression to test
 	 * @message The message to send in the failure
 	 */
-	function assert( required boolean expression, message = "" ){
-		return isTrue( arguments.expression, arguments.message );
+	function assert(
+		required boolean expression,
+		message = ""
+	){
+		return isTrue(
+			arguments.expression,
+			arguments.message
+		);
 	}
 
 	/**
@@ -31,7 +41,10 @@ component {
 	 * @actual The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isTrue( required boolean actual, message = "" ){
+	function isTrue(
+		required boolean actual,
+		message = ""
+	){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be true" );
 		if ( NOT arguments.actual ) {
 			fail( arguments.message );
@@ -44,7 +57,10 @@ component {
 	 * @actual The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isFalse( required boolean actual, message = "" ){
+	function isFalse(
+		required boolean actual,
+		message = ""
+	){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be false" );
 		if ( arguments.actual ) {
 			fail( arguments.message );
@@ -58,7 +74,11 @@ component {
 	 * @actual The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isEqual( any expected, any actual, message = "" ){
+	function isEqual(
+		any expected,
+		any actual,
+		message = ""
+	){
 		// validate equality
 		if ( equalize( argumentCollection = arguments ) ) {
 			return this;
@@ -76,7 +96,11 @@ component {
 	 * @actual The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isNotEqual( any expected, any actual, message = "" ){
+	function isNotEqual(
+		any expected,
+		any actual,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" : "Expected [#getStringName( arguments.expected )#] to not be [#getStringName( arguments.actual )#]"
 		);
@@ -94,7 +118,11 @@ component {
 	 * @actual The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isSameInstance( required any expected, required any actual, message = "" ){
+	function isSameInstance(
+		required any expected,
+		required any actual,
+		message = ""
+	){
 		var expectedIdentityHashCode = getIdentityHashCode( arguments.expected );
 		var actualIdentityHashCode   = getIdentityHashCode( arguments.actual );
 
@@ -115,7 +143,11 @@ component {
 	 * @actual The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isNotSameInstance( required any expected, required any actual, message = "" ){
+	function isNotSameInstance(
+		required any expected,
+		required any actual,
+		message = ""
+	){
 		var expectedIdentityHashCode = getIdentityHashCode( arguments.expected );
 		var actualIdentityHashCode   = getIdentityHashCode( arguments.actual );
 
@@ -136,7 +168,11 @@ component {
 	 * @actual The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isEqualWithCase( string expected, string actual, message = "" ){
+	function isEqualWithCase(
+		string expected,
+		string actual,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]"
 		);
@@ -196,7 +232,11 @@ component {
 	 * @actual The actual data to check
 	 * @message The message to send in the failure
 	 */
-	function typeOf( required string type, required any actual, message = "" ){
+	function typeOf(
+		required string type,
+		required any actual,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Actual data [#getStringName( arguments.actual )#] is not of this type: [#arguments.type#]"
 		);
@@ -212,7 +252,11 @@ component {
 	 * @actual The actual data to check
 	 * @message The message to send in the failure
 	 */
-	function notTypeOf( required string type, required any actual, message = "" ){
+	function notTypeOf(
+		required string type,
+		required any actual,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Actual data [#getStringName( arguments.actual )#] is actually of this type: [#arguments.type#]"
 		);
@@ -228,9 +272,13 @@ component {
 	 * @typeName The typename to check
 	 * @message The message to send in the failure
 	 */
-	function instanceOf( required any actual, required string typeName, message = "" ){
+	function instanceOf(
+		required any actual,
+		required string typeName,
+		message = ""
+	){
 		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The actual data is not of type [#arguments.typeName#]"
+			len( arguments.message ) ? arguments.message : "The actual is of type [#getMetadata( actual ).name ?: 'n/a'#] which is not the expected type of [#arguments.typeName#]"
 		);
 		if ( isInstanceOf( arguments.actual, arguments.typeName ) ) {
 			return this;
@@ -244,9 +292,13 @@ component {
 	 * @typeName The typename to check
 	 * @message The message to send in the failure
 	 */
-	function notInstanceOf( required any actual, required string typeName, message = "" ){
+	function notInstanceOf(
+		required any actual,
+		required string typeName,
+		message = ""
+	){
 		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The actual data is actually of type [#arguments.typeName#]"
+			len( arguments.message ) ? arguments.message : "The actual is of type [#getMetadata( actual ).name ?: 'n/a'#] which is the expected type of [#arguments.typeName#]"
 		);
 		if ( !isInstanceOf( arguments.actual, arguments.typeName ) ) {
 			return this;
@@ -260,7 +312,11 @@ component {
 	 * @regex The regex to check with
 	 * @message The message to send in the failure
 	 */
-	function match( required string actual, required string regex, message = "" ){
+	function match(
+		required string actual,
+		required string regex,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual.toString()#] does not match [#arguments.regex#]"
 		);
@@ -276,7 +332,11 @@ component {
 	 * @regex The regex to check with
 	 * @message The message to send in the failure
 	 */
-	function matchWithCase( required string actual, required string regex, message = "" ){
+	function matchWithCase(
+		required string actual,
+		required string regex,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual.toString()#] does not match [#arguments.regex#]"
 		);
@@ -292,7 +352,11 @@ component {
 	 * @regex The regex to check with
 	 * @message The message to send in the failure
 	 */
-	function notMatchWithCase( required string actual, required string regex, message = "" ){
+	function notMatchWithCase(
+		required string actual,
+		required string regex,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual.toString()#] does not match [#arguments.regex#]"
 		);
@@ -308,7 +372,11 @@ component {
 	 * @regex The regex to check with
 	 * @message The message to send in the failure
 	 */
-	function notMatch( required string actual, required string regex, message = "" ){
+	function notMatch(
+		required string actual,
+		required string regex,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual.toString()#] actually matches [#arguments.regex#]"
 		);
@@ -325,20 +393,24 @@ component {
 	 * @key The key to check for existence
 	 * @message The message to send in the failure
 	 */
-	function key( required any target, required string key, message = "" ){
+	function key(
+		required any target,
+		required string key,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The key(s) [#arguments.key#] does not exist in the target object. Found keys are [#structKeyArray( arguments.target ).toString()#]"
 		);
 
 		// Inflate Key and process
-		if(
+		if (
 			arguments.key
 				.listToArray()
 				.filter( function( thisKey ){
 					return structKeyExists( target, arguments.thisKey );
 				} )
 				.len() != listLen( arguments.key )
-		){
+		) {
 			fail( arguments.message );
 		}
 		return this;
@@ -350,7 +422,11 @@ component {
 	 * @key The key to check for existence
 	 * @message The message to send in the failure
 	 */
-	function notKey( required any target, required string key, message = "" ){
+	function notKey(
+		required any target,
+		required string key,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The key [#arguments.key#] exists in the target object. Found keys are [#structKeyArray( arguments.target ).toString()#]"
 		);
@@ -360,14 +436,14 @@ component {
 		}
 
 		// Inflate Key and process
-		if(
+		if (
 			arguments.key
 				.listToArray()
 				.filter( function( thisKey ){
 					return structKeyExists( target, arguments.thisKey );
 				} )
 				.len() > 0
-		){
+		) {
 			fail( arguments.message );
 		}
 	}
@@ -378,7 +454,11 @@ component {
 	 * @key The key to check for existence anywhere in the nested structure
 	 * @message The message to send in the failure
 	 */
-	function deepKey( required struct target, required string key, message = "" ){
+	function deepKey(
+		required struct target,
+		required string key,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The key [#arguments.key#] does not exist anywhere in the target object."
 		);
@@ -394,7 +474,11 @@ component {
 	 * @key The key to check for existence anywhere in the nested structure
 	 * @message The message to send in the failure
 	 */
-	function notDeepKey( required struct target, required string key, message = "" ){
+	function notDeepKey(
+		required struct target,
+		required string key,
+		message = ""
+	){
 		var results = structFindKey( arguments.target, arguments.key );
 		// check if not found?
 		if ( arrayLen( results ) EQ 0 ) {
@@ -413,7 +497,11 @@ component {
 	 * @length The length to check
 	 * @message The message to send in the failure
 	 */
-	function lengthOf( required any target, required string length, message = "" ){
+	function lengthOf(
+		required any target,
+		required string length,
+		message = ""
+	){
 		var aLength = getTargetLength( arguments.target );
 		// validate it
 		if ( aLength eq arguments.length ) {
@@ -433,7 +521,11 @@ component {
 	 * @length The length to check
 	 * @message The message to send in the failure
 	 */
-	function notLengthOf( required any target, required string length, message = "" ){
+	function notLengthOf(
+		required any target,
+		required string length,
+		message = ""
+	){
 		var aLength = getTargetLength( arguments.target );
 		// validate it
 		if ( aLength neq arguments.length ) {
@@ -523,7 +615,7 @@ component {
 			if ( typeMatches && regexMatches ) {
 				return this;
 			}
-			// diff messsage types
+			// diff message types
 			arguments.message = (
 				len( arguments.message ) ? arguments.message : "The incoming function threw exception [#e.type#] [#e.message#] [#e.detail#] different than expected params type=[#arguments.type#], regex=[#arguments.regex#]"
 			);
@@ -608,11 +700,24 @@ component {
 				return this;
 			}
 		} else if ( isDate( arguments.actual ) ) {
-			if ( !listFindNoCase( "yyyy,q,m,ww,w,y,d,h,n,s,l", arguments.datePart ) ) {
+			if (
+				!listFindNoCase(
+					"yyyy,q,m,ww,w,y,d,h,n,s,l",
+					arguments.datePart
+				)
+			) {
 				fail( "The passed in datepart [#arguments.datepart#] is not valid." );
 			}
 
-			if ( abs( dateDiff( arguments.datePart, arguments.actual, arguments.expected ) ) lt arguments.delta ) {
+			if (
+				abs(
+					dateDiff(
+						arguments.datePart,
+						arguments.actual,
+						arguments.expected
+					)
+				) lt arguments.delta
+			) {
 				return this;
 			}
 		}
@@ -673,7 +778,11 @@ component {
 	 * @needle The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
 	 */
-	function includes( required any target, required any needle, message = "" ){
+	function includes(
+		required any target,
+		required any needle,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was not found in [#arguments.target.toString()#]"
 		);
@@ -696,7 +805,11 @@ component {
 	 * @needle The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
 	 */
-	function includesWithCase( required any target, required any needle, message = "" ){
+	function includesWithCase(
+		required any target,
+		required any needle,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was not found in [#arguments.target.toString()#]"
 		);
@@ -719,7 +832,11 @@ component {
 	 * @needle The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
 	 */
-	function notIncludesWithCase( required any target, required any needle, message = "" ){
+	function notIncludesWithCase(
+		required any target,
+		required any needle,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was found in [#arguments.target.toString()#]"
 		);
@@ -742,7 +859,11 @@ component {
 	 * @needle The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
 	 */
-	function notIncludes( required any target, required any needle, message = "" ){
+	function notIncludes(
+		required any target,
+		required any needle,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was found in [#arguments.target.toString()#]"
 		);
@@ -765,7 +886,11 @@ component {
 	 * @target The target value
 	 * @message The message to send in the failure
 	 */
-	function isGT( required any actual, required any target, message = "" ){
+	function isGT(
+		required any actual,
+		required any target,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not greater than [#arguments.target#]"
 		);
@@ -783,7 +908,11 @@ component {
 	 * @target The target value
 	 * @message The message to send in the failure
 	 */
-	function isGTE( required any actual, required any target, message = "" ){
+	function isGTE(
+		required any actual,
+		required any target,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not greater than or equal to [#arguments.target#]"
 		);
@@ -801,7 +930,11 @@ component {
 	 * @target The target value
 	 * @message The message to send in the failure
 	 */
-	function isLT( required any actual, required any target, message = "" ){
+	function isLT(
+		required any actual,
+		required any target,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not less than [#arguments.target#]"
 		);
@@ -819,7 +952,11 @@ component {
 	 * @target The target value
 	 * @message The message to send in the failure
 	 */
-	function isLTE( required any actual, required any target, message = "" ){
+	function isLTE(
+		required any actual,
+		required any target,
+		message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not less than or equal to [#arguments.target#]"
 		);
@@ -901,8 +1038,14 @@ component {
 			}
 
 			// Get both column lists and sort them the same
-			var actualColumnList   = listSort( arguments.actual.columnList, "textNoCase" );
-			var expectedColumnList = listSort( arguments.expected.columnList, "textNoCase" );
+			var actualColumnList = listSort(
+				arguments.actual.columnList,
+				"textNoCase"
+			);
+			var expectedColumnList = listSort(
+				arguments.expected.columnList,
+				"textNoCase"
+			);
 
 			// Check column lists
 			if ( actualColumnList != expectedColumnList ) {
@@ -961,7 +1104,12 @@ component {
 						return false;
 					}
 					// And make sure they match
-					if ( !equalize( arguments.actual[ i ], arguments.expected[ i ] ) ) {
+					if (
+						!equalize(
+							arguments.actual[ i ],
+							arguments.expected[ i ]
+						)
+					) {
 						return false;
 					}
 					continue;
@@ -980,9 +1128,15 @@ component {
 
 		// Structs / Object
 		if ( isStruct( arguments.actual ) && isStruct( arguments.expected ) ) {
-			var actualKeys   = listSort( structKeyList( arguments.actual ), "textNoCase" );
-			var expectedKeys = listSort( structKeyList( arguments.expected ), "textNoCase" );
-			var key          = "";
+			var actualKeys = listSort(
+				structKeyList( arguments.actual ),
+				"textNoCase"
+			);
+			var expectedKeys = listSort(
+				structKeyList( arguments.expected ),
+				"textNoCase"
+			);
+			var key = "";
 
 			// Confirm both structs have the same keys
 			if ( actualKeys neq expectedKeys ) {
@@ -1000,7 +1154,12 @@ component {
 					return false;
 				}
 				// And make sure they match when actual values exist
-				if ( !equalize( arguments.actual[ key ], arguments.expected[ key ] ) ) {
+				if (
+					!equalize(
+						arguments.actual[ key ],
+						arguments.expected[ key ]
+					)
+				) {
 					return false;
 				}
 			}
@@ -1030,7 +1189,10 @@ component {
 
 		if ( listFirst( server.coldfusion.productversion ) lt 10 ) {
 			if ( isCustomFunction( arguments.target ) ) {
-				throw( type = "InvalidType", message = "You sent an invalid type for length checking (function)" );
+				throw(
+					type    = "InvalidType",
+					message = "You sent an invalid type for length checking (function)"
+				);
 			}
 		} else {
 			if ( isCustomFunction( arguments.target ) or isClosure( arguments.target ) ) {

@@ -7,19 +7,17 @@ notifications:
 env:
   matrix:
     - ENGINE=lucee@5
-    - ENGINE=adobe@10
-    - ENGINE=adobe@11
     - ENGINE=adobe@2016
     - ENGINE=adobe@2018
+    - ENGINE=adobe@2021
 
 branches:
   only:
   - development
   - master
 
-dist: trusty
-
 sudo: required
+dist: focal
 
 before_install:
   # CommandBox Keys
@@ -38,6 +36,7 @@ install:
 script:
   # Set Current Version
   - TARGET_VERSION=`cat $TRAVIS_BUILD_DIR/box.json | jq '.version' -r`
+  - TRAVIS_TAG=${TARGET_VERSION}
   - echo "Starting build TestBox v${TARGET_VERSION}"
   # Replace version so builder can issue it
   - box package set version=@build.version@+@build.number@
@@ -87,6 +86,22 @@ deploy:
     local-dir: $TRAVIS_BUILD_DIR/build-testbox/testbox/apidocs
     upload-dir: testbox/$TARGET_VERSION
     acl: public_read
+
+  # Github Release only on Master
+  - provider: releases
+    api_key: ${GITHUB_TOKEN}
+    on:
+      branch:
+        - master
+      condition: "$ENGINE = lucee@5"
+    skip_cleanup: true
+    edge: true
+    file_glob: true
+    file: $TRAVIS_BUILD_DIR/artifacts/testbox/**/*
+    release_notes_file: $TRAVIS_BUILD_DIR/changelog.md
+    name: v${TRAVIS_TAG}
+    tag_name: v${TRAVIS_TAG}
+    overwrite: true
 
 after_deploy:
   - cd $TRAVIS_BUILD_DIR/build-testbox/testbox

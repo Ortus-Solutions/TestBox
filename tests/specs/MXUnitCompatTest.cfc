@@ -1,6 +1,6 @@
 component extends="BaseTest" {
 
-/*********************************** LIFE CYCLE Methods ***********************************/
+	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeTests(){
 		addAssertDecorator( "testbox.tests.resources.CustomAsserts" );
@@ -19,7 +19,7 @@ component extends="BaseTest" {
 		structDelete( request, "foo" );
 	}
 
-/*********************************** Test Methods ***********************************/
+	/*********************************** Test Methods ***********************************/
 
 	function testAddAssertDecorator(){
 		assertIsFunky( 100 );
@@ -27,81 +27,120 @@ component extends="BaseTest" {
 	}
 
 	function testFailsMethod(){
-		try{
+		try {
 			fail( "This Test should fail" );
-		}
-		catch( Any e ){
-			if( e.message != "This Test should fail" ){
+		} catch ( Any e ) {
+			if ( e.message != "This Test should fail" ) {
 				rethrow;
 			}
 		}
 	}
 
-	function testAssert() {
+	function testAssert(){
 		assert( application.salvador == 1 );
 		assertEquals( 1, request.foo );
 	}
 
-	function testAssertArrayEquals() {
+	function testAssertArrayEquals(){
 		var today = now();
-		assertArrayEquals( [1,2,3], [1,2,3] );
-		assertArrayEquals( [1,2,3, today, { name="luis", awesome=true } ], [1,2,3, today, { name="luis", awesome=true } ] );
+		assertArrayEquals( [ 1, 2, 3 ], [ 1, 2, 3 ] );
+		assertArrayEquals(
+			[
+				1,
+				2,
+				3,
+				today,
+				{ name : "luis", awesome : true }
+			],
+			[
+				1,
+				2,
+				3,
+				today,
+				{ name : "luis", awesome : true }
+			]
+		);
 	}
 
-	function testAssertEquals() {
-		assertEquals(4, 4);
-		assertEquals( { name="luis", awesome=true }, { name="luis", awesome=true } );
+	function testAssertEquals(){
+		assertEquals( 4, 4 );
+		assertEquals(
+			{ name : "luis", awesome : true },
+			{ name : "luis", awesome : true }
+		);
 		assertEquals( "hello", "Hello" );
-		assertArrayEquals( [1,2,3], [1,2,3] );
+		assertArrayEquals( [ 1, 2, 3 ], [ 1, 2, 3 ] );
 	}
 
-	function testAssertEqualsCase() {
+	function testAssertEqualsCase(){
 		assertEqualsCase( "hello", "hello" );
 	}
 
-	function testassertFalse() {
+	function testassertFalse(){
 		assertFalse( false );
 	}
 
-	function testassertNotEquals() {
+	function testassertNotEquals(){
 		assertNotEquals( "hello", "there" );
 	}
 
-	function testassertNotSame() {
-		assertNotSame( this, createObject("component", "testbox.system.MockBox") );
+	function testassertNotSame(){
+		assertNotSame(
+			this,
+			createObject(
+				"component",
+				"testbox.system.MockBox"
+			)
+		);
 		// Even if the same CFC, two separate instances would be "equal" but not the "same".
-		assertNotSame( createObject("component", "testbox.system.MockBox"), createObject("component", "testbox.system.MockBox") );
+		assertNotSame(
+			createObject(
+				"component",
+				"testbox.system.MockBox"
+			),
+			createObject(
+				"component",
+				"testbox.system.MockBox"
+			)
+		);
 	}
 
-	function testassertQueryEquals() {
-		var q1 = querySim( "id, name
+	function testassertQueryEquals(){
+		var q1 = querySim(
+			"id, name
 			1 | luis majano
 			2 | alexia majano
-			3 | lucas majano");
+			3 | lucas majano"
+		);
 
-		var q2 = querySim( "id, name
+		var q2 = querySim(
+			"id, name
 			1 | luis majano
 			2 | alexia majano
-			3 | lucas majano");
+			3 | lucas majano"
+		);
 
 		assertQueryEquals( q1, q2 );
 	}
 
-	function testassertStructEquals() {
-		assertStructEquals( { name="luis", awesome=true }, { name="luis", awesome=true } );
+	function testassertStructEquals(){
+		assertStructEquals(
+			{ name : "luis", awesome : true },
+			{ name : "luis", awesome : true }
+		);
 	}
 
 
 	function testassertSame(){
 		assertSame( this, this );
-		var data = { name="luis", awesome=true };
+		var data = { name : "luis", awesome : true };
 		assertSame( data, data );
 	}
-	function testAssertTrue() {
+	function testAssertTrue(){
 		assertTrue( true );
 	}
 
-	function nonStandardNamesWillNotRun() {
+	function nonStandardNamesWillNotRun(){
 		fail( "Non-test methods should not run" );
 	}
 
@@ -110,36 +149,48 @@ component extends="BaseTest" {
 	}
 
 	/**
-	* @mxunit:expectedException
-	*/
+	 * @mxunit:expectedException
+	 */
 	function testExpectedExceptionNoValue(){
 		// This method should throw an invalid exception and pass
-		throw( type="InvalidException", message="This test method should pass with an expected exception" );
+		throw(
+			type    = "InvalidException",
+			message = "This test method should pass with an expected exception"
+		);
 	}
 
 	/**
-	* @mxunit:expectedException InvalidException
-	*/
+	 * @mxunit:expectedException InvalidException
+	 */
 	function testExpectedExceptionWithValue(){
 		// This method should throw an invalid exception and pass
-		throw( type="InvalidException", message="This test method should pass with an expected exception of type InvalidException" );
+		throw(
+			type    = "InvalidException",
+			message = "This test method should pass with an expected exception of type InvalidException"
+		);
 	}
 
 	function testExpectedExceptionFromMethodWithType(){
 		expectedException( "InvalidException" );
 		// This method should throw an invalid exception and pass
-		throw( type="InvalidException", message="This test method should pass with an expected exception" );
+		throw(
+			type    = "InvalidException",
+			message = "This test method should pass with an expected exception"
+		);
 	}
 
 	function testExpectedExceptionFromMethodWithTypeAndRegex(){
 		expectedException( "InvalidException", "(pass with an)" );
 		// This method should throw an invalid exception and pass
-		throw( type="InvalidException", message="This test method should pass with an expected exception" );
+		throw(
+			type    = "InvalidException",
+			message = "This test method should pass with an expected exception"
+		);
 	}
 
 	function testMakePublic(){
 		var t = new testbox.tests.resources.test1();
-		assertTrue( makePublic( t, "aPrivateMethod").aPrivateMethod() );
+		assertTrue( makePublic( t, "aPrivateMethod" ).aPrivateMethod() );
 
 		var t = new testbox.tests.resources.test1();
 		assertTrue( makePublic( t, "aPrivateMethod", "funkyMethod" ).funkyMethod() );
@@ -151,11 +202,14 @@ component extends="BaseTest" {
 
 	function testMakePublicWithPackage(){
 		variables.test = new tests.resources.somepackage.ComponentInDifferentPackage();
-		makepublic(variables.test, "aPackageMethod");
-		assertEquals("test for this value", variables.test.aPackageMethod());
+		makepublic( variables.test, "aPackageMethod" );
+		assertEquals(
+			"test for this value",
+			variables.test.aPackageMethod()
+		);
 	}
 
-	private function privateMethodsDontRun() {
+	private function privateMethodsDontRun(){
 		fail( "Private method don't run" );
 	}
 
@@ -166,14 +220,14 @@ component extends="BaseTest" {
 	}
 
 	function testInjectMethod(){
-		var giver 		= this;
-		var receiver 	= getMockBox().createStub();
+		var giver    = this;
+		var receiver = getMockBox().createStub();
 
 		injectMethod( receiver, giver, "getData" );
-		assertEquals( receiver.getData(), [1,2,3] );
+		assertEquals( receiver.getData(), [ 1, 2, 3 ] );
 
 		injectMethod( receiver, giver, "getData", "getIt" );
-		assertEquals( receiver.getIt(), [1,2,3] );
+		assertEquals( receiver.getIt(), [ 1, 2, 3 ] );
 	}
 
 	function testIsDefined(){
@@ -193,7 +247,7 @@ component extends="BaseTest" {
 	}
 
 	function testassertIsEmptyQuery(){
-		assertIsEmptyQuery( queryNew("") );
+		assertIsEmptyQuery( queryNew( "" ) );
 	}
 
 	function testassertIsEmptyArray(){
@@ -213,7 +267,7 @@ component extends="BaseTest" {
 	}
 
 	function testassertIsQuery(){
-		assertIsQuery( queryNew("") );
+		assertIsQuery( queryNew( "" ) );
 	}
 
 	function testassertIsArray(){
@@ -227,20 +281,20 @@ component extends="BaseTest" {
 	}
 
 	function testRaiseException_pass(){
-		expectException("MyException");
+		expectException( "MyException" );
 		raiseExpectedException();
 	}
 
-	private	function raiseExpectedException(){
-		throw(type="MyException");
+	private function raiseExpectedException(){
+		throw( type = "MyException" );
 	}
 
 	private function raiseUnexpectedException(){
-		throw(type="DifferentException");
+		throw( type = "DifferentException" );
 	}
 
 	private function getData(){
-		return [1,2,3];
+		return [ 1, 2, 3 ];
 	}
 
 }

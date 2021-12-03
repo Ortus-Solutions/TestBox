@@ -9,6 +9,7 @@
 <cfparam name="url.reportpath" default="#expandPath( "/tests/results" )#">
 <cfparam name="url.propertiesFilename" default="TEST.properties">
 <cfparam name="url.propertiesSummary" default="false" type="boolean">
+<cfparam name="url.editor" 				default="vscode">
 
 <cfparam name="url.coverageEnabled" default="false">
 <cfparam name="url.coverageSonarQubeXMLOutputPath" default="">

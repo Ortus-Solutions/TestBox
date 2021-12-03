@@ -1,0 +1,16 @@
+{
+    "name":"cbstreams-adobe@2016",
+    "app":{
+        "serverHomeDirectory":".engine/adobe2016",
+        "cfengine":"adobe@2016"
+    },
+    "web":{
+        "http":{
+            "port":"60299"
+        },
+        "rewrites":{
+            "enable":"true"
+        }
+    },
+    "openBrowser":"false"
+}

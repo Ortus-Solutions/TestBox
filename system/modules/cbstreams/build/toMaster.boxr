@@ -1,0 +1,19 @@
+# This recipe signifies a new release of the module by doing merges and bumps accordingly
+
+# Check out master
+!git checkout -f master
+# Merge development into it
+!git merge --no-ff development
+# Tag the master repo with the version in box.json
+!git tag v`box package show version`
+# Push all branches
+!git push origin --all
+# Push all tags
+!git push origin --tags
+# Check development again
+!git checkout -f development
+# Bump to prepare for a new release, do minor, change if needed and don't tag
+bump --minor --!tagVersion
+# Send it out
+!git commit -a -m "version bump"
+!git push origin development

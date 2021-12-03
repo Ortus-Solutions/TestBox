@@ -28,7 +28,11 @@ component accessors="true" {
 	 * @assertions The TestBox assertions object: testbox.system.Assertion
 	 * @mockbox A reference to MockBox
 	 */
-	function init( required any spec, required any assertions, required any mockBox ){
+	function init(
+		required any spec,
+		required any assertions,
+		required any mockBox
+	){
 		variables.spec    = arguments.spec;
 		variables.mockBox = arguments.mockbox;
 		variables.assert  = arguments.assertions;
@@ -68,17 +72,27 @@ component accessors="true" {
 		// detect negation
 		if ( left( arguments.missingMethodName, 3 ) eq "not" ) {
 			// remove NOT
-			arguments.missingMethodName = right( arguments.missingMethodName, len( arguments.missingMethodName ) - 3 );
+			arguments.missingMethodName = right(
+				arguments.missingMethodName,
+				len( arguments.missingMethodName ) - 3
+			);
 			// set isNot pivot on this matcher
-			this.isNot                  = true;
+			try {
+				this.isNot = true;
 
-			// execute the dynamic method
-			var results = invoke( this, arguments.missingMethodName, arguments.missingMethodArguments );
-			if ( !isNull( results ) ) {
-				return results;
-			}
-			else {
-				return;
+				// execute the dynamic method
+				var results = invoke(
+					this,
+					arguments.missingMethodName,
+					arguments.missingMethodArguments
+				);
+				if ( !isNull( results ) ) {
+					return results;
+				} else {
+					return;
+				}
+			} finally {
+				this.isNot = false;
 			}
 		}
 
@@ -96,14 +110,20 @@ component accessors="true" {
 				structKeyExists( arguments.missingMethodArguments, "message" ) ? arguments.missingMethodArguments.message : ""
 			);
 			message = (
-				structKeyExists( arguments.missingMethodArguments, "1" ) ? arguments.missingMethodArguments[ 1 ] : message
+				structKeyExists( arguments.missingMethodArguments, "1" ) ? arguments.missingMethodArguments[
+					1
+				] : message
 			);
 			// execute the method
 			return toBeTypeOf( type = type, message = message );
 		}
 
 		// throw exception
-		throw(type="InvalidMethod", message="The dynamic/static method: #arguments.missingMethodName# does not exist in this CFC", detail="Available methods are #structKeyArray( this ).toString()#");
+		throw(
+			type    = "InvalidMethod",
+			message = "The dynamic/static method: #arguments.missingMethodName# does not exist in this CFC",
+			detail  = "Available methods are #structKeyArray( this ).toString()#"
+		);
 	}
 
 	/**
@@ -379,18 +399,26 @@ component accessors="true" {
 	 * @max The expected max number or date
 	 * @message The message to send in the failure
 	 */
-	function toBeBetween( required any min, required any max, message = "" ){
+	function toBeBetween(
+		required any min,
+		required any max,
+		message = ""
+	){
 		arguments.actual = this.actual;
 		if ( this.isNot ) {
+			var pass = false;
 			try {
 				variables.assert.between( argumentCollection = arguments );
+			} catch ( Any e ) {
+				pass = true;
+			}
+			if ( !pass ) {
 				arguments.message = (
 					len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is actually between [#arguments.min#] and [#arguments.max#]"
 				);
 				variables.assert.fail( arguments.message );
-			} catch ( Any e ) {
-				return this;
 			}
+			return this;
 		} else {
 			variables.assert.between( argumentCollection = arguments );
 		}
@@ -438,9 +466,17 @@ component accessors="true" {
 			len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not greater than [#arguments.target#]"
 		);
 		if ( this.isNot ) {
-			variables.assert.isLTE( this.actual, arguments.target, arguments.message );
+			variables.assert.isLTE(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		} else {
-			variables.assert.isGT( this.actual, arguments.target, arguments.message );
+			variables.assert.isGT(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		}
 		return this;
 	}
@@ -455,9 +491,17 @@ component accessors="true" {
 			len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not greater than or equal to [#arguments.target#]"
 		);
 		if ( this.isNot ) {
-			variables.assert.isLT( this.actual, arguments.target, arguments.message );
+			variables.assert.isLT(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		} else {
-			variables.assert.isGTE( this.actual, arguments.target, arguments.message );
+			variables.assert.isGTE(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		}
 		return this;
 	}
@@ -472,9 +516,17 @@ component accessors="true" {
 			len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not less than [#arguments.target#]"
 		);
 		if ( this.isNot ) {
-			variables.assert.isGTE( this.actual, arguments.target, arguments.message );
+			variables.assert.isGTE(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		} else {
-			variables.assert.isLT( this.actual, arguments.target, arguments.message );
+			variables.assert.isLT(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		}
 		return this;
 	}
@@ -489,9 +541,17 @@ component accessors="true" {
 			len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not less than or equal to [#arguments.target#]"
 		);
 		if ( this.isNot ) {
-			variables.assert.isGT( this.actual, arguments.target, arguments.message );
+			variables.assert.isGT(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		} else {
-			variables.assert.isLTE( this.actual, arguments.target, arguments.message );
+			variables.assert.isLTE(
+				this.actual,
+				arguments.target,
+				arguments.message
+			);
 		}
 		return this;
 	}

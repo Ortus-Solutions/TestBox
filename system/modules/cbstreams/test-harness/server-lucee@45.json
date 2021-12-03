@@ -1,0 +1,16 @@
+{
+    "name":"cbstreams-lucee@45",
+    "app":{
+        "serverHomeDirectory":".engine/lucee45",
+        "cfengine":"lucee@4.5"
+    },
+    "web":{
+        "http":{
+            "port":"60299"
+        },
+        "rewrites":{
+            "enable":"true"
+        }
+    },
+    "openBrowser":"false"
+}

@@ -5,7 +5,7 @@
  * ********************************************************************************
  * I generate a code browser to see file-level coverage statistics
  */
-component accessors = true {
+component accessors=true {
 
 	// Location of all assets in TestBox
 	variables.ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
@@ -15,8 +15,8 @@ component accessors = true {
 	 *
 	 * @coverageTresholds Options for threshold
 	 */
-	function init( required struct coverageTresholds ) {
-		variables.streamBuilder = new testbox.system.modules.cbstreams.models.StreamBuilder();
+	function init( required struct coverageTresholds ){
+		variables.streamBuilder     = new testbox.system.modules.cbstreams.models.StreamBuilder();
 		variables.coverageTresholds = arguments.coverageTresholds;
 
 		return this;
@@ -31,8 +31,7 @@ component accessors = true {
 		required query qryCoverageData,
 		required struct stats,
 		required string browserOutputDir
-	) {
-
+	){
 		// wipe old files
 		if ( directoryExists( browserOutputDir ) ) {
 			try {
@@ -46,23 +45,30 @@ component accessors = true {
 		// Create it fresh
 		if ( !directoryExists( browserOutputDir ) ) {
 			directoryCreate( browserOutputDir );
-			directoryCopy( "#variables.ASSETS_DIR#", "#browserOutputDir#/assets", true );
+			directoryCopy(
+				"#variables.ASSETS_DIR#",
+				"#browserOutputDir#/assets",
+				true
+			);
 		}
 
 		// Create index
-		savecontent variable = "local.index" {
+		savecontent variable="local.index" {
 			include "templates/index.cfm";
 		}
-		fileWrite( browserOutputDir & '/index.html', local.index );
+		fileWrite(
+			browserOutputDir & "/index.html",
+			local.index
+		);
 
 		// Create directory skeletons
 		var dataStream = variables.streamBuilder
 			.new()
 			.rangeClosed( 1, qryCoverageData.recordcount )
-			.map( function ( index ) {
+			.map( function( index ){
 				return qryCoverageData.getRow( index );
 			} )
-			.peek( function ( item ) {
+			.peek( function( item ){
 				var theContainerDirectory = getDirectoryFromPath( "#browserOutputDir & item.relativeFilePath#" );
 
 				if ( !directoryExists( theContainerDirectory ) ) {
@@ -75,31 +81,33 @@ component accessors = true {
 		var fileStream = variables.streamBuilder.new( dataStream );
 
 		// Don't use parallel if in Adobe, it sucks!
-		if( server.keyExists( "lucee" ) ){
+		if ( server.keyExists( "lucee" ) ) {
 			fileStream.parallel();
 		}
 
-		fileStream
-			.forEach( function ( fileData ) {
-				// Coverage files are named after "real" files
-				var theFile = "#browserOutputDir & fileData.relativeFilePath#.html";
+		fileStream.forEach( function( fileData ){
+			// Coverage files are named after "real" files
+			var theFile = "#browserOutputDir & fileData.relativeFilePath#.html";
 
-				var lineNumbersBGColors = fileData.lineData.map( function ( key, value ) {
-					return ( value > 0 ) ? "success" : "danger";
-				} );
-				var percentage = numberFormat( fileData.percCoverage * 100, '9.9' );
-				var lineNumbersBGColorsJSON = SerializeJSON( lineNumbersBGColors );
-				var fileContents = fileRead( fileData.filePath );
-				var levelsFromRoot = fileData.relativeFilePath.listLen( "/" );
-				var relPathToRoot = RepeatString( "../", levelsFromRoot - 1 );
-				var brush = right( fileData.relativeFilePath, 4 ) == ".cfm" ? "coldfusion" : "javascript";
-
-				savecontent variable = "local.fileTemplate" {
-					include "templates/file.cfm";
-				}
-
-				fileWrite( theFile, local.fileTemplate );
+			var lineNumbersBGColors = fileData.lineData.map( function( key, value ){
+				return ( value > 0 ) ? "success" : "danger";
 			} );
+			var percentage              = numberFormat( fileData.percCoverage * 100, "9.9" );
+			var lineNumbersBGColorsJSON = serializeJSON( lineNumbersBGColors, false, false );
+			var fileContents            = fileRead( fileData.filePath );
+			var levelsFromRoot          = fileData.relativeFilePath.listLen( "/" );
+			var relPathToRoot           = repeatString( "../", levelsFromRoot - 1 );
+			var brush                   = right( fileData.relativeFilePath, 4 ) == ".cfm" ? "coldfusion" : "javascript";
+
+			// Escape closing script tags to avoid breaking out of code display early
+			fileContents = REReplace(fileContents, '</script>', '&lt;/script>', 'all');
+
+			savecontent variable="local.fileTemplate" {
+				include "templates/file.cfm";
+			}
+
+			fileWrite( theFile, local.fileTemplate );
+		} );
 	}
 
 	/**
@@ -108,14 +116,14 @@ component accessors = true {
 	 *
 	 * @percentage The percentage to get a color on
 	 */
-	function percentToContextualClass( required percentage ) {
+	function percentToContextualClass( required percentage ){
 		percentage = percentage;
 		if ( percentage > variables.coverageTresholds.bad && percentage < variables.coverageTresholds.good ) {
-			return 'warning';
+			return "warning";
 		} else if ( percentage >= variables.coverageTresholds.good ) {
-			return 'success';
+			return "success";
 		} else if ( percentage <= variables.coverageTresholds.bad ) {
-			return 'danger';
+			return "danger";
 		}
 	}
 
