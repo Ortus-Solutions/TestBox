@@ -10,7 +10,7 @@ component {
 	 * Fail assertion
 	 *
 	 * @message The message to send in the failure
-	 * @detail The detail to add in the exception
+	 * @detail  The detail to add in the exception
 	 */
 	function fail( message = "", detail = "" ){
 		arguments.message = ( len( arguments.message ) ? arguments.message : "A test failure occurred" );
@@ -24,28 +24,21 @@ component {
 	/**
 	 * Assert that the passed expression is true
 	 * @expression The expression to test
-	 * @message The message to send in the failure
+	 * @message    The message to send in the failure
 	 */
-	function assert(
-		required boolean expression,
-		message = ""
-	){
-		return isTrue(
-			arguments.expression,
-			arguments.message
-		);
+	function assert( required boolean expression, message = "" ){
+		return isTrue( arguments.expression, arguments.message );
 	}
 
 	/**
 	 * Assert something is true
-	 * @actual The actual data to test
+	 * @actual  The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isTrue(
-		required boolean actual,
-		message = ""
-	){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be true" );
+	function isTrue( required boolean actual, message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be true"
+		);
 		if ( NOT arguments.actual ) {
 			fail( arguments.message );
 		}
@@ -54,14 +47,13 @@ component {
 
 	/**
 	 * Assert something is false
-	 * @actual The actual data to test
+	 * @actual  The actual data to test
 	 * @message The message to send in the failure
 	 */
-	function isFalse(
-		required boolean actual,
-		message = ""
-	){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be false" );
+	function isFalse( required boolean actual, message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be false"
+		);
 		if ( arguments.actual ) {
 			fail( arguments.message );
 		}
@@ -71,14 +63,10 @@ component {
 	/**
 	 * Assert something is equal to each other, no case is required
 	 * @expected The expected data
-	 * @actual The actual data to test
-	 * @message The message to send in the failure
+	 * @actual   The actual data to test
+	 * @message  The message to send in the failure
 	 */
-	function isEqual(
-		any expected,
-		any actual,
-		message = ""
-	){
+	function isEqual( any expected, any actual, message = "" ){
 		// validate equality
 		if ( equalize( argumentCollection = arguments ) ) {
 			return this;
@@ -93,14 +81,10 @@ component {
 	/**
 	 * Assert something is not equal to each other, no case is required
 	 * @expected The expected data
-	 * @actual The actual data to test
-	 * @message The message to send in the failure
+	 * @actual   The actual data to test
+	 * @message  The message to send in the failure
 	 */
-	function isNotEqual(
-		any expected,
-		any actual,
-		message = ""
-	){
+	function isNotEqual( any expected, any actual, message = "" ){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" : "Expected [#getStringName( arguments.expected )#] to not be [#getStringName( arguments.actual )#]"
 		);
@@ -115,8 +99,8 @@ component {
 	/**
 	 * Assert an object is the same instance as another object
 	 * @expected The expected data
-	 * @actual The actual data to test
-	 * @message The message to send in the failure
+	 * @actual   The actual data to test
+	 * @message  The message to send in the failure
 	 */
 	function isSameInstance(
 		required any expected,
@@ -140,8 +124,8 @@ component {
 	/**
 	 * Assert an object is not the same instance as another object
 	 * @expected The expected data
-	 * @actual The actual data to test
-	 * @message The message to send in the failure
+	 * @actual   The actual data to test
+	 * @message  The message to send in the failure
 	 */
 	function isNotSameInstance(
 		required any expected,
@@ -165,14 +149,10 @@ component {
 	/**
 	 * Assert strings are equal to each other with case.
 	 * @expected The expected data
-	 * @actual The actual data to test
-	 * @message The message to send in the failure
+	 * @actual   The actual data to test
+	 * @message  The message to send in the failure
 	 */
-	function isEqualWithCase(
-		string expected,
-		string actual,
-		message = ""
-	){
+	function isEqualWithCase( string expected, string actual, message = "" ){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]"
 		);
@@ -193,7 +173,7 @@ component {
 
 	/**
 	 * Assert something is null
-	 * @actual The actual data to test
+	 * @actual  The actual data to test
 	 * @message The message to send in the failure
 	 */
 	function null( any actual, message = "" ){
@@ -211,7 +191,7 @@ component {
 
 	/**
 	 * Assert something is not null
-	 * @actual The actual data to test
+	 * @actual  The actual data to test
 	 * @message The message to send in the failure
 	 */
 	function notNull( any actual, message = "" ){
@@ -228,8 +208,8 @@ component {
 
 	/**
 	 * Assert the type of the incoming actual data, it uses the internal ColdFusion isValid() function behind the scenes
-	 * @type The type to check, valid types are: array, binary, boolean, component, date, time, float, numeric, integer, query, string, struct, url, uuid
-	 * @actual The actual data to check
+	 * @type    The type to check, valid types are: array, binary, boolean, component, date, time, float, numeric, integer, query, string, struct, url, uuid
+	 * @actual  The actual data to check
 	 * @message The message to send in the failure
 	 */
 	function typeOf(
@@ -248,8 +228,8 @@ component {
 
 	/**
 	 * Assert that is NOT a type of the incoming actual data, it uses the internal ColdFusion isValid() function behind the scenes
-	 * @type The type to check, valid types are: array, binary, boolean, component, date, time, float, numeric, integer, query, string, struct, url, uuid
-	 * @actual The actual data to check
+	 * @type    The type to check, valid types are: array, binary, boolean, component, date, time, float, numeric, integer, query, string, struct, url, uuid
+	 * @actual  The actual data to check
 	 * @message The message to send in the failure
 	 */
 	function notTypeOf(
@@ -268,9 +248,9 @@ component {
 
 	/**
 	 * Assert that the actual object is of the expected instance type
-	 * @actual The actual data to check
+	 * @actual   The actual data to check
 	 * @typeName The typename to check
-	 * @message The message to send in the failure
+	 * @message  The message to send in the failure
 	 */
 	function instanceOf(
 		required any actual,
@@ -278,7 +258,7 @@ component {
 		message = ""
 	){
 		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The actual is of type [#getMetadata( actual ).name ?: 'n/a'#] which is not the expected type of [#arguments.typeName#]"
+			len( arguments.message ) ? arguments.message : "The actual is of type [#getMetadata( actual ).name ?: "n/a"#] which is not the expected type of [#arguments.typeName#]"
 		);
 		if ( isInstanceOf( arguments.actual, arguments.typeName ) ) {
 			return this;
@@ -288,9 +268,9 @@ component {
 
 	/**
 	 * Assert that the actual object is NOT of the expected instance type
-	 * @actual The actual data to check
+	 * @actual   The actual data to check
 	 * @typeName The typename to check
-	 * @message The message to send in the failure
+	 * @message  The message to send in the failure
 	 */
 	function notInstanceOf(
 		required any actual,
@@ -298,7 +278,7 @@ component {
 		message = ""
 	){
 		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The actual is of type [#getMetadata( actual ).name ?: 'n/a'#] which is the expected type of [#arguments.typeName#]"
+			len( arguments.message ) ? arguments.message : "The actual is of type [#getMetadata( actual ).name ?: "n/a"#] which is the expected type of [#arguments.typeName#]"
 		);
 		if ( !isInstanceOf( arguments.actual, arguments.typeName ) ) {
 			return this;
@@ -308,8 +288,8 @@ component {
 
 	/**
 	 * Assert that the actual data matches the incoming regular expression with no case sensitivity
-	 * @actual The actual data to check
-	 * @regex The regex to check with
+	 * @actual  The actual data to check
+	 * @regex   The regex to check with
 	 * @message The message to send in the failure
 	 */
 	function match(
@@ -328,8 +308,8 @@ component {
 
 	/**
 	 * Assert that the actual data matches the incoming regular expression with case sensitivity
-	 * @actual The actual data to check
-	 * @regex The regex to check with
+	 * @actual  The actual data to check
+	 * @regex   The regex to check with
 	 * @message The message to send in the failure
 	 */
 	function matchWithCase(
@@ -348,8 +328,8 @@ component {
 
 	/**
 	 * Assert that the actual data does NOT match the incoming regular expression with case sensitivity
-	 * @actual The actual data to check
-	 * @regex The regex to check with
+	 * @actual  The actual data to check
+	 * @regex   The regex to check with
 	 * @message The message to send in the failure
 	 */
 	function notMatchWithCase(
@@ -368,8 +348,8 @@ component {
 
 	/**
 	 * Assert that the actual data does NOT match the incoming regular expression with no case sensitivity
-	 * @actual The actual data to check
-	 * @regex The regex to check with
+	 * @actual  The actual data to check
+	 * @regex   The regex to check with
 	 * @message The message to send in the failure
 	 */
 	function notMatch(
@@ -389,8 +369,8 @@ component {
 	/**
 	 * Assert that a given key exists in the passed in struct/object
 	 *
-	 * @target The target object/struct
-	 * @key The key to check for existence
+	 * @target  The target object/struct
+	 * @key     The key to check for existence
 	 * @message The message to send in the failure
 	 */
 	function key(
@@ -418,8 +398,8 @@ component {
 
 	/**
 	 * Assert that a given key DOES NOT exist in the passed in struct/object
-	 * @target The target object/struct
-	 * @key The key to check for existence
+	 * @target  The target object/struct
+	 * @key     The key to check for existence
 	 * @message The message to send in the failure
 	 */
 	function notKey(
@@ -450,8 +430,8 @@ component {
 
 	/**
 	 * Assert that a given key exists in the passed in struct by searching the entire nested structure
-	 * @target The target object/struct
-	 * @key The key to check for existence anywhere in the nested structure
+	 * @target  The target object/struct
+	 * @key     The key to check for existence anywhere in the nested structure
 	 * @message The message to send in the failure
 	 */
 	function deepKey(
@@ -470,8 +450,8 @@ component {
 
 	/**
 	 * Assert that a given key DOES NOT exists in the passed in struct by searching the entire nested structure
-	 * @target The target object/struct
-	 * @key The key to check for existence anywhere in the nested structure
+	 * @target  The target object/struct
+	 * @key     The key to check for existence anywhere in the nested structure
 	 * @message The message to send in the failure
 	 */
 	function notDeepKey(
@@ -493,8 +473,8 @@ component {
 
 	/**
 	 * Assert the size of a given string, array, structure or query
-	 * @target The target object to check the length for, this can be a string, array, structure or query
-	 * @length The length to check
+	 * @target  The target object to check the length for, this can be a string, array, structure or query
+	 * @length  The length to check
 	 * @message The message to send in the failure
 	 */
 	function lengthOf(
@@ -517,8 +497,8 @@ component {
 
 	/**
 	 * Assert the size of a given string, array, structure or query
-	 * @target The target object to check the length for, this can be a string, array, structure or query
-	 * @length The length to check
+	 * @target  The target object to check the length for, this can be a string, array, structure or query
+	 * @length  The length to check
 	 * @message The message to send in the failure
 	 */
 	function notLengthOf(
@@ -541,7 +521,7 @@ component {
 
 	/**
 	 * Assert that a a given string, array, structure or query is empty
-	 * @target The target object to check the length for, this can be a string, array, structure or query
+	 * @target  The target object to check the length for, this can be a string, array, structure or query
 	 * @message The message to send in the failure
 	 */
 	function isEmpty( required any target, message = "" ){
@@ -560,7 +540,7 @@ component {
 
 	/**
 	 * Assert that a a given string, array, structure or query is not empty
-	 * @target The target object to check the length for, this can be a string, array, structure or query
+	 * @target  The target object to check the length for, this can be a string, array, structure or query
 	 * @message The message to send in the failure
 	 */
 	function isNotEmpty( required any target, message = "" ){
@@ -577,9 +557,9 @@ component {
 
 	/**
 	 * Assert that the passed in function will throw an exception
-	 * @target The target function to execute and check for exceptions
-	 * @type Match this type with the exception thrown
-	 * @regex Match this regex against the message + detail of the exception
+	 * @target  The target function to execute and check for exceptions
+	 * @type    Match this type with the exception thrown
+	 * @regex   Match this regex against the message + detail of the exception
 	 * @message The message to send in the failure
 	 */
 	function throws(
@@ -628,9 +608,9 @@ component {
 
 	/**
 	 * Assert that the passed in function will NOT throw an exception, an exception of a specified type or exception message regex
-	 * @target The target function to execute and check for exceptions
-	 * @type Match this type with the exception thrown
-	 * @regex Match this regex against the message+detail of the exception
+	 * @target  The target function to execute and check for exceptions
+	 * @type    Match this type with the exception thrown
+	 * @regex   Match this regex against the message+detail of the exception
 	 * @message The message to send in the failure
 	 */
 	function notThrows(
@@ -672,10 +652,10 @@ component {
 	/**
 	 * Assert that the passed in actual number or date is expected to be close to it within +/- a passed delta and optional datepart
 	 * @expected The expected number or date
-	 * @actual The actual number or date
-	 * @delta The +/- delta to range it
+	 * @actual   The actual number or date
+	 * @delta    The +/- delta to range it
 	 * @datepart If passed in values are dates, then you can use the datepart to evaluate it
-	 * @message The message to send in the failure
+	 * @message  The message to send in the failure
 	 */
 	function closeTo(
 		required any expected,
@@ -700,12 +680,7 @@ component {
 				return this;
 			}
 		} else if ( isDate( arguments.actual ) ) {
-			if (
-				!listFindNoCase(
-					"yyyy,q,m,ww,w,y,d,h,n,s,l",
-					arguments.datePart
-				)
-			) {
+			if ( !listFindNoCase( "yyyy,q,m,ww,w,y,d,h,n,s,l", arguments.datePart ) ) {
 				fail( "The passed in datepart [#arguments.datepart#] is not valid." );
 			}
 
@@ -727,9 +702,9 @@ component {
 
 	/**
 	 * Assert that the passed in actual number or date is between the passed in min and max values
-	 * @actual The actual number or date to evaluate
-	 * @min The expected min number or date
-	 * @max The expected max number or date
+	 * @actual  The actual number or date to evaluate
+	 * @min     The expected min number or date
+	 * @max     The expected max number or date
 	 * @message The message to send in the failure
 	 */
 	function between(
@@ -774,8 +749,8 @@ component {
 
 	/**
 	 * Assert that the given "needle" argument exists in the incoming string or array with no case-sensitivity
-	 * @target The target object to check if the incoming needle exists in. This can be a string or array
-	 * @needle The substring to find in a string or the value to find in an array
+	 * @target  The target object to check if the incoming needle exists in. This can be a string or array
+	 * @needle  The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
 	 */
 	function includes(
@@ -801,8 +776,8 @@ component {
 
 	/**
 	 * Assert that the given "needle" argument exists in the incoming string or array with case-sensitivity
-	 * @target The target object to check if the incoming needle exists in. This can be a string or array
-	 * @needle The substring to find in a string or the value to find in an array
+	 * @target  The target object to check if the incoming needle exists in. This can be a string or array
+	 * @needle  The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
 	 */
 	function includesWithCase(
@@ -828,8 +803,8 @@ component {
 
 	/**
 	 * Assert that the given "needle" argument does not exist in the incoming string or array with case-sensitivity
-	 * @target The target object to check if the incoming needle exists in. This can be a string or array
-	 * @needle The substring to find in a string or the value to find in an array
+	 * @target  The target object to check if the incoming needle exists in. This can be a string or array
+	 * @needle  The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
 	 */
 	function notIncludesWithCase(
@@ -855,8 +830,8 @@ component {
 
 	/**
 	 * Assert that the given "needle" argument exists in the incoming string or array with no case-sensitivity
-	 * @target The target object to check if the incoming needle exists in. This can be a string or array
-	 * @needle The substring to find in a string or the value to find in an array
+	 * @target  The target object to check if the incoming needle exists in. This can be a string or array
+	 * @needle  The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
 	 */
 	function notIncludes(
@@ -882,8 +857,8 @@ component {
 
 	/**
 	 * Assert that the actual value is greater than the target value
-	 * @actual The actual value
-	 * @target The target value
+	 * @actual  The actual value
+	 * @target  The target value
 	 * @message The message to send in the failure
 	 */
 	function isGT(
@@ -904,8 +879,8 @@ component {
 
 	/**
 	 * Assert that the actual value is greater than or equal the target value
-	 * @actual The actual value
-	 * @target The target value
+	 * @actual  The actual value
+	 * @target  The target value
 	 * @message The message to send in the failure
 	 */
 	function isGTE(
@@ -926,8 +901,8 @@ component {
 
 	/**
 	 * Assert that the actual value is less than the target value
-	 * @actual The actual value
-	 * @target The target value
+	 * @actual  The actual value
+	 * @target  The target value
 	 * @message The message to send in the failure
 	 */
 	function isLT(
@@ -948,8 +923,8 @@ component {
 
 	/**
 	 * Assert that the actual value is less than or equal the target value
-	 * @actual The actual value
-	 * @target The target value
+	 * @actual  The actual value
+	 * @target  The target value
 	 * @message The message to send in the failure
 	 */
 	function isLTE(
@@ -991,11 +966,13 @@ component {
 
 	/**
 	 * Assert something is JSON
-	 * @actual The actual data to test
+	 * @actual  The actual data to test
 	 * @message The message to send in the failure
 	 */
 	function isJSON( required any actual, message = "" ){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be json" );
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be json"
+		);
 		if ( !isJSON( arguments.actual ) ) {
 			fail( arguments.message );
 		}
@@ -1038,14 +1015,8 @@ component {
 			}
 
 			// Get both column lists and sort them the same
-			var actualColumnList = listSort(
-				arguments.actual.columnList,
-				"textNoCase"
-			);
-			var expectedColumnList = listSort(
-				arguments.expected.columnList,
-				"textNoCase"
-			);
+			var actualColumnList   = listSort( arguments.actual.columnList, "textNoCase" );
+			var expectedColumnList = listSort( arguments.expected.columnList, "textNoCase" );
 
 			// Check column lists
 			if ( actualColumnList != expectedColumnList ) {
@@ -1104,12 +1075,7 @@ component {
 						return false;
 					}
 					// And make sure they match
-					if (
-						!equalize(
-							arguments.actual[ i ],
-							arguments.expected[ i ]
-						)
-					) {
+					if ( !equalize( arguments.actual[ i ], arguments.expected[ i ] ) ) {
 						return false;
 					}
 					continue;
@@ -1128,15 +1094,9 @@ component {
 
 		// Structs / Object
 		if ( isStruct( arguments.actual ) && isStruct( arguments.expected ) ) {
-			var actualKeys = listSort(
-				structKeyList( arguments.actual ),
-				"textNoCase"
-			);
-			var expectedKeys = listSort(
-				structKeyList( arguments.expected ),
-				"textNoCase"
-			);
-			var key = "";
+			var actualKeys   = listSort( structKeyList( arguments.actual ), "textNoCase" );
+			var expectedKeys = listSort( structKeyList( arguments.expected ), "textNoCase" );
+			var key          = "";
 
 			// Confirm both structs have the same keys
 			if ( actualKeys neq expectedKeys ) {
@@ -1154,12 +1114,7 @@ component {
 					return false;
 				}
 				// And make sure they match when actual values exist
-				if (
-					!equalize(
-						arguments.actual[ key ],
-						arguments.expected[ key ]
-					)
-				) {
+				if ( !equalize( arguments.actual[ key ], arguments.expected[ key ] ) ) {
 					return false;
 				}
 			}
@@ -1189,10 +1144,7 @@ component {
 
 		if ( listFirst( server.coldfusion.productversion ) lt 10 ) {
 			if ( isCustomFunction( arguments.target ) ) {
-				throw(
-					type    = "InvalidType",
-					message = "You sent an invalid type for length checking (function)"
-				);
+				throw( type = "InvalidType", message = "You sent an invalid type for length checking (function)" );
 			}
 		} else {
 			if ( isCustomFunction( arguments.target ) or isClosure( arguments.target ) ) {

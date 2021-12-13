@@ -17,35 +17,20 @@ component accessors="true" {
 		return this;
 	}
 
-	remote function addTest(
-		required componentName,
-		required method
-	){
-		arrayAppend(
-			variables.bundles,
-			arguments.componentName
-		);
+	remote function addTest( required componentName, required method ){
+		arrayAppend( variables.bundles, arguments.componentName );
 		variables.testSpecs.addAll( listToArray( arguments.method ) );
 		return this;
 	}
 
-	remote function add(
-		required componentName,
-		required methods
-	){
-		arrayAppend(
-			variables.bundles,
-			arguments.componentName
-		);
+	remote function add( required componentName, required methods ){
+		arrayAppend( variables.bundles, arguments.componentName );
 		variables.testSpecs.addAll( listToArray( arguments.methods ) );
 		return this;
 	}
 
 	remote function addAll( required componentName ){
-		arrayAppend(
-			variables.bundles,
-			arguments.componentName
-		);
+		arrayAppend( variables.bundles, arguments.componentName );
 		return this;
 	}
 
@@ -53,17 +38,14 @@ component accessors="true" {
 		if ( len( arguments.testMethod ) ) {
 			variables.testSpecs.addAll( listToArray( arguments.testMethod ) );
 		}
-		return new Results(
-			variables.bundles,
-			variables.testSpecs
-		);
+		return new Results( variables.bundles, variables.testSpecs );
 	}
 
 	/**
 	 * Run a test remotely like MXUnit
 	 * @testMethod.hint A list or array of test names that are the ones that will be executed ONLY!
-	 * @debug.hint Show debug output on the reports or not
-	 * @output.hint The type of reporter to run the test with
+	 * @debug.hint      Show debug output on the reports or not
+	 * @output.hint     The type of reporter to run the test with
 	 */
 	remote function runTestRemote(
 		any testMethod = "",

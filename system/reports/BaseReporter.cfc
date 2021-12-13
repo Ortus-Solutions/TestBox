@@ -34,10 +34,7 @@ component {
 				getPageContext().getOut().resetHTMLHead();
 			} catch ( any e ) {
 				// don't care, that lucee version doesn't support it.
-				writeDump(
-					var    = "resetHTMLHead() not supported #e.message#",
-					output = "console"
-				);
+				writeDump( var = "resetHTMLHead() not supported #e.message#", output = "console" );
 			}
 		}
 		// reset cfheader from integration tests
@@ -48,8 +45,8 @@ component {
 	 * Compose a url for opening a file in an editor
 	 *
 	 * @template The template target
-	 * @line The line number target
-	 * @editor The editor to use: vscode, vscode-insiders, sublime, textmate, emacs, macvim, idea, atom, espresso
+	 * @line     The line number target
+	 * @editor   The editor to use: vscode, vscode-insiders, sublime, textmate, emacs, macvim, idea, atom, espresso
 	 *
 	 * @return The string for the IDE
 	 */

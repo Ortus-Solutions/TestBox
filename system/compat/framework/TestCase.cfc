@@ -31,8 +31,8 @@ component extends="testbox.system.BaseSpec" {
 	/**
 	 * Run a test remotely like MXUnit
 	 * @testMethod.hint A list or array of test names that are the ones that will be executed ONLY!
-	 * @debug.hint Show debug output on the reports or not
-	 * @output.hint The type of reporter to run the test with
+	 * @debug.hint      Show debug output on the reports or not
+	 * @output.hint     The type of reporter to run the test with
 	 */
 	remote function runTestRemote(
 		any testMethod = "",
@@ -103,7 +103,7 @@ component extends="testbox.system.BaseSpec" {
 
 	/**
 	 * MXUnit style debug
-	 * @var.hint The variable to debug
+	 * @var.hint   The variable to debug
 	 * @label.hint The label to add to the debug entry
 	 */
 	function debug( required var, string label = "" ){
@@ -113,17 +113,11 @@ component extends="testbox.system.BaseSpec" {
 
 	/**
 	 * Expect an exception from the testing spec
-	 * @expectedExceptionType.hint the type to expect
+	 * @expectedExceptionType.hint    the type to expect
 	 * @expectedExceptionMessage.hint Optional exception message
 	 */
-	function expectException(
-		expectedExceptionType,
-		expectedExceptionMessage = ".*"
-	){
-		super.expectedException(
-			arguments.expectedExceptionType,
-			arguments.expectedExceptionMessage
-		);
+	function expectException( expectedExceptionType, expectedExceptionMessage = ".*" ){
+		super.expectedException( arguments.expectedExceptionType, arguments.expectedExceptionMessage );
 	}
 
 	/**
@@ -161,44 +155,27 @@ component extends="testbox.system.BaseSpec" {
 		getMockBox().prepareMock( arguments.receiver );
 
 		// inject it.
-		if (
-			structKeyExists(
-				arguments.giver,
-				arguments.functionName
-			)
-		) {
+		if ( structKeyExists( arguments.giver, arguments.functionName ) ) {
 			arguments.receiver.$property(
 				propertyName  = arguments.functionNameInReceiver,
 				propertyScope = "this",
-				mock          = arguments.giver.$getProperty(
-					name  = arguments.functionName,
-					scope = "this"
-				)
+				mock          = arguments.giver.$getProperty( name = arguments.functionName, scope = "this" )
 			);
 			arguments.receiver.$property(
 				propertyName  = arguments.functionNameInReceiver,
 				propertyScope = "variables",
-				mock          = arguments.giver.$getProperty(
-					name  = arguments.functionName,
-					scope = "this"
-				)
+				mock          = arguments.giver.$getProperty( name = arguments.functionName, scope = "this" )
 			);
 		} else {
 			arguments.receiver.$property(
 				propertyName  = arguments.functionNameInReceiver,
 				propertyScope = "this",
-				mock          = arguments.giver.$getProperty(
-					name  = arguments.functionName,
-					scope = "variables"
-				)
+				mock          = arguments.giver.$getProperty( name = arguments.functionName, scope = "variables" )
 			);
 			arguments.receiver.$property(
 				propertyName  = arguments.functionNameInReceiver,
 				propertyScope = "variables",
-				mock          = arguments.giver.$getProperty(
-					name  = arguments.functionName,
-					scope = "variables"
-				)
+				mock          = arguments.giver.$getProperty( name = arguments.functionName, scope = "variables" )
 			);
 		}
 
@@ -218,14 +195,8 @@ component extends="testbox.system.BaseSpec" {
 	/**
 	 * Assert that the passed expression is true
 	 */
-	function assert(
-		required string condition,
-		message = ""
-	){
-		this.$assert.isTrue(
-			arguments.condition,
-			arguments.message
-		);
+	function assert( required string condition, message = "" ){
+		this.$assert.isTrue( arguments.condition, arguments.message );
 	}
 
 	/**
@@ -276,14 +247,8 @@ component extends="testbox.system.BaseSpec" {
 	/**
 	 * Assert something is false
 	 */
-	function assertFalse(
-		required string condition,
-		message = ""
-	){
-		this.$assert.isFalse(
-			arguments.condition,
-			arguments.message
-		);
+	function assertFalse( required string condition, message = "" ){
+		this.$assert.isFalse( arguments.condition, arguments.message );
 	}
 
 	/**
@@ -368,47 +333,29 @@ component extends="testbox.system.BaseSpec" {
 	/**
 	 * Assert something is true
 	 */
-	function assertTrue(
-		required string condition,
-		message = ""
-	){
-		this.$assert.isTrue(
-			arguments.condition,
-			arguments.message
-		);
+	function assertTrue( required string condition, message = "" ){
+		this.$assert.isTrue( arguments.condition, arguments.message );
 	}
 
 	/**
 	 * Assert something is array
 	 */
 	function assertIsArray( required a, message = "" ){
-		this.$assert.typeOf(
-			"array",
-			arguments.a,
-			arguments.message
-		);
+		this.$assert.typeOf( "array", arguments.a, arguments.message );
 	}
 
 	/**
 	 * Assert something is query
 	 */
 	function assertIsQuery( required q, message = "" ){
-		this.$assert.typeOf(
-			"query",
-			arguments.q,
-			arguments.message
-		);
+		this.$assert.typeOf( "query", arguments.q, arguments.message );
 	}
 
 	/**
 	 * Assert something is struct
 	 */
 	function assertIsStruct( required actual, message = "" ){
-		this.$assert.typeOf(
-			"struct",
-			arguments.actual,
-			arguments.message
-		);
+		this.$assert.typeOf( "struct", arguments.actual, arguments.message );
 	}
 
 	/**
@@ -429,11 +376,7 @@ component extends="testbox.system.BaseSpec" {
 	/**
 	 * Assert something is of a certain object type without any inheritance lookup
 	 */
-	function assertIsExactTypeOf(
-		required o,
-		required type,
-		message = ""
-	){
+	function assertIsExactTypeOf( required o, required type, message = "" ){
 		this.$assert.isEqual(
 			arguments.type,
 			getMetadata( arguments.o ).name,
@@ -445,45 +388,28 @@ component extends="testbox.system.BaseSpec" {
 	 * Assert something is defined or not
 	 */
 	function assertIsDefined( required o, message = "" ){
-		this.$assert.isTrue(
-			isDefined( evaluate( "arguments.o" ) ),
-			arguments.message
-		);
+		this.$assert.isTrue( isDefined( evaluate( "arguments.o" ) ), arguments.message );
 	}
 
 	/**
 	 * Assert something is an XMLDoc
 	 */
-	function assertIsXMLDoc(
-		required xml,
-		message = "Passed in xml is not a valid XML Object"
-	){
-		this.$assert.isTrue(
-			isXMLDoc( arguments.xml ),
-			arguments.message
-		);
+	function assertIsXMLDoc( required xml, message = "Passed in xml is not a valid XML Object" ){
+		this.$assert.isTrue( isXMLDoc( arguments.xml ), arguments.message );
 	}
 
 	/**
 	 * Assert array is empty
 	 */
 	function assertIsEmptyArray( required a, message = "" ){
-		this.$assert.isEqual(
-			0,
-			arrayLen( arguments.a ),
-			arguments.message
-		);
+		this.$assert.isEqual( 0, arrayLen( arguments.a ), arguments.message );
 	}
 
 	/**
 	 * Assert query is empty
 	 */
 	function assertIsEmptyQuery( required q, message = "" ){
-		this.$assert.isEqual(
-			0,
-			arguments.q.recordcount,
-			arguments.message
-		);
+		this.$assert.isEqual( 0, arguments.q.recordcount, arguments.message );
 	}
 
 	/**
@@ -501,11 +427,7 @@ component extends="testbox.system.BaseSpec" {
 	 * Assert string is empty
 	 */
 	function assertIsEmpty( required o, message = "" ){
-		this.$assert.isEqual(
-			0,
-			len( arguments.o ),
-			arguments.message
-		);
+		this.$assert.isEqual( 0, len( arguments.o ), arguments.message );
 	}
 
 	/**

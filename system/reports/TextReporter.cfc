@@ -18,9 +18,9 @@ component extends="BaseReporter" {
 	 * The report should return back in whatever format they desire and should set any
 	 * Specific browser types if needed.
 	 *
-	 * @results The instance of the TestBox TestResult object to build a report on
-	 * @testbox The TestBox core object
-	 * @options A structure of options this reporter needs to build the report with
+	 * @results    The instance of the TestBox TestResult object to build a report on
+	 * @testbox    The TestBox core object
+	 * @options    A structure of options this reporter needs to build the report with
 	 * @justReturn Boolean flag that if set just returns the content with no content type and buffer reset
 	 */
 	any function runReport(
@@ -34,9 +34,9 @@ component extends="BaseReporter" {
 			getPageContextResponse().setContentType( "text/plain" );
 		}
 		// bundle stats
-		variables.bundleStats = arguments.results.getBundleStats();
+		variables.bundleStats= arguments.results.getBundleStats();
 		// prepare the report
-		savecontent variable="local.report" {
+		savecontent variable ="local.report" {
 			include "assets/text.cfm";
 		}
 		return reReplace(
@@ -53,7 +53,7 @@ component extends="BaseReporter" {
 	 * @status The status to get back: error, failed, skipped, passed
 	 */
 	function getStatusIndicator( required status ){
-		if( arguments.status == "error" ){
+		if ( arguments.status == "error" ) {
 			return "!!";
 		} else if ( arguments.status == "failed" ) {
 			return "X";
@@ -66,10 +66,10 @@ component extends="BaseReporter" {
 
 	function getBundleIndicator( required bundle ){
 		var thisStatus = "pass";
-		if( arguments.bundle.totalFail > 0 || arguments.bundle.totalError > 0 ){
+		if ( arguments.bundle.totalFail > 0 || arguments.bundle.totalError > 0 ) {
 			thisStatus = "error";
 		}
-		if( arguments.bundle.totalSkipped == arguments.bundle.totalSpecs ){
+		if ( arguments.bundle.totalSkipped == arguments.bundle.totalSpecs ) {
 			thisStatus = "skipped";
 		}
 		return getStatusIndicator( thisStatus );

@@ -17,7 +17,7 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @spec The target spec
+	 * @spec       The target spec
 	 * @assertions The assertions library
 	 * @collection The collection target
 	 */
@@ -33,10 +33,7 @@ component accessors="true" {
 		return this;
 	}
 
-	function onMissingMethod(
-		string missingMethodName,
-		any missingMethodArguments
-	){
+	function onMissingMethod( string missingMethodName, any missingMethodArguments ){
 		if ( isArray( variables.actual ) ) {
 			for ( var e in variables.actual ) {
 				// Using evaluate since invoke looses track of positional argument collections

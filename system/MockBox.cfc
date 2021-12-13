@@ -8,7 +8,10 @@ Date                   		: April 20, 2009
 Description		:
 The Official ColdBox Mocking Factory
 ----------------------------------------------------------------------->
-<cfcomponent output="false" hint="A unit testing mocking/stubing factory for ColdFusion 7 and above and any CFML Engine">
+<cfcomponent
+	output="false"
+	hint  ="A unit testing mocking/stubing factory for ColdFusion 7 and above and any CFML Engine"
+>
 	<!------------------------------------------- CONSTRUCTOR ------------------------------------------>
 
 	<!--- init --->
@@ -38,10 +41,10 @@ The Official ColdBox Mocking Factory
 			variables.instance.generationPath = variables.instance.generationPath & "/";
 		}
 
-		variables.instance.mockGenerator = createObject(
-			"component",
-			"testbox.system.mockutils.MockGenerator"
-		).init( this, false );
+		variables.instance.mockGenerator = createObject( "component", "testbox.system.mockutils.MockGenerator" ).init(
+			this,
+			false
+		);
 
 		return this;
 		</cfscript>
@@ -221,7 +224,13 @@ The Official ColdBox Mocking Factory
 			default ="true"
 			hint    ="Add method call logging for all mocked methods"
 		/>
-		<cfargument name="extends" type="string" required="false" default="" hint="Make the stub extend from certain CFC"/>
+		<cfargument
+			name    ="extends"
+			type    ="string"
+			required="false"
+			default =""
+			hint    ="Make the stub extend from certain CFC"
+		/>
 		<cfargument
 			name    ="implements"
 			type    ="string"
@@ -232,10 +241,7 @@ The Official ColdBox Mocking Factory
 		<cfscript>
 		// No implements or inheritance
 		if ( NOT len( trim( arguments.implements ) ) AND NOT len( trim( arguments.extends ) ) ) {
-			return createMock(
-				className   = "testbox.system.mockutils.Stub",
-				callLogging = arguments.callLogging
-			);
+			return createMock( className = "testbox.system.mockutils.Stub", callLogging = arguments.callLogging );
 		}
 		// Generate the CFC + Create it + Remove it
 		return prepareMock( instance.mockGenerator.generateCFC( argumentCollection = arguments ) );
@@ -322,12 +328,7 @@ The Official ColdBox Mocking Factory
 
 		// If method name used? Count only this method signatures
 		if ( len( arguments.methodName ) ) {
-			if (
-				structKeyExists(
-					this._mockMethodCallCounters,
-					arguments.methodName
-				)
-			) {
+			if ( structKeyExists( this._mockMethodCallCounters, arguments.methodName ) ) {
 				return this._mockMethodCallCounters[ arguments.methodName ];
 			}
 			return -1;
@@ -390,7 +391,12 @@ The Official ColdBox Mocking Factory
 		returntype="boolean"
 		hint      ="Assert that at least a certain number of calls have been made on the mock or a specific mock method. Injected as $atLeast()"
 	>
-		<cfargument name="minNumberOfInvocations" type="numeric" required="true" hint="The min number of calls to assert"/>
+		<cfargument
+			name    ="minNumberOfInvocations"
+			type    ="numeric"
+			required="true"
+			hint    ="The min number of calls to assert"
+		/>
 		<cfargument
 			name    ="methodName"
 			type    ="string"
@@ -429,7 +435,12 @@ The Official ColdBox Mocking Factory
 		returntype="boolean"
 		hint      ="Assert that at most a certain number of calls have been made on the mock or a specific mock method. Injected as $atMost()"
 	>
-		<cfargument name="maxNumberOfInvocations" type="numeric" required="true" hint="The max number of calls to assert"/>
+		<cfargument
+			name    ="maxNumberOfInvocations"
+			type    ="numeric"
+			required="true"
+			hint    ="The max number of calls to assert"
+		/>
 		<cfargument
 			name    ="methodName"
 			type    ="string"
@@ -602,7 +613,13 @@ The Official ColdBox Mocking Factory
 			default ="false"
 			hint    ="If you want the method call to throw an exception"
 		/>
-		<cfargument name="throwType" type="string" required="false" default="" hint="The type of the exception to throw"/>
+		<cfargument
+			name    ="throwType"
+			type    ="string"
+			required="false"
+			default =""
+			hint    ="The type of the exception to throw"
+		/>
 		<cfargument
 			name    ="throwDetail"
 			type    ="string"
@@ -782,7 +799,7 @@ The Official ColdBox Mocking Factory
 		 *
 		 * @param queryData      Specifically format chunk of text to convert to a query. (Required)
 		 * @return Returns a query object.
-		 * @author Bert Dawson (bert@redbanner.com)
+		 * @author  Bert Dawson (bert@redbanner.com)
 		 * @version 3, June 25, 2013
 		 *
 		 */
@@ -808,11 +825,7 @@ The Official ColdBox Mocking Factory
 
 		// loop though the queryData starting at the second line
 		for ( lineNum = 2; lineNum <= arrayLen( queryRows ); lineNum = lineNum + 1 ) {
-			cellValues = listToArray(
-				queryRows[ lineNum ],
-				fieldsDelimiter,
-				true
-			); // Array of cell values, not ignoring empty values.
+			cellValues = listToArray( queryRows[ lineNum ], fieldsDelimiter, true ); // Array of cell values, not ignoring empty values.
 			if ( arrayLen( cellValues ) == listLen( listOfColumns ) ) {
 				queryAddRow( tmpQuery );
 				for ( colPosition = 1; colPosition <= arrayLen( cellValues ); colPosition++ ) {
@@ -951,9 +964,6 @@ The Official ColdBox Mocking Factory
 		returntype="testbox.system.util.Util"
 		hint      ="Create and return a util object"
 	>
-		<cfreturn createObject(
-			"component",
-			"testbox.system.util.Util"
-		)/>
+		<cfreturn createObject( "component", "testbox.system.util.Util" )/>
 	</cffunction>
 </cfcomponent>

@@ -46,10 +46,7 @@ component {
 
 		var tb = new testbox.system.TestBox( bundles = variables.bundles );
 
-		return tb.run(
-			testSpecs = variables.testSpecs,
-			reporter  = arguments.mode
-		);
+		return tb.run( testSpecs = variables.testSpecs, reporter = arguments.mode );
 	}
 
 }
