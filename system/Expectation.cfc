@@ -24,9 +24,9 @@ component accessors="true" {
 
 	/**
 	 * Constructor
-	 * @spec The spec that this matcher belongs to.
+	 * @spec       The spec that this matcher belongs to.
 	 * @assertions The TestBox assertions object: testbox.system.Assertion
-	 * @mockbox A reference to MockBox
+	 * @mockbox    A reference to MockBox
 	 */
 	function init(
 		required any spec,
@@ -59,7 +59,7 @@ component accessors="true" {
 	 * Fail an assertion
 	 *
 	 * @message The message to fail with.
-	 * @detail The detail to fail with.
+	 * @detail  The detail to fail with.
 	 */
 	function fail( message = "", detail = "" ){
 		variables.assert.fail( argumentCollection = arguments );
@@ -99,7 +99,7 @@ component accessors="true" {
 		// detect toBeTypeOf dynamic shortcuts
 		if (
 			reFindNoCase(
-				"^toBe(array|binary|boolean|component|creditcard|date|time|email|eurodate|float|numeric|guid|integer|query|ssn|social_security_number|string|struct|telephone|url|UUID|usdate|zipcode)$",
+				"^toBe(array|binary|boolean|component|creditcard|date|time|email|eurodate|float|function|numeric|guid|integer|query|ssn|social_security_number|string|struct|telephone|url|UUID|usdate|zipcode|xml)$",
 				arguments.missingMethodName
 			)
 		) {
@@ -110,9 +110,7 @@ component accessors="true" {
 				structKeyExists( arguments.missingMethodArguments, "message" ) ? arguments.missingMethodArguments.message : ""
 			);
 			message = (
-				structKeyExists( arguments.missingMethodArguments, "1" ) ? arguments.missingMethodArguments[
-					1
-				] : message
+				structKeyExists( arguments.missingMethodArguments, "1" ) ? arguments.missingMethodArguments[ 1 ] : message
 			);
 			// execute the method
 			return toBeTypeOf( type = type, message = message );
@@ -136,7 +134,7 @@ component accessors="true" {
 
 	/**
 	 * Assert something is true
-	 * @actual The actual data to test
+	 * @actual  The actual data to test
 	 * @message The message to send in the failure
 	 */
 	function toBeTrue( message = "" ){
@@ -152,7 +150,7 @@ component accessors="true" {
 
 	/**
 	 * Assert something is false
-	 * @actual The actual data to test
+	 * @actual  The actual data to test
 	 * @message The message to send in the failure
 	 */
 	function toBeFalse( message = "" ){
@@ -168,7 +166,7 @@ component accessors="true" {
 	/**
 	 * Assert something is equal to each other, no case is required
 	 * @expected The expected data
-	 * @message The message to send in the failure
+	 * @message  The message to send in the failure
 	 */
 	function toBe( any expected, message = "" ){
 		// Null checks
@@ -190,7 +188,7 @@ component accessors="true" {
 	/**
 	 * Assert strings are equal to each other with case.
 	 * @expected The expected data
-	 * @message The message to send in the failure
+	 * @message  The message to send in the failure
 	 */
 	function toBeWithCase( required string expected, message = "" ){
 		arguments.actual = this.actual;
@@ -229,7 +227,7 @@ component accessors="true" {
 	/**
 	 * Assert that the actual object is of the expected instance type
 	 * @typeName The typename to check
-	 * @message The message to send in the failure
+	 * @message  The message to send in the failure
 	 */
 	function toBeInstanceOf( required string typeName, message = "" ){
 		arguments.actual = this.actual;
@@ -243,7 +241,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual data matches the incoming regular expression with no case sensitivity
-	 * @regex The regex to check with
+	 * @regex   The regex to check with
 	 * @message The message to send in the failure
 	 */
 	function toMatch( required string regex, message = "" ){
@@ -258,8 +256,8 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual data matches the incoming regular expression with case sensitivity
-	 * @actual The actual data to check
-	 * @regex The regex to check with
+	 * @actual  The actual data to check
+	 * @regex   The regex to check with
 	 * @message The message to send in the failure
 	 */
 	function toMatchWithCase( required string regex, message = "" ){
@@ -274,7 +272,7 @@ component accessors="true" {
 
 	/**
 	 * Assert the type of the incoming actual data, it uses the internal ColdFusion isValid() function behind the scenes
-	 * @type The type to check, valid types are: array, binary, boolean, component, date, time, float, numeric, integer, query, string, struct, url, uuid
+	 * @type    The type to check, valid types are: array, binary, boolean, component, date, time, float, numeric, integer, query, string, struct, url, uuid
 	 * @message The message to send in the failure
 	 */
 	function toBeTypeOf( required string type, message = "" ){
@@ -304,7 +302,7 @@ component accessors="true" {
 	/**
 	 * Assert that a given key exists in the passed in struct/object
 	 *
-	 * @key A key or a list of keys to check that the structure MUST contain
+	 * @key     A key or a list of keys to check that the structure MUST contain
 	 * @message The message to send in the failure
 	 */
 	function toHaveKey( required string key, message = "" ){
@@ -319,7 +317,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that a given key exists in the passed in struct by searching the entire nested structure
-	 * @key The key to check for existence anywhere in the nested structure
+	 * @key     The key to check for existence anywhere in the nested structure
 	 * @message The message to send in the failure
 	 */
 	function toHaveDeepKey( required string key, message = "" ){
@@ -334,7 +332,7 @@ component accessors="true" {
 
 	/**
 	 * Assert the size of a given string, array, structure or query
-	 * @length The length to check
+	 * @length  The length to check
 	 * @message The message to send in the failure
 	 */
 	function toHaveLength( required string length, message = "" ){
@@ -349,8 +347,8 @@ component accessors="true" {
 
 	/**
 	 * Assert that the passed in function will throw an exception
-	 * @type Match this type with the exception thrown
-	 * @regex Match this regex against the message of the exception
+	 * @type    Match this type with the exception thrown
+	 * @regex   Match this regex against the message of the exception
 	 * @message The message to send in the failure
 	 */
 	function toThrow( type = "", regex = ".*", message = "" ){
@@ -366,9 +364,9 @@ component accessors="true" {
 	/**
 	 * Assert that the passed in actual number or date is expected to be close to it within +/- a passed delta and optional datepart
 	 * @expected The expected number or date
-	 * @delta The +/- delta to range it
+	 * @delta    The +/- delta to range it
 	 * @datepart If passed in values are dates, then you can use the datepart to evaluate it
-	 * @message The message to send in the failure
+	 * @message  The message to send in the failure
 	 */
 	function toBeCloseTo(
 		required any expected,
@@ -395,8 +393,8 @@ component accessors="true" {
 
 	/**
 	 * Assert that the passed in actual number or date is between the passed in min and max values
-	 * @min The expected min number or date
-	 * @max The expected max number or date
+	 * @min     The expected min number or date
+	 * @max     The expected max number or date
 	 * @message The message to send in the failure
 	 */
 	function toBeBetween(
@@ -427,8 +425,8 @@ component accessors="true" {
 
 	/**
 	 * Assert that the given "needle" argument exists in the incoming string or array with no case-sensitivity
-	 * @target The target object to check if the incoming needle exists in. This can be a string or array
-	 * @needle The substring to find in a string or the value to find in an array
+	 * @target  The target object to check if the incoming needle exists in. This can be a string or array
+	 * @needle  The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
 	 */
 	function toInclude( required any needle, message = "" ){
@@ -443,7 +441,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the given "needle" argument exists in the incoming string or array with case-sensitivity
-	 * @needle The substring to find in a string or the value to find in an array
+	 * @needle  The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
 	 */
 	function toIncludeWithCase( required any needle, message = "" ){
@@ -458,7 +456,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual value is greater than the target value
-	 * @target The target value
+	 * @target  The target value
 	 * @message The message to send in the failure
 	 */
 	function toBeGT( required any target, message = "" ){
@@ -483,7 +481,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual value is greater than or equal the target value
-	 * @target The target value
+	 * @target  The target value
 	 * @message The message to send in the failure
 	 */
 	function toBeGTE( required any target, message = "" ){
@@ -508,7 +506,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual value is less than the target value
-	 * @target The target value
+	 * @target  The target value
 	 * @message The message to send in the failure
 	 */
 	function toBeLT( required any target, message = "" ){
@@ -533,7 +531,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual value is less than or equal the target value
-	 * @target The target value
+	 * @target  The target value
 	 * @message The message to send in the failure
 	 */
 	function toBeLTE( required any target, message = "" ){
@@ -576,7 +574,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual value passes a given truth test (function/closure)
-	 * @target The target truth test function/closure
+	 * @target  The target truth test function/closure
 	 * @message The message to send in the failure
 	 */
 	function toSatisfy( required any target, message = "" ){

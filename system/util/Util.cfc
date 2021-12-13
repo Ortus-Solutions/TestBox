@@ -42,10 +42,7 @@ component {
 	 */
 	function fileLastModified( required filename ){
 		var objFile = createObject( "java", "java.io.File" ).init(
-			javacast(
-				"string",
-				getAbsolutePath( arguments.filename )
-			)
+			javacast( "string", getAbsolutePath( arguments.filename ) )
 		);
 		// Calculate adjustments fot timezone and daylightsavindtime
 		var offset = ( ( getTimezoneInfo().utcHourOffset ) + 1 ) * -3600;
@@ -114,9 +111,9 @@ component {
 
 	/**
 	 * Create a URL safe slug from a string
-	 * @str The target
+	 * @str       The target
 	 * @maxLength The maximum number of characters for the slug
-	 * @allow A regex safe list of additional characters to allow
+	 * @allow     A regex safe list of additional characters to allow
 	 */
 	string function slugify(
 		required string str,
@@ -147,12 +144,9 @@ component {
 	/**
 	 * Find all methods on a given metadata and it's parents with a given annotation
 	 * @annotation The annotation name to look for on methods
-	 * @metadata The metadata to search (recursively) for the provided annotation
+	 * @metadata   The metadata to search (recursively) for the provided annotation
 	 */
-	public array function getAnnotatedMethods(
-		required string annotation,
-		required struct metadata
-	){
+	public array function getAnnotatedMethods( required string annotation, required struct metadata ){
 		var lifecycleMethods = [];
 
 		if ( structKeyExists( arguments.metadata, "functions" ) ) {
@@ -164,15 +158,9 @@ component {
 		}
 
 		if ( structKeyExists( arguments.metadata, "extends" ) ) {
-			arrayEach(
-				getAnnotatedMethods(
-					arguments.annotation,
-					arguments.metadata.extends
-				),
-				function( item ){
-					arrayAppend( lifecycleMethods, arguments.item );
-				}
-			);
+			arrayEach( getAnnotatedMethods( arguments.annotation, arguments.metadata.extends ), function( item ){
+				arrayAppend( lifecycleMethods, arguments.item );
+			} );
 		}
 
 		return lifecycleMethods;

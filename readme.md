@@ -4,7 +4,6 @@
 </p>
 
 <p align="center">
-	<a href="https://travis-ci.org/ortus-solutions/testbox"><img src="https://travis-ci.org/ortus-solutions/testbox.svg?branch=development" alt="Build Status"></a>
 	<a href="https://forgebox.io/view/testbox"><img src="https://forgebox.io/api/v1/entry/testbox/badges/downloads" alt="Total Downloads" /></a>
 	<a href="https://forgebox.io/view/testbox"><img src="https://forgebox.io/api/v1/entry/testbox/badges/version" alt="Latest Stable Version" /></a>
 	<a href="https://forgebox.io/view/testbox"><img src="https://img.shields.io/badge/License-Apache2-brightgreen" alt="Apache2 License" /></a>
@@ -62,6 +61,7 @@ And constructed with the following guidelines:
 * https://testbox.ortusbooks.com/content/primers/xunit/index.html
 
 ### Community and Support
+
 Join us in our Ortus Community and become a valuable member of this project [TestBox BDD](https://community.ortussolutions.com/c/communities/testbox/11). We are looking forward to hearing from you!!
 
 ### Official Site

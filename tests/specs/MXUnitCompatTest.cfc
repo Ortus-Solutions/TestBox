@@ -64,10 +64,7 @@ component extends="BaseTest" {
 
 	function testAssertEquals(){
 		assertEquals( 4, 4 );
-		assertEquals(
-			{ name : "luis", awesome : true },
-			{ name : "luis", awesome : true }
-		);
+		assertEquals( { name : "luis", awesome : true }, { name : "luis", awesome : true } );
 		assertEquals( "hello", "Hello" );
 		assertArrayEquals( [ 1, 2, 3 ], [ 1, 2, 3 ] );
 	}
@@ -85,23 +82,11 @@ component extends="BaseTest" {
 	}
 
 	function testassertNotSame(){
-		assertNotSame(
-			this,
-			createObject(
-				"component",
-				"testbox.system.MockBox"
-			)
-		);
+		assertNotSame( this, createObject( "component", "testbox.system.MockBox" ) );
 		// Even if the same CFC, two separate instances would be "equal" but not the "same".
 		assertNotSame(
-			createObject(
-				"component",
-				"testbox.system.MockBox"
-			),
-			createObject(
-				"component",
-				"testbox.system.MockBox"
-			)
+			createObject( "component", "testbox.system.MockBox" ),
+			createObject( "component", "testbox.system.MockBox" )
 		);
 	}
 
@@ -124,10 +109,7 @@ component extends="BaseTest" {
 	}
 
 	function testassertStructEquals(){
-		assertStructEquals(
-			{ name : "luis", awesome : true },
-			{ name : "luis", awesome : true }
-		);
+		assertStructEquals( { name : "luis", awesome : true }, { name : "luis", awesome : true } );
 	}
 
 
@@ -153,10 +135,7 @@ component extends="BaseTest" {
 	 */
 	function testExpectedExceptionNoValue(){
 		// This method should throw an invalid exception and pass
-		throw(
-			type    = "InvalidException",
-			message = "This test method should pass with an expected exception"
-		);
+		throw( type = "InvalidException", message = "This test method should pass with an expected exception" );
 	}
 
 	/**
@@ -173,19 +152,13 @@ component extends="BaseTest" {
 	function testExpectedExceptionFromMethodWithType(){
 		expectedException( "InvalidException" );
 		// This method should throw an invalid exception and pass
-		throw(
-			type    = "InvalidException",
-			message = "This test method should pass with an expected exception"
-		);
+		throw( type = "InvalidException", message = "This test method should pass with an expected exception" );
 	}
 
 	function testExpectedExceptionFromMethodWithTypeAndRegex(){
 		expectedException( "InvalidException", "(pass with an)" );
 		// This method should throw an invalid exception and pass
-		throw(
-			type    = "InvalidException",
-			message = "This test method should pass with an expected exception"
-		);
+		throw( type = "InvalidException", message = "This test method should pass with an expected exception" );
 	}
 
 	function testMakePublic(){
@@ -203,10 +176,7 @@ component extends="BaseTest" {
 	function testMakePublicWithPackage(){
 		variables.test = new tests.resources.somepackage.ComponentInDifferentPackage();
 		makepublic( variables.test, "aPackageMethod" );
-		assertEquals(
-			"test for this value",
-			variables.test.aPackageMethod()
-		);
+		assertEquals( "test for this value", variables.test.aPackageMethod() );
 	}
 
 	private function privateMethodsDontRun(){

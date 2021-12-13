@@ -11,12 +11,9 @@ component {
 	/**
 	 * Checks if the incoming labels are good for running
 	 * @incomingLabels The incoming labels to test against this runner's labels.
-	 * @testResults The testing results object
+	 * @testResults    The testing results object
 	 */
-	boolean function canRunLabel(
-		required array incomingLabels,
-		required testResults
-	){
+	boolean function canRunLabel( required array incomingLabels, required testResults ){
 		var labels   = arguments.testResults.getLabels();
 		var excludes = arguments.testResults.getExcludes();
 
@@ -47,7 +44,7 @@ component {
 	/**
 	 * Checks if we can run the spec due to using testSpec arguments or incoming URL filters.
 	 *
-	 * @name The spec name
+	 * @name        The spec name
 	 * @testResults The testing results object
 	 */
 	boolean function canRunSpec( required name, required testResults ){
@@ -65,10 +62,10 @@ component {
 	/**
 	 * Verify if the incoming suite is focused
 	 *
-	 * @suite The suite rep
-	 * @target The spec target
+	 * @suite         The suite rep
+	 * @target        The spec target
 	 * @checkChildren Are we checking child suites?
-	 * @checkParent Check the parents!
+	 * @checkParent   Check the parents!
 	 */
 	boolean function isSuiteFocused(
 		required suite,
@@ -131,9 +128,9 @@ component {
 	/**
 	 * Checks if we can run the suite due to using testSuite arguments or incoming URL filters.
 	 *
-	 * @suite The suite definition
+	 * @suite       The suite definition
 	 * @testResults The testing results object
-	 * @target The target object
+	 * @target      The target object
 	 */
 	boolean function canRunSuite(
 		required suite,
@@ -188,7 +185,7 @@ component {
 
 	/**
 	 * Checks if we can run the test bundle due to using testBundles arguments or incoming URL filters.
-	 * @suite The suite definition
+	 * @suite       The suite definition
 	 * @testResults The testing results object
 	 */
 	boolean function canRunBundle(
@@ -210,16 +207,11 @@ component {
 	/**
 	 * Validate the incoming method name is a valid TestBox test method name
 	 * @methodName The method name to validate
-	 * @target The target object
+	 * @target     The target object
 	 */
 	boolean function isValidTestMethod( required methodName, required target ){
 		// True if annotation "test" exists
-		if (
-			structKeyExists(
-				getMetadata( arguments.target[ arguments.methodName ] ),
-				"test"
-			)
-		) {
+		if ( structKeyExists( getMetadata( arguments.target[ arguments.methodName ] ), "test" ) ) {
 			return true;
 		}
 		// All xUnit test methods must start or end with the term, "test".
@@ -228,8 +220,8 @@ component {
 
 	/**
 	 * Get metadata from a method
-	 * @target The target method
-	 * @name The annotation to look for
+	 * @target       The target method
+	 * @name         The annotation to look for
 	 * @defaultValue The default value to return if not found
 	 */
 	function getMethodAnnotation(

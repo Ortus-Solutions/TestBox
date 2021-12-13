@@ -23,9 +23,9 @@ component extends="TextReporter" {
 	 * The report should return back in whatever format they desire and should set any
 	 * Specific browser types if needed.
 	 *
-	 * @results The instance of the TestBox TestResult object to build a report on
-	 * @testbox The TestBox core object
-	 * @options A structure of options this reporter needs to build the report with
+	 * @results    The instance of the TestBox TestResult object to build a report on
+	 * @testbox    The TestBox core object
+	 * @options    A structure of options this reporter needs to build the report with
 	 * @justReturn Boolean flag that if set just returns the content with no content type and buffer reset
 	 */
 	any function runReport(
@@ -40,19 +40,21 @@ component extends="TextReporter" {
 		}
 
 		// bundle stats
-		variables.bundleStats = arguments.results.getBundleStats();
+		variables.bundleStats= arguments.results.getBundleStats();
 		// prepare the report
-		savecontent variable="local.report" {
+		savecontent variable ="local.report" {
 			include "assets/text.cfm";
 		}
 
 		// send to console
-		variables.out.printLn( reReplace(
-			trim( local.report ),
-			"[\r\n]+",
-			chr( 10 ),
-			"all"
-		) );
+		variables.out.printLn(
+			reReplace(
+				trim( local.report ),
+				"[\r\n]+",
+				chr( 10 ),
+				"all"
+			)
+		);
 
 		return "Report Sent To Console";
 	}

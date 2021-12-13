@@ -22,11 +22,11 @@ component extends="testbox.system.BaseSpec" {
 		/**
 		 * describe() starts a suite group of spec tests.
 		 * Arguments:
-		 * @title The title of the suite, Usually how you want to name the desired behavior
-		 * @body A closure that will resemble the tests to execute.
-		 * @labels The list or array of labels this suite group belongs to
+		 * @title    The title of the suite, Usually how you want to name the desired behavior
+		 * @body     A closure that will resemble the tests to execute.
+		 * @labels   The list or array of labels this suite group belongs to
 		 * @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
-		 * @skip A flag that tells TestBox to skip this suite group from testing if true
+		 * @skip     A flag that tells TestBox to skip this suite group from testing if true
 		 */
 		describe(
 			title  = "A spec",
@@ -46,9 +46,9 @@ component extends="testbox.system.BaseSpec" {
 
 				describe( "A nice /suite/with/slashes", function(){
 					it( "can have slashes/inthe/it", function(){
-						expect(	true ).toBeTrue();
-					});
-				});
+						expect( true ).toBeTrue();
+					} );
+				} );
 
 				it( "can match strings with no case sensitivity", function(){
 					expect( "Luis" ).toMatch( "^luis" );
@@ -61,10 +61,10 @@ component extends="testbox.system.BaseSpec" {
 				/**
 				 * it() describes a spec to test. Usually the title is prefixed with the suite name to create an expression.
 				 * Arguments:
-				 * @title The title of the spec
-				 * @spec A closure that represents the test to execute
+				 * @title  The title of the spec
+				 * @spec   A closure that represents the test to execute
 				 * @labels The list or array of labels this spec belongs to
-				 * @skip A flag that tells TestBox to skip this spec from testing if true
+				 * @skip   A flag that tells TestBox to skip this spec from testing if true
 				 */
 				it(
 					title = "is just a closure so it can contain code",
@@ -191,12 +191,7 @@ component extends="testbox.system.BaseSpec" {
 
 
 				it( "can process structure key expectations", function(){
-					var s = {
-						"data"  : {},
-						"error" : {},
-						"name"  : {},
-						"age"   : 0
-					};
+					var s = { "data" : {}, "error" : {}, "name" : {}, "age" : 0 };
 
 					expect( s ).toHaveKey( "error" );
 					expect( s ).notToHaveKey( "luis" );
@@ -371,22 +366,21 @@ component extends="testbox.system.BaseSpec" {
 		} );
 
 		describe( "In depth throwing exceptions", function(){
-			it("throws a FooException", function() {
-				expect(function() {
-					throw(type="FooException");
-				}).toThrow("FooException");
-			});
-			it("won't throw a FooException because nothing is thrown", function() {
-				expect(function() {
-
-				}).notToThrow("FooException");
-			});
-			it("won't throw a FooException because a different exception is thrown", function() {
-				expect(function() {
-					throw(type="DifferentException");
-				}).notToThrow("FooException");
-			});
-		});
+			it( "throws a FooException", function(){
+				expect( function(){
+					throw( type = "FooException" );
+				} ).toThrow( "FooException" );
+			} );
+			it( "won't throw a FooException because nothing is thrown", function(){
+				expect( function(){
+				} ).notToThrow( "FooException" );
+			} );
+			it( "won't throw a FooException because a different exception is thrown", function(){
+				expect( function(){
+					throw( type = "DifferentException" );
+				} ).notToThrow( "FooException" );
+			} );
+		} );
 	}
 
 	private function isLucee(){

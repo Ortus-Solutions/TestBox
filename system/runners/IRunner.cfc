@@ -11,16 +11,13 @@ interface {
 	 * @options The options for a runner
 	 * @testbox The TestBox class reference
 	 */
-	function init(
-		required struct options,
-		required testbox
-	);
+	function init( required struct options, required testbox );
 
 	/**
 	 * Execute a test run on a target bundle CFC
-	 * @target The target bundle CFC to test
+	 * @target      The target bundle CFC to test
 	 * @testResults The test results object to keep track of results for this test case
-	 * @callbacks A struct of listener callbacks or a CFC with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
+	 * @callbacks   A struct of listener callbacks or a CFC with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
 	 */
 	any function run(
 		required any target,

@@ -1,5 +1,11 @@
 <cfcomponent hint="MXUnit Compat Automatic Test Suite Runner" output="false">
-	<cffunction name="run" access="public" hint="Runs a directory of tests via TestBox" returntype="any" output="false">
+	<cffunction
+		name      ="run"
+		access    ="public"
+		hint      ="Runs a directory of tests via TestBox"
+		returntype="any"
+		output    ="false"
+	>
 		<cfargument name="directory" required="true" hint="directory of tests to run">
 		<cfargument
 			name    ="componentPath"
@@ -38,23 +44,16 @@
 	>
 		<cfargument name="path" type="string" required="true"/>
 		<cfscript>
-		var explorer = createObject(
-			"component",
-			"CFIDE.componentutils.cfcexplorer"
-		);
-		var target  = explorer.normalizePath( arguments.path );
-		var cfcs    = explorer.getcfcs( true ); // true == refresh cache
-		var package = "";
+		var explorer = createObject( "component", "CFIDE.componentutils.cfcexplorer" );
+		var target   = explorer.normalizePath( arguments.path );
+		var cfcs     = explorer.getcfcs( true ); // true == refresh cache
+		var package  = "";
 
 		for ( var i = 1; i lte arrayLen( cfcs ); i++ ) {
 			var cfc     = cfcs[ i ];
 			// Assumes that CF always stores path info with fwd slash
 			// and strip last element to get path.
-			var cfcpath = listDeleteAt(
-				cfc.path,
-				listLen( cfc.path, "/" ),
-				"/"
-			);
+			var cfcpath = listDeleteAt( cfc.path, listLen( cfc.path, "/" ), "/" );
 
 			// Array of structs. Doesn't seem possible to do binary search
 			if ( cfcpath eq target ) {
