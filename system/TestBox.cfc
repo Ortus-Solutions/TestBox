@@ -228,16 +228,16 @@ component accessors="true" {
 
 		// Verify URL conventions for bundle, suites and specs exclusions.
 		if ( !isNull( url.testBundles ) ) {
-			testBundles.addAll( listToArray( url.testBundles ) );
+			testBundles.addAll( listToArray( urlDecode( url.testBundles ) ) );
 		}
 		if ( !isNull( url.testSuites ) ) {
-			arguments.testSuites.addAll( listToArray( url.testSuites ) );
+			arguments.testSuites.addAll( listToArray( urlDecode( url.testSuites ) ) );
 		}
 		if ( !isNull( url.testSpecs ) ) {
-			arguments.testSpecs.addAll( listToArray( url.testSpecs ) );
+			arguments.testSpecs.addAll( listToArray( urlDecode( url.testSpecs ) ) );
 		}
 		if ( !isNull( url.testMethod ) ) {
-			arguments.testSpecs.addAll( listToArray( url.testMethod ) );
+			arguments.testSpecs.addAll( listToArray( urlDecode( url.testMethod ) ) );
 		}
 
 		// Using a directory runner?
