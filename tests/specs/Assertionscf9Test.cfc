@@ -171,19 +171,17 @@ component
 		querySetCell( testQuery, "column_a", "1" );
 		querySetCell( testQuery, "column_b", "2" );
 
-		a = new Query(
-			sql = "SELECT column_a ,column_b
-						FROM testQuery",
-			dbtype    = "query",
-			testQuery = testQuery
-		).execute().getResult();
+		a = queryExecute(
+			"SELECT column_a ,column_b FROM testQuery",
+			{},
+			{ dbtype="query" }
+		);
 
-		b = new Query(
-			sql = "SELECT column_b ,column_a
-						FROM testQuery",
-			dbtype    = "query",
-			testQuery = testQuery
-		).execute().getResult();
+		b = queryExecute(
+			"SELECT column_b ,column_a FROM testQuery",
+			{},
+			{ dbtype="query" }
+		);
 
 		$assert.isEqual( a, b );
 	}
