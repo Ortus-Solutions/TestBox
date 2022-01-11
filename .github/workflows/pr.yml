@@ -15,13 +15,18 @@ jobs:
     name: Tests
     runs-on: ubuntu-20.04
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
         javaVersion: [ "openjdk8", "openjdk11" ]
+        fullNull: [ "true", "false" ]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
+
+      - name: Delete AbstractClass for adobe@2016
+        if: contains(matrix.cfengine, 'adobe@2016')
+        run: rm tests/specs/AbstractClass.cfc
 
       - name: Setup Java
         uses: actions/setup-java@v2
@@ -41,6 +46,8 @@ jobs:
           box server start serverConfigFile="server-${{ matrix.cfengine }}.json" javaVersion=${{ matrix.javaVersion }} --noSaveSettings --debug
 
       - name: Run Tests
+        env:
+          FULL_NULL: ${{ matrix.fullNull }}
         run: |
           ant -f build/build.xml run-tests
 
