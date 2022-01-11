@@ -797,11 +797,11 @@ The Official ColdBox Mocking Factory
 		 * v2 rewrite by Jamie Jackson
 		 * v3 rewrite by James Davis
 		 *
-		 * @param queryData      Specifically format chunk of text to convert to a query. (Required)
-		 * @return Returns a query object.
+		 * @param   queryData      Specifically format chunk of text to convert to a query. (Required)
 		 * @author  Bert Dawson (bert@redbanner.com)
 		 * @version 3, June 25, 2013
 		 *
+		 * @return Returns a query object.
 		 */
 		var fieldsDelimiter = "|";
 		var listOfColumns   = "";

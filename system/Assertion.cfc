@@ -23,6 +23,7 @@ component {
 
 	/**
 	 * Assert that the passed expression is true
+	 *
 	 * @expression The expression to test
 	 * @message    The message to send in the failure
 	 */
@@ -32,6 +33,7 @@ component {
 
 	/**
 	 * Assert something is true
+	 *
 	 * @actual  The actual data to test
 	 * @message The message to send in the failure
 	 */
@@ -47,6 +49,7 @@ component {
 
 	/**
 	 * Assert something is false
+	 *
 	 * @actual  The actual data to test
 	 * @message The message to send in the failure
 	 */
@@ -62,6 +65,7 @@ component {
 
 	/**
 	 * Assert something is equal to each other, no case is required
+	 *
 	 * @expected The expected data
 	 * @actual   The actual data to test
 	 * @message  The message to send in the failure
@@ -80,6 +84,7 @@ component {
 
 	/**
 	 * Assert something is not equal to each other, no case is required
+	 *
 	 * @expected The expected data
 	 * @actual   The actual data to test
 	 * @message  The message to send in the failure
@@ -98,6 +103,7 @@ component {
 
 	/**
 	 * Assert an object is the same instance as another object
+	 *
 	 * @expected The expected data
 	 * @actual   The actual data to test
 	 * @message  The message to send in the failure
@@ -123,6 +129,7 @@ component {
 
 	/**
 	 * Assert an object is not the same instance as another object
+	 *
 	 * @expected The expected data
 	 * @actual   The actual data to test
 	 * @message  The message to send in the failure
@@ -148,6 +155,7 @@ component {
 
 	/**
 	 * Assert strings are equal to each other with case.
+	 *
 	 * @expected The expected data
 	 * @actual   The actual data to test
 	 * @message  The message to send in the failure
@@ -173,6 +181,7 @@ component {
 
 	/**
 	 * Assert something is null
+	 *
 	 * @actual  The actual data to test
 	 * @message The message to send in the failure
 	 */
@@ -191,6 +200,7 @@ component {
 
 	/**
 	 * Assert something is not null
+	 *
 	 * @actual  The actual data to test
 	 * @message The message to send in the failure
 	 */
@@ -208,6 +218,7 @@ component {
 
 	/**
 	 * Assert the type of the incoming actual data, it uses the internal ColdFusion isValid() function behind the scenes
+	 *
 	 * @type    The type to check, valid types are: array, binary, boolean, component, date, time, float, numeric, integer, query, string, struct, url, uuid
 	 * @actual  The actual data to check
 	 * @message The message to send in the failure
@@ -228,6 +239,7 @@ component {
 
 	/**
 	 * Assert that is NOT a type of the incoming actual data, it uses the internal ColdFusion isValid() function behind the scenes
+	 *
 	 * @type    The type to check, valid types are: array, binary, boolean, component, date, time, float, numeric, integer, query, string, struct, url, uuid
 	 * @actual  The actual data to check
 	 * @message The message to send in the failure
@@ -248,6 +260,7 @@ component {
 
 	/**
 	 * Assert that the actual object is of the expected instance type
+	 *
 	 * @actual   The actual data to check
 	 * @typeName The typename to check
 	 * @message  The message to send in the failure
@@ -268,6 +281,7 @@ component {
 
 	/**
 	 * Assert that the actual object is NOT of the expected instance type
+	 *
 	 * @actual   The actual data to check
 	 * @typeName The typename to check
 	 * @message  The message to send in the failure
@@ -288,6 +302,7 @@ component {
 
 	/**
 	 * Assert that the actual data matches the incoming regular expression with no case sensitivity
+	 *
 	 * @actual  The actual data to check
 	 * @regex   The regex to check with
 	 * @message The message to send in the failure
@@ -308,6 +323,7 @@ component {
 
 	/**
 	 * Assert that the actual data matches the incoming regular expression with case sensitivity
+	 *
 	 * @actual  The actual data to check
 	 * @regex   The regex to check with
 	 * @message The message to send in the failure
@@ -328,6 +344,7 @@ component {
 
 	/**
 	 * Assert that the actual data does NOT match the incoming regular expression with case sensitivity
+	 *
 	 * @actual  The actual data to check
 	 * @regex   The regex to check with
 	 * @message The message to send in the failure
@@ -348,6 +365,7 @@ component {
 
 	/**
 	 * Assert that the actual data does NOT match the incoming regular expression with no case sensitivity
+	 *
 	 * @actual  The actual data to check
 	 * @regex   The regex to check with
 	 * @message The message to send in the failure
@@ -398,6 +416,7 @@ component {
 
 	/**
 	 * Assert that a given key DOES NOT exist in the passed in struct/object
+	 *
 	 * @target  The target object/struct
 	 * @key     The key to check for existence
 	 * @message The message to send in the failure
@@ -430,6 +449,7 @@ component {
 
 	/**
 	 * Assert that a given key exists in the passed in struct by searching the entire nested structure
+	 *
 	 * @target  The target object/struct
 	 * @key     The key to check for existence anywhere in the nested structure
 	 * @message The message to send in the failure
@@ -450,6 +470,7 @@ component {
 
 	/**
 	 * Assert that a given key DOES NOT exists in the passed in struct by searching the entire nested structure
+	 *
 	 * @target  The target object/struct
 	 * @key     The key to check for existence anywhere in the nested structure
 	 * @message The message to send in the failure
@@ -473,6 +494,7 @@ component {
 
 	/**
 	 * Assert the size of a given string, array, structure or query
+	 *
 	 * @target  The target object to check the length for, this can be a string, array, structure or query
 	 * @length  The length to check
 	 * @message The message to send in the failure
@@ -497,6 +519,7 @@ component {
 
 	/**
 	 * Assert the size of a given string, array, structure or query
+	 *
 	 * @target  The target object to check the length for, this can be a string, array, structure or query
 	 * @length  The length to check
 	 * @message The message to send in the failure
@@ -521,6 +544,7 @@ component {
 
 	/**
 	 * Assert that a a given string, array, structure or query is empty
+	 *
 	 * @target  The target object to check the length for, this can be a string, array, structure or query
 	 * @message The message to send in the failure
 	 */
@@ -540,6 +564,7 @@ component {
 
 	/**
 	 * Assert that a a given string, array, structure or query is not empty
+	 *
 	 * @target  The target object to check the length for, this can be a string, array, structure or query
 	 * @message The message to send in the failure
 	 */
@@ -557,6 +582,7 @@ component {
 
 	/**
 	 * Assert that the passed in function will throw an exception
+	 *
 	 * @target  The target function to execute and check for exceptions
 	 * @type    Match this type with the exception thrown
 	 * @regex   Match this regex against the message + detail of the exception
@@ -608,6 +634,7 @@ component {
 
 	/**
 	 * Assert that the passed in function will NOT throw an exception, an exception of a specified type or exception message regex
+	 *
 	 * @target  The target function to execute and check for exceptions
 	 * @type    Match this type with the exception thrown
 	 * @regex   Match this regex against the message+detail of the exception
@@ -651,6 +678,7 @@ component {
 
 	/**
 	 * Assert that the passed in actual number or date is expected to be close to it within +/- a passed delta and optional datepart
+	 *
 	 * @expected The expected number or date
 	 * @actual   The actual number or date
 	 * @delta    The +/- delta to range it
@@ -702,6 +730,7 @@ component {
 
 	/**
 	 * Assert that the passed in actual number or date is between the passed in min and max values
+	 *
 	 * @actual  The actual number or date to evaluate
 	 * @min     The expected min number or date
 	 * @max     The expected max number or date
@@ -749,6 +778,7 @@ component {
 
 	/**
 	 * Assert that the given "needle" argument exists in the incoming string or array with no case-sensitivity
+	 *
 	 * @target  The target object to check if the incoming needle exists in. This can be a string or array
 	 * @needle  The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
@@ -776,6 +806,7 @@ component {
 
 	/**
 	 * Assert that the given "needle" argument exists in the incoming string or array with case-sensitivity
+	 *
 	 * @target  The target object to check if the incoming needle exists in. This can be a string or array
 	 * @needle  The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
@@ -803,6 +834,7 @@ component {
 
 	/**
 	 * Assert that the given "needle" argument does not exist in the incoming string or array with case-sensitivity
+	 *
 	 * @target  The target object to check if the incoming needle exists in. This can be a string or array
 	 * @needle  The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
@@ -830,6 +862,7 @@ component {
 
 	/**
 	 * Assert that the given "needle" argument exists in the incoming string or array with no case-sensitivity
+	 *
 	 * @target  The target object to check if the incoming needle exists in. This can be a string or array
 	 * @needle  The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
@@ -857,6 +890,7 @@ component {
 
 	/**
 	 * Assert that the actual value is greater than the target value
+	 *
 	 * @actual  The actual value
 	 * @target  The target value
 	 * @message The message to send in the failure
@@ -879,6 +913,7 @@ component {
 
 	/**
 	 * Assert that the actual value is greater than or equal the target value
+	 *
 	 * @actual  The actual value
 	 * @target  The target value
 	 * @message The message to send in the failure
@@ -901,6 +936,7 @@ component {
 
 	/**
 	 * Assert that the actual value is less than the target value
+	 *
 	 * @actual  The actual value
 	 * @target  The target value
 	 * @message The message to send in the failure
@@ -923,6 +959,7 @@ component {
 
 	/**
 	 * Assert that the actual value is less than or equal the target value
+	 *
 	 * @actual  The actual value
 	 * @target  The target value
 	 * @message The message to send in the failure
@@ -966,6 +1003,7 @@ component {
 
 	/**
 	 * Assert something is JSON
+	 *
 	 * @actual  The actual data to test
 	 * @message The message to send in the failure
 	 */

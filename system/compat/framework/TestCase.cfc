@@ -30,6 +30,7 @@ component extends="testbox.system.BaseSpec" {
 
 	/**
 	 * Run a test remotely like MXUnit
+	 *
 	 * @testMethod.hint A list or array of test names that are the ones that will be executed ONLY!
 	 * @debug.hint      Show debug output on the reports or not
 	 * @output.hint     The type of reporter to run the test with
@@ -71,6 +72,7 @@ component extends="testbox.system.BaseSpec" {
 
 	/**
 	 * Utility for dynamically adding assertion behaviors at runtime
+	 *
 	 * @decoratorName.hint The fully qualified name of the assertion component to add; e.g., org.mycompany.MyAssertionComponent
 	 */
 	function addAssertDecorator( required string decoratorName ){
@@ -103,6 +105,7 @@ component extends="testbox.system.BaseSpec" {
 
 	/**
 	 * MXUnit style debug
+	 *
 	 * @var.hint   The variable to debug
 	 * @label.hint The label to add to the debug entry
 	 */
@@ -113,6 +116,7 @@ component extends="testbox.system.BaseSpec" {
 
 	/**
 	 * Expect an exception from the testing spec
+	 *
 	 * @expectedExceptionType.hint    the type to expect
 	 * @expectedExceptionMessage.hint Optional exception message
 	 */
@@ -186,6 +190,7 @@ component extends="testbox.system.BaseSpec" {
 
 	/**
 	 * Fail assertion
+	 *
 	 * @message.hint The message to fail with
 	 */
 	function fail( message = "", detail = "" ){

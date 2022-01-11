@@ -131,7 +131,7 @@ component extends="BaseTest" {
 	}
 
 	/**
-	 * @mxunit:expectedException
+	 * @mxunit :expectedException
 	 */
 	function testExpectedExceptionNoValue(){
 		// This method should throw an invalid exception and pass
@@ -139,7 +139,7 @@ component extends="BaseTest" {
 	}
 
 	/**
-	 * @mxunit:expectedException InvalidException
+	 * @mxunit :expectedException InvalidException
 	 */
 	function testExpectedExceptionWithValue(){
 		// This method should throw an invalid exception and pass

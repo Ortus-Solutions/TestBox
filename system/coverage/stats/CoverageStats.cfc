@@ -12,9 +12,10 @@ component accessors=true {
 	}
 
 	/**
+	 *
 	 * @qryCoverageData A query object containing coverage data
 	 *
-	 * @Returns struct of stats
+	 * @return struct of stats
 	 */
 	struct function generateStats( required query qryCoverageData ){
 		var stats = {

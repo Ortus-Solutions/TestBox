@@ -146,6 +146,7 @@ component accessors="true" {
 
 	/**
 	 * Increment a global stat
+	 *
 	 * @type The type of stat to increment: fail,pass,error or skipped
 	 */
 	TestResult function incrementStat( required type = "pass", numeric count = 1 ){
@@ -221,6 +222,7 @@ component accessors="true" {
 
 	/**
 	 * End processing of a bundle stats reference
+	 *
 	 * @stats The bundle stats structure reference to complete
 	 */
 	TestResult function endStats( required struct stats ){
@@ -233,6 +235,7 @@ component accessors="true" {
 
 	/**
 	 * Get a bundle stats by path as a struct or the entire stats array if no path passed.
+	 *
 	 * @id If passed, then retrieve by id
 	 */
 	any function getBundleStats( string id ){
@@ -258,6 +261,7 @@ component accessors="true" {
 
 	/**
 	 * Start a new suite stats and return its reference
+	 *
 	 * @name        The name of the suite
 	 * @bundleStats The bundle stats reference this belongs to.
 	 * @parentStats If passed, the parent stats this suite belongs to
@@ -321,6 +325,7 @@ component accessors="true" {
 
 	/**
 	 * Get a suite stats by id from the reverse lookup
+	 *
 	 * @id Retrieve by id
 	 */
 	any function getSuiteStats( required string id ){
@@ -331,6 +336,7 @@ component accessors="true" {
 
 	/**
 	 * Start a new spec stats and return its reference
+	 *
 	 * @name       The name of the suite
 	 * @suiteStats The suite stats reference this belongs to.
 	 */
@@ -374,6 +380,7 @@ component accessors="true" {
 
 	/**
 	 * Record a spec stat with its recursive chain
+	 *
 	 * @type      The type of stat to store: skipped,fail,error,pass
 	 * @specStats The spec stats to increment
 	 */

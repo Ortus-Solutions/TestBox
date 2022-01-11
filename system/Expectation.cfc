@@ -24,6 +24,7 @@ component accessors="true" {
 
 	/**
 	 * Constructor
+	 *
 	 * @spec       The spec that this matcher belongs to.
 	 * @assertions The TestBox assertions object: testbox.system.Assertion
 	 * @mockbox    A reference to MockBox
@@ -42,6 +43,7 @@ component accessors="true" {
 
 	/**
 	 * Registers a custom matcher on this Expectation object
+	 *
 	 * @name The name of the custom matcher
 	 * @body The body closure/udf representing this matcher.
 	 */
@@ -134,6 +136,7 @@ component accessors="true" {
 
 	/**
 	 * Assert something is true
+	 *
 	 * @actual  The actual data to test
 	 * @message The message to send in the failure
 	 */
@@ -150,6 +153,7 @@ component accessors="true" {
 
 	/**
 	 * Assert something is false
+	 *
 	 * @actual  The actual data to test
 	 * @message The message to send in the failure
 	 */
@@ -165,6 +169,7 @@ component accessors="true" {
 
 	/**
 	 * Assert something is equal to each other, no case is required
+	 *
 	 * @expected The expected data
 	 * @message  The message to send in the failure
 	 */
@@ -187,6 +192,7 @@ component accessors="true" {
 
 	/**
 	 * Assert strings are equal to each other with case.
+	 *
 	 * @expected The expected data
 	 * @message  The message to send in the failure
 	 */
@@ -202,6 +208,7 @@ component accessors="true" {
 
 	/**
 	 * Assert something is null
+	 *
 	 * @message The message to send in the failure
 	 */
 	function toBeNull( message = "" ){
@@ -226,6 +233,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual object is of the expected instance type
+	 *
 	 * @typeName The typename to check
 	 * @message  The message to send in the failure
 	 */
@@ -241,6 +249,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual data matches the incoming regular expression with no case sensitivity
+	 *
 	 * @regex   The regex to check with
 	 * @message The message to send in the failure
 	 */
@@ -256,6 +265,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual data matches the incoming regular expression with case sensitivity
+	 *
 	 * @actual  The actual data to check
 	 * @regex   The regex to check with
 	 * @message The message to send in the failure
@@ -272,6 +282,7 @@ component accessors="true" {
 
 	/**
 	 * Assert the type of the incoming actual data, it uses the internal ColdFusion isValid() function behind the scenes
+	 *
 	 * @type    The type to check, valid types are: array, binary, boolean, component, date, time, float, numeric, integer, query, string, struct, url, uuid
 	 * @message The message to send in the failure
 	 */
@@ -287,6 +298,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that a a given string, array, structure or query is empty
+	 *
 	 * @message The message to send in the failure
 	 */
 	function toBeEmpty( message = "" ){
@@ -317,6 +329,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that a given key exists in the passed in struct by searching the entire nested structure
+	 *
 	 * @key     The key to check for existence anywhere in the nested structure
 	 * @message The message to send in the failure
 	 */
@@ -332,6 +345,7 @@ component accessors="true" {
 
 	/**
 	 * Assert the size of a given string, array, structure or query
+	 *
 	 * @length  The length to check
 	 * @message The message to send in the failure
 	 */
@@ -347,6 +361,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the passed in function will throw an exception
+	 *
 	 * @type    Match this type with the exception thrown
 	 * @regex   Match this regex against the message of the exception
 	 * @message The message to send in the failure
@@ -363,6 +378,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the passed in actual number or date is expected to be close to it within +/- a passed delta and optional datepart
+	 *
 	 * @expected The expected number or date
 	 * @delta    The +/- delta to range it
 	 * @datepart If passed in values are dates, then you can use the datepart to evaluate it
@@ -393,6 +409,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the passed in actual number or date is between the passed in min and max values
+	 *
 	 * @min     The expected min number or date
 	 * @max     The expected max number or date
 	 * @message The message to send in the failure
@@ -425,6 +442,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the given "needle" argument exists in the incoming string or array with no case-sensitivity
+	 *
 	 * @target  The target object to check if the incoming needle exists in. This can be a string or array
 	 * @needle  The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
@@ -441,6 +459,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the given "needle" argument exists in the incoming string or array with case-sensitivity
+	 *
 	 * @needle  The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
 	 */
@@ -456,6 +475,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual value is greater than the target value
+	 *
 	 * @target  The target value
 	 * @message The message to send in the failure
 	 */
@@ -481,6 +501,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual value is greater than or equal the target value
+	 *
 	 * @target  The target value
 	 * @message The message to send in the failure
 	 */
@@ -506,6 +527,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual value is less than the target value
+	 *
 	 * @target  The target value
 	 * @message The message to send in the failure
 	 */
@@ -531,6 +553,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual value is less than or equal the target value
+	 *
 	 * @target  The target value
 	 * @message The message to send in the failure
 	 */
@@ -556,6 +579,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual value is JSON
+	 *
 	 * @message The message to send in the failure
 	 */
 	function toBeJSON( message = "" ){
@@ -574,6 +598,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the actual value passes a given truth test (function/closure)
+	 *
 	 * @target  The target truth test function/closure
 	 * @message The message to send in the failure
 	 */

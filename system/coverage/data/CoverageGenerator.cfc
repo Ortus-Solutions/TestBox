@@ -22,7 +22,7 @@ component accessors=true {
 	/**
 	 * Configure the main data collection class.
 	 *
-	 * @returns true if enabled, false if disabled
+	 * @return true if enabled, false if disabled
 	 */
 	boolean function configure(){
 		try {
@@ -70,6 +70,7 @@ component accessors=true {
 
 	/**
 	 * End the capture of data.  Clears up memory and optionally turns off line profiling
+	 *
 	 * @leaveLineProfilingOn Set to true to leave line profiling enabled on the server
 	 */
 	CoverageGenerator function endCapture( leaveLineProfilingOn = false ){
@@ -90,11 +91,12 @@ component accessors=true {
 	}
 
 	/**
+	 *
 	 * @pathToCapture The full path to a folder of code.  Searched recursively
 	 * @whitelist     Comma-delimited list or array of file paths to include
 	 * @blacklist     Comma-delimited list or array of file paths to exclude
 	 *
-	 * @Returns query of data
+	 * @return query of data
 	 */
 	query function generateData(
 		required string pathToCapture,

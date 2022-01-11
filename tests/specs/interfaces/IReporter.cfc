@@ -15,6 +15,7 @@ interface {
 	 * Do the reporting thing here using the incoming test results
 	 * The report should return back in whatever format they desire and should set any
 	 * Specifc browser types if needed.
+	 *
 	 * @results.hint The instance of the TestBox TestResult object to build a report on
 	 * @testbox.hint The TestBox core object
 	 * @options.hint A structure of options this reporter needs to build the report with

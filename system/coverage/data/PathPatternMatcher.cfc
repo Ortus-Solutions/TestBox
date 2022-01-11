@@ -1,9 +1,8 @@
 /**
- *********************************************************************************
+ * ********************************************************************************
  * Copyright Since 2014 CommandBox by Ortus Solutions, Corp
  * www.coldbox.org | www.ortussolutions.com
- ********************************************************************************
- * @author Brad Wood, Luis Majano, Denny Valliant
+ * *******************************************************************************
  *
  * I am a utility to match file system path patterns
  *
@@ -22,6 +21,7 @@
  * Use a double ** to match zero or more characters including slashes. This allows a pattern to span directories Ex:
  * - a/** /z will match a/z and a/b/z and a/b/c/z
  *
+ * @author Brad Wood, Luis Majano, Denny Valliant
  */
 component accessors="true" singleton {
 
@@ -31,6 +31,7 @@ component accessors="true" singleton {
 
 	/**
 	 * Match a single path to a single pattern.  Returns true if the path matches the pattern, otherwise false.
+	 *
 	 * @pattern.hint The pattern to match against the path
 	 * @path.hint    The file system path to test.  Can be a file or directory.  Directories MUST end with a trailing slash
 	 */
@@ -76,6 +77,7 @@ component accessors="true" singleton {
 
 	/**
 	 * Match an array of patterns against a single path.  Returns true if at least one pattern matches, otherwise false.
+	 *
 	 * @patterns.hint An array of patterns to match against the path
 	 * @path.hint     The file system path to test.  Can be a file or directory.  Directories MUST end with a trailing slash
 	 */

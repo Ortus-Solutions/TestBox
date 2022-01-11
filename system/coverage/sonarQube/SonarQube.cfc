@@ -24,10 +24,11 @@ component accessors=true {
 	}
 
 	/**
+	 *
 	 * @qryCoverageData A query object containing coverage data
 	 * @XMLOutputPath   Full path to write XML file to
 	 *
-	 * @Returns generated XML string
+	 * @return generated XML string
 	 */
 	string function generateXML( required query qryCoverageData, string XMLOutputPath = "" ){
 		var coverageXML                     = xmlNew();

@@ -8,6 +8,7 @@ component {
 
 	/**
 	 * Get the mixer utility object instance. It lazy loads into variables scope for faster execution next time.
+	 *
 	 * @return MixerUtil
 	 */
 	function getMixerUtil(){
@@ -20,6 +21,7 @@ component {
 
 	/**
 	 * Convert an array to struct argument notation
+	 *
 	 * @input The array to convert
 	 */
 	struct function arrayToStruct( required array input ){
@@ -36,6 +38,7 @@ component {
 
 	/**
 	 * Get the last modified date of a file
+	 *
 	 * @filename The target
 	 *
 	 * @return date
@@ -56,6 +59,7 @@ component {
 
 	/**
 	 * Rip an extension of a filename
+	 *
 	 * @filename The target
 	 */
 	string function ripExtension( required filename ){
@@ -64,6 +68,7 @@ component {
 
 	/**
 	 * Turn any system path, either relative or absolute, into a fully qualified one
+	 *
 	 * @path The target
 	 */
 	string function getAbsolutePath( required path ){
@@ -111,6 +116,7 @@ component {
 
 	/**
 	 * Create a URL safe slug from a string
+	 *
 	 * @str       The target
 	 * @maxLength The maximum number of characters for the slug
 	 * @allow     A regex safe list of additional characters to allow
@@ -143,6 +149,7 @@ component {
 
 	/**
 	 * Find all methods on a given metadata and it's parents with a given annotation
+	 *
 	 * @annotation The annotation name to look for on methods
 	 * @metadata   The metadata to search (recursively) for the provided annotation
 	 */

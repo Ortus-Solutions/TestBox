@@ -62,6 +62,7 @@ component {
 
 	/**
 	 * Expect an exception from the testing spec
+	 *
 	 * @type  The type to expect
 	 * @regex Optional exception message regular expression to match, by default it matches .*
 	 */
@@ -72,6 +73,7 @@ component {
 
 	/**
 	 * Assert that the passed expression is true
+	 *
 	 * @facade
 	 */
 	function assert( required expression, message = "" ){
@@ -80,6 +82,7 @@ component {
 
 	/**
 	 * Fail an assertion
+	 *
 	 * @facade
 	 */
 	function fail( message = "", detail = "" ){
@@ -88,6 +91,7 @@ component {
 
 	/**
 	 * This function is used for BDD test suites to store the beforeEach() function to execute for a test suite group
+	 *
 	 * @body The closure function
 	 * @data Data bindings
 	 */
@@ -99,6 +103,7 @@ component {
 
 	/**
 	 * This function is used for BDD test suites to store the afterEach() function to execute for a test suite group
+	 *
 	 * @body The closure function
 	 * @data Data bindings
 	 */
@@ -110,6 +115,7 @@ component {
 
 	/**
 	 * This is used to surround a spec with your own closure code to provide a nice around decoration advice
+	 *
 	 * @body The closure function
 	 * @data Data bindings
 	 */
@@ -260,6 +266,7 @@ component {
 	/**
 	 * The way to describe BDD test suites in TestBox. The story is an alias for describe usually use when you are writing using Gherkin-esque language
 	 * The body is the function that implements the suite.
+	 *
 	 * @story    The name of this test suite
 	 * @body     The closure that represents the test suite
 	 * @labels   The list or array of labels this suite group belongs to
@@ -298,6 +305,7 @@ component {
 	/**
 	 * The way to describe BDD test suites in TestBox. The feature is an alias for describe usually use when you are writing in a Given-When-Then style
 	 * The body is the function that implements the suite.
+	 *
 	 * @feature  The name of this test suite
 	 * @body     The closure that represents the test suite
 	 * @labels   The list or array of labels this suite group belongs to
@@ -336,6 +344,7 @@ component {
 	/**
 	 * The way to describe BDD test suites in TestBox. The given is an alias for describe usually use when you are writing in a Given-When-Then style
 	 * The body is the function that implements the suite.
+	 *
 	 * @feature  The name of this test suite
 	 * @body     The closure that represents the test suite
 	 * @labels   The list or array of labels this suite group belongs to
@@ -374,6 +383,7 @@ component {
 	/**
 	 * The way to describe BDD test suites in TestBox. The scenario is an alias for describe usually use when you are writing in a Given-When-Then style
 	 * The body is the function that implements the suite.
+	 *
 	 * @feature  The name of this test suite
 	 * @body     The closure that represents the test suite
 	 * @labels   The list or array of labels this suite group belongs to
@@ -412,6 +422,7 @@ component {
 	/**
 	 * The way to describe BDD test suites in TestBox. The when is an alias for scenario usually use when you are writing in a Given-When-Then style
 	 * The body is the function that implements the suite.
+	 *
 	 * @feature  The name of this test suite
 	 * @body     The closure that represents the test suite
 	 * @labels   The list or array of labels this suite group belongs to
@@ -542,6 +553,7 @@ component {
 	/**
 	 * The then() function describes a spec or a test in TestBox and is an alias for it.  The body argument is the closure that implements
 	 * the test which usually contains one or more expectations that test the state of the code under test.
+	 *
 	 * @then   The title of this spec
 	 * @body   The closure that represents the test
 	 * @labels The list or array of labels this spec belongs to
@@ -579,6 +591,7 @@ component {
 
 	/**
 	 * This is a convenience method that makes sure the test suite is skipped from execution
+	 *
 	 * @title    The name of this test suite
 	 * @body     The closure that represents the test suite
 	 * @labels   The list or array of labels this suite group belongs to
@@ -596,6 +609,7 @@ component {
 
 	/**
 	 * This is a convenience method that makes sure the test spec is skipped from execution
+	 *
 	 * @title  The title of this spec
 	 * @body   The closure that represents the test
 	 * @labels The list or array of labels this spec belongs to
@@ -614,6 +628,7 @@ component {
 	/**
 	 * The way to describe BDD test suites in TestBox. The story is an alias for describe usually use when you are writing using Gherkin-esque language
 	 * The body is the function that implements the suite.
+	 *
 	 * @story    The name of this test suite
 	 * @body     The closure that represents the test suite
 	 * @labels   The list or array of labels this suite group belongs to
@@ -633,6 +648,7 @@ component {
 	/**
 	 * The way to describe BDD test suites in TestBox. The feature is an alias for describe usually use when you are writing in a Given-When-Then style
 	 * The body is the function that implements the suite.
+	 *
 	 * @feature  The name of this test suite
 	 * @body     The closure that represents the test suite
 	 * @labels   The list or array of labels this suite group belongs to
@@ -652,6 +668,7 @@ component {
 	/**
 	 * The way to describe BDD test suites in TestBox. The given is an alias for describe usually use when you are writing in a Given-When-Then style
 	 * The body is the function that implements the suite.
+	 *
 	 * @feature  The name of this test suite
 	 * @body     The closure that represents the test suite
 	 * @labels   The list or array of labels this suite group belongs to
@@ -671,6 +688,7 @@ component {
 	/**
 	 * The way to describe BDD test suites in TestBox. The scenario is an alias for describe usually use when you are writing in a Given-When-Then style
 	 * The body is the function that implements the suite.
+	 *
 	 * @feature  The name of this test suite
 	 * @body     The closure that represents the test suite
 	 * @labels   The list or array of labels this suite group belongs to
@@ -690,6 +708,7 @@ component {
 	/**
 	 * The way to describe BDD test suites in TestBox. The when is an alias for scenario usually use when you are writing in a Given-When-Then style
 	 * The body is the function that implements the suite.
+	 *
 	 * @feature  The name of this test suite
 	 * @body     The closure that represents the test suite
 	 * @labels   The list or array of labels this suite group belongs to
@@ -708,6 +727,7 @@ component {
 
 	/**
 	 * This is a convenience method that makes sure the test spec is skipped from execution
+	 *
 	 * @title  The title of this spec
 	 * @body   The closure that represents the test
 	 * @labels The list or array of labels this spec belongs to
@@ -725,6 +745,7 @@ component {
 
 	/**
 	 * Start an expectation expression. This returns an instance of Expectation so you can work with its matchers.
+	 *
 	 * @actual The actual value, it is not required as it can be null.
 	 */
 	Expectation function expect( any actual ){
@@ -755,6 +776,7 @@ component {
 	/**
 	 * Start a collection expectation expression. This returns an instance of CollectionExpectation
 	 * so you can work with its collection-unrolling matches (delegating to Expectation).
+	 *
 	 * @actual The actual value, it should be an array or a struct.
 	 */
 	CollectionExpectation function expectAll( required any actual ){
@@ -767,6 +789,7 @@ component {
 
 	/**
 	 * Add custom matchers to your expectations
+	 *
 	 * @matchers The structure of custom matcher functions to register or a path or instance of a CFC containing all the matcher functions to register
 	 */
 	function addMatchers( required any matchers ){
@@ -801,6 +824,7 @@ component {
 
 	/**
 	 * Add custom assertions to the $assert object
+	 *
 	 * @assertions The structure of custom assertion functions to register or a path or instance of a CFC containing all the assertion functions to register
 	 */
 	function addAssertions( required any assertions ){
@@ -837,6 +861,7 @@ component {
 
 	/**
 	 * Run a test remotely, only useful if the spec inherits from this class. Useful for remote executions.
+	 *
 	 * @testSuites A list or array of suite names that are the ones that will be executed ONLY!
 	 * @testSpecs  A list or array of test names that are the ones that will be executed ONLY!
 	 * @reporter   The type of reporter to run the test with
@@ -864,6 +889,7 @@ component {
 
 	/**
 	 * Run a BDD test in this target CFC
+	 *
 	 * @spec        The spec definition to test
 	 * @suite       The suite definition this spec belongs to
 	 * @testResults The testing results object
@@ -982,6 +1008,7 @@ component {
 
 	/**
 	 * Execute the before each closures in order for a suite and spec
+	 *
 	 * @suite The suite definition
 	 * @spec  The spec definition
 	 */
@@ -1030,6 +1057,7 @@ component {
 
 	/**
 	 * Execute the around each closures in order for a suite and spec
+	 *
 	 * @suite The suite definition
 	 * @spec  The spec definition
 	 */
@@ -1097,6 +1125,7 @@ component {
 
 	/**
 	 * Generates a specs stack for executions
+	 *
 	 * @closures The array of closures data to build
 	 * @suite    The target suite
 	 * @spec     The target spec
@@ -1153,6 +1182,7 @@ component {
 
 	/**
 	 * Execute the after each closures in order for a suite and spec
+	 *
 	 * @suite The suite definition
 	 * @spec  The spec definition
 	 */
@@ -1180,6 +1210,7 @@ component {
 
 	/**
 	 * Runs a xUnit style test method in this target CFC
+	 *
 	 * @spec        The spec definition to test
 	 * @testResults The testing results object
 	 * @suiteStats  The suite stats that the incoming spec definition belongs to
@@ -1283,6 +1314,7 @@ component {
 
 	/**
 	 * Send some information to the console via writedump( output="console" )
+	 *
 	 * @var The data to send
 	 * @top Apply a top to the dump, by default it does 9999 levels
 	 */
@@ -1297,6 +1329,7 @@ component {
 
 	/**
 	 * Debug some information into the TestBox debugger array buffer
+	 *
 	 * @var      The data to debug
 	 * @label    The label to add to the debug entry
 	 * @deepCopy By default we do not duplicate the incoming information, but you can :)
@@ -1335,7 +1368,7 @@ component {
 	}
 
 	/**
-	 *  Clear the debug array buffer
+	 * Clear the debug array buffer
 	 */
 	any function clearDebugBuffer(){
 		arrayClear( this.$debugBuffer );
@@ -1343,7 +1376,7 @@ component {
 	}
 
 	/**
-	 *  Get the debug array buffer from scope
+	 * Get the debug array buffer from scope
 	 */
 	array function getDebugBuffer(){
 		return this.$debugBuffer;
@@ -1368,6 +1401,7 @@ component {
 
 	/**
 	 * Make a private method on a CFC public with or without a new name and returns the target object
+	 *
 	 * @target  The target object to expose the method
 	 * @method  The private method to expose
 	 * @newName If passed, it will expose the method with this name, else just uses the same name
@@ -1387,6 +1421,7 @@ component {
 
 	/**
 	 * Get a private property
+	 *
 	 * @target       The target to get a property from
 	 * @name         The name of the property to retrieve
 	 * @scope        The scope to get it from, defaults to 'variables' scope
@@ -1423,6 +1458,7 @@ component {
 
 	/**
 	 * Get a reference to the MockBox engine
+	 *
 	 * @generationPath The path to generate the mocks if passed, else uses default location.
 	 */
 	function getMockBox( string generationPath ){
@@ -1434,6 +1470,7 @@ component {
 
 	/**
 	 * Create an empty mock
+	 *
 	 * @className   The class name of the object to mock. The mock factory will instantiate it for you
 	 * @object      The object to mock, already instantiated
 	 * @callLogging Add method call logging for all mocked methods. Defaults to true
@@ -1448,6 +1485,7 @@ component {
 
 	/**
 	 * Create a mock with or without clearing implementations, usually not clearing means you want to build object spies
+	 *
 	 * @className    The class name of the object to mock. The mock factory will instantiate it for you
 	 * @object       The object to mock, already instantiated
 	 * @clearMethods If true, all methods in the target mock object will be removed. You can then mock only the methods that you want to mock. Defaults to false
@@ -1464,6 +1502,7 @@ component {
 
 	/**
 	 * Prepares an already instantiated object to act as a mock for spying and much more
+	 *
 	 * @object      The object to mock, already instantiated
 	 * @callLogging Add method call logging for all mocked methods. Defaults to true
 	 */
@@ -1473,6 +1512,7 @@ component {
 
 	/**
 	 * Create an empty stub object that you can use for mocking
+	 *
 	 * @callLogging Add method call logging for all mocked methods. Defaults to true
 	 * @extends     Make the stub extend from certain CFC
 	 * @implements  Make the stub adhere to an interface
