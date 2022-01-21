@@ -742,10 +742,7 @@ The Official ColdBox Mocking Factory
 		<cfargument name="method" type="string" required="true" hint="The method you want to mock or spy on"/>
 
 		<cfscript>
-			return this.$(
-				method = arguments.method,
-				callback = variables[ arguments.method ]
-			);
+		return this.$( method = arguments.method, callback = variables[ arguments.method ] );
 		</cfscript>
 	</cffunction>
 
