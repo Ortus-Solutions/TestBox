@@ -494,6 +494,22 @@
 		);
 	}
 
+	function test$spy(){
+		var mock = getMockBox().createMock( "testbox.tests.resources.Test" );
+		mock.getData();
+		$assert.isEqual( -1, mock.$count( "getData" ) );
+		mock.$spy( "getData" );
+		$assert.isEqual( 0, mock.$count( "getData" ) );
+		$assert.isEqual( 5, mock.getData() );
+		$assert.isEqual( 5, mock.getData() );
+		$assert.isEqual( 2, mock.$count( "getData" ) );
+
+		mock.$spy( "getSetting" );
+		$assert.isEqual( "mockFactory", mock.getSetting( "appname" ) );
+		$assert.isEqual( "NOT FOUND", mock.getSetting( "NOT_EXISTENT_SETTING" ) );
+		$assert.isEqual( 2, mock.$count( "getSetting" ) );
+	}
+
 	private function testFunction( string amigo = "Amigo" ){
 		return "Hola #arguments.amigo#!";
 	}
