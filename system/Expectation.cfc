@@ -349,7 +349,7 @@ component accessors="true" {
 	 * @length  The length to check
 	 * @message The message to send in the failure
 	 */
-	function toHaveLength( required string length, message = "" ){
+	function toHaveLength( required numeric length, message = "" ){
 		arguments.target = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notLengthOf( argumentCollection = arguments );
