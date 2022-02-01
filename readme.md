@@ -70,13 +70,12 @@ Join us in our Ortus Community and become a valuable member of this project [Tes
 
 ## Requirements
 
-<img src="https://cfmlbadges.monkehworks.com/images/badges/compatibility-coldfusion-2018.svg"><br>
-<img src="https://cfmlbadges.monkehworks.com/images/badges/compatibility-coldfusion-2016.svg"><br>
-<img src="https://cfmlbadges.monkehworks.com/images/badges/compatibility-lucee-5.svg">
+- Lucee 5+
+- Adobe ColdFusion 2018+
 
 ## Installation
 
-You can visit the TestBox documentation page to view all of its features and 
+You can visit the TestBox documentation page to view all of its features and
 capabilities.  To install TestBox just drop it in your web root as `/testbox` or
 create a mapping in your CFML administrator or `Application.cfc` that points to the
 directory you installed TestBox and create the mapping `/testbox` that points to it.
@@ -103,7 +102,7 @@ Because of His grace, this project exists. If you don't like this, then don't re
 By whom also we have access by faith into this grace wherein we stand, and rejoice in hope of the glory of God.
 And not only so, but we glory in tribulations also: knowing that tribulation worketh patience;
 And patience, experience; and experience, hope:
-And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the 
+And hope maketh not ashamed; because the love of God is shed abroad in our hearts by the
 Holy Ghost which is given unto us. ." Romans 5:5
 
 
