@@ -13,8 +13,6 @@ component {
 	variables.$assert          = this.$assert = new testbox.system.Assertion();
 	// Custom Matchers
 	this.$customMatchers       = {};
-	// Utility object
-	this.$utility              = new testbox.system.util.Util();
 	// BDD Test Suites are stored here as an array so they are executed in order of definition
 	this.$suites               = [];
 	// A reverse lookup for the suite definitions
@@ -1021,7 +1019,7 @@ component {
 		}
 
 		// Incorporate annotated methods
-		arrayEach( this.$utility.getAnnotatedMethods( annotation = "beforeEach", metadata = getMetadata( this ) ), function( item ){
+		arrayEach( getUtility().getAnnotatedMethods( annotation = "beforeEach", metadata = getMetadata( this ) ), function( item ){
 			arrayAppend(
 				reverseTree,
 				{
@@ -1084,7 +1082,7 @@ component {
 		}
 
 		// Discover annotated methods and add to reverseTree
-		arrayEach( this.$utility.getAnnotatedMethods( annotation = "aroundEach", metadata = getMetadata( this ) ), function( item ){
+		arrayEach( getUtility().getAnnotatedMethods( annotation = "aroundEach", metadata = getMetadata( this ) ), function( item ){
 			arrayAppend(
 				reverseTree,
 				{
@@ -1189,7 +1187,7 @@ component {
 			parentSuite = parentSuite.parentRef;
 		}
 
-		arrayEach( this.$utility.getAnnotatedMethods( annotation = "afterEach", metadata = getMetadata( this ) ), function( item ){
+		arrayEach( getUtility().getAnnotatedMethods( annotation = "afterEach", metadata = getMetadata( this ) ), function( item ){
 			invoke(
 				this,
 				item.name,
@@ -1404,7 +1402,7 @@ component {
 		string newName = ""
 	){
 		// decorate it
-		this.$utility.getMixerUtil().start( arguments.target );
+		getUtility().getMixerUtil().start( arguments.target );
 		// expose it
 		arguments.target.exposeMixin( arguments.method, arguments.newName );
 
@@ -1459,6 +1457,19 @@ component {
 			variables.$mockDataCFC = new testbox.system.modules.mockdatacfc.models.MockData();
 		}
 		return variables.$mockDataCFC;
+	}
+
+	/**
+	 * Get the TestBox utility object
+	 *
+	 * @return testbox.system.util.Util
+	 */
+	function getUtility(){
+		// Lazy Load it
+		if ( isNull( variables.$utility ) ) {
+			variables.$utility = new testbox.system.util.Util();
+		}
+		return variables.$utility;
 	}
 
 	/**
