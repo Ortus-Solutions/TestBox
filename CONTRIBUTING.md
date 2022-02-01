@@ -8,6 +8,7 @@ Hola amigo! I'm really excited that you are interested in contributing to TestBo
 - [Pull Request Guidelines](#pull-request-guidelines)
 - [Security Vulnerabilities](#security-vulnerabilities)
 - [Development Setup](#development-setup)
+	- [Language Compatiblity](#language-compatiblity)
 - [Coding Styles & Formatting](#coding-styles--formatting)
 - [CFC Docs With DocBox](#cfc-docs-with-docbox)
 - [Financial Contributions](#financial-contributions)
@@ -61,6 +62,13 @@ If you discover a security vulnerability, please send an email to the developmen
 3. Start a CommandBox shell in the root of the project: `box`
 4. Install the development dependencies: `install`
 5. Hack away! Create tests under `/tests/specs` and run the tests!
+
+### Language Compatiblity
+
+Please make sure your code runs on the following CFML Engines:
+
+- Lucee 5+
+- Adobe ColdFusion 2018+
 
 ## Coding Styles & Formatting
 
