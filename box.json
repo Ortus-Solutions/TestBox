@@ -39,6 +39,11 @@
         "cbstreams":"^1.5.0",
         "mockdatacfc":"^3.3.0+22"
     },
+	"devDependencies":{
+        "commandbox-dotenv":"*",
+        "commandbox-cfconfig":"*",
+        "commandbox-cfformat":"*"
+    },
     "installPaths":{
         "cbstreams":"system/modules/cbstreams/",
         "mockdatacfc":"system/modules/mockdatacfc/"
