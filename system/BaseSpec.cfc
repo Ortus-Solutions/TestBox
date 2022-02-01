@@ -9,8 +9,6 @@ component {
 	// Param default URL method runner.
 	param name="url.method" default="runRemote";
 
-	// MockData CFC framework
-	variables.$mockData        = this.$mockData = new testbox.system.modules.mockdatacfc.models.MockData();
 	// Assertions object
 	variables.$assert          = this.$assert = new testbox.system.Assertion();
 	// Custom Matchers
@@ -1442,12 +1440,25 @@ component {
 	}
 
 	/**
-	 * Use MockDataCFC to mock whatever data you want.  This funnles to MocData.mock()
+	 * Use MockDataCFC to mock whatever data you want by executing the `mock()` function in MockDataCFC
 	 *
 	 * @return The mock data you desire sir!
 	 */
 	function mockData(){
-		return this.$mockData.mock( argumentCollection = arguments );
+		return getMockDataCFC().mock( argumentCollection = arguments );
+	}
+
+	/**
+	 * Get the MockData CFC object
+	 *
+	 * @return testbox.system.modules.mockdatacfc.models.MockData
+	 */
+	function getMockDataCFC(){
+		// Lazy Load it
+		if ( isNull( variables.$mockDataCFC ) ) {
+			variables.$mockDataCFC = new testbox.system.modules.mockdatacfc.models.MockData();
+		}
+		return variables.$mockDataCFC;
 	}
 
 	/**
