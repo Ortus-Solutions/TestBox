@@ -11,8 +11,6 @@ component accessors="true" {
 	property name="spec";
 	// The assertions reference
 	property name="assert";
-	// The MockBox reference
-	property name="mockbox";
 
 	// Public properties for this Expectation to use with the BDD DSL
 	// The actual value
@@ -27,16 +25,10 @@ component accessors="true" {
 	 *
 	 * @spec       The spec that this matcher belongs to.
 	 * @assertions The TestBox assertions object: testbox.system.Assertion
-	 * @mockbox    A reference to MockBox
 	 */
-	function init(
-		required any spec,
-		required any assertions,
-		required any mockBox
-	){
-		variables.spec    = arguments.spec;
-		variables.mockBox = arguments.mockbox;
-		variables.assert  = arguments.assertions;
+	function init( required any spec, required any assertions ){
+		variables.spec   = arguments.spec;
+		variables.assert = arguments.assertions;
 
 		return this;
 	}

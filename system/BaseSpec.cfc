@@ -9,8 +9,6 @@ component {
 	// Param default URL method runner.
 	param name="url.method" default="runRemote";
 
-	// MockBox mocking framework
-	variables.$mockBox         = this.$mockBox = new testbox.system.MockBox();
 	// MockData CFC framework
 	variables.$mockData        = this.$mockData = new testbox.system.modules.mockdatacfc.models.MockData();
 	// Assertions object
@@ -750,11 +748,7 @@ component {
 	 */
 	Expectation function expect( any actual ){
 		// build an expectation
-		var oExpectation = new Expectation(
-			spec       = this,
-			assertions = this.$assert,
-			mockbox    = this.$mockbox
-		);
+		var oExpectation = new Expectation( spec = this, assertions = this.$assert );
 
 		// Store the actual data
 		if ( !isNull( arguments.actual ) ) {
@@ -1444,7 +1438,7 @@ component {
 	 * First line are the query columns separated by commas. Then do a consequent rows separated by line breaks separated by | to denote columns.
 	 */
 	function querySim( required queryData ){
-		return this.$mockBox.querySim( arguments.queryData );
+		return getMockBox().querySim( arguments.queryData );
 	}
 
 	/**
@@ -1457,14 +1451,23 @@ component {
 	}
 
 	/**
-	 * Get a reference to the MockBox engine
+	 * Get a reference to the MockBox Engine
 	 *
 	 * @generationPath The path to generate the mocks if passed, else uses default location.
+	 *
+	 * @return testbox.system.MockBox
 	 */
-	function getMockBox( string generationPath ){
-		if ( structKeyExists( arguments, "generationPath" ) ) {
-			this.$mockBox.setGenerationPath( arguments.generationPath );
+	function getMockBox( string generationPath = "" ){
+		// Lazy Load it
+		if ( isNull( this.$mockbox ) ) {
+			variables.$mockbox = this.$mockbox = new testbox.system.MockBox( arguments.generationPath );
+		} else {
+			// Generation path updates
+			if ( len( arguments.generationPath ) ) {
+				this.$mockBox.setGenerationPath( arguments.generationPath );
+			}
 		}
+
 		return this.$mockBox;
 	}
 
@@ -1480,7 +1483,7 @@ component {
 		any object,
 		boolean callLogging = true
 	){
-		return this.$mockBox.createEmptyMock( argumentCollection = arguments );
+		return getMockBox().createEmptyMock( argumentCollection = arguments );
 	}
 
 	/**
@@ -1497,7 +1500,7 @@ component {
 		boolean clearMethods = false
 		boolean callLogging  =true
 	){
-		return this.$mockBox.createMock( argumentCollection = arguments );
+		return getMockBox().createMock( argumentCollection = arguments );
 	}
 
 	/**
@@ -1507,7 +1510,7 @@ component {
 	 * @callLogging Add method call logging for all mocked methods. Defaults to true
 	 */
 	function prepareMock( any object, boolean callLogging = true ){
-		return this.$mockBox.prepareMock( argumentCollection = arguments );
+		return getMockBox().prepareMock( argumentCollection = arguments );
 	}
 
 	/**
@@ -1522,7 +1525,7 @@ component {
 		string extends      = "",
 		string implements   = ""
 	){
-		return this.$mockBox.createStub( argumentCollection = arguments );
+		return getMockBox().createStub( argumentCollection = arguments );
 	}
 
 	// Closure Stub
