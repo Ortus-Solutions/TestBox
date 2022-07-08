@@ -195,11 +195,11 @@ component {
 		required testResults,
 		required targetMD
 	){
-		var testBundles = arguments.testResults.getTestBundles();
+		var pathPatternMatcher = new testbox.system.util.PathPatternMatcher();
+		var testBundles        = arguments.testResults.getTestBundles();
 
-		// verify we have some?
 		if ( arrayLen( testBundles ) ) {
-			return ( arrayFindNoCase( testBundles, arguments.bundlePath ) ? true : false );
+			return pathPatternMatcher.matchPatterns( testBundles, arguments.bundlePath );
 		}
 
 		// we can run it.
