@@ -199,7 +199,10 @@ component {
 		var testBundles        = arguments.testResults.getTestBundles();
 
 		if ( arrayLen( testBundles ) ) {
-			return pathPatternMatcher.matchPatterns( testBundles, arguments.bundlePath );
+			return pathPatternMatcher.matchPatterns(
+				testBundles.map( ( bundle ) => replace( bundle, ".", "/", "all" ) ),
+				replace( arguments.bundlePath, ".", "/", "all" )
+			);
 		}
 
 		// we can run it.
