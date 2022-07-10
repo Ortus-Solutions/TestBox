@@ -195,7 +195,7 @@ component {
 		required testResults,
 		required targetMD
 	){
-		var pathPatternMatcher = new testbox.system.util.PathPatternMatcher();
+		var pathPatternMatcher = new testbox.system.modules.globber.models.PathPatternMatcher();
 		var testBundles        = arguments.testResults.getTestBundles();
 
 		if ( arrayLen( testBundles ) ) {

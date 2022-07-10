@@ -37,16 +37,18 @@
     },
     "dependencies":{
         "cbstreams":"^1.5.0",
-        "mockdatacfc":"^3.3.0+22"
+        "mockdatacfc":"^3.3.0+22",
+        "globber":"^3.1.3"
     },
-	"devDependencies":{
+    "devDependencies":{
         "commandbox-dotenv":"*",
         "commandbox-cfconfig":"*",
         "commandbox-cfformat":"*"
     },
     "installPaths":{
         "cbstreams":"system/modules/cbstreams/",
-        "mockdatacfc":"system/modules/mockdatacfc/"
+        "mockdatacfc":"system/modules/mockdatacfc/",
+        "globber":"modules/globber/"
     },
     "scripts":{
         "release":"recipe build/release.boxr",

@@ -38,7 +38,7 @@ component accessors=true {
 		}
 
 		// for file globbing
-		variables.pathPatternMatcher = new testbox.system.util.PathPatternMatcher();
+		variables.pathPatternMatcher = new testbox.system.modules.globber.models.PathPatternMatcher();
 
 		// Detect server
 		if ( listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ) {
