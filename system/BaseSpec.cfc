@@ -32,15 +32,9 @@ component {
 	// Focused Structures
 	this.$focusedTargets       = { "suites" : [], "specs" : [] };
 
-	// Setup Request Utilities
+	// Setup Request Utilities struct
 	if ( !request.keyExists( "testbox" ) ) {
-		request.testbox = {
-			"console"          : variables.console,
-			"debug"            : variables.debug,
-			"clearDebugBuffer" : variables.clearDebugBuffer,
-			"print"            : variables.print,
-			"println"          : variables.println
-		};
+		request.testbox = {};
 	}
 	// Setup request lookbacks for debugging purposes.
 	request.$testID = this.$testID;
@@ -1003,6 +997,13 @@ component {
 	 * @spec  The spec definition
 	 */
 	BaseSpec function runBeforeEachClosures( required suite, required spec ){
+		// re-bind request utilities to the currently executing test before they may be invoked
+		request.testbox.console = 			() => variables.console(argumentCollection=arguments);
+		request.testbox.debug = 			() => variables.debug(argumentCollection=arguments);
+		request.testbox.clearDebugBuffer = 	() => variables.clearDebugBuffer(argumentCollection=arguments);
+		request.testbox.print = 			() => variables.print(argumentCollection=arguments);
+		request.testbox.println = 			() => variables.println(argumentCollection=arguments);
+
 		var reverseTree = [];
 
 		// do we have nested suites? If so, traverse the tree to build reverse execution map
