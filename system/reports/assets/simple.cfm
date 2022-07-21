@@ -560,7 +560,7 @@ code {
 									</cfif>
 
 									<!--- If it's an error, show the last snapshot --->
-									<cfif !isNull( local.thisSpec.error.tagContext ) >
+									<cfif !isNull( local.thisSpec.error.tagContext ) && arrayLen( local.thisSpec.error.tagContext ) >
 										<cfset var thisContext = local.thisSpec.error.tagContext[ 1 ]>
 										<!--- Template --->
 										<div style="margin-bottom: 5px">
