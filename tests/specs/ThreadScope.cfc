@@ -29,8 +29,8 @@ component extends="testbox.system.BaseSpec" {
 
 					systemOutput( cfthread );
 					expect( cfthread.testThread ).toHaveKey( "result" );
-					expect( cfthread.result ).toBe( "I Exist" );
-					// normal keys in the thread scope
+					expect( cfthread.testThread.result ).toBe( "I Exist" );
+					// normal keys to be expected in the thread scope
 					loop list="ELAPSEDTIME,NAME,OUTPUT,PRIORITY,STARTTIME,STATUS,STACKTRACE" index="local.key" {
 						expect( cfthread.testThread ).toHaveKey( key );
 					}
