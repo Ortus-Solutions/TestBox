@@ -21,7 +21,7 @@ component extends="testbox.system.BaseSpec" {
 			"Thread Scope Corruption",
 			function(){
 				it( "check for thread scope corruption", function(){
-					thread name="testThread"  {
+					thread name="testThread" {
 						thread.result = "I Exist";
 						sleep( 10 );
 					}
