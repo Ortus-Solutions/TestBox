@@ -21,7 +21,7 @@ component extends="testbox.system.BaseSpec" {
 			"Thread Scope Corruption",
 			function(){
 				it( "check for thread scope corruption", function(){
-					thread name="testThread"  {
+					thread name="testThread" {
 						thread.result = "I Exist";
 						sleep( 10 );
 					}
@@ -31,8 +31,8 @@ component extends="testbox.system.BaseSpec" {
 					expect( cfthread.testThread ).toHaveKey( "result" );
 					expect( cfthread.result ).toBe( "I Exist" );
 					// normal keys in the thread scope
-					loop list="ELAPSEDTIME,NAME,OUTPUT,PRIORITY,STARTTIME,STATUS,STACKTRACE" index="local.key"{
-						expect ( cfthread.testThread ).toHaveKey( key );
+					loop list="ELAPSEDTIME,NAME,OUTPUT,PRIORITY,STARTTIME,STATUS,STACKTRACE" index="local.key" {
+						expect( cfthread.testThread ).toHaveKey( key );
 					}
 				} );
 			},
