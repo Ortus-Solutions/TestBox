@@ -963,6 +963,13 @@ component {
 			}
 		}
 		// Catch assertion failures
+		catch ( "TestBox.SkipSpec" e ) {
+			// store spec status
+			specStats.status = "Skipped";
+			// Increment recursive pass stats
+			arguments.testResults.incrementSpecStat( type = "skipped", stats = specStats );
+		}
+		// Catch assertion failures
 		catch ( "TestBox.AssertionFailed" e ) {
 			// store spec status and debug data
 			specStats.status           = "Failed";
