@@ -84,6 +84,16 @@ component {
 	}
 
 	/**
+	 * Skip a test
+	 *
+	 * @facade
+	 */
+	function skip( message = "", detail = "" ){
+		this.$assert.skip( argumentCollection = arguments );
+	}
+
+
+	/**
 	 * This function is used for BDD test suites to store the beforeEach() function to execute for a test suite group
 	 *
 	 * @body The closure function
