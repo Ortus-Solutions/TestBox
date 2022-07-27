@@ -353,20 +353,28 @@ component accessors="true" {
 
 	/**
 	 * Assert that the passed in function will throw an exception
-	 *
 	 * @type    Match this type with the exception thrown
 	 * @regex   Match this regex against the message of the exception
 	 * @message The message to send in the failure
 	 */
 	function toThrow( type = "", regex = ".*", message = "" ){
 		arguments.target = this.actual;
-		if ( this.isNot ) {
-			variables.assert.notThrows( argumentCollection = arguments );
-		} else {
-			variables.assert.throws( argumentCollection = arguments );
-		}
+		variables.assert.throws( argumentCollection = arguments );
 		return this;
 	}
+
+	/**
+	 * Assert that the passed in function will NOT throw an exception
+	 * @type    Match this type with the exception thrown
+	 * @regex   Match this regex against the message of the exception
+	 * @message The message to send in the failure
+	 */
+	function notToThrow( type = "", regex = "", message = "" ){
+		arguments.target = this.actual;
+		variables.assert.notThrows( argumentCollection = arguments );
+		return this;
+	}
+
 
 	/**
 	 * Assert that the passed in actual number or date is expected to be close to it within +/- a passed delta and optional datepart
