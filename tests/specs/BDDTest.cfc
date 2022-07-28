@@ -384,11 +384,11 @@ component extends="testbox.system.BaseSpec" {
 			} );
 			it( "will fail when no regex provided if any exception occurs", function(){
 				// Exception Inception!
-				expect( function() {
+				expect( function(){
 					expect( function(){
 						throw( type = "AnyException" );
 					} ).notToThrow();
-				}).toThrow( "TestBox.AssertionFailed" );
+				} ).toThrow( "TestBox.AssertionFailed" );
 			} );
 		} );
 	}
