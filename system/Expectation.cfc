@@ -353,6 +353,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the passed in function will throw an exception
+	 *
 	 * @type    Match this type with the exception thrown
 	 * @regex   Match this regex against the message of the exception
 	 * @message The message to send in the failure
@@ -365,6 +366,7 @@ component accessors="true" {
 
 	/**
 	 * Assert that the passed in function will NOT throw an exception
+	 *
 	 * @type    Match this type with the exception thrown
 	 * @regex   Match this regex against the message of the exception
 	 * @message The message to send in the failure
