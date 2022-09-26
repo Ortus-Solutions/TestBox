@@ -30,8 +30,9 @@
 	qResults = directoryList( targetPath, false, "query", "", "name" );
 	// Get the back path
 	if( len( url.path ) ){
-		backPath = replacenocase( url.path, listLast( url.path, "/" ), "" );
-		backPath = reReplace( backpath, "/$", "" );
+		backPath = ListToArray( url.path, "\" );
+		backPath.pop();
+		backPath = ArrayToList( backPath, "\" );
 	}
 	// TestBox Assets
 	ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
