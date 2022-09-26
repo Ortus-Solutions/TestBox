@@ -108,7 +108,7 @@
 						<cfif qResults.type eq "Dir">
 							<a
 								class="btn btn-secondary btn-sm my-1"
-								href="index.cfm?path=#urlEncodedFormat( url.path & qResults.name )#"
+								href="index.cfm?path=#urlEncodedFormat( url.path & "\" & qResults.name )#"
 							>
 								&##x271A; #qResults.name#
 							</a>
