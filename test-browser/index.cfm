@@ -30,9 +30,9 @@
 	qResults = directoryList( targetPath, false, "query", "", "name" );
 	// Get the back path
 	if( len( url.path ) ){
-		backPath = ListToArray( url.path, "\" );
+		backPath = ListToArray( url.path, "/" );
 		backPath.pop();
-		backPath = ArrayToList( backPath, "\" );
+		backPath = ArrayToList( backPath, "/" );
 	}
 	// TestBox Assets
 	ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
@@ -109,7 +109,7 @@
 						<cfif qResults.type eq "Dir">
 							<a
 								class="btn btn-secondary btn-sm my-1"
-								href="index.cfm?path=#urlEncodedFormat( url.path & "\" & qResults.name )#"
+								href="index.cfm?path=#urlEncodedFormat( url.path & "/" & qResults.name )#"
 							>
 								&##x271A; #qResults.name#
 							</a>
