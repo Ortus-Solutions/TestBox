@@ -43,8 +43,9 @@ component accessors="true" {
 
 		// If disabled in config, go no further
 		if ( coverageEnabled ) {
-			variables.coverageGenerator = new data.CoverageGenerator();
+			variables.coverageGenerator = loadCoverageGenerator();
 			variables.coverageEnabled   = coverageGenerator.configure();
+			variables.coverageReporter  = loadCoverageReporter();
 		}
 
 		return this;
@@ -90,6 +91,10 @@ component accessors="true" {
 
 			// SonarQube Integration
 			var sonarQubeResults = processSonarQube( qryCoverageData, getCoverageOptions() );
+
+			if ( getCoverageOptions().isBatched ){
+				qryCoverageData = variables.coverageReporter.processCoverageReport( qryCoverageData );
+			}
 
 			// Generate Stats
 			var stats = processStats( qryCoverageData );
@@ -185,6 +190,9 @@ component accessors="true" {
 		}
 		if ( isNull( opts.blacklist ) ) {
 			opts.blacklist = "";
+		}
+		if ( isNull( opts.isBatched ) ) {
+			opts.isBatched = false;
 		}
 
 		// If no path provided to capture
@@ -289,4 +297,18 @@ component accessors="true" {
 		}
 	}
 
+
+	/**
+	 * Acquire a CoverageGenerator component which does the hard work.
+	 */
+	private component function loadCoverageGenerator(){
+		return new data.CoverageGenerator();
+	}
+
+	/**
+	 * Acquire a CoverageGenerator component which does the hard work.
+	 */
+	private component function loadCoverageReporter(){
+		return new CoverageReporter( { outputDir : getCoverageOptions().browser.outputDir } );
+	}
 }
