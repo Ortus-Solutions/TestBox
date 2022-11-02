@@ -90,7 +90,7 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Failure Debugging Info
-        if: ${{ failure() }}
+        # if: ${{ failure() }}
         run: |
           box server log serverConfigFile="server-${{ matrix.cfengine }}.json"
 
