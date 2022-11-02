@@ -50,14 +50,16 @@ jobs:
         run: |
           # Core dependencies
           box install --production
+          box install commandbox-dotenv
+
+      - name: Configure Null Support
+        run: echo 'FULL_NULL=${{ matrix.fullNull }}' >> .env
 
       - name: Start ${{ matrix.cfengine }}/${{ matrix.javaVersion }} Server
         run: |
           box server start serverConfigFile="server-${{ matrix.cfengine }}.json" javaVersion=${{ matrix.javaVersion }} --noSaveSettings --debug
 
       - name: Run Tests
-        env:
-          FULL_NULL: ${{ matrix.fullNull }}
         run: |
           ant -f build/build.xml run-tests
 
