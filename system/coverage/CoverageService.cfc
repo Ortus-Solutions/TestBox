@@ -38,11 +38,11 @@ component accessors="true" {
 	 */
 	function init( coverageOptions = {} ){
 		// Default options
-		variables.coverageOptions = setDefaultOptions( coverageOptions );
-		variables.coverageEnabled = coverageOptions.enabled;
+		variables.coverageOptions = setDefaultOptions( arguments.coverageOptions );
+		variables.coverageEnabled = variables.coverageOptions.enabled;
 
 		// If disabled in config, go no further
-		if ( coverageEnabled ) {
+		if ( getCoverageEnabled() ) {
 			variables.coverageGenerator = loadCoverageGenerator();
 			variables.coverageEnabled   = coverageGenerator.configure();
 			variables.coverageReporter  = loadCoverageReporter();
@@ -55,7 +55,7 @@ component accessors="true" {
 	 * Reset system for a new test.  Turns on line coverage and resets in-memory statistics
 	 */
 	CoverageService function beginCapture(){
-		if ( coverageEnabled ) {
+		if ( getCoverageEnabled() ) {
 			coverageGenerator.beginCapture();
 		}
 
@@ -68,7 +68,7 @@ component accessors="true" {
 	 * @leaveLineProfilingOn Set to true to leave line profiling enabled on the server
 	 */
 	CoverageService function endCapture( leaveLineProfilingOn = false ){
-		if ( coverageEnabled ) {
+		if ( getCoverageEnabled() ) {
 			coverageGenerator.endCapture( leaveLineProfilingOn );
 		}
 
