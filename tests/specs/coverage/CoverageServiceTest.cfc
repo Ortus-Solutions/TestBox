@@ -10,9 +10,20 @@ component extends="testbox.system.BaseSpec" {
 			} );
 			it( "will read options", function() {
 				var model = new system.coverage.CoverageService( {} );
+				// debug( model.getCoverageOptions() );
 
-				expect( model.getCoverageEnabled() ).toBeTrue( "enables coverage if unspecified" );
-			});
+				expect( model.getCoverageOptions() )
+					.toHaveKey( "blacklist" )
+					.toHaveKey( "whitelist")
+					.toHaveKey( "browser" )
+					.toHaveKey( "sonarqube" );
+
+				if ( isFRLoaded() ){
+					expect( model.getCoverageEnabled() ).toBeTrue( "enables coverage by default if Fusion Reactor loaded" );
+				} else {
+					expect( model.getCoverageEnabled() ).toBeFalse( "manually DISABLES coverage if Fusion Reactor not loaded" );
+				}
+			} );
 			describe( "un-enabled coverage", function() {
 				beforeEach(function() {
 					if ( structKeyExists( variables, "model" ) ){
@@ -58,4 +69,12 @@ component extends="testbox.system.BaseSpec" {
 		} );
 	}
 
+	function isFRLoaded(){
+		try {
+			variables.fragentClass = createObject( "java", "com.intergral.fusionreactor.agent.Agent" );
+			return true;
+		} catch ( Any e ) {
+			return false;
+		}
+	}
 }
