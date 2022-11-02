@@ -92,7 +92,7 @@ component accessors="true" {
 			// SonarQube Integration
 			var sonarQubeResults = processSonarQube( qryCoverageData, getCoverageOptions() );
 
-			if ( getCoverageOptions().isBatched ){
+			if ( getCoverageOptions().isBatched ) {
 				qryCoverageData = variables.coverageReporter.processCoverageReport( qryCoverageData );
 			}
 
@@ -311,4 +311,5 @@ component accessors="true" {
 	private component function loadCoverageReporter(){
 		return new CoverageReporter( { outputDir : getCoverageOptions().browser.outputDir } );
 	}
+
 }
