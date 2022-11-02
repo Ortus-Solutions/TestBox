@@ -8,6 +8,7 @@ component{
 	// any other application.cfc stuff goes below:
 	this.sessionManagement = true;
 	this.enableNullSupport  = shouldEnableFullNullSupport();
+	writeDump( var = "FULL NULL support enabled: #yesNoFormat( shouldEnableFullNullSupport() )#", output = "console" );
 
 	// any mappings go here, we create one that points to the root called test.
 	this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() );
