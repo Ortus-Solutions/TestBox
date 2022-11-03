@@ -60,7 +60,7 @@ jobs:
           summary: true
 
       - name: Failure debugging
-        # if: ${{ failure() }}
+        if: ${{ failure() }}
         run: |
           box server log serverConfigFile="server-${{ matrix.cfengine }}.json"
 
