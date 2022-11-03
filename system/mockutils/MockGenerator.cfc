@@ -304,6 +304,7 @@ A mock generator
 			removeStub( genPath & tmpFile );
 			rethrow;
 		}
+		return genPath & tmpFile;
 		</cfscript>
 	</cffunction>
 
