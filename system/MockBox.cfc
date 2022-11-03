@@ -857,7 +857,7 @@ The Official ColdBox Mocking Factory
 		var serializedArgs = "";
 
 		for ( var arg in argOrderedTree ) {
-			if ( isNull( argOrderedTree[ arg ] ) ) {
+			if ( !structKeyExists( argOrderedTree, arg ) || isNull( argOrderedTree[ arg ] ) ) {
 				/* we aren't going to be able to serialize an undefined variable, this might occur if an arguments structure
 				 * containing optional parameters is passed by argumentCollection=arguments to the mocked method.
 				 */
