@@ -131,23 +131,30 @@ component accessors="true" {
 	 * @opts The options to default and check
 	 */
 	private function setDefaultOptions( struct opts = {} ){
-		if ( isNull( opts.enabled ) ) {
-			opts.enabled = true;
-		}
+		var defaults = {
+			"enabled" : true,
+			"sonarQube" : {
+				"XMLOutputPath" : ""
+			},
+			"browser" : {
+				"outputDir" : ""
+			},
+			"coverageTresholds" : {
+				"good": 85,
+				"bad" : 50
+			},
+			"pathToCapture" : "",
+			"whitelist" : "",
+			"blacklist" : ""
+		};
 
-		if ( isNull( opts.sonarQube ) ) {
-			opts.sonarQube = {};
-		}
-		if ( isNull( opts.sonarQube.XMLOutputPath ) ) {
-			opts.sonarQube.XMLOutputPath = "";
-		}
-
-		if ( isNull( opts.browser ) ) {
-			opts.browser = {};
-		}
-		if ( isNull( opts.browser.outputDir ) ) {
-			opts.browser.outputDir = "";
-		}
+		// pull configured options andfall back to the defaults if not set.
+		opts = structMap( defaults, function( key, value ){
+			if ( structKeyExists( opts, key ) && !isNull( opts[ key ] ) ){
+				return opts[ key ];
+			}
+			return defaults[ key ];
+		});
 
 		// Clean up the browser output dir if it is set
 		if ( len( opts.browser.outputDir ) ) {
@@ -165,26 +172,6 @@ component accessors="true" {
 			if ( !opts.browser.outputDir.endsWith( "/" ) ) {
 				opts.browser.outputDir = opts.browser.outputDir & "/";
 			}
-		}
-
-		if ( isNull( opts.coverageTresholds ) ) {
-			opts.coverageTresholds = {};
-		}
-		if ( isNull( opts.coverageTresholds.good ) ) {
-			opts.coverageTresholds.good = 85;
-		}
-		if ( isNull( opts.coverageTresholds.bad ) ) {
-			opts.coverageTresholds.bad = 50;
-		}
-
-		if ( isNull( opts.pathToCapture ) ) {
-			opts.pathToCapture = "";
-		}
-		if ( isNull( opts.whitelist ) ) {
-			opts.whitelist = "";
-		}
-		if ( isNull( opts.blacklist ) ) {
-			opts.blacklist = "";
 		}
 
 		// If no path provided to capture
