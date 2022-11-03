@@ -591,7 +591,7 @@ code {
 												onClick="window.location='#openInEditorURL( thisStack.template, thisStack.line, url.editor )#'"
 											>
 												#thisStack.template#:#thisStack.line#
-												<cfif !isNull( thisStack.codePrintPlain )>
+												<cfif structKeyExists( thisStack, "codePrintPlain" ) && !isNull( thisStack.codePrintPlain )>
 													<pre>#thisStack.codePrintPlain#</pre>
 												</cfif>
 											</div>

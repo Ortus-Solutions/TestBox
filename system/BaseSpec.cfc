@@ -1453,7 +1453,7 @@ component {
 	 */
 	function getMockDataCFC(){
 		// Lazy Load it
-		if ( isNull( variables.$mockDataCFC ) ) {
+		if ( !structKeyExists( variables, "$mockDataCFC" ) || isNull( variables.$mockDataCFC ) ) {
 			variables.$mockDataCFC = new testbox.system.modules.mockdatacfc.models.MockData();
 		}
 		return variables.$mockDataCFC;
@@ -1466,7 +1466,7 @@ component {
 	 */
 	function getUtility(){
 		// Lazy Load it
-		if ( isNull( variables.$utility ) ) {
+		if ( !structKeyExists( variables, "$utility" ) || isNull( variables.$utility ) ) {
 			variables.$utility = new testbox.system.util.Util();
 		}
 		return variables.$utility;
@@ -1481,7 +1481,7 @@ component {
 	 */
 	function getMockBox( string generationPath = "" ){
 		// Lazy Load it
-		if ( isNull( this.$mockbox ) ) {
+		if ( !structKeyExists( variables, "$mockbox" ) || isNull( this.$mockbox ) ) {
 			variables.$mockbox = this.$mockbox = new testbox.system.MockBox( arguments.generationPath );
 		} else {
 			// Generation path updates

@@ -221,16 +221,16 @@ component accessors="true" {
 		);
 
 		// Verify URL conventions for bundle, suites and specs exclusions.
-		if ( !isNull( url.testBundles ) ) {
-			testBundles.addAll( listToArray( urlDecode( url.testBundles ) ) );
+		if ( structKeyExists( url, "testBundles" ) && !isNull( url.testBundles ) ) {
+			arguments.testBundles.addAll( listToArray( urlDecode( url.testBundles ) ) );
 		}
-		if ( !isNull( url.testSuites ) ) {
+		if ( structKeyExists( url, "testSuites" ) && !isNull( url.testSuites ) ) {
 			arguments.testSuites.addAll( listToArray( urlDecode( url.testSuites ) ) );
 		}
-		if ( !isNull( url.testSpecs ) ) {
+		if ( structKeyExists( url, "testSpecs" ) && !isNull( url.testSpecs ) ) {
 			arguments.testSpecs.addAll( listToArray( urlDecode( url.testSpecs ) ) );
 		}
-		if ( !isNull( url.testMethod ) ) {
+		if ( structKeyExists( url, "testMethod" ) && !isNull( url.testMethod ) ) {
 			arguments.testSpecs.addAll( listToArray( urlDecode( url.testMethod ) ) );
 		}
 
