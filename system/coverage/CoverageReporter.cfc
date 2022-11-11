@@ -58,11 +58,9 @@ component accessors="true" {
 	 * @return an aggregated, FULL report of all test coverage data accumulated to this point.
 	 */
 	public any function processCoverageReport( required any coverageQuery ){
-		if ( !getReportOptions().isBatched ) {
-			return arguments.coverageQuery;
-		}
-
-		return aggregateCoverageData( arguments.coverageQuery );
+		return !getReportOptions().isBatched
+			? arguments.coverageQuery
+			: aggregateCoverageData( arguments.coverageQuery );
 	}
 
 	/**
