@@ -60,6 +60,43 @@ component extends="testbox.system.BaseSpec" {
 						"should merge NOT duplicate coverage data"
 					);
 				} );
+				it( "processCoverageReport - keeps COVERED line data from both old and new", function(){
+					var opts  = { outputDir : expandPath( "./" ), isBatched : true };
+					var model = prepareMock( new system.coverage.CoverageReporter( opts ) );
+					model.beginCoverageReport();
+
+					// test initial report run
+					var dummyData = getDummyCodeCoverage();
+
+					// fake some code coverage
+					var rowIndex = 1// get row index
+					dummyData[ "lineData" ][ rowIndex ] = {
+						"1" : 1
+					};
+
+					// get comparison data
+					var oldLineData = duplicate( dummyData.filter( function( row ){
+						return row[ "relativeFilePath" ] == "CoverageReporterTest.cfc";
+					})[ "lineData" ][1] );
+
+					// save to report JSON file
+					model.processCoverageReport( dummyData );
+
+					// now fake the ABSENCE of code coverage
+					dummyData[ "lineData" ][ rowIndex ] = {
+						1 : 0
+					};
+					var resultQry = model.processCoverageReport( dummyData );
+					var newLineData = resultQry.filter( function( row ){
+						return row[ "relativeFilePath" ] == "CoverageReporterTest.cfc";
+					})[ "lineData" ];
+
+					resultQry.filter( function( row ){
+						return row[ "relativeFilePath" ] == "CoverageReporterTest.cfc";
+					});
+
+					expect( newLineData[ 1 ] ).toBe( 1, "should retain knowledge of previously covered code" );
+				} );
 			} );
 		} );
 	}

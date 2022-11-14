@@ -74,19 +74,24 @@ component accessors="true" {
 	 * @return an aggregated, FULL report of all test coverage data accumulated to this point.
 	 */
 	private function aggregateCoverageData( required any coverageQuery ){
+		var totalCoverage = queryNew(
+			"filePath,relativeFilePath,filePathHash,numLines,numCoveredLines,numExecutableLines,percCoverage,lineData",
+			"varchar,varchar,varchar,integer,integer,integer,decimal,object"
+		);
 		if ( fileExists( getCoverageReportFile() ) ) {
-			var currentCoverage = queryToStruct( arguments.coverageQuery );
-			var totalCoverage   = readCoverageFromReportFile();
+			var currentCoverage = arguments.coverageQuery;
+			var previousCoverage   = readCoverageFromReportFile();
 
-			for ( var filepath in currentCoverage ) {
-				var value = currentCoverage[ filepath ];
-				if ( totalCoverage.keyExists( filepath ) ) {
-					var amended           = totalCoverage[ filepath ];
+			currentCoverage.each(function( row ){
+				var filepath = row[ "relativeFilePath" ];
+				var oldRowIndex = getRowIndexWithFile( previousCoverage, filepath );
+				if ( oldRowIndex > 0 ) {
+					var amended           = queryGetRow( previousCoverage, oldRowIndex );
 					// UPDATE LINE DATA
 					amended[ "lineData" ] = amended[ "lineData" ].map( function( line, lineCoveredValue ){
 						// if it's covered in the latest coverage check, use that value. Otherwise use value from file.
-						if ( structKeyExists( value[ "lineData" ], line ) && value[ "lineData" ][ line ] > 0 ) {
-							return value[ "lineData" ][ line ];
+						if ( structKeyExists( row[ "lineData" ], line ) && row[ "lineData" ][ line ] > 0 ) {
+							return row[ "lineData" ][ line ];
 						}
 						return lineCoveredValue;
 					} );
@@ -103,36 +108,35 @@ component accessors="true" {
 					} else {
 						amended[ "percCoverage" ] = 1;
 					}
-					totalCoverage[ filepath ] = amended;
+					// Because Lucee rots. See LDEV-4269.
+					queryAddRow( totalCoverage, 1 );
+					amended.each( function( key, value ){
+						totalCoverage[ key ][ totalCoverage.recordCount ] = value;
+					});
 				} else {
-					totalCoverage[ filepath ] = value;
+					// Because Lucee rots. See LDEV-4269.
+					queryAddRow( totalCoverage, 1 );
+					row.each( function( key, value ){
+						totalCoverage[ key ][ totalCoverage.recordCount ] = value;
+					});
 				}
-			}
+			});
 
 			/**
 			 * After combining the previous coverage report with the current coverage query data,
 			 * we save it as JSON to aggregate with the next test run.
 			 */
-			fileWrite( getCoverageReportFile(), serializeJSON( totalCoverage, false, false ) );
-
-			// and convert back to a query for consumption in CoverageStats.cfc
-			arguments.coverageQuery = structToQuery( totalCoverage );
+			writeJSONReport( totalCoverage );
 		} else {
 			/**
 			 * If no previous coverage data exists, we simply export the current coverage query to a struct
 			 * and save as json for future test runs to consume.
 			 */
-			fileWrite(
-				getCoverageReportFile(),
-				serializeJSON(
-					queryToStruct( arguments.coverageQuery ),
-					false,
-					false
-				)
-			);
+			writeJSONReport( arguments.coverageQuery );
 		}
 
-		return arguments.coverageQuery;
+		// Return a new query without modifying the old
+		return totalCoverage.recordCount ? totalCoverage : arguments.coverageQuery;
 	}
 
 	/**
@@ -140,48 +144,37 @@ component accessors="true" {
 	 *
 	 * @return a struct where `key` is the filePath and the value is each row from the coverage data query.
 	 */
-	private struct function readCoverageFromReportFile(){
-		return deserializeJSON( fileRead( getCoverageReportFile() ) ).reduce( function( result, key, row ){
-			if ( !result.keyExists( key ) ) {
-				result[ key ] = row;
-			}
-			return result;
-		}, {} );
+	private Query function readCoverageFromReportFile(){
+		return deserializeJSON( fileRead( getCoverageReportFile() ), false );
+	}
+
+	private void function writeJSONReport( required Query coverageQuery ){
+		fileWrite(
+			getCoverageReportFile(),
+			serializeJSON(
+				arguments.coverageQuery,
+				false,
+				false
+			)
+		);
 	}
 
 	/**
-	 * Convert coverage key/value struct back to query for Testbox consumption.
-	 *
-	 * @coverage struct of coverage data in filePath = data struct format.
+	 * Determine whether the provided filepath/filename is in the query.
+	 * 
+	 * @returns the row index
 	 */
-	private any function structToQuery( required struct coverage ){
-		return arguments.coverage.reduce( function( result, key, row ){
-			if ( isArray( row ) ) {
-				return result;
+	private numeric function getRowIndexWithFile( required query coverage, required string filepath ){
+		var index = 0;
+		var i = 1;
+		for( var row in arguments.coverage ){
+			if ( row[ "relativeFilePath" ] == arguments.filepath ){
+				index = i;
+				break;
 			}
-			row.each( function( columnName ){
-				if ( !result.keyExists( columnName ) ) {
-					result.addColumn( columnName, [] );
-				}
-			} );
-			result.addRow( row );
-			return result;
-		}, queryNew( "" ) );
-	}
-
-	/**
-	 * Convert coverage query to a struct so we can de-dupe and serialize to JSON.
-	 *
-	 * @return a de-duplicated struct where the key is the relativeFilePath from the coverage data.
-	 */
-	private struct function queryToStruct( required any coverage ){
-		return arguments.coverage.reduce( function( result, row ){
-			var key = row[ "relativeFilePath" ];
-			if ( !result.keyExists( key ) ) {
-				result[ key ] = row;
-			}
-			return result;
-		}, {} );
+			i++;
+		}
+		return index;
 	}
 
 	/**
