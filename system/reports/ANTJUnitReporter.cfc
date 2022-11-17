@@ -176,9 +176,34 @@ return;
 		switch ( stats.status ) {
 			case "failed": {
 				out.append(
-					"<failure message=""#encodeForXMLAttribute( stats.failMessage )#""><![CDATA[
-					#stats.failorigin.toString()#
-					]]></failure>"
+					"<failure message=""#encodeForXMLAttribute( stats.failMessage )#""><![CDATA["
+				);
+				if ( isArray(stats.failOrigin) && arrayLen(stats.failOrigin ) ) {
+					for ( var thisContext in stats.failOrigin ) {
+						if ( findNoCase( arguments.bundleStats.path, reReplace( thisContext.template, "(/|\\)", ".", "all" ) ) ) {
+							if ( structKeyExists( thisContext, "codePrintPlain" ) ) {
+								out.append(
+									"#thisContext.codePrintPlain#"
+								);
+							}
+							out.append(
+								"#thisContext.template#:#thisContext.line#"
+							);
+						}
+					}
+				}
+				if ( len( stats.failDetail ) ) {
+					out.append(
+						"Failure Details: #stats.failDetail#"
+					);
+				}
+				if ( len( stats.failExtendedInfo ) ) {
+					out.append(
+						"Failure Extended Info: #stats.failExtendedInfo#"
+					);
+				}
+				out.append(
+					"]]></failure>"
 				);
 				break;
 			}
