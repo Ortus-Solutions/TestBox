@@ -46,7 +46,7 @@ jobs:
         env:
           FULL_NULL: ${{ matrix.fullNull }}
         run: |
-          ant -f build/build.xml run-tests
+          box task run taskfile=build/Build target=runTests
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
@@ -128,12 +128,12 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          cd apidocs && box install
+          box install --production
 
       - name: Build TestBox for ${{ env.BRANCH }} v${{ env.TESTBOX_VERSION }}
         run: |
-          box server start serverConfigFile="server-lucee@5.json"
-          ant -Dversion=${{ env.TESTBOX_VERSION }} -Dbuild.branch=${{ env.BRANCH }} -Dbuild.number=${{ github.run_number }} -f build/build.xml
+          box install commandbox-docbox
+          box task run taskfile=build/Build target=run :version=${{ env.VERSION }} :buildID=${{ github.run_number }} :branch=${{ env.BRANCH }}
 
       - name: Upload Build Artifacts
         if: success()
@@ -141,7 +141,7 @@ jobs:
         with:
           name: testbox
           path: |
-            artifacts/**/*
+            .artifacts/**/*
 
       - name: Upload Binaries to S3
         uses: jakejarvis/s3-sync-action@master
@@ -151,8 +151,8 @@ jobs:
           AWS_S3_BUCKET: "downloads.ortussolutions.com"
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-          SOURCE_DIR: "artifacts/testbox"
-          DEST_DIR: "ortussolutions/testbox"
+          SOURCE_DIR: ".artifacts"
+          DEST_DIR: "ortussolutions"
 
       - name: Upload API Docs to S3
         uses: jakejarvis/s3-sync-action@master
@@ -162,13 +162,14 @@ jobs:
           AWS_S3_BUCKET: "apidocs.ortussolutions.com"
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET }}
-          SOURCE_DIR: "build-testbox/testbox/apidocs"
+          SOURCE_DIR: ".tmp/apidocs"
           DEST_DIR: "testbox/${{ env.TESTBOX_VERSION }}"
 
       - name: Publish
         run: |
-          ROOT_DIR=`pwd`
-          cd $ROOT_DIR/build-testbox/testbox && box forgebox publish
+          cd .tmp/testbox
+          cat box.json
+          box forgebox publish
 
       - name: Inform Slack
         if: ${{ always() }}
