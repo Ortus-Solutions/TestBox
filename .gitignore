@@ -3,7 +3,6 @@
 /settings.xml
 .settings/
 .engine/
-cpu.json
 
 # Test Results
 tests/results

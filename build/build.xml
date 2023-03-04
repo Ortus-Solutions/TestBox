@@ -101,7 +101,6 @@
 				<exclude name="build/**" />
 				<exclude name="build-testbox/**" />
 				<exclude name="tests/**" />
-				<exclude name="cpu.json" />
 				<exclude name="box.json" />
 				<exclude name="server.json" />
 				<exclude name="server-*.json" />
