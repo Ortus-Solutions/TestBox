@@ -17,34 +17,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
+        cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
         javaVersion: [ "openjdk8", "openjdk11" ]
         fullNull: [ "true", "false" ]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Delete AbstractClass for adobe@2016
-        if: contains(matrix.cfengine, 'adobe@2016')
-        run: rm tests/specs/AbstractClass.cfc
-
       - name: Setup Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3.9.0
         with:
-          distribution: "adopt"
+          distribution: "temurin"
           java-version: "11"
 
       - name: Setup CommandBox
-        uses: elpete/setup-commandbox@v1.0.0
-
-      - name: Cache CommandBox Dependencies
-        uses: actions/cache@v1
-        if: ${{ true }}
-        with:
-          path: ~/.CommandBox/artifacts
-          key: ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
-          restore-keys: |
-            ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
+        uses: Ortus-Solutions/setup-commandbox@v2.0.1
 
       - name: Install Dependencies
         run: |
@@ -62,16 +49,15 @@ jobs:
           ant -f build/build.xml run-tests
 
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          files: tests/results/**/*.xml
+          junit_files: tests/results/**/*.xml
           check_name: "${{ matrix.cfengine }} Test Results"
-          summary: true
 
       - name: Upload Test Results Artifacts
         if: always()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3.1.1
         with:
           name: testbox-test-results-${{ matrix.cfengine }}
           path: |
@@ -96,7 +82,7 @@ jobs:
 
       - name: Upload Debugging Info To Artifacts
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3.1.1
         with:
           name: Failure Debugging Info - ${{ matrix.cfengine }}
           path: |
@@ -104,7 +90,7 @@ jobs:
             .engine/**/WEB-INF/cfusion/logs/*
 
   #############################################
-  # Build ColdBox Now
+  # Build it Now
   #############################################
   build:
     name: Build & Publish
@@ -117,22 +103,13 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Java
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3.9.0
         with:
-          distribution: "adopt"
+          distribution: "temurin"
           java-version: "11"
 
-      - name: Cache CommandBox Dependencies
-        uses: actions/cache@v1
-        if: ${{ true }}
-        with:
-          path: ~/.CommandBox/artifacts
-          key: ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
-          restore-keys: |
-            ${{ runner.OS }}-commandbox-cache-${{ hashFiles( 'box.json' ) }}
-
       - name: Setup CommandBox
-        uses: elpete/setup-commandbox@v1.0.0
+        uses: Ortus-Solutions/setup-commandbox@v2.0.1
         with:
           forgeboxAPIKey: ${{ secrets.FORGEBOX_API_TOKEN }}
 
@@ -142,6 +119,7 @@ jobs:
           echo "TESTBOX_VERSION=`cat box.json | jq '.version' -r`" >> $GITHUB_ENV
           box package set version=@build.version@+@build.number@
           # master or snapshot
+          echo "Github Ref is $GITHUB_REF"
           echo "BRANCH=master" >> $GITHUB_ENV
           if [ $GITHUB_REF == 'refs/heads/development' ]
           then
@@ -159,7 +137,7 @@ jobs:
 
       - name: Upload Build Artifacts
         if: success()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3.1.1
         with:
           name: testbox
           path: |
