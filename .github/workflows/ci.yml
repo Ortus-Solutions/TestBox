@@ -133,7 +133,7 @@ jobs:
       - name: Build TestBox for ${{ env.BRANCH }} v${{ env.TESTBOX_VERSION }}
         run: |
           box install commandbox-docbox
-          box task run taskfile=build/Build target=run :version=${{ env.VERSION }} :buildID=${{ github.run_number }} :branch=${{ env.BRANCH }}
+          box task run taskfile=build/Build target=run :version=${{ env.TESTBOX_VERSION }} :buildID=${{ github.run_number }} :branch=${{ env.BRANCH }}
 
       - name: Upload Build Artifacts
         if: success()
