@@ -22,7 +22,7 @@ jobs:
         fullNull: [ "true", "false" ]
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.2.0
 
       - name: Setup Java
         uses: actions/setup-java@v3.9.0
@@ -98,7 +98,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.2.0
         with:
           fetch-depth: 0
 

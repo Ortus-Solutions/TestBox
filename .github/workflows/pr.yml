@@ -17,16 +17,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
+        cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
         javaVersion: [ "openjdk8", "openjdk11" ]
         fullNull: [ "true", "false" ]
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Delete AbstractClass for adobe@2016
-        if: contains(matrix.cfengine, 'adobe@2016')
-        run: rm tests/specs/AbstractClass.cfc
+        uses: actions/checkout@v3.2.0
 
       - name: Setup Java
         uses: actions/setup-java@v3.9.0
@@ -35,7 +31,7 @@ jobs:
           java-version: "11"
 
       - name: Setup CommandBox
-        uses: pinning of setup-commandbox github action
+        uses: Ortus-Solutions/setup-commandbox@v2.0.1
 
       - name: Install Dependencies
         run: |
@@ -52,11 +48,10 @@ jobs:
           ant -f build/build.xml run-tests
 
       - name: Publish PR Test Reports
-        uses: mikepenz/action-junit-report@v2
+        uses: EnricoMi/publish-unit-test-result-action@v2
         with:
-          report_paths: 'tests/results/**/*.xml'
+          junit_files: 'tests/results/**/*.xml'
           check_name: "${{ matrix.cfengine }}/${{ matrix.javaVersion }} Test Results"
-          summary: true
 
       - name: Failure debugging
         if: ${{ failure() }}
@@ -68,22 +63,11 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.2.0
 
-      - name: Setup Java
-        uses: actions/setup-java@v3.9.0
+      - uses: Ortus-Solutions/commandbox-action@v1.0.2
         with:
-          distribution: "temurin"
-          java-version: "11"
-
-      - name: Set Up CommandBox
-        uses: pinning of setup-commandbox github action
-
-      - name: Install CFFormat
-        run: box install commandbox-cfformat
-
-      - name: Run CFFormat
-        run: box run-script format
+          cmd: run-script format
 
       - name: Commit Format Changes
         uses: stefanzweifel/git-auto-commit-action@v4
