@@ -998,11 +998,11 @@ component {
 	 */
 	BaseSpec function runBeforeEachClosures( required suite, required spec ){
 		// re-bind request utilities to the currently executing test before they may be invoked
-		request.testbox.console = 			() => variables.console(argumentCollection=arguments);
-		request.testbox.debug = 			() => variables.debug(argumentCollection=arguments);
-		request.testbox.clearDebugBuffer = 	() => variables.clearDebugBuffer(argumentCollection=arguments);
-		request.testbox.print = 			() => variables.print(argumentCollection=arguments);
-		request.testbox.println = 			() => variables.println(argumentCollection=arguments);
+		request.testbox.console          = () => variables.console( argumentCollection = arguments );
+		request.testbox.debug            = () => variables.debug( argumentCollection = arguments );
+		request.testbox.clearDebugBuffer = () => variables.clearDebugBuffer( argumentCollection = arguments );
+		request.testbox.print            = () => variables.print( argumentCollection = arguments );
+		request.testbox.println          = () => variables.println( argumentCollection = arguments );
 
 		var reverseTree = [];
 
