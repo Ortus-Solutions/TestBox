@@ -6,57 +6,17 @@ on:
       - "main"
       - "master"
       - "development"
+      - "releases/**"
   pull_request:
     branches:
       - development
+      - "releases/**"
 
 jobs:
   tests:
-    name: Tests
-    runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
-      matrix:
-        cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
-        javaVersion: [ "openjdk8", "openjdk11" ]
-        fullNull: [ "true", "false" ]
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3.2.0
-
-      - name: Setup Java
-        uses: actions/setup-java@v3.9.0
-        with:
-          distribution: "temurin"
-          java-version: "11"
-
-      - name: Setup CommandBox
-        uses: Ortus-Solutions/setup-commandbox@v2.0.1
-
-      - name: Install Dependencies
-        run: |
-          box install
-
-      - name: Start ${{ matrix.cfengine }}/${{ matrix.javaVersion }} Server
-        run: |
-          box server start serverConfigFile="server-${{ matrix.cfengine }}.json" javaVersion=${{ matrix.javaVersion }} --noSaveSettings --debug
-
-      - name: Run Tests
-        env:
-          FULL_NULL: ${{ matrix.fullNull }}
-        run: |
-          ant -f build/build.xml run-tests
-
-      - name: Publish PR Test Reports
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        with:
-          junit_files: 'tests/results/**/*.xml'
-          check_name: "${{ matrix.cfengine }}/${{ matrix.javaVersion }} Test Results"
-
-      - name: Failure debugging
-        if: ${{ failure() }}
-        run: |
-          box server log serverConfigFile="server-${{ matrix.cfengine }}.json"
+    uses: ./.github/workflows/tests.yml
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   format:
     name: Format
