@@ -6,84 +6,28 @@ on:
       - "main"
       - "master"
       - "development"
+      - "releases/**"
   pull_request:
     branches:
       - development
+      - "releases/**"
 
 jobs:
   tests:
-    name: Tests
-    runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: false
-      matrix:
-        cfengine: [ "lucee@5", "adobe@2016", "adobe@2018", "adobe@2021" ]
-        javaVersion: [ "openjdk8", "openjdk11" ]
-        fullNull: [ "true", "false" ]
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Delete AbstractClass for adobe@2016
-        if: contains(matrix.cfengine, 'adobe@2016')
-        run: rm tests/specs/AbstractClass.cfc
-
-      - name: Setup Java
-        uses: actions/setup-java@v2
-        with:
-          distribution: "adopt"
-          java-version: "11"
-
-      - name: Setup CommandBox
-        uses: elpete/setup-commandbox@v1.0.0
-
-      - name: Install Dependencies
-        run: |
-          box install
-
-      - name: Start ${{ matrix.cfengine }}/${{ matrix.javaVersion }} Server
-        run: |
-          box server start serverConfigFile="server-${{ matrix.cfengine }}.json" javaVersion=${{ matrix.javaVersion }} --noSaveSettings --debug
-
-      - name: Run Tests
-        env:
-          FULL_NULL: ${{ matrix.fullNull }}
-        run: |
-          ant -f build/build.xml run-tests
-
-      - name: Publish PR Test Reports
-        uses: mikepenz/action-junit-report@v2
-        with:
-          report_paths: 'tests/results/**/*.xml'
-          check_name: "${{ matrix.cfengine }}/${{ matrix.javaVersion }} Test Results"
-          summary: true
-
-      - name: Failure debugging
-        if: ${{ failure() }}
-        run: |
-          box server log serverConfigFile="server-${{ matrix.cfengine }}.json"
+    uses: ./.github/workflows/tests.yml
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   format:
     name: Format
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.2.0
 
-      - name: Setup Java
-        uses: actions/setup-java@v2
+      - uses: Ortus-Solutions/commandbox-action@v1.0.2
         with:
-          distribution: "adopt"
-          java-version: "11"
-
-      - name: Set Up CommandBox
-        uses: elpete/setup-commandbox@v1.0.0
-
-      - name: Install CFFormat
-        run: box install commandbox-cfformat
-
-      - name: Run CFFormat
-        run: box run-script format
+          cmd: run-script format
 
       - name: Commit Format Changes
         uses: stefanzweifel/git-auto-commit-action@v4
