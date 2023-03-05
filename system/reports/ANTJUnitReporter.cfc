@@ -178,7 +178,7 @@ return;
 				out.append(
 					"<failure message=""#encodeForXMLAttribute( stats.failMessage )#""><![CDATA["
 				);
-				if ( isArray(stats.failOrigin) && arrayLen(stats.failOrigin ) ) {
+				if ( isArray( stats.failOrigin ) && arrayLen( stats.failOrigin ) ) {
 					for ( var thisContext in stats.failOrigin ) {
 						if ( findNoCase( arguments.bundleStats.path, reReplace( thisContext.template, "(/|\\)", ".", "all" ) ) ) {
 							if ( structKeyExists( thisContext, "codePrintPlain" ) ) {
