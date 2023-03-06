@@ -278,6 +278,16 @@ component extends="testbox.system.BaseSpec" {
 			} );
 		} );
 
+		// skip() by inline function call
+		describe(
+			title = "A suite that gets skipped inline via skip()",
+			body  = function(){
+				it( "should be skipped", function(){
+					skip();
+				} );
+			}
+		);
+
 		// Skip by env suite
 		describe(
 			title = "A Lucee only suite",
