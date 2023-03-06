@@ -11,5 +11,8 @@
     "app":{
         "cfengine":"lucee@5",
         "serverHomeDirectory":".engine/lucee5"
-    }
+    },
+	"cfconfig": {
+		"file" : ".cfconfig.json"
+	}
 }

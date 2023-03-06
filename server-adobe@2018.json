@@ -11,5 +11,8 @@
     "app":{
 		"cfengine":"adobe@2018",
 		"serverHomeDirectory":".engine/adobe2018"
-    }
+    },
+	"cfconfig": {
+		"file" : ".cfconfig.json"
+	}
 }

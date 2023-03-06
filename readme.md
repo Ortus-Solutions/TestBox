@@ -52,7 +52,7 @@ And constructed with the following guidelines:
 ### Support
 
 * https://community.ortussolutions.com/c/communities/testbox/11
-* [Join BoxTeam Slack](https://boxteam.herokuapp.com)
+* [Join BoxTeam Slack](https://boxteam.ortussolutions.com)
 
 ### Documentation
 
@@ -70,8 +70,8 @@ Join us in our Ortus Community and become a valuable member of this project [Tes
 
 ## Requirements
 
-- Lucee 5+
-- Adobe ColdFusion 2018+
+* Lucee 5+
+* Adobe ColdFusion 2018+
 
 ## Installation
 
