@@ -966,14 +966,16 @@ component {
 				arguments.testResults.incrementSpecStat( type = "skipped", stats = specStats );
 			}
 		}
-		// Catch assertion failures
+		// Catch Skip() calls
 		catch ( "TestBox.SkipSpec" e ) {
 			// store spec status
-			specStats.status = "Skipped";
+			specStats.status      = "Skipped";
+			specStats.failMessage = e.message;
+			specStats.failDetail  = e.detail;
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type = "skipped", stats = specStats );
 		}
-		// Catch assertion failures
+		// Catch Fail() calls
 		catch ( "TestBox.AssertionFailed" e ) {
 			// store spec status and debug data
 			specStats.status           = "Failed";
@@ -1290,7 +1292,16 @@ component {
 				arguments.testResults.incrementSpecStat( type = "skipped", stats = specStats );
 			}
 		}
-		// Catch assertion failures
+		// Catch skip() calls
+		catch ( "TestBox.SkipSpec" e ) {
+			// store spec status
+			specStats.status      = "Skipped";
+			specStats.failMessage = e.message;
+			specStats.failDetail  = e.detail;
+			// Increment recursive pass stats
+			arguments.testResults.incrementSpecStat( type = "skipped", stats = specStats );
+		}
+		// Catch Fail() calls
 		catch ( "TestBox.AssertionFailed" e ) {
 			// store spec status and debug data
 			specStats.status           = "Failed";
