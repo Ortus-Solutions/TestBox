@@ -1,13 +1,11 @@
-# Config Files
+# Config + Engine Files
 .DS_Store
 /settings.xml
 .settings/
 .engine/
-cpu.json
 
 # Test Results
-tests/results
-tests/results-mb
+tests/results/**
 
 # Dependencies
 system/modules/**
@@ -15,6 +13,5 @@ system/modules/**
 # Build Process
 WEB-INF
 build/build.number
-artifacts
-apidocs/docbox
-build-testbox/*
+.artifacts
+.tmp
