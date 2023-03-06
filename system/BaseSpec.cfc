@@ -9,16 +9,10 @@ component {
 	// Param default URL method runner.
 	param name="url.method" default="runRemote";
 
-	// MockBox mocking framework
-	variables.$mockBox         = this.$mockBox = new testbox.system.MockBox();
-	// MockData CFC framework
-	variables.$mockData        = this.$mockData = new testbox.system.modules.mockdatacfc.models.MockData();
 	// Assertions object
 	variables.$assert          = this.$assert = new testbox.system.Assertion();
 	// Custom Matchers
 	this.$customMatchers       = {};
-	// Utility object
-	this.$utility              = new testbox.system.util.Util();
 	// BDD Test Suites are stored here as an array so they are executed in order of definition
 	this.$suites               = [];
 	// A reverse lookup for the suite definitions
@@ -38,15 +32,9 @@ component {
 	// Focused Structures
 	this.$focusedTargets       = { "suites" : [], "specs" : [] };
 
-	// Setup Request Utilities
+	// Setup Request Utilities struct
 	if ( !request.keyExists( "testbox" ) ) {
-		request.testbox = {
-			"console"          : variables.console,
-			"debug"            : variables.debug,
-			"clearDebugBuffer" : variables.clearDebugBuffer,
-			"print"            : variables.print,
-			"println"          : variables.println
-		};
+		request.testbox = {};
 	}
 	// Setup request lookbacks for debugging purposes.
 	request.$testID = this.$testID;
@@ -750,11 +738,7 @@ component {
 	 */
 	Expectation function expect( any actual ){
 		// build an expectation
-		var oExpectation = new Expectation(
-			spec       = this,
-			assertions = this.$assert,
-			mockbox    = this.$mockbox
-		);
+		var oExpectation = new Expectation( spec = this, assertions = this.$assert );
 
 		// Store the actual data
 		if ( !isNull( arguments.actual ) ) {
@@ -1013,6 +997,13 @@ component {
 	 * @spec  The spec definition
 	 */
 	BaseSpec function runBeforeEachClosures( required suite, required spec ){
+		// re-bind request utilities to the currently executing test before they may be invoked
+		request.testbox.console          = () => variables.console( argumentCollection = arguments );
+		request.testbox.debug            = () => variables.debug( argumentCollection = arguments );
+		request.testbox.clearDebugBuffer = () => variables.clearDebugBuffer( argumentCollection = arguments );
+		request.testbox.print            = () => variables.print( argumentCollection = arguments );
+		request.testbox.println          = () => variables.println( argumentCollection = arguments );
+
 		var reverseTree = [];
 
 		// do we have nested suites? If so, traverse the tree to build reverse execution map
@@ -1029,7 +1020,7 @@ component {
 		}
 
 		// Incorporate annotated methods
-		arrayEach( this.$utility.getAnnotatedMethods( annotation = "beforeEach", metadata = getMetadata( this ) ), function( item ){
+		arrayEach( getUtility().getAnnotatedMethods( annotation = "beforeEach", metadata = getMetadata( this ) ), function( item ){
 			arrayAppend(
 				reverseTree,
 				{
@@ -1092,7 +1083,7 @@ component {
 		}
 
 		// Discover annotated methods and add to reverseTree
-		arrayEach( this.$utility.getAnnotatedMethods( annotation = "aroundEach", metadata = getMetadata( this ) ), function( item ){
+		arrayEach( getUtility().getAnnotatedMethods( annotation = "aroundEach", metadata = getMetadata( this ) ), function( item ){
 			arrayAppend(
 				reverseTree,
 				{
@@ -1197,7 +1188,7 @@ component {
 			parentSuite = parentSuite.parentRef;
 		}
 
-		arrayEach( this.$utility.getAnnotatedMethods( annotation = "afterEach", metadata = getMetadata( this ) ), function( item ){
+		arrayEach( getUtility().getAnnotatedMethods( annotation = "afterEach", metadata = getMetadata( this ) ), function( item ){
 			invoke(
 				this,
 				item.name,
@@ -1412,7 +1403,7 @@ component {
 		string newName = ""
 	){
 		// decorate it
-		this.$utility.getMixerUtil().start( arguments.target );
+		getUtility().getMixerUtil().start( arguments.target );
 		// expose it
 		arguments.target.exposeMixin( arguments.method, arguments.newName );
 
@@ -1444,27 +1435,62 @@ component {
 	 * First line are the query columns separated by commas. Then do a consequent rows separated by line breaks separated by | to denote columns.
 	 */
 	function querySim( required queryData ){
-		return this.$mockBox.querySim( arguments.queryData );
+		return getMockBox().querySim( arguments.queryData );
 	}
 
 	/**
-	 * Use MockDataCFC to mock whatever data you want.  This funnles to MocData.mock()
+	 * Use MockDataCFC to mock whatever data you want by executing the `mock()` function in MockDataCFC
 	 *
 	 * @return The mock data you desire sir!
 	 */
 	function mockData(){
-		return this.$mockData.mock( argumentCollection = arguments );
+		return getMockDataCFC().mock( argumentCollection = arguments );
 	}
 
 	/**
-	 * Get a reference to the MockBox engine
+	 * Get the MockData CFC object
+	 *
+	 * @return testbox.system.modules.mockdatacfc.models.MockData
+	 */
+	function getMockDataCFC(){
+		// Lazy Load it
+		if ( isNull( variables.$mockDataCFC ) ) {
+			variables.$mockDataCFC = new testbox.system.modules.mockdatacfc.models.MockData();
+		}
+		return variables.$mockDataCFC;
+	}
+
+	/**
+	 * Get the TestBox utility object
+	 *
+	 * @return testbox.system.util.Util
+	 */
+	function getUtility(){
+		// Lazy Load it
+		if ( isNull( variables.$utility ) ) {
+			variables.$utility = new testbox.system.util.Util();
+		}
+		return variables.$utility;
+	}
+
+	/**
+	 * Get a reference to the MockBox Engine
 	 *
 	 * @generationPath The path to generate the mocks if passed, else uses default location.
+	 *
+	 * @return testbox.system.MockBox
 	 */
-	function getMockBox( string generationPath ){
-		if ( structKeyExists( arguments, "generationPath" ) ) {
-			this.$mockBox.setGenerationPath( arguments.generationPath );
+	function getMockBox( string generationPath = "" ){
+		// Lazy Load it
+		if ( isNull( this.$mockbox ) ) {
+			variables.$mockbox = this.$mockbox = new testbox.system.MockBox( arguments.generationPath );
+		} else {
+			// Generation path updates
+			if ( len( arguments.generationPath ) ) {
+				this.$mockBox.setGenerationPath( arguments.generationPath );
+			}
 		}
+
 		return this.$mockBox;
 	}
 
@@ -1480,7 +1506,7 @@ component {
 		any object,
 		boolean callLogging = true
 	){
-		return this.$mockBox.createEmptyMock( argumentCollection = arguments );
+		return getMockBox().createEmptyMock( argumentCollection = arguments );
 	}
 
 	/**
@@ -1497,7 +1523,7 @@ component {
 		boolean clearMethods = false
 		boolean callLogging  =true
 	){
-		return this.$mockBox.createMock( argumentCollection = arguments );
+		return getMockBox().createMock( argumentCollection = arguments );
 	}
 
 	/**
@@ -1507,7 +1533,7 @@ component {
 	 * @callLogging Add method call logging for all mocked methods. Defaults to true
 	 */
 	function prepareMock( any object, boolean callLogging = true ){
-		return this.$mockBox.prepareMock( argumentCollection = arguments );
+		return getMockBox().prepareMock( argumentCollection = arguments );
 	}
 
 	/**
@@ -1522,7 +1548,7 @@ component {
 		string extends      = "",
 		string implements   = ""
 	){
-		return this.$mockBox.createStub( argumentCollection = arguments );
+		return getMockBox().createStub( argumentCollection = arguments );
 	}
 
 	// Closure Stub

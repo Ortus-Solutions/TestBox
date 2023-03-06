@@ -195,11 +195,14 @@ component {
 		required testResults,
 		required targetMD
 	){
-		var testBundles = arguments.testResults.getTestBundles();
+		var pathPatternMatcher = new testbox.system.modules.globber.models.PathPatternMatcher();
+		var testBundles        = arguments.testResults.getTestBundles();
 
-		// verify we have some?
 		if ( arrayLen( testBundles ) ) {
-			return ( arrayFindNoCase( testBundles, arguments.bundlePath ) ? true : false );
+			return pathPatternMatcher.matchPatterns(
+				testBundles.map( ( bundle ) => replace( bundle, ".", "/", "all" ) ),
+				replace( arguments.bundlePath, ".", "/", "all" )
+			);
 		}
 
 		// we can run it.

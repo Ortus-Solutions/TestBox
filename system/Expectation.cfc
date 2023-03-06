@@ -11,8 +11,6 @@ component accessors="true" {
 	property name="spec";
 	// The assertions reference
 	property name="assert";
-	// The MockBox reference
-	property name="mockbox";
 
 	// Public properties for this Expectation to use with the BDD DSL
 	// The actual value
@@ -27,16 +25,10 @@ component accessors="true" {
 	 *
 	 * @spec       The spec that this matcher belongs to.
 	 * @assertions The TestBox assertions object: testbox.system.Assertion
-	 * @mockbox    A reference to MockBox
 	 */
-	function init(
-		required any spec,
-		required any assertions,
-		required any mockBox
-	){
-		variables.spec    = arguments.spec;
-		variables.mockBox = arguments.mockbox;
-		variables.assert  = arguments.assertions;
+	function init( required any spec, required any assertions ){
+		variables.spec   = arguments.spec;
+		variables.assert = arguments.assertions;
 
 		return this;
 	}
@@ -349,7 +341,7 @@ component accessors="true" {
 	 * @length  The length to check
 	 * @message The message to send in the failure
 	 */
-	function toHaveLength( required string length, message = "" ){
+	function toHaveLength( required numeric length, message = "" ){
 		arguments.target = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notLengthOf( argumentCollection = arguments );
@@ -368,13 +360,23 @@ component accessors="true" {
 	 */
 	function toThrow( type = "", regex = ".*", message = "" ){
 		arguments.target = this.actual;
-		if ( this.isNot ) {
-			variables.assert.notThrows( argumentCollection = arguments );
-		} else {
-			variables.assert.throws( argumentCollection = arguments );
-		}
+		variables.assert.throws( argumentCollection = arguments );
 		return this;
 	}
+
+	/**
+	 * Assert that the passed in function will NOT throw an exception
+	 *
+	 * @type    Match this type with the exception thrown
+	 * @regex   Match this regex against the message of the exception
+	 * @message The message to send in the failure
+	 */
+	function notToThrow( type = "", regex = "", message = "" ){
+		arguments.target = this.actual;
+		variables.assert.notThrows( argumentCollection = arguments );
+		return this;
+	}
+
 
 	/**
 	 * Assert that the passed in actual number or date is expected to be close to it within +/- a passed delta and optional datepart

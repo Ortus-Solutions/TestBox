@@ -1,6 +1,6 @@
 {
     "name":"TestBox",
-    "version":"4.6.0",
+    "version":"5.0.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/testbox/@build.version@/testbox-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com>",
     "slug":"testbox",
@@ -37,11 +37,18 @@
     },
     "dependencies":{
         "cbstreams":"^1.5.0",
-        "mockdatacfc":"^3.3.0+22"
+        "mockdatacfc":"^3.3.0+22",
+        "globber": "^3.1.3"
+    },
+	"devDependencies":{
+        "commandbox-dotenv":"*",
+        "commandbox-cfconfig":"*",
+        "commandbox-cfformat":"*"
     },
     "installPaths":{
         "cbstreams":"system/modules/cbstreams/",
-        "mockdatacfc":"system/modules/mockdatacfc/"
+        "mockdatacfc":"system/modules/mockdatacfc/",
+        "globber": "system/modules/globber/"
     },
     "scripts":{
         "release":"recipe build/release.boxr",
@@ -49,9 +56,10 @@
         "format:check":"cfformat check system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
         "format:watch":"cfformat watch system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
         "start:lucee":"server start serverConfigFile=server-lucee@5.json",
-        "start:2016":"server start serverConfigFile=server-adobe@2016.json",
         "start:2018":"server start serverConfigFile=server-adobe@2018.json",
         "start:2021":"server start serverConfigFile=server-adobe@2021.json",
-        "cfpm":"echo '\".engine/adobe2021/WEB-INF/cfusion/bin/cfpm.sh\" install ${1}' | run"
+		"log:lucee":"server log testbox-lucee@5 --follow",
+        "log:2018":"server log testbox-adobe@2018 --follow",
+        "log:2021":"server log testbox-adobe@2021 --follow"
     }
 }
