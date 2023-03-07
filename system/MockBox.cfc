@@ -730,6 +730,22 @@ The Official ColdBox Mocking Factory
 		</cfscript>
 	</cffunction>
 
+	<!--- $spy --->
+	<cffunction
+		name      ="$spy"
+		output    ="false"
+		access    ="public"
+		returntype="any"
+		hint      ="Spy on a Method. Like mocking but keeping the original code."
+	>
+		<!--- ************************************************************* --->
+		<cfargument name="method" type="string" required="true" hint="The method you want to mock or spy on"/>
+
+		<cfscript>
+		return this.$( method = arguments.method, callback = variables[ arguments.method ] );
+		</cfscript>
+	</cffunction>
+
 	<!--- $callLog --->
 	<cffunction
 		name      ="$callLog"
@@ -857,7 +873,7 @@ The Official ColdBox Mocking Factory
 		var serializedArgs = "";
 
 		for ( var arg in argOrderedTree ) {
-			if ( NOT structKeyExists( argOrderedTree, arg ) ) {
+			if ( isNull( argOrderedTree[ arg ] ) || NOT structKeyExists( argOrderedTree, arg ) ) {
 				/* we aren't going to be able to serialize an undefined variable, this might occur if an arguments structure
 				 * containing optional parameters is passed by argumentCollection=arguments to the mocked method.
 				 */
@@ -929,6 +945,7 @@ The Official ColdBox Mocking Factory
 		obj._mockCurrentArgsHash    = "";
 		// Mock Method
 		obj.$                       = variables.$;
+		obj.$spy                    = variables.$spy;
 		// Mock Property
 		obj.$property               = variables.$property;
 		obj.$getProperty            = variables.$getProperty;

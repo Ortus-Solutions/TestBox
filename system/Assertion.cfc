@@ -22,6 +22,21 @@ component {
 	}
 
 	/**
+	 * Skip Test
+	 *
+	 * @message The message to send in the skip
+	 * @detail  The detail to add in the exception
+	 */
+	function skip( message = "", detail = "" ){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "Test was skipped" );
+		throw(
+			type    = "TestBox.SkipSpec",
+			message = arguments.message,
+			detail  = arguments.detail
+		);
+	}
+
+	/**
 	 * Assert that the passed expression is true
 	 *
 	 * @expression The expression to test

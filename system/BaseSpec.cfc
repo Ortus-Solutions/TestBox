@@ -78,6 +78,16 @@ component {
 	}
 
 	/**
+	 * Skip a test
+	 *
+	 * @facade
+	 */
+	function skip( message = "", detail = "" ){
+		this.$assert.skip( argumentCollection = arguments );
+	}
+
+
+	/**
 	 * This function is used for BDD test suites to store the beforeEach() function to execute for a test suite group
 	 *
 	 * @body The closure function
@@ -956,7 +966,16 @@ component {
 				arguments.testResults.incrementSpecStat( type = "skipped", stats = specStats );
 			}
 		}
-		// Catch assertion failures
+		// Catch Skip() calls
+		catch ( "TestBox.SkipSpec" e ) {
+			// store spec status
+			specStats.status      = "Skipped";
+			specStats.failMessage = e.message;
+			specStats.failDetail  = e.detail;
+			// Increment recursive pass stats
+			arguments.testResults.incrementSpecStat( type = "skipped", stats = specStats );
+		}
+		// Catch Fail() calls
 		catch ( "TestBox.AssertionFailed" e ) {
 			// store spec status and debug data
 			specStats.status           = "Failed";
@@ -1273,7 +1292,16 @@ component {
 				arguments.testResults.incrementSpecStat( type = "skipped", stats = specStats );
 			}
 		}
-		// Catch assertion failures
+		// Catch skip() calls
+		catch ( "TestBox.SkipSpec" e ) {
+			// store spec status
+			specStats.status      = "Skipped";
+			specStats.failMessage = e.message;
+			specStats.failDetail  = e.detail;
+			// Increment recursive pass stats
+			arguments.testResults.incrementSpecStat( type = "skipped", stats = specStats );
+		}
+		// Catch Fail() calls
 		catch ( "TestBox.AssertionFailed" e ) {
 			// store spec status and debug data
 			specStats.status           = "Failed";
