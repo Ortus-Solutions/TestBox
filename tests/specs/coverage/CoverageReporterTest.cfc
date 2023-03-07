@@ -71,31 +71,33 @@ component extends="testbox.system.BaseSpec" {
 					// fake some code coverage
 					var rowIndex = 1// get row index
 					dummyData[ "lineData" ][ rowIndex ] = {
-						"1" : 1
+						"1" : 1,
+						"2" : "0"
 					};
-
-					// get comparison data
-					var oldLineData = duplicate( dummyData.filter( function( row ){
-						return row[ "relativeFilePath" ] == "CoverageReporterTest.cfc";
-					})[ "lineData" ][1] );
 
 					// save to report JSON file
 					model.processCoverageReport( dummyData );
 
 					// now fake the ABSENCE of code coverage
 					dummyData[ "lineData" ][ rowIndex ] = {
-						1 : 0
+						"1" : 0,
+						"2" : "1"
 					};
 					var resultQry = model.processCoverageReport( dummyData );
-					var newLineData = resultQry.filter( function( row ){
+					var lineCoverage = resultQry.filter( function( row ){
 						return row[ "relativeFilePath" ] == "CoverageReporterTest.cfc";
-					})[ "lineData" ];
+					}).reduce( function( agg, row ){
+						agg.append( row );
+						return agg;
+					}, []).first();
 
-					resultQry.filter( function( row ){
-						return row[ "relativeFilePath" ] == "CoverageReporterTest.cfc";
-					});
+					debug( lineCoverage );
 
-					expect( newLineData[ 1 ] ).toBe( 1, "should retain knowledge of previously covered code" );
+					var firstLineCoverage = lineCoverage.lineData[ 1 ];
+					var secondLineCoverage = lineCoverage.lineData[ 2 ];
+
+					expect( firstLineCoverage ).toBe( 1, "should retain knowledge of previously covered code" );
+					expect( secondLineCoverage ).toBe( 1, "should retain knowledge of current coverage report" );
 				} );
 			} );
 		} );
