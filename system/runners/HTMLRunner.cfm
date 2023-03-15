@@ -43,7 +43,7 @@ if( len( url.bundles ) ){
 }
 if( len( url.directory ) ){
 	for( dir in listToArray( url.directory ) ){
-		testbox.addDirectory( dir, url.recurse );
+		testbox.addDirectories( dir, url.recurse );
 	}
 }
 
