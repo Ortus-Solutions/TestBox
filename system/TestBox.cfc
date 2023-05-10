@@ -80,6 +80,7 @@ component accessors="true" {
 
 	/**
 	 * Constructor
+	 *
 	 * @directory A directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	 */
 	any function addDirectory( required any directory, boolean recurse = true ){
@@ -101,6 +102,7 @@ component accessors="true" {
 
 	/**
 	 * Constructor
+	 *
 	 * @directories A set of directories to test which can be a list of simple mapping paths or an array of structs with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	 */
 	any function addDirectories( required any directories, boolean recurse = true ){
@@ -115,6 +117,7 @@ component accessors="true" {
 
 	/**
 	 * Constructor
+	 *
 	 * @directory A directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	 */
 	any function addBundles( required any bundles ){
@@ -417,6 +420,7 @@ component accessors="true" {
 
 	/**
 	 * Build a report according to this runner's setup reporter, which can be anything.
+	 *
 	 * @results The results object to use to produce a report
 	 */
 	private any function produceReport( required results ){
@@ -607,6 +611,7 @@ component accessors="true" {
 
 	/**
 	 * Get an array of spec paths from a directory
+	 *
 	 * @directory The directory information struct to test: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	 */
 	private function getSpecPaths( required directory ){

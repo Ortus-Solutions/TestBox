@@ -30,6 +30,7 @@ component
 
 	/**
 	 * Execute a BDD test on the incoming target and store the results in the incoming test results
+	 *
 	 * @target      The target bundle CFC to test
 	 * @testResults The test results object to keep track of results for this test case
 	 * @callbacks   A struct of listener callbacks or a CFC with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
@@ -138,6 +139,7 @@ component
 
 	/**
 	 * Test the incoming suite definition
+	 *
 	 * @target      The target bundle CFC
 	 * @method      The method definition to test
 	 * @testResults The testing results object
@@ -339,6 +341,7 @@ component
 
 	/**
 	 * Get all the test suites in the passed in bundle
+	 *
 	 * @target   The target to get the suites from
 	 * @targetMD The metdata of the target
 	 */

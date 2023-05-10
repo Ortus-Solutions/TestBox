@@ -1,4 +1,5 @@
-abstract   component {
+// cfformat-ignore-start
+abstract component {
 
 	function init(){
 		// This is an abstract class
@@ -8,3 +9,4 @@ abstract   component {
 	}
 
 }
+// cfformat-ignore-end

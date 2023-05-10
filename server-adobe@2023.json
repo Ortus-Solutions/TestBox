@@ -1,0 +1,21 @@
+{
+    "app":{
+        "cfengine":"adobe@2023.0.0-beta.1",
+        "serverHomeDirectory":".engine/adobe2023"
+    },
+    "name":"testbox-adobe@2023",
+    "force":true,
+    "openBrowser":false,
+    "web":{
+        "directoryBrowsing":true,
+        "http":{
+			"port":"49616"
+        },
+    },
+	"cfconfig": {
+		"file" : ".cfconfig.json"
+	},
+	"scripts" : {
+		"onServerInstall":"cfpm install zip,debugger"
+	}
+}

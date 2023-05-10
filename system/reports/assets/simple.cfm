@@ -237,7 +237,7 @@
 															>
 																<i class="fas fa-plus-square plus-minus"></i>
 															</button>
-															<div>#thisBundle.globalException.Message#</div>
+															<div>#encodeForHtml( thisBundle.globalException.Message )#</div>
 															<div class="bg-light p-2 ">
 																<cfif arrayLen( thisBundle.globalException.TagContext ) && structKeyExists( thisBundle.globalException.TagContext[ 1 ], "codePrintHTML" )>
 																	<code>#thisBundle.globalException.TagContext[ 1 ].codePrintHTML#</code>
@@ -560,7 +560,7 @@ code {
 									</cfif>
 
 									<!--- If it's an error, show the last snapshot --->
-									<cfif !isNull( local.thisSpec.error.tagContext ) >
+									<cfif !isNull( local.thisSpec.error.tagContext ) && arrayLen( local.thisSpec.error.tagContext ) >
 										<cfset var thisContext = local.thisSpec.error.tagContext[ 1 ]>
 										<!--- Template --->
 										<div style="margin-bottom: 5px">
@@ -606,10 +606,10 @@ code {
 										<!--- StackTrace --->
 										<h4>Failure StackTrace</h4>
 										<cfif len( local.thisSpec.failStackTrace )>
-											<pre>#local.thisSpec.failStackTrace#</pre>
+											<pre>#encodeForHTML( local.thisSpec.failStackTrace )#</pre>
 										</cfif>
 										<cfif !isNull( local.thisSpec.error.stackTrace )>
-											<pre>#local.thisSpec.error.stackTrace#</pre>
+											<pre>#encodeForHTML( local.thisSpec.error.stackTrace )#</pre>
 										</cfif>
 
 										<!--- Extended Info --->

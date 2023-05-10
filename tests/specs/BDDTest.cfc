@@ -22,6 +22,7 @@ component extends="testbox.system.BaseSpec" {
 		/**
 		 * describe() starts a suite group of spec tests.
 		 * Arguments:
+		 *
 		 * @title    The title of the suite, Usually how you want to name the desired behavior
 		 * @body     A closure that will resemble the tests to execute.
 		 * @labels   The list or array of labels this suite group belongs to
@@ -61,6 +62,7 @@ component extends="testbox.system.BaseSpec" {
 				/**
 				 * it() describes a spec to test. Usually the title is prefixed with the suite name to create an expression.
 				 * Arguments:
+				 *
 				 * @title  The title of the spec
 				 * @spec   A closure that represents the test to execute
 				 * @labels The list or array of labels this spec belongs to
@@ -276,6 +278,16 @@ component extends="testbox.system.BaseSpec" {
 			} );
 		} );
 
+		// skip() by inline function call
+		describe(
+			title = "A suite that gets skipped inline via skip()",
+			body  = function(){
+				it( "should be skipped", function(){
+					skip();
+				} );
+			}
+		);
+
 		// Skip by env suite
 		describe(
 			title = "A Lucee only suite",
@@ -379,6 +391,14 @@ component extends="testbox.system.BaseSpec" {
 				expect( function(){
 					throw( type = "DifferentException" );
 				} ).notToThrow( "FooException" );
+			} );
+			it( "will fail when no regex provided if any exception occurs", function(){
+				// Exception Inception!
+				expect( function(){
+					expect( function(){
+						throw( type = "AnyException" );
+					} ).notToThrow();
+				} ).toThrow( "TestBox.AssertionFailed" );
 			} );
 		} );
 	}

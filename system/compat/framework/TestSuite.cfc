@@ -43,6 +43,7 @@ component accessors="true" {
 
 	/**
 	 * Run a test remotely like MXUnit
+	 *
 	 * @testMethod.hint A list or array of test names that are the ones that will be executed ONLY!
 	 * @debug.hint      Show debug output on the reports or not
 	 * @output.hint     The type of reporter to run the test with

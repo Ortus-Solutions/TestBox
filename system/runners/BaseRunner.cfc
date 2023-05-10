@@ -10,6 +10,7 @@ component {
 
 	/**
 	 * Checks if the incoming labels are good for running
+	 *
 	 * @incomingLabels The incoming labels to test against this runner's labels.
 	 * @testResults    The testing results object
 	 */
@@ -185,6 +186,7 @@ component {
 
 	/**
 	 * Checks if we can run the test bundle due to using testBundles arguments or incoming URL filters.
+	 *
 	 * @suite       The suite definition
 	 * @testResults The testing results object
 	 */
@@ -193,11 +195,14 @@ component {
 		required testResults,
 		required targetMD
 	){
-		var testBundles = arguments.testResults.getTestBundles();
+		var pathPatternMatcher = new testbox.system.modules.globber.models.PathPatternMatcher();
+		var testBundles        = arguments.testResults.getTestBundles();
 
-		// verify we have some?
 		if ( arrayLen( testBundles ) ) {
-			return ( arrayFindNoCase( testBundles, arguments.bundlePath ) ? true : false );
+			return pathPatternMatcher.matchPatterns(
+				testBundles.map( ( bundle ) => replace( bundle, ".", "/", "all" ) ),
+				replace( arguments.bundlePath, ".", "/", "all" )
+			);
 		}
 
 		// we can run it.
@@ -206,6 +211,7 @@ component {
 
 	/**
 	 * Validate the incoming method name is a valid TestBox test method name
+	 *
 	 * @methodName The method name to validate
 	 * @target     The target object
 	 */
@@ -220,6 +226,7 @@ component {
 
 	/**
 	 * Get metadata from a method
+	 *
 	 * @target       The target method
 	 * @name         The annotation to look for
 	 * @defaultValue The default value to return if not found

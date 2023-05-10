@@ -7,6 +7,7 @@ component{
 	this.name = "A TestBox Runner Suite " & hash( getCurrentTemplatePath() );
 	// any other application.cfc stuff goes below:
 	this.sessionManagement = true;
+	this.enableNullSupport  = shouldEnableFullNullSupport();
 
 	// any mappings go here, we create one that points to the root called test.
 	this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() );
@@ -22,4 +23,11 @@ component{
 	public boolean function onRequestStart( String targetPage ){
 		return true;
 	}
+
+	private boolean function shouldEnableFullNullSupport() {
+		param value = url.keyExists( "FULL_NULL" );
+		var system = createObject( "java", "java.lang.System" );
+        var value = system.getEnv( "FULL_NULL" ) ?: false;
+        return !!value;
+    }
 }
