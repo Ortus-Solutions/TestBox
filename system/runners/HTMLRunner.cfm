@@ -17,6 +17,8 @@
 <cfparam name="url.coveragePathToCapture"			default="">
 <cfparam name="url.coverageWhitelist"				default="">
 <cfparam name="url.coverageBlacklist"				default="/testbox">
+<!--- Enable batched code coverage reporter, useful for large test bundles which require spreading over multiple testbox run commands. --->
+<cfparam name="url.isBatched"						default="false">
 
 <cfscript>
 // prepare for tests for bundles or directories
@@ -29,6 +31,7 @@ testbox = new testbox.system.TestBox(
 			pathToCapture 	: url.coveragePathToCapture,
 			whitelist     	: url.coverageWhitelist,
 			blacklist     	: url.coverageBlacklist,
+			isBatched		: url.isBatched,
 			sonarQube     	: {
 				XMLOutputPath : url.coverageSonarQubeXMLOutputPath
 			},

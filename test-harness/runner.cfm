@@ -17,6 +17,8 @@
 <cfparam name="url.coverageBlacklist"				default="/testbox,/coldbox,/tests,/modules,Application.cfc,/index.cfm">
 <!---<cfparam name="url.coverageBrowserOutputDir"		default="#expandPath( '/tests/results/coverageReport' )#">--->
 <!---<cfparam name="url.coverageSonarQubeXMLOutputPath"	default="#expandPath( '/tests/results/SonarQubeCoverage.xml' )#">--->
+<!--- Enable batched code coverage reporter, useful for large test bundles which require spreading over multiple testbox run commands. --->
+<!--- <cfparam name="url.isBatched"						default="false"> --->
 
 <!--- Include the TestBox HTML Runner --->
 <cfinclude template="/testbox/system/runners/HTMLRunner.cfm" >
