@@ -411,7 +411,6 @@ component {
 		required string key,
 		message = ""
 	){
-
 		arguments.target = normalizeToStruct( arguments.target );
 
 		arguments.message = (
@@ -444,7 +443,7 @@ component {
 		required string key,
 		message = ""
 	){
-		arguments.target = normalizeToStruct( arguments.target );
+		arguments.target  = normalizeToStruct( arguments.target );
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The key [#arguments.key#] exists in the target object. Found keys are [#structKeyArray( arguments.target ).toString()#]"
 		);
@@ -478,7 +477,7 @@ component {
 		required string key,
 		message = ""
 	){
-		arguments.target = normalizeToStruct( arguments.target );
+		arguments.target  = normalizeToStruct( arguments.target );
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The key [#arguments.key#] does not exist anywhere in the target object."
 		);
@@ -501,7 +500,7 @@ component {
 		message = ""
 	){
 		arguments.target = normalizeToStruct( arguments.target );
-		var results = structFindKey( arguments.target, arguments.key );
+		var results      = structFindKey( arguments.target, arguments.key );
 		// check if not found?
 		if ( arrayLen( results ) EQ 0 ) {
 			return this;
@@ -1236,17 +1235,17 @@ component {
 	 * Normalize the target to a struct if possible.
 	 *
 	 * @target The target to normalize
+	 *
 	 * @throws InvalidTargetType - If we can normalize it to a struct
 	 */
 	private function normalizeToStruct( any target ){
-		if( isStruct( arguments.target ) ){
+		if ( isStruct( arguments.target ) ) {
 			return arguments.target;
 		}
-		if( isQuery( arguments.target ) ){
-			return getMetadata( arguments.target )
-				.reduce( (results,item) => {
-					results[ item.name ] = {}
-				}, {} );
+		if ( isQuery( arguments.target ) ) {
+			return getMetadata( arguments.target ).reduce( ( results, item ) => {
+				results[ item.name ] = {}
+			}, {} );
 		}
 		throw( "InvalidTargetType", "The target is not a struct or query" );
 	}
