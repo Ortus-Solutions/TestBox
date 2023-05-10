@@ -15,27 +15,47 @@ jobs:
       fail-fast: false
       matrix:
         cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
-        javaVersion: [ "openjdk8", "openjdk11" ]
+        jdkVersion: [ "openjdk8", "openjdk11" ]
+        experimental: [false]
+        include:
+          - cfengine: "lucee@6"
+            commandbox_version: "6.0.0-alpha"
+            jdkVersion: "11"
+            experimental: true
+          - cfengine: "lucee@6"
+            commandbox_version: "6.0.0-alpha"
+            jdkVersion: "17"
+            experimental: true
+          - cfengine: "adobe@2023"
+            commandbox_version: "6.0.0-alpha"
+            jdkVersion: "11"
+            experimental: true
+          - cfengine: "adobe@2023"
+            commandbox_version: "6.0.0-alpha"
+            jdkVersion: "17"
+            experimental: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3.2.0
 
       - name: Setup Java
-        uses: actions/setup-java@v3.9.0
+        uses: actions/setup-java@v3
         with:
           distribution: "temurin"
-          java-version: "11"
+          java-version: ${{ matrix.jdkVersion }}
 
       - name: Setup CommandBox
         uses: Ortus-Solutions/setup-commandbox@v2.0.1
+        with:
+          version: ${{ matrix.commandbox_version }}
 
       - name: Install Dependencies
         run: |
           box install --production
 
-      - name: Start ${{ matrix.cfengine }}/${{ matrix.javaVersion }} Server
+      - name: Start ${{ matrix.cfengine }}/${{ matrix.jdkVersion }} Server
         run: |
-          box server start serverConfigFile="server-${{ matrix.cfengine }}.json" javaVersion=${{ matrix.javaVersion }} --noSaveSettings --debug
+          box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
 
       - name: Run Tests
         run: |
@@ -46,28 +66,15 @@ jobs:
         if: always()
         with:
           junit_files: tests/results/**/*.xml
-          check_name: "${{ matrix.cfengine }} Test Results"
+          check_name: "${{ matrix.cfengine }} ${{ matrix.jdkVersion }} Test Results"
 
       - name: Upload Test Results Artifacts
         if: always()
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3
         with:
-          name: testbox-test-results-${{ matrix.cfengine }}
+          name: testbox-test-results-${{ matrix.cfengine }}-${{ matrix.jdkVersion }}
           path: |
             tests/results/**/*
-
-      - name: Slack Notification
-        # Only on failures and NOT in pull requests
-        if: ${{ failure() && !startsWith( 'pull_request', github.event_name ) }}
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_CHANNEL: testbox
-          SLACK_COLOR: ${{ job.status }} # or a specific color like 'green' or '#ff00ff'
-          SLACK_ICON_EMOJI: ":bell:"
-          SLACK_MESSAGE: 'TestBox tests failed :cry:, check them out here: https://github.com/Ortus-Solutions/testbox/actions'
-          SLACK_TITLE: TestBox Tests For ${{ matrix.cfengine }} failed
-          SLACK_USERNAME: CI
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Failure Debugging Info
         if: ${{ failure() }}
@@ -78,7 +85,20 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v3.1.1
         with:
-          name: Failure Debugging Info - ${{ matrix.cfengine }}
+          name: Failure Debugging Info - ${{ matrix.cfengine }} - ${{ matrix.jdkVersion }}
           path: |
             .engine/**/logs/*
             .engine/**/WEB-INF/cfusion/logs/*
+
+      - name: Slack Notification
+        # Only on failures and NOT in pull requests
+        if: ${{ failure() && !startsWith( 'pull_request', github.event_name ) }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: testbox
+          SLACK_COLOR: ${{ job.status }} # or a specific color like 'green' or '#ff00ff'
+          SLACK_ICON_EMOJI: ":bell:"
+          SLACK_MESSAGE: 'TestBox tests failed :cry:, check them out here: https://github.com/Ortus-Solutions/testbox/actions'
+          SLACK_TITLE: TestBox Tests For ${{ matrix.cfengine }}-${{ matrix.jdkVersion }} failed
+          SLACK_USERNAME: CI
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}

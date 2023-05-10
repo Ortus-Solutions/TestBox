@@ -12,7 +12,7 @@
         "cfengine":"lucee@5",
         "serverHomeDirectory":".engine/lucee5"
     },
-	"cfconfig": {
-		"file" : ".cfconfig.json"
-	}
+    "cfconfig":{
+        "file":".cfconfig.json"
+    }
 }

@@ -16,9 +16,9 @@
 			"problemMatcher": []
 		},
 		{
-			"label": "Run CommandBox Task",
+			"label": "Run TestBox Bundle",
 			"type": "shell",
-			"command": "box testbox run bundles=${relativeFile}",
+			"command": "box testbox run bundles=${relativeFile} recurse=false",
 			"group": {
 				"kind": "build",
 				"isDefault": true
