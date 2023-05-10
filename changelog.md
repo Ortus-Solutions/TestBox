@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- [TESTBOX-371](https://ortussolutions.atlassian.net/browse/TESTBOX-371) Add CoverageReporter for batching code coverage reports
 - [TESTBOX-137](https://ortussolutions.atlassian.net/browse/TESTBOX-137) Ability to spy on existing methods: $spy\(\)
 - [TESTBOX-342](https://ortussolutions.atlassian.net/browse/TESTBOX-342) Add development dependencies to box.json
 - [TESTBOX-344](https://ortussolutions.atlassian.net/browse/TESTBOX-344) Performance optimizations for BaseSpec creations by lazy loading external objects
