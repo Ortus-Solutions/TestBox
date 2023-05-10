@@ -1,7 +1,6 @@
 /**
  * Copyright Since 2005 Ortus Solutions, Corp
  * www.ortussolutions.com
- **************************************************************************************
  */
 component {
 
