@@ -57,7 +57,7 @@ jobs:
         if: env.SNAPSHOT == 'false'
         with:
           changelogPath: ./changelog.md
-          tag: v${{ env.VERSION }}
+          tag: v${{ env.TESTBOX_VERSION }}
 
       - name: Build TestBox for ${{ env.BRANCH }} v${{ env.TESTBOX_VERSION }}
         run: |
@@ -72,16 +72,16 @@ jobs:
         with:
           author_name: Github Actions
           author_email: info@ortussolutions.com
-          message: 'Finalized changelog for v${{ env.VERSION }}'
+          message: 'Finalized changelog for v${{ env.TESTBOX_VERSION }}'
           add: changelog.md
 
       - name: Tag Version
         uses: rickstaa/action-create-tag@v1.6.1
         if: env.SNAPSHOT == 'false'
         with:
-          tag: "v${{ env.VERSION }}"
+          tag: "v${{ env.TESTBOX_VERSION }}"
           force_push_tag: true
-          message: "Latest Release v${{ env.VERSION }}"
+          message: "Latest Release v${{ env.TESTBOX_VERSION }}"
 
       - name: Upload Build Artifacts
         if: success()
@@ -125,10 +125,10 @@ jobs:
         continue-on-error: true
         if: env.SNAPSHOT == 'false'
         with:
-          title: ${{ env.VERSION }}
+          title: ${{ env.TESTBOX_VERSION }}
           changelog: changelog.md
           token: ${{ secrets.GITHUB_TOKEN }}
-          ref: refs/tags/v${{ env.VERSION }}
+          ref: refs/tags/v${{ env.TESTBOX_VERSION }}
 
       - name: Inform Slack
         if: ${{ always() }}
