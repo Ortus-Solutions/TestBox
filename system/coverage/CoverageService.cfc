@@ -38,13 +38,14 @@ component accessors="true" {
 	 */
 	function init( coverageOptions = {} ){
 		// Default options
-		variables.coverageOptions = setDefaultOptions( coverageOptions );
-		variables.coverageEnabled = coverageOptions.enabled;
+		variables.coverageOptions = setDefaultOptions( arguments.coverageOptions );
+		variables.coverageEnabled = variables.coverageOptions.enabled;
 
 		// If disabled in config, go no further
-		if ( coverageEnabled ) {
-			variables.coverageGenerator = new data.CoverageGenerator();
+		if ( getCoverageEnabled() ) {
+			variables.coverageGenerator = loadCoverageGenerator();
 			variables.coverageEnabled   = coverageGenerator.configure();
+			variables.coverageReporter  = loadCoverageReporter();
 		}
 
 		return this;
@@ -54,7 +55,7 @@ component accessors="true" {
 	 * Reset system for a new test.  Turns on line coverage and resets in-memory statistics
 	 */
 	CoverageService function beginCapture(){
-		if ( coverageEnabled ) {
+		if ( getCoverageEnabled() ) {
 			coverageGenerator.beginCapture();
 		}
 
@@ -67,7 +68,7 @@ component accessors="true" {
 	 * @leaveLineProfilingOn Set to true to leave line profiling enabled on the server
 	 */
 	CoverageService function endCapture( leaveLineProfilingOn = false ){
-		if ( coverageEnabled ) {
+		if ( getCoverageEnabled() ) {
 			coverageGenerator.endCapture( leaveLineProfilingOn );
 		}
 
@@ -90,6 +91,10 @@ component accessors="true" {
 
 			// SonarQube Integration
 			var sonarQubeResults = processSonarQube( qryCoverageData, getCoverageOptions() );
+
+			if ( getCoverageOptions().isBatched ) {
+				qryCoverageData = variables.coverageReporter.processCoverageReport( qryCoverageData );
+			}
 
 			// Generate Stats
 			var stats = processStats( qryCoverageData );
@@ -185,6 +190,9 @@ component accessors="true" {
 		}
 		if ( isNull( opts.blacklist ) ) {
 			opts.blacklist = "";
+		}
+		if ( isNull( opts.isBatched ) ) {
+			opts.isBatched = false;
 		}
 
 		// If no path provided to capture
@@ -287,6 +295,21 @@ component accessors="true" {
 		} else {
 			return path.replace( "\", "/", "all" ).replace( "//", "/", "all" );
 		}
+	}
+
+
+	/**
+	 * Acquire a CoverageGenerator component which does the hard work.
+	 */
+	private component function loadCoverageGenerator(){
+		return new data.CoverageGenerator();
+	}
+
+	/**
+	 * Acquire a CoverageGenerator component which does the hard work.
+	 */
+	private component function loadCoverageReporter(){
+		return new CoverageReporter( { outputDir : getCoverageOptions().browser.outputDir } );
 	}
 
 }
