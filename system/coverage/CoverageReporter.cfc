@@ -59,8 +59,8 @@ component accessors="true" {
 	 */
 	public any function processCoverageReport( required any coverageQuery ){
 		return !getReportOptions().isBatched
-			? arguments.coverageQuery
-			: aggregateCoverageData( arguments.coverageQuery );
+		 ? arguments.coverageQuery
+		 : aggregateCoverageData( arguments.coverageQuery );
 	}
 
 	/**
@@ -79,11 +79,11 @@ component accessors="true" {
 			"varchar,varchar,varchar,integer,integer,integer,decimal,object"
 		);
 		if ( fileExists( getCoverageReportFile() ) ) {
-			var currentCoverage = arguments.coverageQuery;
-			var previousCoverage   = readCoverageFromReportFile();
+			var currentCoverage  = arguments.coverageQuery;
+			var previousCoverage = readCoverageFromReportFile();
 
-			currentCoverage.each(function( row ){
-				var filepath = row[ "relativeFilePath" ];
+			currentCoverage.each( function( row ){
+				var filepath    = row[ "relativeFilePath" ];
 				var oldRowIndex = getRowIndexWithFile( previousCoverage, filepath );
 				if ( oldRowIndex > 0 ) {
 					var amended           = queryGetRow( previousCoverage, oldRowIndex );
@@ -112,15 +112,15 @@ component accessors="true" {
 					queryAddRow( totalCoverage, 1 );
 					amended.each( function( key, value ){
 						totalCoverage[ key ][ totalCoverage.recordCount ] = value;
-					});
+					} );
 				} else {
 					// Because Lucee rots. See LDEV-4269.
 					queryAddRow( totalCoverage, 1 );
 					row.each( function( key, value ){
 						totalCoverage[ key ][ totalCoverage.recordCount ] = value;
-					});
+					} );
 				}
-			});
+			} );
 
 			/**
 			 * After combining the previous coverage report with the current coverage query data,
@@ -149,26 +149,19 @@ component accessors="true" {
 	}
 
 	private void function writeJSONReport( required Query coverageQuery ){
-		fileWrite(
-			getCoverageReportFile(),
-			serializeJSON(
-				arguments.coverageQuery,
-				false,
-				false
-			)
-		);
+		fileWrite( getCoverageReportFile(), serializeJSON( arguments.coverageQuery, false, false ) );
 	}
 
 	/**
 	 * Determine whether the provided filepath/filename is in the query.
-	 * 
-	 * @returns the row index
+	 *
+	 * @return the row index
 	 */
 	private numeric function getRowIndexWithFile( required query coverage, required string filepath ){
 		var index = 0;
-		var i = 1;
-		for( var row in arguments.coverage ){
-			if ( row[ "relativeFilePath" ] == arguments.filepath ){
+		var i     = 1;
+		for ( var row in arguments.coverage ) {
+			if ( row[ "relativeFilePath" ] == arguments.filepath ) {
 				index = i;
 				break;
 			}

@@ -20,7 +20,9 @@ component extends="testbox.system.BaseSpec" {
 
 					model.processCoverageReport( queryNew( "filePath,numCoveredLines,lineData" ) );
 
-					expect( model.$never( "aggregateCoverageData" ) ).toBeTrue( "shouldn't execute the aggregateCoverageData() method" );
+					expect( model.$never( "aggregateCoverageData" ) ).toBeTrue(
+						"shouldn't execute the aggregateCoverageData() method"
+					);
 				} );
 			} );
 			describe( "batching enabled", function(){
@@ -46,7 +48,9 @@ component extends="testbox.system.BaseSpec" {
 
 					// test initial report run
 					model.processCoverageReport( getDummyCodeCoverage() );
-					expect( fileExists( model.getCoverageReportFile() ) ).toBeTrue( "should create .json report file" );
+					expect( fileExists( model.getCoverageReportFile() ) ).toBeTrue(
+						"should create .json report file"
+					);
 
 					var initialResult = fileRead( model.getCoverageReportFile() );
 					expect( initialResult ).toBeJSON();
@@ -69,31 +73,28 @@ component extends="testbox.system.BaseSpec" {
 					var dummyData = getDummyCodeCoverage();
 
 					// fake some code coverage
-					var rowIndex = 1// get row index
-					dummyData[ "lineData" ][ rowIndex ] = {
-						"1" : 1,
-						"2" : "0"
-					};
+					var rowIndex                        = 1 // get row index
+					dummyData[ "lineData" ][ rowIndex ] = { "1" : 1, "2" : "0" };
 
 					// save to report JSON file
 					model.processCoverageReport( dummyData );
 
 					// now fake the ABSENCE of code coverage
-					dummyData[ "lineData" ][ rowIndex ] = {
-						"1" : 0,
-						"2" : "1"
-					};
-					var resultQry = model.processCoverageReport( dummyData );
-					var lineCoverage = resultQry.filter( function( row ){
-						return row[ "relativeFilePath" ] == "CoverageReporterTest.cfc";
-					}).reduce( function( agg, row ){
-						agg.append( row );
-						return agg;
-					}, []).first();
+					dummyData[ "lineData" ][ rowIndex ] = { "1" : 0, "2" : "1" };
+					var resultQry                       = model.processCoverageReport( dummyData );
+					var lineCoverage                    = resultQry
+						.filter( function( row ){
+							return row[ "relativeFilePath" ] == "CoverageReporterTest.cfc";
+						} )
+						.reduce( function( agg, row ){
+							agg.append( row );
+							return agg;
+						}, [] )
+						.first();
 
 					debug( lineCoverage );
 
-					var firstLineCoverage = lineCoverage.lineData[ 1 ];
+					var firstLineCoverage  = lineCoverage.lineData[ 1 ];
 					var secondLineCoverage = lineCoverage.lineData[ 2 ];
 
 					expect( firstLineCoverage ).toBe( 1, "should retain knowledge of previously covered code" );

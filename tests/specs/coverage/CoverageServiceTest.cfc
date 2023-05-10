@@ -14,19 +14,23 @@ component extends="testbox.system.BaseSpec" {
 
 				expect( model.getCoverageOptions() )
 					.toHaveKey( "blacklist" )
-					.toHaveKey( "whitelist")
+					.toHaveKey( "whitelist" )
 					.toHaveKey( "browser" )
 					.toHaveKey( "sonarqube" );
 
-				if ( isFRLoaded() ){
-					expect( model.getCoverageEnabled() ).toBeTrue( "enables coverage by default if Fusion Reactor loaded" );
+				if ( isFRLoaded() ) {
+					expect( model.getCoverageEnabled() ).toBeTrue(
+						"enables coverage by default if Fusion Reactor loaded"
+					);
 				} else {
-					expect( model.getCoverageEnabled() ).toBeFalse( "manually DISABLES coverage if Fusion Reactor not loaded" );
+					expect( model.getCoverageEnabled() ).toBeFalse(
+						"manually DISABLES coverage if Fusion Reactor not loaded"
+					);
 				}
 			} );
-			describe( "un-enabled coverage", function() {
-				beforeEach(function() {
-					if ( structKeyExists( variables, "model" ) ){
+			describe( "un-enabled coverage", function(){
+				beforeEach( function(){
+					if ( structKeyExists( variables, "model" ) ) {
 						structDelete( variables, "model" );
 					}
 					variables.model         = prepareMock( new system.coverage.CoverageService( { "enabled" : false } ) );
@@ -74,4 +78,5 @@ component extends="testbox.system.BaseSpec" {
 			return false;
 		}
 	}
+
 }
