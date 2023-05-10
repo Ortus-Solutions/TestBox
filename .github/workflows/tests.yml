@@ -14,6 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        commandbox_version: [ "5.8.0" ]
         cfengine: [ "lucee@5", "adobe@2018", "adobe@2021" ]
         jdkVersion: [ "8", "11" ]
         experimental: [false]
