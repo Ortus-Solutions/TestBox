@@ -37,3 +37,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [TESTBOX-344](https://ortussolutions.atlassian.net/browse/TESTBOX-344) Performance optimizations for BaseSpec creations by lazy loading external objects
 - [TESTBOX-345](https://ortussolutions.atlassian.net/browse/TESTBOX-345) add a skip\(\[message\]\) like fail\(\) for skipping from inside a spec
 - [TESTBOX-365](https://ortussolutions.atlassian.net/browse/TESTBOX-365) New build process using CommandBox
+- [TESTBOX-372](https://ortussolutions.atlassian.net/browse/TESTBOX-372) Adobe 2023 and Lucee 6 Support
