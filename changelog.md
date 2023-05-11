@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Small regresion on [TESTBOX-370](https://ortussolutions.atlassian.net/browse/TESTBOX-370) `toHaveKey` works on queries in Lucee but not ColdFusion
+
 ## [5.0.0] - 2023-05-10
 
 ### Fixed
