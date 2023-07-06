@@ -102,7 +102,6 @@ You can support ColdBox and all of our Open Source initiatives at Ortus Solution
 
 Thank you to all the people who have already contributed to ColdBox! We :heart: :heart: :heart: love you!
 
-
 <a href = "https://github.com/ortus-solutions/testbox/graphs/contributors">
   <img src = "https://contrib.rocks/image?repo=ortus-solutions/testbox"/>
 </a>
