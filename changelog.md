@@ -9,7 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [] - 2023-05-10
+### Added
+
+- Update to `cbstreams` 2.x series for compat purposes.
+
+### Fixed
+
+- Small regresion on [TESTBOX-370](https://ortussolutions.atlassian.net/browse/TESTBOX-370) `toHaveKey` works on queries in Lucee but not ColdFusion
+
+## [5.0.0] - 2023-05-10
 
 ### Fixed
 
@@ -40,6 +48,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [TESTBOX-345](https://ortussolutions.atlassian.net/browse/TESTBOX-345) add a skip(\[message]) like fail() for skipping from inside a spec
 - [TESTBOX-365](https://ortussolutions.atlassian.net/browse/TESTBOX-365) New build process using CommandBox
 - [TESTBOX-372](https://ortussolutions.atlassian.net/browse/TESTBOX-372) Adobe 2023 and Lucee 6 Support
+
+[Unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v...HEAD
+
+[]: https://github.com/Ortus-Solutions/TestBox/compare/9f820840b1012dd89b79c62494333d4117bc1a7c...v
 
 [Unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v...HEAD
 

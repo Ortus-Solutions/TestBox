@@ -9,7 +9,7 @@
         }
     },
     "app":{
-        "cfengine":"lucee@6.0.0-BETA+346",
+        "cfengine":"lucee@6.0.0-SNAPSHOT",
         "serverHomeDirectory":".engine/lucee6"
     },
     "cfconfig":{

@@ -1244,7 +1244,8 @@ component {
 		}
 		if ( isQuery( arguments.target ) ) {
 			return getMetadata( arguments.target ).reduce( ( results, item ) => {
-				results[ item.name ] = {}
+				results[ item.name ] = {};
+				return results;
 			}, {} );
 		}
 		throw( "InvalidTargetType", "The target is not a struct or query" );
