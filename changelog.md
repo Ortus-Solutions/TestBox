@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Update to `cbstreams` 2.x series for compat purposes.
+
 ### Fixed
 
 - Small regresion on [TESTBOX-370](https://ortussolutions.atlassian.net/browse/TESTBOX-370) `toHaveKey` works on queries in Lucee but not ColdFusion
