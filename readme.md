@@ -82,11 +82,11 @@ directory you installed TestBox and create the mapping `/testbox` that points to
 
 You can also use [CommandBox](https://www.ortussolutions.com/products/commandbox) to install and leverage TestBox for commandline executions, test generations, watchers and much more:
 
-**Stable Release**
+### Stable Release
 
 `box install testbox`
 
-**Bleeding Edge Release**
+### Bleeding Edge Release
 
 `box install testbox@be`
 
