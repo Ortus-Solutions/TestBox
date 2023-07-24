@@ -50,32 +50,48 @@ component accessors="true" {
 		// TestBox version
 		variables.version  = "@build.version@+@build.number@";
 		variables.codename = "";
-		// init util
+		// Utility and mappings
 		variables.utility  = new testbox.system.util.Util();
+		loadModuleMappings();
+		// Coverage Service
 		if ( !structKeyExists( arguments.options, "coverage" ) ) {
 			arguments.options.coverage = {};
 		}
 		variables.coverageService = new testbox.system.coverage.CoverageService( arguments.options.coverage );
-
 		// reporter
-		variables.reporter = arguments.reporter;
+		variables.reporter        = arguments.reporter;
 		// options
-		variables.options  = arguments.options;
+		variables.options         = arguments.options;
 		// Empty bundles to start
-		variables.bundles  = [];
+		variables.bundles         = [];
 
 		// inflate labels
 		inflateLabels( arguments.labels );
 		// inflate excludes
 		inflateExcludes( arguments.excludes );
-		// add bundles
+		// Add bundles given (if any)
 		addBundles( arguments.bundles );
 		// Add directory given (if any)
 		addDirectory( arguments.directory );
-		// Add directory given (if any)
+		// Add directories given (if any)
 		addDirectories( arguments.directories );
 
 		return this;
+	}
+
+	/**
+	 * Load the module mappings for TestBox
+	 */
+	function loadModuleMappings(){
+		var testBoxPath = expandPath( "/testbox" );
+		var modulesPath = testBoxPath & "/system/modules";
+		var mappings    = directoryList( modulesPath, true, "path", "ModuleConfig.cfc" )
+			.map( ( item ) => item.replaceNoCase( "ModuleConfig.cfc", "" ) )
+			.reduce( ( results, item ) => {
+				results[ listLast( item, "/" ) ] = item;
+				return results;
+			}, {} );
+		variables.utility.addMapping( mappings: mappings );
 	}
 
 	/**
@@ -116,9 +132,9 @@ component accessors="true" {
 	}
 
 	/**
-	 * Constructor
+	 * Add bundles to the TestBox `bundles` target to test
 	 *
-	 * @directory A directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	 * @bundles The path, list of paths or array of paths of the spec bundle CFCs to run and test
 	 */
 	any function addBundles( required any bundles ){
 		if ( isSimpleValue( arguments.bundles ) ) {
