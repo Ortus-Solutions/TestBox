@@ -5,4 +5,7 @@
  * This is the base Application.cfc for the TestBox testing suite
  * Whenever you are running tests from within TestBox Core
  */
-component output="false"{}
+component output="false" {
+
+
+}
