@@ -83,6 +83,10 @@ component extends="testbox.system.BaseSpec" {
 					expect( 0 ).notToSatisfy( function( num ){
 						return arguments.num > 0;
 					} );
+
+					expect( this ).toSatisfy( function( target ){
+						return isObject( arguments.target );
+					} );
 				} );
 
 				it( "can validate json", function(){

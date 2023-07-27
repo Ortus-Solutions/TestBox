@@ -619,14 +619,16 @@ component accessors="true" {
 	}
 
 	/**
-	 * Assert that the actual value passes a given truth test (function/closure)
+	 * Assert that the actual value passes a given truth test (function/closure/lambda)
 	 *
 	 * @target  The target truth test function/closure
 	 * @message The message to send in the failure
 	 */
 	function toSatisfy( required any target, message = "" ){
+		var actualMessage = isSimpleValue( this.actual ) ? this.actual : "The actual (complex) value";
+
 		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The actual [#this.actual#] does not pass the truth test"
+			len( arguments.message ) ? arguments.message : "The actual [#actualMessage#] does not pass the truth test"
 		);
 
 		var isPassed = arguments.target( this.actual );
