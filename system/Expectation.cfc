@@ -449,6 +449,26 @@ component accessors="true" {
 	 * @needle  The substring to find in a string or the value to find in an array
 	 * @message The message to send in the failure
 	 */
+	function toContain( required any needle, message = "" ){
+		return toInclude( argumentCollection = arguments );
+	}
+
+	/**
+	 * Assert that the given "needle" argument exists in the incoming string or array with case-sensitivity
+	 *
+	 * @needle  The substring to find in a string or the value to find in an array
+	 * @message The message to send in the failure
+	 */
+	function toContainWithCase( required any needle, message = "" ){
+		return toIncludeWithCase( argumentCollection = arguments );
+	}
+
+	/**
+	 * Assert that the given "needle" argument exists in the incoming string or array with no case-sensitivity
+	 *
+	 * @needle  The substring to find in a string or the value to find in an array
+	 * @message The message to send in the failure
+	 */
 	function toInclude( required any needle, message = "" ){
 		arguments.target = this.actual;
 		if ( this.isNot ) {
