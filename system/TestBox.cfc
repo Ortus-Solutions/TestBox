@@ -27,7 +27,7 @@ component accessors="true" {
 	property name="result";
 	// Code Coverage Service
 	property name="coverageService";
-	// TestBox Modules
+	// TestBox Modules Registry
 	property name="modules";
 
 	/**
@@ -54,8 +54,6 @@ component accessors="true" {
 		variables.codename = "";
 		// Utility and mappings
 		variables.utility  = new testbox.system.util.Util();
-		// Load TestBox Modules
-		loadTestBoxModules();
 		// Coverage Service
 		if ( !structKeyExists( arguments.options, "coverage" ) ) {
 			arguments.options.coverage = {};
@@ -78,6 +76,8 @@ component accessors="true" {
 		addDirectory( arguments.directory );
 		// Add directories given (if any)
 		addDirectories( arguments.directories );
+		// Load TestBox Modules
+		loadTestBoxModules();
 
 		return this;
 	}
@@ -132,6 +132,7 @@ component accessors="true" {
 			try{
 				config.moduleConfig.configure();
 				config.settings = config.moduleConfig.getPropertyMixin( "settings", "variables", {} );
+				config.active = true;
 				config.moduleConfig.onLoad();
 			} catch( any e ){
 				config.activationFailure = e;
@@ -141,6 +142,17 @@ component accessors="true" {
 
 		// register Global Mappings
 		variables.utility.addMapping( mappings: variables.modules.mappings );
+	}
+
+	/**
+	 * Get only the activated modules registry
+	 *
+	 * @return The struct of activated modules
+	 */
+	struct function getActiveModules(){
+		return variables.modules.registry.filter( ( moduleName, config ) => {
+			return config.active;
+		} );
 	}
 
 	/**
@@ -614,6 +626,12 @@ component accessors="true" {
 		if ( structKeyExists( arguments.callbacks, "onBundleStart" ) ) {
 			arguments.callbacks.onBundleStart( target, testResults );
 		}
+		// Module call backs
+		getActiveModules().each( ( moduleName, config ) => {
+			if( structKeyExists( config.moduleConfig, "onBundleStart" ) ){
+				config.moduleConfig.onBundleStart( target, testResults );
+			}
+		} );
 
 		try {
 			// Discover type?
@@ -647,6 +665,12 @@ component accessors="true" {
 		if ( structKeyExists( arguments.callbacks, "onBundleEnd" ) ) {
 			arguments.callbacks.onBundleEnd( target, testResults );
 		}
+		// Module call backs
+		getActiveModules().each( ( moduleName, config ) => {
+			if( structKeyExists( config.moduleConfig, "onBundleEnd" ) ){
+				config.moduleConfig.onBundleEnd( target, testResults );
+			}
+		} );
 
 		return this;
 	}

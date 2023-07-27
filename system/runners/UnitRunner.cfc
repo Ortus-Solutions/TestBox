@@ -92,6 +92,18 @@ component
 							thisSuite
 						);
 					}
+					// Module call backs
+					variables.testbox
+						.getActiveModules()
+						.each( ( moduleName, config ) => {
+							if ( structKeyExists( config.moduleConfig, "onSuiteStart" ) ) {
+								config.moduleConfig.onSuiteStart(
+									arguments.target,
+									arguments.testResults,
+									thisSuite
+								);
+							}
+						} );
 
 					// Execute Suite
 					testSuite(
@@ -110,6 +122,18 @@ component
 							thisSuite
 						);
 					}
+					// Module call backs
+					variables.testbox
+						.getActiveModules()
+						.each( ( moduleName, config ) => {
+							if ( structKeyExists( config.moduleConfig, "onSuiteEnd" ) ) {
+								config.moduleConfig.onSuiteEnd(
+									arguments.target,
+									arguments.testResults,
+									thisSuite
+								);
+							}
+						} );
 				}
 
 				// execute afterAll(), afterTests() for this bundle, no matter how many suites they have.
@@ -135,6 +159,18 @@ component
 				// The amount doesn't matter, nothing can run at this point, failure with before/after aspects that need fixing
 				bundleStats.totalError      = 7;
 				arguments.testResults.incrementStat( type = "error", count = bundleStats.totalError );
+				// Module call backs
+				variables.testbox
+					.getActiveModules()
+					.each( ( moduleName, config ) => {
+						if ( structKeyExists( config.moduleConfig, "onSuiteError" ) ) {
+							config.moduleConfig.onSuiteError(
+								arguments.target,
+								arguments.testResults,
+								thisSuite
+							);
+						}
+					} );
 			}
 		}
 
@@ -215,6 +251,20 @@ component
 							);
 						}
 
+						// Module call backs
+						variables.testbox
+							.getActiveModules()
+							.each( ( moduleName, config ) => {
+								if ( structKeyExists( config.moduleConfig, "onSpecStart" ) ) {
+									config.moduleConfig.onSpecStart(
+										thread.target,
+										thread.testResults,
+										thread.suiteStats,
+										attributes.thisSpec
+									);
+								}
+							} );
+
 						// execute the test within the context of the spec target due to lucee closure bug, move back once it is resolved.
 						thread.target.runTestMethod(
 							spec        = attributes.thisSpec,
@@ -232,6 +282,20 @@ component
 								attributes.thisSpec
 							);
 						}
+
+						// Module call backs
+						variables.testbox
+							.getActiveModules()
+							.each( ( moduleName, config ) => {
+								if ( structKeyExists( config.moduleConfig, "onSpecEnd" ) ) {
+									config.moduleConfig.onSpecEnd(
+										thread.target,
+										thread.testResults,
+										thread.suiteStats,
+										attributes.thisSpec
+									);
+								}
+							} );
 					}
 				} else {
 					// verify call backs
@@ -243,6 +307,19 @@ component
 							thisSpec
 						);
 					}
+					// Module call backs
+					variables.testbox
+						.getActiveModules()
+						.each( ( moduleName, config ) => {
+							if ( structKeyExists( config.moduleConfig, "onSpecStart" ) ) {
+								config.moduleConfig.onSpecStart(
+									arguments.target,
+									arguments.testResults,
+									thread.suiteStats,
+									thisSpec
+								);
+							}
+						} );
 
 					// execute the test within the context of the spec target due to lucee closure bug, move back once it is resolved.
 					thread.target.runTestMethod(
@@ -261,6 +338,19 @@ component
 							thisSpec
 						);
 					}
+					// Module call backs
+					variables.testbox
+						.getActiveModules()
+						.each( ( moduleName, config ) => {
+							if ( structKeyExists( config.moduleConfig, "onSpecEnd" ) ) {
+								config.moduleConfig.onSpecEnd(
+									arguments.target,
+									arguments.testResults,
+									thread.suiteStats,
+									thisSpec
+								);
+							}
+						} );
 				}
 			}
 			// end loop over specs
@@ -289,6 +379,19 @@ component
 			suiteStats.status = "Skipped";
 			arguments.bundleStats.totalSkipped += suiteStats.totalSpecs;
 			arguments.testResults.incrementStat( "skipped", suiteStats.totalSpecs );
+			// Module call backs
+			variables.testbox
+				.getActiveModules()
+				.each( ( moduleName, config ) => {
+					if ( structKeyExists( config.moduleConfig, "onSpecSkipped" ) ) {
+						config.moduleConfig.onSpecStart(
+							arguments.target,
+							arguments.testResults,
+							thread.suiteStats,
+							thisSpec
+						);
+					}
+				} );
 		}
 
 		// Finalize the suite stats
