@@ -95,16 +95,16 @@ component accessors="true" {
 			.reduce( ( results, path ) => {
 				var moduleName                 = listLast( path, "/" );
 				results.mappings[ moduleName ] = path;
-				results.registry[ moduleName ]  = {
-					"name"           : moduleName,
-					"settings"       : {},
-					"moduleConfig"   : "",
-					"path"           : path,
-					"loadTime"       : now(),
-					"active" : false,
+				results.registry[ moduleName ] = {
+					"name"              : moduleName,
+					"settings"          : {},
+					"moduleConfig"      : "",
+					"path"              : path,
+					"loadTime"          : now(),
+					"active"            : false,
 					"activationFailure" : {},
-					"mapping"        : moduleName,
-					"invocationPath" : "testbox" & path
+					"mapping"           : moduleName,
+					"invocationPath"    : "testbox" & path
 						.replaceNoCase( testBoxPath, "" )
 						.reReplace( "[\\\/]", ".", "all" )
 						.reReplace( "\.$", "", "all" )
@@ -129,13 +129,16 @@ component accessors="true" {
 				.injectPropertyMixin( "getSystemProperty", getEnv().getSystemProperty )
 				.injectPropertyMixin( "getEnv", getEnv().getEnv );
 			// Activate it
-			try{
+			try {
 				config.moduleConfig.configure();
 				config.settings = config.moduleConfig.getPropertyMixin( "settings", "variables", {} );
 				config.moduleConfig.onLoad();
-			} catch( any e ){
+			} catch ( any e ) {
 				config.activationFailure = e;
-				writeDump( var="**** Error activating (#moduleName#) TestBox Module: #e.message & e.detail#", output="console" );
+				writeDump(
+					var    = "**** Error activating (#moduleName#) TestBox Module: #e.message & e.detail#",
+					output = "console"
+				);
 			}
 		} );
 
