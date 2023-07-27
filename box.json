@@ -58,10 +58,10 @@
         "start:lucee":"server start serverConfigFile=server-lucee@5.json",
         "start:2018":"server start serverConfigFile=server-adobe@2018.json",
         "start:2021":"server start serverConfigFile=server-adobe@2021.json",
-		"start:2023":"server start serverConfigFile=server-adobe@2023.json",
+        "start:2023":"server start serverConfigFile=server-adobe@2023.json",
         "log:lucee":"server log testbox-lucee@5 --follow",
         "log:2018":"server log testbox-adobe@2018 --follow",
         "log:2021":"server log testbox-adobe@2021 --follow",
-		"log:2023":"server log testbox-adobe@2023 --follow"
+        "log:2023":"server log testbox-adobe@2023 --follow"
     }
 }

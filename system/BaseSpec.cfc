@@ -1502,6 +1502,19 @@ component {
 	}
 
 	/**
+	 * Get the TestBox Env  object
+	 *
+	 * @return testbox.system.util.Env
+	 */
+	function getEnv(){
+		// Lazy Load it
+		if ( isNull( variables.$env ) ) {
+			variables.$env = new testbox.system.util.Env();
+		}
+		return variables.$env;
+	}
+
+	/**
 	 * Get a reference to the MockBox Engine
 	 *
 	 * @generationPath The path to generate the mocks if passed, else uses default location.

@@ -27,6 +27,8 @@ component accessors="true" {
 	property name="result";
 	// Code Coverage Service
 	property name="coverageService";
+	// TestBox Modules
+	property name="modules";
 
 	/**
 	 * Constructor
@@ -52,7 +54,8 @@ component accessors="true" {
 		variables.codename = "";
 		// Utility and mappings
 		variables.utility  = new testbox.system.util.Util();
-		loadModuleMappings();
+		// Load TestBox Modules
+		loadTestBoxModules();
 		// Coverage Service
 		if ( !structKeyExists( arguments.options, "coverage" ) ) {
 			arguments.options.coverage = {};
@@ -80,22 +83,81 @@ component accessors="true" {
 	}
 
 	/**
-	 * Load the module mappings for TestBox
+	 * Load the TestBox Modules
 	 */
-	function loadModuleMappings(){
-		var testBoxPath = expandPath( "/testbox" );
-		var modulesPath = testBoxPath & "/system/modules";
-		var mappings    = directoryList( modulesPath, true, "path", "ModuleConfig.cfc" )
+	function loadTestBoxModules(){
+		var testBoxPath   = expandPath( "/testbox" );
+		var modulesPath   = testBoxPath & "/system/modules";
+		// Register Modules
+		variables.modules = directoryList( modulesPath, true, "path", "ModuleConfig.cfc" )
 			.map( ( item ) => item.replaceNoCase( "ModuleConfig.cfc", "" ) )
-			.reduce( ( results, item ) => {
-				results[ listLast( item, "/" ) ] = item;
+			// Create mappings and module registrations
+			.reduce( ( results, path ) => {
+				var moduleName                 = listLast( path, "/" );
+				results.mappings[ moduleName ] = path;
+				results.registry[ moduleName ]  = {
+					"name"           : moduleName,
+					"settings"       : {},
+					"moduleConfig"   : "",
+					"path"           : path,
+					"loadTime"       : now(),
+					"active" : false,
+					"activationFailure" : {},
+					"mapping"        : moduleName,
+					"invocationPath" : "testbox" & path
+						.replaceNoCase( testBoxPath, "" )
+						.reReplace( "[\\\/]", ".", "all" )
+						.reReplace( "\.$", "", "all" )
+				};
 				return results;
-			}, {} );
-		variables.utility.addMapping( mappings: mappings );
+			}, { "mappings" : {}, "registry" : structNew( "ordered" ) } );
+
+		// Activate Modules
+		variables.modules.registry.each( ( moduleName, config ) => {
+			// Create and Decorate ModuleConfig
+			config.moduleConfig = variables.utility
+				.getMixerUtil()
+				.start( createObject( "component", config.invocationPath & ".ModuleConfig" ) );
+			// Inject properties
+			config.moduleConfig
+				.injectPropertyMixin( "testbox", this )
+				.injectPropertyMixin( "testboxVersion", variables.version )
+				.injectPropertyMixin( "moduleMapping", config.invocationPath )
+				.injectPropertyMixin( "modulePath", config.path )
+				.injectPropertyMixin( "getJavaSystem", getEnv().getJavaSystem )
+				.injectPropertyMixin( "getSystemSetting", getEnv().getSystemSetting )
+				.injectPropertyMixin( "getSystemProperty", getEnv().getSystemProperty )
+				.injectPropertyMixin( "getEnv", getEnv().getEnv );
+			// Activate it
+			try{
+				config.moduleConfig.configure();
+				config.settings = config.moduleConfig.getPropertyMixin( "settings", "variables", {} );
+				config.moduleConfig.onLoad();
+			} catch( any e ){
+				config.activationFailure = e;
+				writeDump( var="**** Error activating (#moduleName#) TestBox Module: #e.message & e.detail#", output="console" );
+			}
+		} );
+
+		// register Global Mappings
+		variables.utility.addMapping( mappings: variables.modules.mappings );
 	}
 
 	/**
-	 * Constructor
+	 * Get the TestBox Env object
+	 *
+	 * @return testbox.system.util.Env
+	 */
+	function getEnv(){
+		// Lazy Load it
+		if ( isNull( variables.env ) ) {
+			variables.env = new testbox.system.util.Env();
+		}
+		return variables.env;
+	}
+
+	/**
+	 * Register a directory to test
 	 *
 	 * @directory A directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	 */
@@ -315,10 +377,18 @@ component accessors="true" {
 
 		// mark end of testing bundles
 		results.end();
-
+		// mark end of code coverage
 		coverageService.processCoverage( results = results, testbox = this );
-
 		coverageService.endCapture( true );
+		// Store results
+		variable.result = results;
+
+		// Unload Modules
+		variables.modules.registry.each( ( moduleName, config ) => {
+			if ( config.active ) {
+				config.moduleConfig.onUnload( results );
+			}
+		} );
 
 		return results;
 	}
@@ -393,17 +463,17 @@ component accessors="true" {
 		}
 
 		// run it and get results
-		var results = runRaw( argumentCollection = arguments );
+		variables.result = runRaw( argumentCollection = arguments );
 
 		// check if reporter is "raw" and if raw, just return it else output the results
 		if ( variables.reporter.type == "raw" ) {
-			return produceReport( results );
+			return produceReport( variables.result );
 		} else {
-			writeOutput( produceReport( results ) );
+			writeOutput( produceReport( variables.result ) );
 		}
 
 		// create status headers
-		sendStatusHeaders( results );
+		sendStatusHeaders( variables.result );
 	}
 
 	/**
