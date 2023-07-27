@@ -132,7 +132,7 @@ component accessors="true" {
 			try {
 				config.moduleConfig.configure();
 				config.settings = config.moduleConfig.getPropertyMixin( "settings", "variables", {} );
-				config.active = true;
+				config.active   = true;
 				config.moduleConfig.onLoad();
 			} catch ( any e ) {
 				config.activationFailure = e;
@@ -631,7 +631,7 @@ component accessors="true" {
 		}
 		// Module call backs
 		getActiveModules().each( ( moduleName, config ) => {
-			if( structKeyExists( config.moduleConfig, "onBundleStart" ) ){
+			if ( structKeyExists( config.moduleConfig, "onBundleStart" ) ) {
 				config.moduleConfig.onBundleStart( target, testResults );
 			}
 		} );
@@ -670,7 +670,7 @@ component accessors="true" {
 		}
 		// Module call backs
 		getActiveModules().each( ( moduleName, config ) => {
-			if( structKeyExists( config.moduleConfig, "onBundleEnd" ) ){
+			if ( structKeyExists( config.moduleConfig, "onBundleEnd" ) ) {
 				config.moduleConfig.onBundleEnd( target, testResults );
 			}
 		} );
