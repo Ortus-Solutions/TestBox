@@ -383,8 +383,8 @@ component
 			variables.testbox
 				.getActiveModules()
 				.each( ( moduleName, config ) => {
-					if ( structKeyExists( config.moduleConfig, "onSpecSkipped" ) ) {
-						config.moduleConfig.onSpecStart(
+					if ( structKeyExists( config.moduleConfig, "onSuiteSkipped" ) ) {
+						config.moduleConfig.onSuiteSkipped(
 							arguments.target,
 							arguments.testResults,
 							thread.suiteStats,

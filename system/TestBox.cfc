@@ -159,6 +159,15 @@ component accessors="true" {
 	}
 
 	/**
+	 * Get the modules registry
+	 *
+	 * @return The struct of registered modules
+	 */
+	struct function getModuleRegistry(){
+		return variables.modules.registry;
+	}
+
+	/**
 	 * Get the TestBox Env object
 	 *
 	 * @return testbox.system.util.Env

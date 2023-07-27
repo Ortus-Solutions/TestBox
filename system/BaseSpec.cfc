@@ -974,6 +974,20 @@ component {
 			specStats.failDetail  = e.detail;
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type = "skipped", stats = specStats );
+			// Module call backs
+			arguments.runner
+				.getTestBox()
+				.getActiveModules()
+				.each( ( moduleName, config ) => {
+					if ( structKeyExists( config.moduleConfig, "onSpecSkipped" ) ) {
+						config.moduleConfig.onSpecSkipped(
+							arguments.spec,
+							specStats,
+							arguments.suite,
+							arguments.testResults
+						);
+					}
+				} );
 		}
 		// Catch Fail() calls
 		catch ( "TestBox.AssertionFailed" e ) {
@@ -987,6 +1001,21 @@ component {
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type = "fail", stats = specStats );
+			// Module call backs
+			arguments.runner
+				.getTestBox()
+				.getActiveModules()
+				.each( ( moduleName, config ) => {
+					if ( structKeyExists( config.moduleConfig, "onSpecError" ) ) {
+						config.moduleConfig.onSpecError(
+							e,
+							arguments.spec,
+							specStats,
+							arguments.suite,
+							arguments.testResults
+						);
+					}
+				} );
 		}
 		// Catch errors
 		catch ( any e ) {

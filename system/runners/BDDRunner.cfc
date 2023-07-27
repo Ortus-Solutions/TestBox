@@ -428,8 +428,7 @@ component
 						config.moduleConfig.onSuiteSkipped(
 							arguments.target,
 							arguments.testResults,
-							arguments.suite,
-							thisSpec
+							arguments.suite
 						);
 					}
 				} );
