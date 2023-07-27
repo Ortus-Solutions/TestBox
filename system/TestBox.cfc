@@ -29,31 +29,40 @@ component accessors="true" {
 	property name="coverageService";
 	// TestBox Modules Registry
 	property name="modules";
+	// A list of globbing patterns to match bundles to test ONLY! Ex: *Spec,*Test
+	property name="bundlesPattern";
 
 	/**
 	 * Constructor
 	 *
-	 * @bundles     The path, list of paths or array of paths of the spec bundle CFCs to run and test
-	 * @directory   The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
-	 * @directories Same as @directory, but accepts an array or list
-	 * @reporter    The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a testbox.system.reports.IReporter
-	 * @labels      The list or array of labels that a suite or spec must have in order to execute.
-	 * @options     A structure of configuration options that are optionally used to configure a runner.
+	 * @bundles        The path, list of paths or array of paths of the spec bundle CFCs to run and test
+	 * @directory      The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	 * @directories    Same as @directory, but accepts an array or list
+	 * @reporter       The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a testbox.system.reports.IReporter
+	 * @labels         The list or array of labels that a suite or spec must have in order to execute.
+	 * @options        A structure of configuration options that are optionally used to configure a runner.
+	 * @bundlesPattern A globbing pattern list to match bundles to test ONLY, matches directoryList() filters! Ex: *Spec|*Test
 	 */
 	any function init(
-		any bundles     = [],
-		any directory   = {},
-		any directories = {},
-		any reporter    = "simple",
-		any labels      = [],
-		any excludes    = [],
-		struct options  = {}
+		any bundles           = [],
+		any directory         = {},
+		any directories       = {},
+		any reporter          = "simple",
+		any labels            = [],
+		any excludes          = [],
+		struct options        = {},
+		string bundlesPattern = "*.cfc"
 	){
 		// TestBox version
 		variables.version  = "@build.version@+@build.number@";
 		variables.codename = "";
+		// Bundles pattern
+		if ( !len( arguments.bundlesPattern ) ) {
+			arguments.bundlesPattern = "*.cfc";
+		}
+		variables.bundlesPattern = arguments.bundlesPattern;
 		// Utility and mappings
-		variables.utility  = new testbox.system.util.Util();
+		variables.utility        = new testbox.system.util.Util();
 		// Coverage Service
 		if ( !structKeyExists( arguments.options, "coverage" ) ) {
 			arguments.options.coverage = {};
@@ -746,12 +755,13 @@ component accessors="true" {
 		// clean up paths
 		var bundleExpandedPath = expandPath( "/" & replace( arguments.directory.mapping, ".", "/", "all" ) );
 		bundleExpandedPath     = replace( bundleExpandedPath, "\", "/", "all" );
+
 		// search directory with filters
-		var bundlesFound       = directoryList(
+		var bundlesFound = directoryList(
 			bundleExpandedPath,
 			arguments.directory.recurse,
 			"path",
-			"*.cfc",
+			variables.bundlesPattern,
 			"asc"
 		);
 

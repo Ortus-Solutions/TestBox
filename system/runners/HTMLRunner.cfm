@@ -10,6 +10,7 @@
 <cfparam name="url.reportpath" 						default="">
 <cfparam name="url.propertiesFilename"			 	default="TEST.properties">
 <cfparam name="url.propertiesSummary"			 	default="false" type="boolean">
+<cfparam name="url.bundlesPattern" 					default="*.cfc">
 
 <cfparam name="url.coverageEnabled"					default="false" type="boolean">
 <cfparam name="url.coverageSonarQubeXMLOutputPath"	default="">
@@ -39,7 +40,8 @@ testbox = new testbox.system.TestBox(
 				outputDir : url.coverageBrowserOutputDir
 			}
 		}
-	}
+	},
+	bundlesPattern = url.bundlesPattern
 );
 if( len( url.bundles ) ){
 	testbox.addBundles( url.bundles );
