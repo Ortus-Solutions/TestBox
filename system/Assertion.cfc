@@ -285,12 +285,16 @@ component {
 		required string typeName,
 		message = ""
 	){
+		var md            = getMetadata( arguments.actual );
+		var actualType    = isStruct( md ) && md.keyExists( "name" ) ? md.name : actual.getClass().getName();
 		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The actual is of type [#getMetadata( actual ).name ?: "n/a"#] which is not the expected type of [#arguments.typeName#]"
+			len( arguments.message ) ? arguments.message : "The actual is of type [#actualType#] which is not the expected type of [#arguments.typeName#]"
 		);
+
 		if ( isInstanceOf( arguments.actual, arguments.typeName ) ) {
 			return this;
 		}
+
 		fail( arguments.message );
 	}
 
@@ -306,8 +310,10 @@ component {
 		required string typeName,
 		message = ""
 	){
+		var md            = getMetadata( arguments.actual );
+		var actualType    = isStruct( md ) && md.keyExists( "name" ) ? md.name : actual.getClass().getName();
 		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The actual is of type [#getMetadata( actual ).name ?: "n/a"#] which is the expected type of [#arguments.typeName#]"
+			len( arguments.message ) ? arguments.message : "The actual is of type [#actualType#] which is the expected type of [#arguments.typeName#]"
 		);
 		if ( !isInstanceOf( arguments.actual, arguments.typeName ) ) {
 			return this;
