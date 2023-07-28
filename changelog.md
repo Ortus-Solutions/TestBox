@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.2.0] - 2023-07-28
+
 ### New Features
 
 - [TESTBOX-375](https://ortussolutions.atlassian.net/browse/TESTBOX-375) Updated mixerUtil for faster performance and new approaches to dynamic mixins
@@ -66,11 +68,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [TESTBOX-365](https://ortussolutions.atlassian.net/browse/TESTBOX-365) New build process using CommandBox
 - [TESTBOX-372](https://ortussolutions.atlassian.net/browse/TESTBOX-372) Adobe 2023 and Lucee 6 Support
 
-[Unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v5.1.0...HEAD
+[Unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v5.2.0...HEAD
+
+[5.2.0]: https://github.com/Ortus-Solutions/TestBox/compare/v5.1.0...v5.2.0
 
 [5.1.0]: https://github.com/Ortus-Solutions/TestBox/compare/HEAD...v5.1.0
 
 \[]: <https://github.com/Ortus-Solutions/TestBox/compare/9f820840b1012dd89b79c62494333d4117bc1a7c...v>
-
 
 \[]: <https://github.com/Ortus-Solutions/TestBox/compare/9f820840b1012dd89b79c62494333d4117bc1a7c...v>
