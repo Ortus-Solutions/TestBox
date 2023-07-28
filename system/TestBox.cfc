@@ -32,6 +32,9 @@ component accessors="true" {
 	// A list of globbing patterns to match bundles to test ONLY! Ex: *Spec,*Test
 	property name="bundlesPattern";
 
+	// Constants
+	variables.TESTBOX_PATH = expandPath( "/testbox" );
+
 	/**
 	 * Constructor
 	 *
@@ -74,6 +77,8 @@ component accessors="true" {
 		variables.options         = arguments.options;
 		// Empty bundles to start
 		variables.bundles         = [];
+		// Modules Init
+		variables.modules         = { "mappings" : {}, "registry" : structNew( "ordered" ) };
 
 		// inflate labels
 		inflateLabels( arguments.labels );
@@ -95,65 +100,115 @@ component accessors="true" {
 	 * Load the TestBox Modules
 	 */
 	function loadTestBoxModules(){
-		var testBoxPath   = expandPath( "/testbox" );
-		var modulesPath   = testBoxPath & "/system/modules";
+		var modulesPath = variables.TESTBOX_PATH & "/system/modules";
+
 		// Register Modules
-		variables.modules = directoryList( modulesPath, true, "path", "ModuleConfig.cfc" )
+		directoryList( modulesPath, true, "path", "ModuleConfig.cfc" )
 			.map( ( item ) => item.replaceNoCase( "ModuleConfig.cfc", "" ) )
-			// Create mappings and module registrations
-			.reduce( ( results, path ) => {
-				var moduleName                 = listLast( path, "/" );
-				results.mappings[ moduleName ] = path;
-				results.registry[ moduleName ] = {
-					"name"              : moduleName,
-					"settings"          : {},
-					"moduleConfig"      : "",
-					"path"              : path,
-					"loadTime"          : now(),
-					"active"            : false,
-					"activationFailure" : {},
-					"mapping"           : moduleName,
-					"invocationPath"    : "testbox" & path
-						.replaceNoCase( testBoxPath, "" )
-						.reReplace( "[\\\/]", ".", "all" )
-						.reReplace( "\.$", "", "all" )
-				};
-				return results;
-			}, { "mappings" : {}, "registry" : structNew( "ordered" ) } );
+			.each( ( path ) => {
+				registerModule( "testbox" & arguments.path
+					.replaceNoCase( variables.TESTBOX_PATH, "" )
+					.reReplace( "[\\\/]", ".", "all" )
+					.reReplace( "\.$", "", "all" ) );
+			} );
 
 		// Activate Modules
-		variables.modules.registry.each( ( moduleName, config ) => {
-			// Create and Decorate ModuleConfig
-			config.moduleConfig = variables.utility
-				.getMixerUtil()
-				.start( createObject( "component", config.invocationPath & ".ModuleConfig" ) );
-			// Inject properties
-			config.moduleConfig
-				.injectPropertyMixin( "testbox", this )
-				.injectPropertyMixin( "testboxVersion", variables.version )
-				.injectPropertyMixin( "moduleMapping", config.invocationPath )
-				.injectPropertyMixin( "modulePath", config.path )
-				.injectPropertyMixin( "getJavaSystem", getEnv().getJavaSystem )
-				.injectPropertyMixin( "getSystemSetting", getEnv().getSystemSetting )
-				.injectPropertyMixin( "getSystemProperty", getEnv().getSystemProperty )
-				.injectPropertyMixin( "getEnv", getEnv().getEnv );
-			// Activate it
-			try {
-				config.moduleConfig.configure();
-				config.settings = config.moduleConfig.getPropertyMixin( "settings", "variables", {} );
-				config.active   = true;
-				config.moduleConfig.onLoad();
-			} catch ( any e ) {
-				config.activationFailure = e;
-				writeDump(
-					var    = "**** Error activating (#moduleName#) TestBox Module: #e.message & e.detail#",
-					output = "console"
-				);
-			}
-		} );
+		variables.modules.registry.each( ( moduleName, config ) => activateModule( moduleName ) );
 
-		// register Global Mappings
+		// Register Global Mappings
 		variables.utility.addMapping( mappings: variables.modules.mappings );
+	}
+
+	/**
+	 * Register a module in TestBox
+	 *
+	 * @path The invocationPath path to the module. Ex: tests.resources.myModule
+	 */
+	function registerModule( required path ){
+		var moduleName                           = listLast( arguments.path, "." );
+		var absolutePath                         = expandPath( "/" & arguments.path.replace( ".", "/", "all" ) );
+		// Register Mapping
+		variables.modules.mappings[ moduleName ] = absolutePath;
+		// Register Module
+		variables.modules.registry[ moduleName ] = {
+			"name"              : moduleName,
+			"settings"          : {},
+			"moduleConfig"      : "",
+			"path"              : absolutePath,
+			"loadTime"          : now(),
+			"activationTime"    : 0,
+			"active"            : false,
+			"activationFailure" : {},
+			"mapping"           : moduleName,
+			"invocationPath"    : arguments.path
+		};
+		return this;
+	}
+
+	/**
+	 * Activate a module in TestBox
+	 *
+	 * @name The name of the module to activate
+	 *
+	 * @throws ModuleNotRegisteredException - If the module is not registered
+	 */
+	function activateModule( required name ){
+		// Verify it
+		if ( !variables.modules.registry.keyExists( arguments.name ) ) {
+			throw( "ModuleNotRegisteredException", "The module #arguments.name# is not registered in TestBox" );
+		}
+
+		// If active, skip activation
+		var moduleRecord = variables.modules.registry[ arguments.name ];
+		if ( moduleRecord.active ) {
+			return this;
+		}
+
+		// Create and Decorate ModuleConfig
+		moduleRecord.moduleConfig = variables.utility
+			.getMixerUtil()
+			.start( createObject( "component", moduleRecord.invocationPath & ".ModuleConfig" ) );
+
+		// Inject properties
+		moduleRecord.moduleConfig
+			.injectPropertyMixin( "testbox", this )
+			.injectPropertyMixin( "testboxVersion", variables.version )
+			.injectPropertyMixin( "moduleMapping", moduleRecord.invocationPath )
+			.injectPropertyMixin( "modulePath", moduleRecord.path )
+			.injectPropertyMixin( "getJavaSystem", getEnv().getJavaSystem )
+			.injectPropertyMixin( "getSystemSetting", getEnv().getSystemSetting )
+			.injectPropertyMixin( "getSystemProperty", getEnv().getSystemProperty )
+			.injectPropertyMixin( "getEnv", getEnv().getEnv );
+
+		// Activate it
+		try {
+			moduleRecord.moduleConfig.configure();
+			moduleRecord.settings       = moduleRecord.moduleConfig.getPropertyMixin( "settings", "variables", {} );
+			moduleRecord.active         = true;
+			moduleRecord.activationTime = now();
+			moduleRecord.moduleConfig.onLoad();
+		} catch ( any e ) {
+			moduleRecord.activationFailure = e;
+			writeDump(
+				var    = "**** Error activating (#arguments.name#) TestBox Module: #e.message & e.detail#",
+				output = "console"
+			);
+		}
+
+		return this;
+	}
+
+	/**
+	 * Register and activate a TestBox module.  You must pass the full invocation
+	 * path in order to register and activate the module.
+	 *
+	 * @path The invocationPath path to the module. Ex: tests.resources.myModule
+	 */
+	function registerAndActivateModule( required path ){
+		var moduleName = listLast( arguments.path, "." );
+		registerModule( arguments.path ).activateModule( moduleName );
+		variables.utility.addMapping( name: moduleName, path: variables.modules.registry[ moduleName ].path );
+		return this;
 	}
 
 	/**
@@ -170,7 +225,7 @@ component accessors="true" {
 	/**
 	 * Get the modules registry
 	 *
-	 * @return The struct of registered modules
+	 * @return The struct of registered modules regardless if they are activated or not
 	 */
 	struct function getModuleRegistry(){
 		return variables.modules.registry;
@@ -619,6 +674,20 @@ component accessors="true" {
 		}
 	}
 
+	/**
+	 * Announce an event to all modules
+	 *
+	 * @event The name of the event to announce
+	 * @args  The arguments to pass to the event: struct or array
+	 */
+	function announceToModules( required event, args = {} ){
+		getActiveModules().each( ( moduleName, config ) => {
+			if ( structKeyExists( config.moduleConfig, event ) ) {
+				invoke( config.moduleConfig, event, args );
+			}
+		} );
+	}
+
 	/***************************************** PRIVATE ************************************************************/
 
 	/**
@@ -648,11 +717,7 @@ component accessors="true" {
 			arguments.callbacks.onBundleStart( target, testResults );
 		}
 		// Module call backs
-		getActiveModules().each( ( moduleName, config ) => {
-			if ( structKeyExists( config.moduleConfig, "onBundleStart" ) ) {
-				config.moduleConfig.onBundleStart( target, testResults );
-			}
-		} );
+		announceToModules( "onBundleStart", { target : target, testResults : testResults } );
 
 		try {
 			// Discover type?
@@ -687,11 +752,7 @@ component accessors="true" {
 			arguments.callbacks.onBundleEnd( target, testResults );
 		}
 		// Module call backs
-		getActiveModules().each( ( moduleName, config ) => {
-			if ( structKeyExists( config.moduleConfig, "onBundleEnd" ) ) {
-				config.moduleConfig.onBundleEnd( target, testResults );
-			}
-		} );
+		announceToModules( "onBundleEnd", { target : target, testResults : testResults } );
 
 		return this;
 	}

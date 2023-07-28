@@ -93,17 +93,14 @@ component
 						);
 					}
 					// Module call backs
-					variables.testbox
-						.getActiveModules()
-						.each( ( moduleName, config ) => {
-							if ( structKeyExists( config.moduleConfig, "onSuiteStart" ) ) {
-								config.moduleConfig.onSuiteStart(
-									arguments.target,
-									arguments.testResults,
-									thisSuite
-								);
-							}
-						} );
+					variables.testbox.announceToModules(
+						"onSuiteStart",
+						[
+							arguments.target,
+							arguments.testResults,
+							thisSuite
+						]
+					);
 
 					// Execute Suite
 					testSuite(
@@ -122,18 +119,16 @@ component
 							thisSuite
 						);
 					}
+
 					// Module call backs
-					variables.testbox
-						.getActiveModules()
-						.each( ( moduleName, config ) => {
-							if ( structKeyExists( config.moduleConfig, "onSuiteEnd" ) ) {
-								config.moduleConfig.onSuiteEnd(
-									arguments.target,
-									arguments.testResults,
-									thisSuite
-								);
-							}
-						} );
+					variables.testbox.announceToModules(
+						"onSuiteEnd",
+						[
+							arguments.target,
+							arguments.testResults,
+							thisSuite
+						]
+					);
 				}
 
 				// execute afterAll(), afterTests() for this bundle, no matter how many suites they have.
@@ -159,18 +154,11 @@ component
 				// The amount doesn't matter, nothing can run at this point, failure with before/after aspects that need fixing
 				bundleStats.totalError      = 7;
 				arguments.testResults.incrementStat( type = "error", count = bundleStats.totalError );
-				// Module call backs
-				variables.testbox
-					.getActiveModules()
-					.each( ( moduleName, config ) => {
-						if ( structKeyExists( config.moduleConfig, "onSuiteError" ) ) {
-							config.moduleConfig.onSuiteError(
-								arguments.target,
-								arguments.testResults,
-								thisSuite
-							);
-						}
-					} );
+
+				variables.testbox.announceToModules(
+					"onSuiteError",
+					[ e, arguments.target, arguments.testResults ]
+				);
 			}
 		}
 
@@ -252,18 +240,15 @@ component
 						}
 
 						// Module call backs
-						variables.testbox
-							.getActiveModules()
-							.each( ( moduleName, config ) => {
-								if ( structKeyExists( config.moduleConfig, "onSpecStart" ) ) {
-									config.moduleConfig.onSpecStart(
-										thread.target,
-										thread.testResults,
-										thread.suiteStats,
-										attributes.thisSpec
-									);
-								}
-							} );
+						variables.testbox.announceToModules(
+							"onSpecStart",
+							[
+								thread.target,
+								thread.testResults,
+								thread.suiteStats,
+								attributes.thisSpec
+							]
+						);
 
 						// execute the test within the context of the spec target due to lucee closure bug, move back once it is resolved.
 						thread.target.runTestMethod(
@@ -284,18 +269,15 @@ component
 						}
 
 						// Module call backs
-						variables.testbox
-							.getActiveModules()
-							.each( ( moduleName, config ) => {
-								if ( structKeyExists( config.moduleConfig, "onSpecEnd" ) ) {
-									config.moduleConfig.onSpecEnd(
-										thread.target,
-										thread.testResults,
-										thread.suiteStats,
-										attributes.thisSpec
-									);
-								}
-							} );
+						variables.testbox.announceToModules(
+							"onSpecEnd",
+							[
+								thread.target,
+								thread.testResults,
+								thread.suiteStats,
+								attributes.thisSpec
+							]
+						);
 					}
 				} else {
 					// verify call backs
@@ -307,19 +289,17 @@ component
 							thisSpec
 						);
 					}
+
 					// Module call backs
-					variables.testbox
-						.getActiveModules()
-						.each( ( moduleName, config ) => {
-							if ( structKeyExists( config.moduleConfig, "onSpecStart" ) ) {
-								config.moduleConfig.onSpecStart(
-									arguments.target,
-									arguments.testResults,
-									thread.suiteStats,
-									thisSpec
-								);
-							}
-						} );
+					variables.testbox.announceToModules(
+						"onSpecStart",
+						[
+							arguments.target,
+							arguments.testResults,
+							thread.suiteStats,
+							thisSpec
+						]
+					);
 
 					// execute the test within the context of the spec target due to lucee closure bug, move back once it is resolved.
 					thread.target.runTestMethod(
@@ -338,19 +318,17 @@ component
 							thisSpec
 						);
 					}
+
 					// Module call backs
-					variables.testbox
-						.getActiveModules()
-						.each( ( moduleName, config ) => {
-							if ( structKeyExists( config.moduleConfig, "onSpecEnd" ) ) {
-								config.moduleConfig.onSpecEnd(
-									arguments.target,
-									arguments.testResults,
-									thread.suiteStats,
-									thisSpec
-								);
-							}
-						} );
+					variables.testbox.announceToModules(
+						"onSpecEnd",
+						[
+							arguments.target,
+							arguments.testResults,
+							thread.suiteStats,
+							thisSpec
+						]
+					);
 				}
 			}
 			// end loop over specs
@@ -380,18 +358,15 @@ component
 			arguments.bundleStats.totalSkipped += suiteStats.totalSpecs;
 			arguments.testResults.incrementStat( "skipped", suiteStats.totalSpecs );
 			// Module call backs
-			variables.testbox
-				.getActiveModules()
-				.each( ( moduleName, config ) => {
-					if ( structKeyExists( config.moduleConfig, "onSuiteSkipped" ) ) {
-						config.moduleConfig.onSuiteSkipped(
-							arguments.target,
-							arguments.testResults,
-							thread.suiteStats,
-							thisSpec
-						);
-					}
-				} );
+			variables.testbox.announceToModules(
+				"onSuiteSkipped",
+				[
+					arguments.target,
+					arguments.testResults,
+					suiteStats,
+					arguments.bundleStats
+				]
+			);
 		}
 
 		// Finalize the suite stats

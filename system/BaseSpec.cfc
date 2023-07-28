@@ -977,17 +977,16 @@ component {
 			// Module call backs
 			arguments.runner
 				.getTestBox()
-				.getActiveModules()
-				.each( ( moduleName, config ) => {
-					if ( structKeyExists( config.moduleConfig, "onSpecSkipped" ) ) {
-						config.moduleConfig.onSpecSkipped(
-							arguments.spec,
-							specStats,
-							arguments.suite,
-							arguments.testResults
-						);
-					}
-				} );
+				.announceToModules(
+					"onSpecSkipped",
+					[
+						arguments.spec,
+						specStats,
+						arguments.suite,
+						arguments.suiteStats,
+						arguments.testResults
+					]
+				);
 		}
 		// Catch Fail() calls
 		catch ( "TestBox.AssertionFailed" e ) {
@@ -1004,18 +1003,17 @@ component {
 			// Module call backs
 			arguments.runner
 				.getTestBox()
-				.getActiveModules()
-				.each( ( moduleName, config ) => {
-					if ( structKeyExists( config.moduleConfig, "onSpecError" ) ) {
-						config.moduleConfig.onSpecError(
-							e,
-							arguments.spec,
-							specStats,
-							arguments.suite,
-							arguments.testResults
-						);
-					}
-				} );
+				.announceToModules(
+					"onSpecFailure",
+					[
+						e,
+						arguments.spec,
+						specStats,
+						arguments.suite,
+						arguments.suiteStats,
+						arguments.testResults
+					]
+				);
 		}
 		// Catch errors
 		catch ( any e ) {
@@ -1030,6 +1028,21 @@ component {
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type = "error", stats = specStats );
+
+			// Module call backs
+			arguments.runner
+				.getTestBox()
+				.announceToModules(
+					"onSpecError",
+					[
+						e,
+						arguments.spec,
+						specStats,
+						arguments.suite,
+						arguments.suiteSpecs,
+						arguments.testResults
+					]
+				);
 		} finally {
 			// Complete spec testing
 			arguments.testResults.endStats( specStats );
