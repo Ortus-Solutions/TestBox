@@ -83,6 +83,18 @@ component extends="testbox.system.BaseSpec" {
 					expect( 0 ).notToSatisfy( function( num ){
 						return arguments.num > 0;
 					} );
+
+					expect( this ).toSatisfy( function( target ){
+						return isObject( arguments.target );
+					} );
+				} );
+
+				it( "can validate instance types", function(){
+					expect( this ).toBeInstanceOf( "testbox.system.BaseSpec" );
+					expect( now() ).toBeInstanceOf( "java.util.Date" );
+					expect( [] ).toBeInstanceOf( "java.util.List" );
+					expect( {} ).toBeInstanceOf( "java.util.Map" );
+					expect( queryNew( "" ) ).notToBeInstanceOf( "Query" );
 				} );
 
 				it( "can validate json", function(){

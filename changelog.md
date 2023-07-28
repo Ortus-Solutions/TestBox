@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### New Features
+
+- [TESTBOX-375](https://ortussolutions.atlassian.net/browse/TESTBOX-375) Updated mixerUtil for faster performance and new approaches to dynamic mixins
+- [TESTBOX-376](https://ortussolutions.atlassian.net/browse/TESTBOX-376) Add `bundlesPattern` to testbox.system.TestBox `init` method
+- [TESTBOX-377](https://ortussolutions.atlassian.net/browse/TESTBOX-377) TestBox Modules
+
+### Bugs
+
+- [TESTBOX-346](https://ortussolutions.atlassian.net/browse/TESTBOX-346) `expect(sut).toBeInstanceOf("something")` breaks if sut is a query
+- [TESTBOX-374](https://ortussolutions.atlassian.net/browse/TESTBOX-374) cbstreams doesn't entirely work outside of ColdBox
+
+### Improvements
+
+- [TESTBOX-20](https://ortussolutions.atlassian.net/browse/TESTBOX-20) toBeInstanceOf() Expectation handle Java classes
+
 ## [5.1.0] - 2023-07-06
 
 ### Added
@@ -39,7 +54,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [TESTBOX-355](https://ortussolutions.atlassian.net/browse/TESTBOX-355) Add debugBuffer to JSONReporter
 - [TESTBOX-366](https://ortussolutions.atlassian.net/browse/TESTBOX-366) ANTJunit Reporter better visualization of the fail origin and details
 - [TESTBOX-368](https://ortussolutions.atlassian.net/browse/TESTBOX-368) Support list of Directories for HTMLRunner to allow more modular tests structure
-- [TESTBOX-370](https://ortussolutions.atlassian.net/browse/TESTBOX-370) \`toHaveKey\` works on queries in Lucee but not ColdFusion
+- [TESTBOX-370](https://ortussolutions.atlassian.net/browse/TESTBOX-370) `toHaveKey` works on queries in Lucee but not ColdFusion
 
 ### Added
 

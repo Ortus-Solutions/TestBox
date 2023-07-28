@@ -92,6 +92,15 @@ component
 							thisSuite
 						);
 					}
+					// Module call backs
+					variables.testbox.announceToModules(
+						"onSuiteStart",
+						[
+							arguments.target,
+							arguments.testResults,
+							thisSuite
+						]
+					);
 
 					// Execute Suite
 					testSuite(
@@ -110,6 +119,16 @@ component
 							thisSuite
 						);
 					}
+
+					// Module call backs
+					variables.testbox.announceToModules(
+						"onSuiteEnd",
+						[
+							arguments.target,
+							arguments.testResults,
+							thisSuite
+						]
+					);
 				}
 
 				// execute afterAll(), afterTests() for this bundle, no matter how many suites they have.
@@ -135,6 +154,11 @@ component
 				// The amount doesn't matter, nothing can run at this point, failure with before/after aspects that need fixing
 				bundleStats.totalError      = 7;
 				arguments.testResults.incrementStat( type = "error", count = bundleStats.totalError );
+
+				variables.testbox.announceToModules(
+					"onSuiteError",
+					[ e, arguments.target, arguments.testResults ]
+				);
 			}
 		}
 
@@ -215,6 +239,17 @@ component
 							);
 						}
 
+						// Module call backs
+						variables.testbox.announceToModules(
+							"onSpecStart",
+							[
+								thread.target,
+								thread.testResults,
+								thread.suiteStats,
+								attributes.thisSpec
+							]
+						);
+
 						// execute the test within the context of the spec target due to lucee closure bug, move back once it is resolved.
 						thread.target.runTestMethod(
 							spec        = attributes.thisSpec,
@@ -232,6 +267,17 @@ component
 								attributes.thisSpec
 							);
 						}
+
+						// Module call backs
+						variables.testbox.announceToModules(
+							"onSpecEnd",
+							[
+								thread.target,
+								thread.testResults,
+								thread.suiteStats,
+								attributes.thisSpec
+							]
+						);
 					}
 				} else {
 					// verify call backs
@@ -243,6 +289,17 @@ component
 							thisSpec
 						);
 					}
+
+					// Module call backs
+					variables.testbox.announceToModules(
+						"onSpecStart",
+						[
+							arguments.target,
+							arguments.testResults,
+							thread.suiteStats,
+							thisSpec
+						]
+					);
 
 					// execute the test within the context of the spec target due to lucee closure bug, move back once it is resolved.
 					thread.target.runTestMethod(
@@ -261,6 +318,17 @@ component
 							thisSpec
 						);
 					}
+
+					// Module call backs
+					variables.testbox.announceToModules(
+						"onSpecEnd",
+						[
+							arguments.target,
+							arguments.testResults,
+							thread.suiteStats,
+							thisSpec
+						]
+					);
 				}
 			}
 			// end loop over specs
@@ -289,6 +357,16 @@ component
 			suiteStats.status = "Skipped";
 			arguments.bundleStats.totalSkipped += suiteStats.totalSpecs;
 			arguments.testResults.incrementStat( "skipped", suiteStats.totalSpecs );
+			// Module call backs
+			variables.testbox.announceToModules(
+				"onSuiteSkipped",
+				[
+					arguments.target,
+					arguments.testResults,
+					suiteStats,
+					arguments.bundleStats
+				]
+			);
 		}
 
 		// Finalize the suite stats

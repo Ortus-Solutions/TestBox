@@ -872,10 +872,10 @@ component {
 		getPageContext().getResponse().setContentType( "text/html" );
 		// run tests
 		var runner = new testbox.system.TestBox(
-			bundles  = "#getMetadata( this ).name#",
-			labels   = arguments.labels,
-			reporter = arguments.reporter,
-			options  = { coverage : { enabled : false } }
+			bundles : "#getMetadata( this ).name#",
+			labels  : arguments.labels,
+			reporter: arguments.reporter,
+			options : { coverage : { enabled : false } }
 		);
 		// Produce report
 		writeOutput( runner.run( testSuites = arguments.testSuites, testSpecs = arguments.testSpecs ) );
@@ -974,6 +974,19 @@ component {
 			specStats.failDetail  = e.detail;
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type = "skipped", stats = specStats );
+			// Module call backs
+			arguments.runner
+				.getTestBox()
+				.announceToModules(
+					"onSpecSkipped",
+					[
+						arguments.spec,
+						specStats,
+						arguments.suite,
+						arguments.suiteStats,
+						arguments.testResults
+					]
+				);
 		}
 		// Catch Fail() calls
 		catch ( "TestBox.AssertionFailed" e ) {
@@ -987,6 +1000,20 @@ component {
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type = "fail", stats = specStats );
+			// Module call backs
+			arguments.runner
+				.getTestBox()
+				.announceToModules(
+					"onSpecFailure",
+					[
+						e,
+						arguments.spec,
+						specStats,
+						arguments.suite,
+						arguments.suiteStats,
+						arguments.testResults
+					]
+				);
 		}
 		// Catch errors
 		catch ( any e ) {
@@ -1001,6 +1028,21 @@ component {
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type = "error", stats = specStats );
+
+			// Module call backs
+			arguments.runner
+				.getTestBox()
+				.announceToModules(
+					"onSpecError",
+					[
+						e,
+						arguments.spec,
+						specStats,
+						arguments.suite,
+						arguments.suiteSpecs,
+						arguments.testResults
+					]
+				);
 		} finally {
 			// Complete spec testing
 			arguments.testResults.endStats( specStats );
@@ -1499,6 +1541,19 @@ component {
 			variables.$utility = new testbox.system.util.Util();
 		}
 		return variables.$utility;
+	}
+
+	/**
+	 * Get the TestBox Env  object
+	 *
+	 * @return testbox.system.util.Env
+	 */
+	function getEnv(){
+		// Lazy Load it
+		if ( isNull( variables.$env ) ) {
+			variables.$env = new testbox.system.util.Env();
+		}
+		return variables.$env;
 	}
 
 	/**

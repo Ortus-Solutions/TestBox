@@ -27,59 +27,227 @@ component accessors="true" {
 	property name="result";
 	// Code Coverage Service
 	property name="coverageService";
+	// TestBox Modules Registry
+	property name="modules";
+	// A list of globbing patterns to match bundles to test ONLY! Ex: *Spec,*Test
+	property name="bundlesPattern";
+
+	// Constants
+	variables.TESTBOX_PATH = expandPath( "/testbox" );
 
 	/**
 	 * Constructor
 	 *
-	 * @bundles     The path, list of paths or array of paths of the spec bundle CFCs to run and test
-	 * @directory   The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
-	 * @directories Same as @directory, but accepts an array or list
-	 * @reporter    The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a testbox.system.reports.IReporter
-	 * @labels      The list or array of labels that a suite or spec must have in order to execute.
-	 * @options     A structure of configuration options that are optionally used to configure a runner.
+	 * @bundles        The path, list of paths or array of paths of the spec bundle CFCs to run and test
+	 * @directory      The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	 * @directories    Same as @directory, but accepts an array or list
+	 * @reporter       The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a testbox.system.reports.IReporter
+	 * @labels         The list or array of labels that a suite or spec must have in order to execute.
+	 * @options        A structure of configuration options that are optionally used to configure a runner.
+	 * @bundlesPattern A globbing pattern list to match bundles to test ONLY, matches directoryList() filters! Ex: *Spec|*Test
 	 */
 	any function init(
-		any bundles     = [],
-		any directory   = {},
-		any directories = {},
-		any reporter    = "simple",
-		any labels      = [],
-		any excludes    = [],
-		struct options  = {}
+		any bundles           = [],
+		any directory         = {},
+		any directories       = {},
+		any reporter          = "simple",
+		any labels            = [],
+		any excludes          = [],
+		struct options        = {},
+		string bundlesPattern = "*.cfc"
 	){
 		// TestBox version
 		variables.version  = "@build.version@+@build.number@";
 		variables.codename = "";
-		// init util
-		variables.utility  = new testbox.system.util.Util();
+		// Bundles pattern
+		if ( !len( arguments.bundlesPattern ) ) {
+			arguments.bundlesPattern = "*.cfc";
+		}
+		variables.bundlesPattern = arguments.bundlesPattern;
+		// Utility and mappings
+		variables.utility        = new testbox.system.util.Util();
+		// Coverage Service
 		if ( !structKeyExists( arguments.options, "coverage" ) ) {
 			arguments.options.coverage = {};
 		}
 		variables.coverageService = new testbox.system.coverage.CoverageService( arguments.options.coverage );
-
 		// reporter
-		variables.reporter = arguments.reporter;
+		variables.reporter        = arguments.reporter;
 		// options
-		variables.options  = arguments.options;
+		variables.options         = arguments.options;
 		// Empty bundles to start
-		variables.bundles  = [];
+		variables.bundles         = [];
+		// Modules Init
+		variables.modules         = { "mappings" : {}, "registry" : structNew( "ordered" ) };
 
 		// inflate labels
 		inflateLabels( arguments.labels );
 		// inflate excludes
 		inflateExcludes( arguments.excludes );
-		// add bundles
+		// Add bundles given (if any)
 		addBundles( arguments.bundles );
 		// Add directory given (if any)
 		addDirectory( arguments.directory );
-		// Add directory given (if any)
+		// Add directories given (if any)
 		addDirectories( arguments.directories );
+		// Load TestBox Modules
+		loadTestBoxModules();
 
 		return this;
 	}
 
 	/**
-	 * Constructor
+	 * Load the TestBox Modules
+	 */
+	function loadTestBoxModules(){
+		var modulesPath = variables.TESTBOX_PATH & "/system/modules";
+
+		// Register Modules
+		directoryList( modulesPath, true, "path", "ModuleConfig.cfc" )
+			.map( ( item ) => item.replaceNoCase( "ModuleConfig.cfc", "" ) )
+			.each( ( path ) => {
+				registerModule(
+					"testbox" & arguments.path
+						.replaceNoCase( variables.TESTBOX_PATH, "" )
+						.reReplace( "[\\\/]", ".", "all" )
+						.reReplace( "\.$", "", "all" )
+				);
+			} );
+
+		// Activate Modules
+		variables.modules.registry.each( ( moduleName, config ) => activateModule( moduleName ) );
+
+		// Register Global Mappings
+		variables.utility.addMapping( mappings: variables.modules.mappings );
+	}
+
+	/**
+	 * Register a module in TestBox
+	 *
+	 * @path The invocationPath path to the module. Ex: tests.resources.myModule
+	 */
+	function registerModule( required path ){
+		var moduleName                           = listLast( arguments.path, "." );
+		var absolutePath                         = expandPath( "/" & arguments.path.replace( ".", "/", "all" ) );
+		// Register Mapping
+		variables.modules.mappings[ moduleName ] = absolutePath;
+		// Register Module
+		variables.modules.registry[ moduleName ] = {
+			"name"              : moduleName,
+			"settings"          : {},
+			"moduleConfig"      : "",
+			"path"              : absolutePath,
+			"loadTime"          : now(),
+			"activationTime"    : 0,
+			"active"            : false,
+			"activationFailure" : {},
+			"mapping"           : moduleName,
+			"invocationPath"    : arguments.path
+		};
+		return this;
+	}
+
+	/**
+	 * Activate a module in TestBox
+	 *
+	 * @name The name of the module to activate
+	 *
+	 * @throws ModuleNotRegisteredException - If the module is not registered
+	 */
+	function activateModule( required name ){
+		// Verify it
+		if ( !variables.modules.registry.keyExists( arguments.name ) ) {
+			throw( "ModuleNotRegisteredException", "The module #arguments.name# is not registered in TestBox" );
+		}
+
+		// If active, skip activation
+		var moduleRecord = variables.modules.registry[ arguments.name ];
+		if ( moduleRecord.active ) {
+			return this;
+		}
+
+		// Create and Decorate ModuleConfig
+		moduleRecord.moduleConfig = variables.utility
+			.getMixerUtil()
+			.start( createObject( "component", moduleRecord.invocationPath & ".ModuleConfig" ) );
+
+		// Inject properties
+		moduleRecord.moduleConfig
+			.injectPropertyMixin( "testbox", this )
+			.injectPropertyMixin( "testboxVersion", variables.version )
+			.injectPropertyMixin( "moduleMapping", moduleRecord.invocationPath )
+			.injectPropertyMixin( "modulePath", moduleRecord.path )
+			.injectPropertyMixin( "getJavaSystem", getEnv().getJavaSystem )
+			.injectPropertyMixin( "getSystemSetting", getEnv().getSystemSetting )
+			.injectPropertyMixin( "getSystemProperty", getEnv().getSystemProperty )
+			.injectPropertyMixin( "getEnv", getEnv().getEnv );
+
+		// Activate it
+		try {
+			moduleRecord.moduleConfig.configure();
+			moduleRecord.settings       = moduleRecord.moduleConfig.getPropertyMixin( "settings", "variables", {} );
+			moduleRecord.active         = true;
+			moduleRecord.activationTime = now();
+			moduleRecord.moduleConfig.onLoad();
+		} catch ( any e ) {
+			moduleRecord.activationFailure = e;
+			writeDump(
+				var    = "**** Error activating (#arguments.name#) TestBox Module: #e.message & e.detail#",
+				output = "console"
+			);
+		}
+
+		return this;
+	}
+
+	/**
+	 * Register and activate a TestBox module.  You must pass the full invocation
+	 * path in order to register and activate the module.
+	 *
+	 * @path The invocationPath path to the module. Ex: tests.resources.myModule
+	 */
+	function registerAndActivateModule( required path ){
+		var moduleName = listLast( arguments.path, "." );
+		registerModule( arguments.path ).activateModule( moduleName );
+		variables.utility.addMapping( name: moduleName, path: variables.modules.registry[ moduleName ].path );
+		return this;
+	}
+
+	/**
+	 * Get only the activated modules registry
+	 *
+	 * @return The struct of activated modules
+	 */
+	struct function getActiveModules(){
+		return variables.modules.registry.filter( ( moduleName, config ) => {
+			return config.active;
+		} );
+	}
+
+	/**
+	 * Get the modules registry
+	 *
+	 * @return The struct of registered modules regardless if they are activated or not
+	 */
+	struct function getModuleRegistry(){
+		return variables.modules.registry;
+	}
+
+	/**
+	 * Get the TestBox Env object
+	 *
+	 * @return testbox.system.util.Env
+	 */
+	function getEnv(){
+		// Lazy Load it
+		if ( isNull( variables.env ) ) {
+			variables.env = new testbox.system.util.Env();
+		}
+		return variables.env;
+	}
+
+	/**
+	 * Register a directory to test
 	 *
 	 * @directory A directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
 	 */
@@ -116,9 +284,9 @@ component accessors="true" {
 	}
 
 	/**
-	 * Constructor
+	 * Add bundles to the TestBox `bundles` target to test
 	 *
-	 * @directory A directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	 * @bundles The path, list of paths or array of paths of the spec bundle CFCs to run and test
 	 */
 	any function addBundles( required any bundles ){
 		if ( isSimpleValue( arguments.bundles ) ) {
@@ -299,10 +467,18 @@ component accessors="true" {
 
 		// mark end of testing bundles
 		results.end();
-
+		// mark end of code coverage
 		coverageService.processCoverage( results = results, testbox = this );
-
 		coverageService.endCapture( true );
+		// Store results
+		variable.result = results;
+
+		// Unload Modules
+		variables.modules.registry.each( ( moduleName, config ) => {
+			if ( config.active ) {
+				config.moduleConfig.onUnload( results );
+			}
+		} );
 
 		return results;
 	}
@@ -377,17 +553,17 @@ component accessors="true" {
 		}
 
 		// run it and get results
-		var results = runRaw( argumentCollection = arguments );
+		variables.result = runRaw( argumentCollection = arguments );
 
 		// check if reporter is "raw" and if raw, just return it else output the results
 		if ( variables.reporter.type == "raw" ) {
-			return produceReport( results );
+			return produceReport( variables.result );
 		} else {
-			writeOutput( produceReport( results ) );
+			writeOutput( produceReport( variables.result ) );
 		}
 
 		// create status headers
-		sendStatusHeaders( results );
+		sendStatusHeaders( variables.result );
 	}
 
 	/**
@@ -500,6 +676,20 @@ component accessors="true" {
 		}
 	}
 
+	/**
+	 * Announce an event to all modules
+	 *
+	 * @event The name of the event to announce
+	 * @args  The arguments to pass to the event: struct or array
+	 */
+	function announceToModules( required event, args = {} ){
+		getActiveModules().each( ( moduleName, config ) => {
+			if ( structKeyExists( config.moduleConfig, event ) ) {
+				invoke( config.moduleConfig, event, args );
+			}
+		} );
+	}
+
 	/***************************************** PRIVATE ************************************************************/
 
 	/**
@@ -528,6 +718,8 @@ component accessors="true" {
 		if ( structKeyExists( arguments.callbacks, "onBundleStart" ) ) {
 			arguments.callbacks.onBundleStart( target, testResults );
 		}
+		// Module call backs
+		announceToModules( "onBundleStart", { target : target, testResults : testResults } );
 
 		try {
 			// Discover type?
@@ -561,6 +753,8 @@ component accessors="true" {
 		if ( structKeyExists( arguments.callbacks, "onBundleEnd" ) ) {
 			arguments.callbacks.onBundleEnd( target, testResults );
 		}
+		// Module call backs
+		announceToModules( "onBundleEnd", { target : target, testResults : testResults } );
 
 		return this;
 	}
@@ -624,12 +818,13 @@ component accessors="true" {
 		// clean up paths
 		var bundleExpandedPath = expandPath( "/" & replace( arguments.directory.mapping, ".", "/", "all" ) );
 		bundleExpandedPath     = replace( bundleExpandedPath, "\", "/", "all" );
+
 		// search directory with filters
-		var bundlesFound       = directoryList(
+		var bundlesFound = directoryList(
 			bundleExpandedPath,
 			arguments.directory.recurse,
 			"path",
-			"*.cfc",
+			variables.bundlesPattern,
 			"asc"
 		);
 

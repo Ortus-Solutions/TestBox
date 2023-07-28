@@ -80,6 +80,31 @@ component {
 	}
 
 	/**
+	 * Add a CFML Mapping to the running engine
+	 *
+	 * @name     The name of the mapping
+	 * @path     The path of the mapping
+	 * @mappings A struct of mappings to incorporate instead of one-offs
+	 */
+	Util function addMapping( string name, string path, struct mappings ){
+		var engineMappingHelper = getEngineMappingHelper();
+
+		if ( !isNull( arguments.mappings ) ) {
+			engineMappingHelper.addMappings( arguments.mappings );
+		} else {
+			// Add / registration
+			if ( left( arguments.name, 1 ) != "/" ) {
+				arguments.name = "/#arguments.name#";
+			}
+
+			// Add mapping
+			engineMappingHelper.addMapping( arguments.name, arguments.path );
+		}
+
+		return this;
+	}
+
+	/**
 	 * Check if you are in cfthread or not for any CFML Engine
 	 */
 	boolean function inThread(){
@@ -153,7 +178,7 @@ component {
 	 * @annotation The annotation name to look for on methods
 	 * @metadata   The metadata to search (recursively) for the provided annotation
 	 */
-	public array function getAnnotatedMethods( required string annotation, required struct metadata ){
+	array function getAnnotatedMethods( required string annotation, required struct metadata ){
 		var lifecycleMethods = [];
 
 		if ( structKeyExists( arguments.metadata, "functions" ) ) {
@@ -171,6 +196,22 @@ component {
 		}
 
 		return lifecycleMethods;
+	}
+
+	/**
+	 * Get the appropriate engine mapping helper for the current engine
+	 */
+	private function getEngineMappingHelper(){
+		// Lazy load the helper
+		if ( isNull( variables.engineMappingHelper ) ) {
+			// Detect server
+			if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
+				variables.engineMappingHelper = new LuceeMappingHelper();
+			} else {
+				variables.engineMappingHelper = new CFMappingHelper();
+			}
+		}
+		return variables.engineMappingHelper;
 	}
 
 }

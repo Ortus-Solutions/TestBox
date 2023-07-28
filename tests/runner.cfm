@@ -10,6 +10,7 @@
 <cfparam name="url.propertiesFilename" 	default="TEST.properties">
 <cfparam name="url.propertiesSummary" 	default="false" type="boolean">
 <cfparam name="url.editor" 				default="vscode">
+<cfparam name="url.bundlesPattern" 		default="">
 
 <cfparam name="url.coverageEnabled"					default="true" type="boolean">
 <cfparam name="url.coverageSonarQubeXMLOutputPath"	default="">
