@@ -106,10 +106,12 @@ component accessors="true" {
 		directoryList( modulesPath, true, "path", "ModuleConfig.cfc" )
 			.map( ( item ) => item.replaceNoCase( "ModuleConfig.cfc", "" ) )
 			.each( ( path ) => {
-				registerModule( "testbox" & arguments.path
-					.replaceNoCase( variables.TESTBOX_PATH, "" )
-					.reReplace( "[\\\/]", ".", "all" )
-					.reReplace( "\.$", "", "all" ) );
+				registerModule(
+					"testbox" & arguments.path
+						.replaceNoCase( variables.TESTBOX_PATH, "" )
+						.reReplace( "[\\\/]", ".", "all" )
+						.reReplace( "\.$", "", "all" )
+				);
 			} );
 
 		// Activate Modules
