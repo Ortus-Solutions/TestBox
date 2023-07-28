@@ -29,10 +29,9 @@ component extends="testbox.system.BaseSpec" {
 		 * @labels   The list or array of labels this suite group belongs to
 		 * @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
 		 * @skip     A flag that tells TestBox to skip this suite group from testing if true
-		 * @focused A flag that tells TestBox to only run this suite and no other
+		 * @focused  A flag that tells TestBox to only run this suite and no other
 		 */
 		describe( "A spec", () => {
-
 			/**
 			 * --------------------------------------------------------------------------
 			 * Runs before each spec in THIS suite group or nested groups
@@ -58,11 +57,11 @@ component extends="testbox.system.BaseSpec" {
 			 *
 			 * Arguments:
 			 *
-			 * @title  The title of this spec
-			 * @body   The closure that represents the test
-			 * @labels The list or array of labels this spec belongs to
-			 * @skip   A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
-			 * @data   A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+			 * @title   The title of this spec
+			 * @body    The closure that represents the test
+			 * @labels  The list or array of labels this spec belongs to
+			 * @skip    A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+			 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
 			 * @focused A flag that tells TestBox to only run this spec and no other
 			 */
 			it( "can test for equality", () => {
