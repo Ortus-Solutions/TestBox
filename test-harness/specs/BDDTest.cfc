@@ -1,118 +1,118 @@
 /**
- * This tests the BDD functionality in TestBox. This is CF10+, Railo4+
+ * My first spec file
  */
 component extends="testbox.system.BaseSpec" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeAll(){
-		application.salvador = 1;
+		// setup the entire test bundle here
+		variables.salvador = 1;
 	}
 
 	function afterAll(){
-		structClear( application );
+		// do cleanup here
 	}
 
 	/*********************************** BDD SUITES ***********************************/
 
 	function run(){
 		/**
-		 * describe() starts a suite group of spec tests.
+		 * describe() starts a suite group of spec tests. It is the main BDD construct.
+		 * You can also use the aliases: story(), feature(), scenario(), given(), when()
+		 * to create fluent chains of human-readable expressions.
+		 *
 		 * Arguments:
 		 *
-		 * @title    The title of the suite, Usually how you want to name the desired behavior
-		 * @body     A closure that will resemble the tests to execute.
+		 * @title    Required: The title of the suite, Usually how you want to name the desired behavior
+		 * @body     Required: A closure that will resemble the tests to execute.
 		 * @labels   The list or array of labels this suite group belongs to
 		 * @asyncAll If you want to parallelize the execution of the defined specs in this suite group.
 		 * @skip     A flag that tells TestBox to skip this suite group from testing if true
+		 * @focused A flag that tells TestBox to only run this suite and no other
 		 */
-		describe( "A spec", function(){
-			// before each spec in THIS suite group
-			beforeEach( function(){
-				coldbox = 0;
-				coldbox++;
+		describe( "A spec", () => {
+
+			/**
+			 * --------------------------------------------------------------------------
+			 * Runs before each spec in THIS suite group or nested groups
+			 * --------------------------------------------------------------------------
+			 */
+			beforeEach( () => {
+				testbox = 0;
+				testbox++;
 			} );
 
-			// after each spec in THIS suite group
-			afterEach( function(){
+			/**
+			 * --------------------------------------------------------------------------
+			 * Runs after each spec in THIS suite group or nested groups
+			 * --------------------------------------------------------------------------
+			 */
+			afterEach( () => {
 				foo = 0;
 			} );
 
 			/**
 			 * it() describes a spec to test. Usually the title is prefixed with the suite name to create an expression.
+			 * You can also use the aliases: then() to create fluent chains of human-readable expressions.
+			 *
 			 * Arguments:
 			 *
-			 * @title  The title of the spec
-			 * @spec   A closure that represents the test to execute
+			 * @title  The title of this spec
+			 * @body   The closure that represents the test
 			 * @labels The list or array of labels this spec belongs to
-			 * @skip   A flag that tells TestBox to skip this spec from testing if true
+			 * @skip   A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+			 * @data   A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+			 * @focused A flag that tells TestBox to only run this spec and no other
 			 */
-			it( "is just a closure so it can contain code", function(){
-				expect( coldbox ).toBe( 1 );
+			it( "can test for equality", () => {
+				expect( testbox ).toBe( 1 );
 			} );
 
-			// more than 1 expectation
-			it( "can have more than one expectation test", function(){
-				coldbox = coldbox * 8;
+			it( "can have more than one expectation to test", () => {
+				testbox = testbox * 8;
 				// type checks
-				expect( coldbox ).toBeTypeOf( "numeric" );
+				expect( testbox ).toBeTypeOf( "numeric" );
 				// dynamic type methods
-				expect( coldbox ).toBeNumeric();
+				expect( testbox ).toBeNumeric();
 				// delta ranges
-				expect( coldbox ).toBeCloseTo( expected = 10, delta = 2 );
-				// negations
-				expect( coldbox ).notToBe( 4 );
+				expect( testbox ).toBeCloseTo( expected = 10, delta = 2 );
 			} );
 
-			// negations
-			it( "can have negative expectations", function(){
-				coldbox = coldbox * 8;
+			it( "can have negative expectations", () => {
+				testbox = testbox * 8;
 				// type checks
-				expect( coldbox ).notToBeTypeOf( "usdate" );
+				expect( testbox ).notToBeTypeOf( "usdate" );
 				// dynamic type methods
-				expect( coldbox ).notToBeArray();
+				expect( testbox ).notToBeArray();
 				// delta ranges
-				expect( coldbox ).notToBeCloseTo( expected = 10, delta = 2 );
+				expect( testbox ).notToBeCloseTo( expected = 10, delta = 2 );
 			} );
 
-			// xit() skips
-			xit( "can have tests that can be skipped easily like this one", function(){
+			xit( "can have tests that can be skipped easily like this one by prefixing it with x", () => {
 				fail( "xit() this should skip" );
 			} );
 
-			// acf dynamic skips
 			it(
-				title = "can have tests that execute if the right environment exists (railo only)",
-				body  = function(){
-					expect( server ).toHaveKey( "railo" );
+				title = "can have tests that execute if the right environment exists (lucee only)",
+				body  = () => {
+					expect( server ).toHaveKey( "lucee" );
 				},
-				skip = ( !isRailo() )
+				skip = ( !isLucee() )
 			);
 
-			// railo dynamic skips
 			it(
-				title = "can have tests that execute if the right environment exists (acf only)",
-				body  = function(){
-					expect( server ).notToHaveKey( "railo" );
+				title = "can have tests that execute if the right environment exists (Adobe only)",
+				body  = () => {
+					expect( server ).notToHaveKey( "lucee" );
 				},
-				skip = ( isRailo() )
-			);
-
-			// specs with a random skip closure
-			it(
-				title = "can have a skip that is executed at runtime",
-				body  = function(){
-					fail( "Skipped programmatically, this should fail" );
-				},
-				skip = function(){
-					return true;
-				}
+				skip = ( isLucee() )
 			);
 		} );
 	}
 
-	private function isRailo(){
-		return ( structKeyExists( server, "railo" ) );
+	private function isLucee(){
+		return ( structKeyExists( server, "lucee" ) );
 	}
 
 }
