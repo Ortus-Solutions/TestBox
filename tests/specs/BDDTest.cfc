@@ -8,12 +8,10 @@ component extends="testbox.system.BaseSpec" {
 	function beforeAll(){
 		// print( "<h2>BDD Testing is Awesome!</h2>" );
 		console( "Executed beforeAll() at #now()# " );
-		application.salvador = 1;
 	}
 
 	function afterAll(){
 		console( "Executed afterAll() at #now()#" );
-		structClear( application );
 	}
 
 	/*********************************** BDD SUITES ***********************************/
@@ -115,6 +113,44 @@ component extends="testbox.system.BaseSpec" {
 					debug( " >1 expectation tests: coldbox = #coldbox#" );
 				} );
 
+				// ToInclude and ToBeIn
+				it( "can check includes with strings", function(){
+					expect( "Hola luis, how are you" ).toInclude( "luis" );
+					expect( "Hola luis, how are you" ).notToInclude( "pete" );
+				} );
+				it( "can check includes with arrays", function(){
+					expect( [ "l", "lui", "luis", "joe" ] ).toInclude( "luis" );
+					expect( [ "l", "lui", "joe" ] ).notToInclude( "luis" );
+				} );
+				it( "can check an expected needle to exist in a string", function(){
+					expect( "luis" ).toBeIn( "Hola luis, how are you" );
+					expect( "joe" ).notToBeIn( "Hola luis, how are you" );
+				} );
+				it( "can check an expected needle to exist in an array", function(){
+					expect( "luis" ).toBeIn( [ "l", "lui", "luis", "joe" ] );
+					expect( "luis" ).notToBeIn( [ "l", "lui", "joe" ] );
+				} );
+
+				// toStartWith
+				it( "can check if a string starts with the actual value", function(){
+					expect( "hello world" ).toStartWith( "hello" );
+					expect( "world peace" ).notToStartWith( "hello" );
+				} );
+				it( "can check if a string starts with the actual value with case-sensitivity", function(){
+					expect( "Hello world" ).toStartWithCase( "Hello" );
+					expect( "Hello peace" ).notToStartWithCase( "hello" );
+				} );
+
+				// toEndWith
+				it( "can check if a string ends with the actual value", function(){
+					expect( "hello world" ).toEndWith( "LD" );
+					expect( "world peace" ).notToEndWith( "world" );
+				} );
+				it( "can check if a string ends with the actual value with case-sensitivity", function(){
+					expect( "Hello world" ).toEndWithCase( "ld" );
+					expect( "Hello peace" ).notToEndWithCase( "peeee" );
+				} );
+
 				// negations
 				it( "can have negative expectations", function(){
 					coldbox = coldbox * 8;
@@ -202,7 +238,6 @@ component extends="testbox.system.BaseSpec" {
 						expect( e.message ).toBe( "The actual [10] is not less than [10]" );
 					}
 				} );
-
 
 				it( "can process structure key expectations", function(){
 					var s = { "data" : {}, "error" : {}, "name" : {}, "age" : 0 };

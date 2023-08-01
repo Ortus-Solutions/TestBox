@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### New Features
 
+- [TESTBOX-379](https://ortussolutions.atlassian.net/browse/TESTBOX-379) New expectations: `toBeIn(), toBeInWithCase()` so you can verify a needle in string or array targets
+- [TESTBOX-380](https://ortussolutions.atlassian.net/browse/TESTBOX-380) New matchers and assertions: `toStartWith(), toStartWithCase(), startsWith(), startsWthCase()` and their appropriate negations
+- [TESTBOX-381](https://ortussolutions.atlassian.net/browse/TESTBOX-381) New matchers and assertions: `toEndWith(), toEndWithCase(), endsWith(), endsWithCase()` and their appropriate negations
+
+### Bugs
+
+- [TESTBOX-378](https://ortussolutions.atlassian.net/browse/TESTBOX-378) onSpecError `suiteSpecs` is invalid, it's `suiteStats`
+
+## [5.2.0] - 2023-07-28
+
+### New Features
+
 - [TESTBOX-375](https://ortussolutions.atlassian.net/browse/TESTBOX-375) Updated mixerUtil for faster performance and new approaches to dynamic mixins
 - [TESTBOX-376](https://ortussolutions.atlassian.net/browse/TESTBOX-376) Add `bundlesPattern` to testbox.system.TestBox `init` method
 - [TESTBOX-377](https://ortussolutions.atlassian.net/browse/TESTBOX-377) TestBox Modules

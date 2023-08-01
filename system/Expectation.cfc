@@ -256,6 +256,78 @@ component accessors="true" {
 	}
 
 	/**
+	 * Asserts that the actual value starts with the expected value with no case sensitivity
+	 * expect( "Hello World" ).toStartWith( "hello" );
+	 *
+	 * @needle  The needle to test
+	 * @message The message to send in the failure
+	 */
+	function toStartWith( required needle, message = "" ){
+		arguments.target = this.actual;
+		if ( this.isNot ) {
+			variables.assert.notStartsWith( argumentCollection = arguments );
+		} else {
+			variables.assert.startsWith( argumentCollection = arguments );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Asserts that the actual value starts with the expected value with case sensitivity.
+	 * expect( "Hello World" ).toStartWithCase( "hello" );
+	 *
+	 * @needle  The needle to test
+	 * @message The message to send in the failure
+	 */
+	function toStartWithCase( required needle, message = "" ){
+		arguments.target = this.actual;
+		if ( this.isNot ) {
+			variables.assert.notStartsWithCase( argumentCollection = arguments );
+		} else {
+			variables.assert.startsWithCase( argumentCollection = arguments );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Asserts that the actual value ends with the expected value with no case sensitivity
+	 * expect( "Hello World" ).toEndWith( "ld" );
+	 *
+	 * @needle  The needle to test
+	 * @message The message to send in the failure
+	 */
+	function toEndWith( required needle, message = "" ){
+		arguments.target = this.actual;
+		if ( this.isNot ) {
+			variables.assert.notEndsWith( argumentCollection = arguments );
+		} else {
+			variables.assert.endsWith( argumentCollection = arguments );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Asserts that the actual value ends with the expected value with case sensitivity.
+	 * expect( "Hello World" ).toEndWithCase( "World" );
+	 *
+	 * @needle  The needle to test
+	 * @message The message to send in the failure
+	 */
+	function toEndWithCase( required needle, message = "" ){
+		arguments.target = this.actual;
+		if ( this.isNot ) {
+			variables.assert.notEndsWithCase( argumentCollection = arguments );
+		} else {
+			variables.assert.endsWithCase( argumentCollection = arguments );
+		}
+
+		return this;
+	}
+
+	/**
 	 * Assert that the actual data matches the incoming regular expression with case sensitivity
 	 *
 	 * @actual  The actual data to check
@@ -475,6 +547,38 @@ component accessors="true" {
 			variables.assert.notIncludes( argumentCollection = arguments );
 		} else {
 			variables.assert.includes( argumentCollection = arguments );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the actual value exists in the coming string or array list target with no case-sensitivity
+	 *
+	 * @target  The list or string or array to include the actual value
+	 * @message The message to send in the failure
+	 */
+	function toBeIn( required any target, message = "" ){
+		arguments.needle = this.actual;
+		if ( this.isNot ) {
+			variables.assert.notIncludes( argumentCollection = arguments );
+		} else {
+			variables.assert.includes( argumentCollection = arguments );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the actual value exists in the coming string or array list target with case-sensitivity
+	 *
+	 * @target  The list or string or array to include the actual value
+	 * @message The message to send in the failure
+	 */
+	function toBeInWithCase( required any target, message = "" ){
+		arguments.needle = this.actual;
+		if ( this.isNot ) {
+			variables.assert.notIncludesWithCase( argumentCollection = arguments );
+		} else {
+			variables.assert.includesWithCase( argumentCollection = arguments );
 		}
 		return this;
 	}
