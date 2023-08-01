@@ -9,8 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [5.2.0] - 2023-07-28
-
 ### New Features
 
 - [TESTBOX-379](https://ortussolutions.atlassian.net/browse/TESTBOX-379) New expectations: `toBeIn(), toBeInWithCase()` so you can verify a needle in string or array targets
