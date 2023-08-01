@@ -480,6 +480,38 @@ component accessors="true" {
 	}
 
 	/**
+	 * Assert that the actual value exists in the coming string or array list target with no case-sensitivity
+	 *
+	 * @target  The list or string or array to include the actual value
+	 * @message The message to send in the failure
+	 */
+	function toBeIn( required any target, message = "" ){
+		arguments.needle = this.actual;
+		if ( this.isNot ) {
+			variables.assert.notIncludes( argumentCollection = arguments );
+		} else {
+			variables.assert.includes( argumentCollection = arguments );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the actual value exists in the coming string or array list target with case-sensitivity
+	 *
+	 * @target  The list or string or array to include the actual value
+	 * @message The message to send in the failure
+	 */
+	function toBeInWithCase( required any target, message = "" ){
+		arguments.needle = this.actual;
+		if ( this.isNot ) {
+			variables.assert.notIncludesWithCase( argumentCollection = arguments );
+		} else {
+			variables.assert.includesWithCase( argumentCollection = arguments );
+		}
+		return this;
+	}
+
+	/**
 	 * Assert that the given "needle" argument exists in the incoming string or array with case-sensitivity
 	 *
 	 * @needle  The substring to find in a string or the value to find in an array
