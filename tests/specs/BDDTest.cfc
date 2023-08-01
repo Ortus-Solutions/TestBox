@@ -135,11 +135,11 @@ component extends="testbox.system.BaseSpec" {
 				it( "can check if a string starts with the actual value", function(){
 					expect( "hello world" ).toStartWith( "hello" );
 					expect( "world peace" ).notToStartWith( "hello" );
-				});
+				} );
 				it( "can check if a string starts with the actual value with case-sensitivity", function(){
 					expect( "Hello world" ).toStartWithCase( "Hello" );
 					expect( "Hello peace" ).notToStartWithCase( "hello" );
-				});
+				} );
 
 				// negations
 				it( "can have negative expectations", function(){

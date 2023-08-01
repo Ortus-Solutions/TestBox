@@ -932,7 +932,7 @@ component {
 			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't start with [#arguments.needle#]]"
 		);
 
-		if( toString( lcase( arguments.target ) ).startsWith( lcase( arguments.needle ) ) ){
+		if ( toString( lCase( arguments.target ) ).startsWith( lCase( arguments.needle ) ) ) {
 			return this;
 		}
 
@@ -953,13 +953,13 @@ component {
 		required string needle,
 		message = ""
 	){
-		try{
+		try {
 			startsWith( argumentCollection = arguments );
 			arguments.message = (
 				len( arguments.message ) ? arguments.message : "[#arguments.target#] actually starts with [#arguments.needle#]]"
 			);
 			fail( arguments.message );
-		} catch ( "TestBox.AssertionFailed" e ){
+		} catch ( "TestBox.AssertionFailed" e ) {
 			return this;
 		}
 	}
@@ -982,7 +982,7 @@ component {
 			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't start with [#arguments.needle#]]"
 		);
 
-		if( toString( arguments.target ).startsWith( arguments.needle ) ){
+		if ( toString( arguments.target ).startsWith( arguments.needle ) ) {
 			return this;
 		}
 
@@ -1003,13 +1003,13 @@ component {
 		required string needle,
 		message = ""
 	){
-		try{
+		try {
 			startsWithCase( argumentCollection = arguments );
 			arguments.message = (
 				len( arguments.message ) ? arguments.message : "[#arguments.target#] actually starts with [#arguments.needle#]]"
 			);
 			fail( arguments.message );
-		} catch ( "TestBox.AssertionFailed" e ){
+		} catch ( "TestBox.AssertionFailed" e ) {
 			return this;
 		}
 	}
