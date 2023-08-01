@@ -275,7 +275,7 @@ component accessors="true" {
 
 	/**
 	 * Asserts that the actual value starts with the expected value with case sensitivity.
-	 * expect( "Hello World" ).toStartWith( "hello" );
+	 * expect( "Hello World" ).toStartWithCase( "hello" );
 	 *
 	 * @needle  The needle to test
 	 * @message The message to send in the failure
@@ -286,6 +286,42 @@ component accessors="true" {
 			variables.assert.notStartsWithCase( argumentCollection = arguments );
 		} else {
 			variables.assert.startsWithCase( argumentCollection = arguments );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Asserts that the actual value ends with the expected value with no case sensitivity
+	 * expect( "Hello World" ).toEndWith( "ld" );
+	 *
+	 * @needle  The needle to test
+	 * @message The message to send in the failure
+	 */
+	function toEndWith( required needle, message = "" ){
+		arguments.target = this.actual;
+		if ( this.isNot ) {
+			variables.assert.notEndsWith( argumentCollection = arguments );
+		} else {
+			variables.assert.endsWith( argumentCollection = arguments );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Asserts that the actual value ends with the expected value with case sensitivity.
+	 * expect( "Hello World" ).toEndWithCase( "World" );
+	 *
+	 * @needle  The needle to test
+	 * @message The message to send in the failure
+	 */
+	function toEndWithCase( required needle, message = "" ){
+		arguments.target = this.actual;
+		if ( this.isNot ) {
+			variables.assert.notEndsWithCase( argumentCollection = arguments );
+		} else {
+			variables.assert.endsWithCase( argumentCollection = arguments );
 		}
 
 		return this;

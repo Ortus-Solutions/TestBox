@@ -1015,6 +1015,106 @@ component {
 	}
 
 	/**
+	 * Assert that the given target string ends with the given needle string with no case-sensitivity
+	 *
+	 * $assert.endsWith( "hello world", "World" );
+	 *
+	 * @target  The target string to check
+	 * @needle  The starts with string
+	 * @message The message to send in the failure
+	 */
+	function endsWith(
+		required string target,
+		required string needle,
+		message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't end with [#arguments.needle#]]"
+		);
+
+		if( toString( lcase( arguments.target ) ).endsWith( lcase( arguments.needle ) ) ){
+			return this;
+		}
+
+		fail( arguments.message );
+	}
+
+	/**
+	 * Assert that the given target string doesn't end with the given needle string with no case-sensitivity
+	 *
+	 * $assert.notEndsWith( "hello world", "peace" );
+	 *
+	 * @target  The target string to check
+	 * @needle  The starts with string
+	 * @message The message to send in the failure
+	 */
+	function notEndsWith(
+		required string target,
+		required string needle,
+		message = ""
+	){
+		try{
+			endsWith( argumentCollection = arguments );
+			arguments.message = (
+				len( arguments.message ) ? arguments.message : "[#arguments.target#] actually ends with [#arguments.needle#]]"
+			);
+			fail( arguments.message );
+		} catch ( "TestBox.AssertionFailed" e ){
+			return this;
+		}
+	}
+
+	/**
+	 * Assert that the given target string ends with the given needle string with case-sensitivity
+	 *
+	 * $assert.endsWith( "hello world", "ld" );
+	 *
+	 * @target  The target string to check
+	 * @needle  The starts with string
+	 * @message The message to send in the failure
+	 */
+	function endsWithCase(
+		required string target,
+		required string needle,
+		message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't end with [#arguments.needle#]]"
+		);
+
+		if( toString( arguments.target ).endsWith( arguments.needle ) ){
+			return this;
+		}
+
+		fail( arguments.message );
+	}
+
+	/**
+	 * Assert that the given target string doesn't end with the given needle string with case-sensitivity
+	 *
+	 * $assert.notEndsWith( "hello world", "ld" );
+	 *
+	 * @target  The target string to check
+	 * @needle  The starts with string
+	 * @message The message to send in the failure
+	 */
+	function notEndsWithCase(
+		required string target,
+		required string needle,
+		message = ""
+	){
+		try{
+			endsWithCase( argumentCollection = arguments );
+			arguments.message = (
+				len( arguments.message ) ? arguments.message : "[#arguments.target#] actually ends with [#arguments.needle#]]"
+			);
+			fail( arguments.message );
+		} catch ( "TestBox.AssertionFailed" e ){
+			return this;
+		}
+	}
+
+	/**
 	 * Assert that the actual value is greater than the target value
 	 *
 	 * @actual  The actual value

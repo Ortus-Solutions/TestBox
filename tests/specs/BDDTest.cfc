@@ -141,6 +141,16 @@ component extends="testbox.system.BaseSpec" {
 					expect( "Hello peace" ).notToStartWithCase( "hello" );
 				});
 
+				// toEndWith
+				it( "can check if a string ends with the actual value", function(){
+					expect( "hello world" ).toEndWith( "LD" );
+					expect( "world peace" ).notToEndWith( "world" );
+				});
+				it( "can check if a string ends with the actual value with case-sensitivity", function(){
+					expect( "Hello world" ).toEndWithCase( "ld" );
+					expect( "Hello peace" ).notToEndWithCase( "peeee" );
+				});
+
 				// negations
 				it( "can have negative expectations", function(){
 					coldbox = coldbox * 8;
