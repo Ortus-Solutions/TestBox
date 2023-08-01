@@ -115,21 +115,21 @@ component extends="testbox.system.BaseSpec" {
 
 				// ToInclude and ToBeIn
 				it( "can check includes with strings", function(){
-					expect(	"Hola luis, how are you" ).toInclude( "luis" );
-					expect(	"Hola luis, how are you" ).notToInclude( "pete" );
-				});
+					expect( "Hola luis, how are you" ).toInclude( "luis" );
+					expect( "Hola luis, how are you" ).notToInclude( "pete" );
+				} );
 				it( "can check includes with arrays", function(){
-					expect(	[ "l", "lui", "luis", "joe" ] ).toInclude( "luis" );
-					expect(	[ "l", "lui", "joe" ] ).notToInclude( "luis" );
-				});
+					expect( [ "l", "lui", "luis", "joe" ] ).toInclude( "luis" );
+					expect( [ "l", "lui", "joe" ] ).notToInclude( "luis" );
+				} );
 				it( "can check an expected needle to exist in a string", function(){
-					expect(	"luis" ).toBeIn( "Hola luis, how are you" );
-					expect(	"joe" ).notToBeIn( "Hola luis, how are you" );
-				});
+					expect( "luis" ).toBeIn( "Hola luis, how are you" );
+					expect( "joe" ).notToBeIn( "Hola luis, how are you" );
+				} );
 				it( "can check an expected needle to exist in an array", function(){
-					expect(	"luis" ).toBeIn( [ "l", "lui", "luis", "joe" ] );
-					expect(	"luis" ).notToBeIn( [ "l", "lui", "joe" ] );
-				});
+					expect( "luis" ).toBeIn( [ "l", "lui", "luis", "joe" ] );
+					expect( "luis" ).notToBeIn( [ "l", "lui", "joe" ] );
+				} );
 
 				// toStartWith
 				it( "can check if a string starts with the actual value", function(){
