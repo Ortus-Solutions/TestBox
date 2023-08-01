@@ -256,6 +256,42 @@ component accessors="true" {
 	}
 
 	/**
+	 * Asserts that the actual value starts with the expected value with no case sensitivity
+	 * expect( "Hello World" ).toStartWith( "hello" );
+	 *
+	 * @needle  The needle to test
+	 * @message The message to send in the failure
+	 */
+	function toStartWith( required needle, message = "" ){
+		arguments.target = this.actual;
+		if ( this.isNot ) {
+			variables.assert.notStartsWith( argumentCollection = arguments );
+		} else {
+			variables.assert.startsWith( argumentCollection = arguments );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Asserts that the actual value starts with the expected value with case sensitivity.
+	 * expect( "Hello World" ).toStartWith( "hello" );
+	 *
+	 * @needle  The needle to test
+	 * @message The message to send in the failure
+	 */
+	function toStartWithCase( required needle, message = "" ){
+		arguments.target = this.actual;
+		if ( this.isNot ) {
+			variables.assert.notStartsWithCase( argumentCollection = arguments );
+		} else {
+			variables.assert.startsWithCase( argumentCollection = arguments );
+		}
+
+		return this;
+	}
+
+	/**
 	 * Assert that the actual data matches the incoming regular expression with case sensitivity
 	 *
 	 * @actual  The actual data to check

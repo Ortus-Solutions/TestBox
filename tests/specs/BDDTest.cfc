@@ -113,6 +113,7 @@ component extends="testbox.system.BaseSpec" {
 					debug( " >1 expectation tests: coldbox = #coldbox#" );
 				} );
 
+				// ToInclude and ToBeIn
 				it( "can check includes with strings", function(){
 					expect(	"Hola luis, how are you" ).toInclude( "luis" );
 					expect(	"Hola luis, how are you" ).notToInclude( "pete" );
@@ -130,6 +131,15 @@ component extends="testbox.system.BaseSpec" {
 					expect(	"luis" ).notToBeIn( [ "l", "lui", "joe" ] );
 				});
 
+				// toStartWith
+				it( "can check if a string starts with the actual value", function(){
+					expect( "hello world" ).toStartWith( "hello" );
+					expect( "world peace" ).notToStartWith( "hello" );
+				});
+				it( "can check if a string starts with the actual value with case-sensitivity", function(){
+					expect( "Hello world" ).toStartWithCase( "Hello" );
+					expect( "Hello peace" ).notToStartWithCase( "hello" );
+				});
 
 				// negations
 				it( "can have negative expectations", function(){

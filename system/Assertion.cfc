@@ -915,6 +915,106 @@ component {
 	}
 
 	/**
+	 * Assert that the given target string starts with the given needle string with no case-sensitivity
+	 *
+	 * $assert.startsWith( "hello world", "hello" );
+	 *
+	 * @target  The target string to check
+	 * @needle  The starts with string
+	 * @message The message to send in the failure
+	 */
+	function startsWith(
+		required string target,
+		required string needle,
+		message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't start with [#arguments.needle#]]"
+		);
+
+		if( toString( lcase( arguments.target ) ).startsWith( lcase( arguments.needle ) ) ){
+			return this;
+		}
+
+		fail( arguments.message );
+	}
+
+	/**
+	 * Assert that the given target string doesn't start with the given needle string with no case-sensitivity
+	 *
+	 * $assert.notStartsWith( "hello world", "hello" );
+	 *
+	 * @target  The target string to check
+	 * @needle  The starts with string
+	 * @message The message to send in the failure
+	 */
+	function notStartsWith(
+		required string target,
+		required string needle,
+		message = ""
+	){
+		try{
+			startsWith( argumentCollection = arguments );
+			arguments.message = (
+				len( arguments.message ) ? arguments.message : "[#arguments.target#] actually starts with [#arguments.needle#]]"
+			);
+			fail( arguments.message );
+		} catch ( "TestBox.AssertionFailed" e ){
+			return this;
+		}
+	}
+
+	/**
+	 * Assert that the given target string starts with the given needle string with case-sensitivity
+	 *
+	 * $assert.startsWith( "hello world", "hello" );
+	 *
+	 * @target  The target string to check
+	 * @needle  The starts with string
+	 * @message The message to send in the failure
+	 */
+	function startsWithCase(
+		required string target,
+		required string needle,
+		message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't start with [#arguments.needle#]]"
+		);
+
+		if( toString( arguments.target ).startsWith( arguments.needle ) ){
+			return this;
+		}
+
+		fail( arguments.message );
+	}
+
+	/**
+	 * Assert that the given target string doesn't start with the given needle string with case-sensitivity
+	 *
+	 * $assert.notStartsWith( "hello world", "hello" );
+	 *
+	 * @target  The target string to check
+	 * @needle  The starts with string
+	 * @message The message to send in the failure
+	 */
+	function notStartsWithCase(
+		required string target,
+		required string needle,
+		message = ""
+	){
+		try{
+			startsWithCase( argumentCollection = arguments );
+			arguments.message = (
+				len( arguments.message ) ? arguments.message : "[#arguments.target#] actually starts with [#arguments.needle#]]"
+			);
+			fail( arguments.message );
+		} catch ( "TestBox.AssertionFailed" e ){
+			return this;
+		}
+	}
+
+	/**
 	 * Assert that the actual value is greater than the target value
 	 *
 	 * @actual  The actual value
