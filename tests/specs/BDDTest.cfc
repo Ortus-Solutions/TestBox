@@ -145,11 +145,11 @@ component extends="testbox.system.BaseSpec" {
 				it( "can check if a string ends with the actual value", function(){
 					expect( "hello world" ).toEndWith( "LD" );
 					expect( "world peace" ).notToEndWith( "world" );
-				});
+				} );
 				it( "can check if a string ends with the actual value with case-sensitivity", function(){
 					expect( "Hello world" ).toEndWithCase( "ld" );
 					expect( "Hello peace" ).notToEndWithCase( "peeee" );
-				});
+				} );
 
 				// negations
 				it( "can have negative expectations", function(){

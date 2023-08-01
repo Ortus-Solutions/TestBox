@@ -1032,7 +1032,7 @@ component {
 			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't end with [#arguments.needle#]]"
 		);
 
-		if( toString( lcase( arguments.target ) ).endsWith( lcase( arguments.needle ) ) ){
+		if ( toString( lCase( arguments.target ) ).endsWith( lCase( arguments.needle ) ) ) {
 			return this;
 		}
 
@@ -1053,13 +1053,13 @@ component {
 		required string needle,
 		message = ""
 	){
-		try{
+		try {
 			endsWith( argumentCollection = arguments );
 			arguments.message = (
 				len( arguments.message ) ? arguments.message : "[#arguments.target#] actually ends with [#arguments.needle#]]"
 			);
 			fail( arguments.message );
-		} catch ( "TestBox.AssertionFailed" e ){
+		} catch ( "TestBox.AssertionFailed" e ) {
 			return this;
 		}
 	}
@@ -1082,7 +1082,7 @@ component {
 			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't end with [#arguments.needle#]]"
 		);
 
-		if( toString( arguments.target ).endsWith( arguments.needle ) ){
+		if ( toString( arguments.target ).endsWith( arguments.needle ) ) {
 			return this;
 		}
 
@@ -1103,13 +1103,13 @@ component {
 		required string needle,
 		message = ""
 	){
-		try{
+		try {
 			endsWithCase( argumentCollection = arguments );
 			arguments.message = (
 				len( arguments.message ) ? arguments.message : "[#arguments.target#] actually ends with [#arguments.needle#]]"
 			);
 			fail( arguments.message );
-		} catch ( "TestBox.AssertionFailed" e ){
+		} catch ( "TestBox.AssertionFailed" e ) {
 			return this;
 		}
 	}
