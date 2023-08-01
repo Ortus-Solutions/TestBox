@@ -1041,7 +1041,7 @@ component {
 						arguments.spec,
 						specStats,
 						arguments.suite,
-						arguments.suiteSpecs,
+						arguments.suiteStats,
 						arguments.testResults
 					]
 				);
