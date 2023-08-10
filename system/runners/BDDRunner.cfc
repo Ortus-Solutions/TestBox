@@ -153,7 +153,7 @@ component
 						e,
 						arguments.target,
 						arguments.testResults,
-						thisSuite
+						thisSuite?:""
 					]
 				);
 			}
