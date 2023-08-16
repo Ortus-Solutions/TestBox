@@ -49,6 +49,7 @@ jobs:
         uses: Ortus-Solutions/setup-commandbox@v2.0.1
         with:
           version: ${{ matrix.commandbox_version }}
+          install: testbox-cli
 
       - name: Install Dependencies
         run: |
