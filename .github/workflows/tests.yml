@@ -11,6 +11,7 @@ jobs:
   tests:
     name: Test Suites
     runs-on: ubuntu-20.04
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       fail-fast: false
       matrix:
