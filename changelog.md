@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- The variable `thisSuite` isn't defined if the for loop in the try/catch is never reached before the error.
+ (https://github.com/Ortus-Solutions/TestBox/pull/150)
+
 ## [5.3.0] - 2023-08-01
 
 ### New Features
