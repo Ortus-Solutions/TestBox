@@ -9,10 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.3.1] - 2023-09-13
+
 ### Fixed
 
 - The variable `thisSuite` isn't defined if the for loop in the try/catch is never reached before the error.
- (https://github.com/Ortus-Solutions/TestBox/pull/150)
+    (<https://github.com/Ortus-Solutions/TestBox/pull/150>)
 
 ## [5.3.0] - 2023-08-01
 
@@ -85,7 +87,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [TESTBOX-365](https://ortussolutions.atlassian.net/browse/TESTBOX-365) New build process using CommandBox
 - [TESTBOX-372](https://ortussolutions.atlassian.net/browse/TESTBOX-372) Adobe 2023 and Lucee 6 Support
 
-[Unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v5.3.0...HEAD
+[Unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v5.3.1...HEAD
+
+[5.3.1]: https://github.com/Ortus-Solutions/TestBox/compare/v5.3.0...v5.3.1
 
 [5.3.0]: https://github.com/Ortus-Solutions/TestBox/compare/v5.2.0...v5.3.0
 
