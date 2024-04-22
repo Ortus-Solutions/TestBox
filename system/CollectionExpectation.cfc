@@ -36,17 +36,12 @@ component accessors="true" {
 	function onMissingMethod( string missingMethodName, any missingMethodArguments ){
 		if ( isArray( variables.actual ) ) {
 			for ( var e in variables.actual ) {
-				// Using evaluate since invoke looses track of positional argument collections
-				evaluate(
-					"variables.spec.expect( e ).#arguments.missingMethodName#( argumentCollection=arguments.missingMethodArguments )"
-				);
+				invoke( variables.spec.expect( e ), arguments.missingMethodName, arguments.missingMethodArguments );
 			}
 		} else if ( isStruct( variables.actual ) ) {
 			for ( var k in variables.actual ) {
 				var e = variables.actual[ k ];
-				evaluate(
-					"variables.spec.expect( e ).#arguments.missingMethodName#( argumentCollection=arguments.missingMethodArguments )"
-				);
+				invoke( variables.spec.expect( e ), arguments.missingMethodName, arguments.missingMethodArguments );
 			}
 		} else {
 			variables.assert.fail( "expectAll() actual is neither array nor struct" );

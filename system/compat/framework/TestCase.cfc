@@ -393,7 +393,7 @@ component extends="testbox.system.BaseSpec" {
 	 * Assert something is defined or not
 	 */
 	function assertIsDefined( required o, message = "" ){
-		this.$assert.isTrue( isDefined( evaluate( "arguments.o" ) ), arguments.message );
+		this.$assert.isTrue( isDefined( "#arguments.o#" ), arguments.message );
 	}
 
 	/**

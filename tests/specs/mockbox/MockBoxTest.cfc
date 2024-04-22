@@ -401,7 +401,7 @@
 		$assert.isEqual( "Majano", mock.$getProperty( name = "luis", scope = "this" ) );
 		$assert.isEqual( true, mock.$getProperty( name = "cool" ) );
 		$assert.isEqual( true, mock.$getProperty( name = "cool", scope = "variables" ) );
-		$assert.isEqual( 7, mock.$getProperty( name = "number", scope = "variables.instance" ) );
+		$assert.isEqual( 7, mock.$getProperty( name = "number", scope = "instance" ) );
 		$assert.isEqual( 7, mock.$getProperty( name = "number", scope = "instance" ) );
 	}
 
