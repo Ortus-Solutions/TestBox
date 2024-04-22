@@ -110,7 +110,7 @@ component {
 	boolean function inThread(){
 		var engine = "LUCEE";
 
-		if ( server.keyExists( "coldfusion" ) && server.coldfusion.productname.findNoCase( "ColdFusion") ) {
+		if ( server.keyExists( "coldfusion" ) && server.coldfusion.productname.findNoCase( "ColdFusion" ) ) {
 			engine = "ADOBE";
 		}
 

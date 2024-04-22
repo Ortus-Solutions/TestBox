@@ -17,7 +17,7 @@ component {
 	 * Helper method to deal with ACF2016's overload of the page context response, come on Adobe, get your act together!
 	 */
 	function getPageContextResponse(){
-		if( server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion") ){
+		if ( server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" ) ) {
 			return getPageContext().getResponse().getResponse();
 		} else {
 			return getPageContext().getResponse();
