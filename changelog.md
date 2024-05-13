@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [TESTBOX-385](https://ortussolutions.atlassian.net/browse/TESTBOX-385) Remove all unsafe references to evaluate
 - [TESTBOX-386](https://ortussolutions.atlassian.net/browse/TESTBOX-386) Add lists of runners to Browser Page
 - [TESTBOX-387](https://ortussolutions.atlassian.net/browse/TESTBOX-387) more compats on engine detection
+- [TESTBOX-388](https://ortussolutions.atlassian.net/browse/TESTBOX-388) Adobe 2023 Certification
 
 ## [5.3.1] - 2023-09-13
 
