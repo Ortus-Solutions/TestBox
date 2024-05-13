@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.4.0] - 2024-05-13
+
 ### Improvement
 
 - [TESTBOX-385](https://ortussolutions.atlassian.net/browse/TESTBOX-385) Remove all unsafe references to evaluate
