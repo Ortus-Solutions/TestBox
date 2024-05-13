@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.4.0] - 2024-05-13
+
 ### Improvement
 
 - [TESTBOX-385](https://ortussolutions.atlassian.net/browse/TESTBOX-385) Remove all unsafe references to evaluate
@@ -95,6 +97,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [TESTBOX-372](https://ortussolutions.atlassian.net/browse/TESTBOX-372) Adobe 2023 and Lucee 6 Support
 
 [Unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v5.3.1...HEAD
+
+[5.4.0]: https://github.com/Ortus-Solutions/TestBox/compare/v5.3.1...v5.4.0
 
 [5.3.1]: https://github.com/Ortus-Solutions/TestBox/compare/v5.3.0...v5.3.1
 
