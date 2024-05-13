@@ -108,10 +108,10 @@ component {
 	 * Check if you are in cfthread or not for any CFML Engine
 	 */
 	boolean function inThread(){
-		var engine = "ADOBE";
+		var engine = "LUCEE";
 
-		if ( server.coldfusion.productname eq "Lucee" ) {
-			engine = "LUCEE";
+		if ( server.keyExists( "coldfusion" ) && server.coldfusion.productname.findNoCase( "ColdFusion" ) ) {
+			engine = "ADOBE";
 		}
 
 		switch ( engine ) {

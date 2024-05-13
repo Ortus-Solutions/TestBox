@@ -292,7 +292,12 @@ The Official ColdBox Mocking Factory
 		/>
 		<cfargument name="default" required="false" hint="Default value to return if property does not exist"/>
 		<cfscript>
-		var thisScope = evaluate( "#arguments.scope#" );
+		var thisScope = variables;
+		if ( arguments.scope == "this" ) {
+			thisScope = this;
+		} else if ( !isNull( variables ) && variables.keyExists( arguments.scope ) ) {
+			thisScope = variables[ arguments.scope ];
+		}
 
 		if ( structKeyExists( thisScope, arguments.name ) ) {
 			return thisScope[ arguments.name ];
@@ -304,7 +309,7 @@ The Official ColdBox Mocking Factory
 		</cfscript>
 		<cfthrow
 			type   ="MockBox.PropertyDoesNotExist"
-			message="The property requested #arguments.name# does not exist in the #arguments.scope# scope"
+			message="The property requested [#arguments.name#] does not exist in the [#arguments.scope#] scope"
 		>
 	</cffunction>
 

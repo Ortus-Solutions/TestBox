@@ -164,7 +164,11 @@ component accessors="true" {
 	 * Removes a method in a CFC
 	 */
 	function removePropertyMixin( required propertyName, scope = "variables" ){
-		structDelete( evaluate( arguments.scope ), arguments.propertyName );
+		if ( arguments.scope eq "variables" ) {
+			structDelete( variables, arguments.propertyName );
+		} else {
+			structDelete( this, arguments.propertyName );
+		}
 		return this;
 	}
 
