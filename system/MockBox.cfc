@@ -136,7 +136,7 @@ component accessors=true {
 			return createMock( className = "testbox.system.mockutils.Stub", callLogging = arguments.callLogging );
 		}
 		// Generate the class + Create it + Remove it
-		return prepareMock( variables.mockGenerator.generateCFC( argumentCollection = arguments ) );
+		return prepareMock( variables.mockGenerator.generateClass( argumentCollection = arguments ) );
 	}
 
 	/**
@@ -624,7 +624,7 @@ component accessors=true {
 					)
 				)
 			) {
-				// If an object and CFC, just use serializeJSON
+				// If an object and a class, just use serializeJSON
 				serializedArgs &= serializeJSON( getMetadata( argOrderedTree[ arg ] ) );
 			} else {
 				// Get obj rep

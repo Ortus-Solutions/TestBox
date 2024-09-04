@@ -34,7 +34,7 @@ component accessors="true" {
 	property name="coverageEnabled" type="boolean";
 	property name="coverageData"    type="struct";
 
-	// CFML Engine Information
+	// Engine Information
 	property name="CFMLEngine";
 	property name="CFMLEngineVersion";
 

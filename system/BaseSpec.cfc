@@ -786,7 +786,7 @@ component {
 	/**
 	 * Add custom matchers to your expectations
 	 *
-	 * @matchers The structure of custom matcher functions to register or a path or instance of a CFC containing all the matcher functions to register
+	 * @matchers The structure of custom matcher functions to register or a path or instance of a class containing all the matcher functions to register
 	 */
 	function addMatchers( required any matchers ){
 		// register structure
@@ -796,7 +796,7 @@ component {
 			return this;
 		}
 
-		// Build the Matcher CFC
+		// Build the Matcher
 		var oMatchers = "";
 		if ( isSimpleValue( arguments.matchers ) ) {
 			oMatchers = new "#arguments.matchers#"( );
@@ -821,7 +821,7 @@ component {
 	/**
 	 * Add custom assertions to the $assert object
 	 *
-	 * @assertions The structure of custom assertion functions to register or a path or instance of a CFC containing all the assertion functions to register
+	 * @assertions The structure of custom assertion functions to register or a path or instance of a class containing all the assertion functions to register
 	 */
 	function addAssertions( required any assertions ){
 		// register structure
@@ -831,7 +831,7 @@ component {
 			return this;
 		}
 
-		// Build the Custom Assertion CFC
+		// Build the Custom Assertion
 		var oAssertions = "";
 		if ( isSimpleValue( arguments.assertions ) ) {
 			oAssertions = new "#arguments.assertions#"( );
@@ -886,7 +886,7 @@ component {
 	}
 
 	/**
-	 * Run a BDD test in this target CFC
+	 * Run a BDD test in this target
 	 *
 	 * @spec        The spec definition to test
 	 * @suite       The suite definition this spec belongs to
@@ -1265,7 +1265,7 @@ component {
 	}
 
 	/**
-	 * Runs a xUnit style test method in this target CFC
+	 * Runs a xUnit style test method in this target
 	 *
 	 * @spec        The spec definition to test
 	 * @testResults The testing results object
@@ -1465,7 +1465,7 @@ component {
 	/************************************** MOCKING METHODS *********************************************/
 
 	/**
-	 * Make a private method on a CFC public with or without a new name and returns the target object
+	 * Make a private method on a class public with or without a new name and returns the target object
 	 *
 	 * @target  The target object to expose the method
 	 * @method  The private method to expose
@@ -1627,7 +1627,7 @@ component {
 	 * Create an empty stub object that you can use for mocking
 	 *
 	 * @callLogging Add method call logging for all mocked methods. Defaults to true
-	 * @extends     Make the stub extend from certain CFC
+	 * @extends     Make the stub extend from certain class
 	 * @implements  Make the stub adhere to an interface
 	 */
 	function createStub(

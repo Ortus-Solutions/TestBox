@@ -31,9 +31,9 @@ component
 	/**
 	 * Execute a BDD test on the incoming target and store the results in the incoming test results
 	 *
-	 * @target.hint      The target bundle CFC to test
+	 * @target.hint      The target bundle class to test
 	 * @testResults.hint The test results object to keep track of results for this test case
-	 * @callbacks        A struct of listener callbacks or a CFC with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
+	 * @callbacks        A struct of listener callbacks or a class with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
 	 */
 	any function run(
 		required any target,
@@ -173,11 +173,11 @@ component
 	/**
 	 * Test the incoming suite definition
 	 *
-	 * @target.hint      The target bundle CFC
+	 * @target.hint      The target bundle class
 	 * @method.hint      The method definition to test
 	 * @testResults.hint The testing results object
 	 * @bundleStats.hint The bundle stats this suite belongs to
-	 * @callbacks        The CFC or struct of callback listener methods
+	 * @callbacks        The class or struct of callback listener methods
 	 */
 	private function testSuite(
 		required target,

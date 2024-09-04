@@ -13,7 +13,7 @@ component accessors="true" {
 	property name="codename";
 	// The main utility object
 	property name="utility";
-	// The CFC bundles to test
+	// The class bundles to test
 	property name="bundles";
 	// The labels used for the testing
 	property name="labels";
@@ -38,8 +38,8 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @bundles        The path, list of paths or array of paths of the spec bundle CFCs to run and test
-	 * @directory      The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	 * @bundles        The path, list of paths or array of paths of the spec bundle classes to run and test
+	 * @directory      The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the class found, it must return true to process or false to continue process ]
 	 * @directories    Same as @directory, but accepts an array or list
 	 * @reporter       The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a testbox.system.reports.IReporter
 	 * @labels         The list or array of labels that a suite or spec must have in order to execute.
@@ -105,6 +105,17 @@ component accessors="true" {
 		// Register Modules
 		directoryList( modulesPath, true, "path", "ModuleConfig.cfc" )
 			.map( ( item ) => item.replaceNoCase( "ModuleConfig.cfc", "" ) )
+			.each( ( path ) => {
+				registerModule(
+					"testbox" & arguments.path
+						.replaceNoCase( variables.TESTBOX_PATH, "" )
+						.reReplace( "[\\\/]", ".", "all" )
+						.reReplace( "\.$", "", "all" )
+				);
+			} );
+
+		directoryList( modulesPath, true, "path", "ModuleConfig.bx" )
+			.map( ( item ) => item.replaceNoCase( "ModuleConfig.bx", "" ) )
 			.each( ( path ) => {
 				registerModule(
 					"testbox" & arguments.path
@@ -249,7 +260,7 @@ component accessors="true" {
 	/**
 	 * Register a directory to test
 	 *
-	 * @directory A directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	 * @directory A directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the class found, it must return true to process or false to continue process ]
 	 */
 	any function addDirectory( required any directory, boolean recurse = true ){
 		// inflate directory?
@@ -271,7 +282,7 @@ component accessors="true" {
 	/**
 	 * Constructor
 	 *
-	 * @directories A set of directories to test which can be a list of simple mapping paths or an array of structs with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	 * @directories A set of directories to test which can be a list of simple mapping paths or an array of structs with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the class found, it must return true to process or false to continue process ]
 	 */
 	any function addDirectories( required any directories, boolean recurse = true ){
 		if ( isSimpleValue( arguments.directories ) ) {
@@ -286,7 +297,7 @@ component accessors="true" {
 	/**
 	 * Add bundles to the TestBox `bundles` target to test
 	 *
-	 * @bundles The path, list of paths or array of paths of the spec bundle CFCs to run and test
+	 * @bundles The path, list of paths or array of paths of the spec bundle classess to run and test
 	 */
 	any function addBundles( required any bundles ){
 		if ( isSimpleValue( arguments.bundles ) ) {
@@ -302,8 +313,8 @@ component accessors="true" {
 	 * Run me some testing goodness, this can use the constructed object variables or the ones
 	 * you can send right here.
 	 *
-	 * @bundles      The path, list of paths or array of paths of the spec bundle CFCs to run and test
-	 * @directory    The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	 * @bundles      The path, list of paths or array of paths of the spec bundle classes to run and test
+	 * @directory    The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the class found, it must return true to process or false to continue process ]
 	 * @reporter     The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a testbox.system.reports.IReporter. You can also pass a struct if the reporter requires options: {type="", options={}}
 	 * @labels       The list or array of labels that a suite or spec must have in order to execute.
 	 * @excludes     The list or array of labels that a suite or spec must not have in order to execute.
@@ -311,7 +322,7 @@ component accessors="true" {
 	 * @testBundles  A list or array of bundle names that are the ones that will be executed ONLY!
 	 * @testSuites   A list or array of suite names that are the ones that will be executed ONLY!
 	 * @testSpecs    A list or array of test names that are the ones that will be executed ONLY!
-	 * @callbacks    A struct of listener callbacks or a CFC with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
+	 * @callbacks    A struct of listener callbacks or a class with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
 	 * @eagerFailure If this boolean is set to true, then execution of more bundle tests will stop once the first failure/error is detected. By default this is false.
 	 */
 	any function run(
@@ -346,15 +357,15 @@ component accessors="true" {
 	/**
 	 * Run me some testing goodness but give you back the raw TestResults object instead of a report
 	 *
-	 * @bundles      The path, list of paths or array of paths of the spec bundle CFCs to run and test
-	 * @directory    The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	 * @bundles      The path, list of paths or array of paths of the spec bundle classes to run and test
+	 * @directory    The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the class found, it must return true to process or false to continue process ]
 	 * @labels       The list or array of labels that a suite or spec must have in order to execute.
 	 * @excludes     The list or array of labels that a suite or spec must not have in order to execute.
 	 * @options      A structure of configuration options that are optionally used to configure a runner.
 	 * @testBundles  A list or array of bundle names that are the ones that will be executed ONLY!
 	 * @testSuites   A list or array of suite names that are the ones that will be executed ONLY!
 	 * @testSpecs    A list or array of test names that are the ones that will be executed ONLY!
-	 * @callbacks    A struct of listener callbacks or a CFC with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
+	 * @callbacks    A struct of listener callbacks or a class with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
 	 * @eagerFailure If this boolean is set to true, then execution of more bundle tests will stop once the first failure/error is detected. By default this is false.
 	 */
 	testbox.system.TestResult function runRaw(
@@ -486,7 +497,7 @@ component accessors="true" {
 	/**
 	 * Run me some testing goodness, remotely via SOAP, Flex, REST, URL
 	 *
-	 * @bundles         The path or list of paths of the spec bundle CFCs to run and test
+	 * @bundles         The path or list of paths of the spec bundle classes to run and test
 	 * @directory       The directory mapping to test: directory = the path to the directory using dot notation (myapp.testing.specs)
 	 * @recurse         Recurse the directory mapping or not, by default it does
 	 * @reporter        The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or a class path to the reporter to use.
@@ -693,11 +704,11 @@ component accessors="true" {
 	/***************************************** PRIVATE ************************************************************/
 
 	/**
-	 * This method executes the tests in a bundle CFC according to type. If the testing was ok a true is returned.
+	 * This method executes the tests in a bundle class according to type. If the testing was ok a true is returned.
 	 *
-	 * @bundlePath  The path of the Bundle CFC to test.
+	 * @bundlePath  The path of the Bundle class to test.
 	 * @testResults The testing results object to keep track of results
-	 * @callbacks   The callbacks struct or CFC
+	 * @callbacks   The callbacks struct or class
 	 *
 	 * @throws BundleRunnerMajorException
 	 */
@@ -760,9 +771,9 @@ component accessors="true" {
 	}
 
 	/**
-	 * Creates and returns a bundle CFC with spec capabilities if not inherited.
+	 * Creates and returns a bundle class with spec capabilities if not inherited.
 	 *
-	 * @bundlePath The path to the Bundle CFC
+	 * @bundlePath The path to the Bundle class
 	 *
 	 * @throws AbstractComponentException - When an abstract component exists as a spec
 	 */
@@ -806,7 +817,7 @@ component accessors="true" {
 	/**
 	 * Get an array of spec paths from a directory
 	 *
-	 * @directory The directory information struct to test: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the CFC found, it must return true to process or false to continue process ]
+	 * @directory The directory information struct to test: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the class found, it must return true to process or false to continue process ]
 	 */
 	private function getSpecPaths( required directory ){
 		var results = [];

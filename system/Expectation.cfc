@@ -2,7 +2,7 @@
  * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * The Expectation CFC holds a current expectation with all the required matcher methods to provide you
+ * The Expectation class holds a current expectation with all the required matcher methods to provide you
  * with awesome BDD expressions and testing.
  */
 component accessors="true" {
@@ -113,7 +113,7 @@ component accessors="true" {
 		// throw exception
 		throw(
 			type    = "InvalidMethod",
-			message = "The dynamic/static method: #arguments.missingMethodName# does not exist in this CFC",
+			message = "The dynamic/static method: #arguments.missingMethodName# does not exist in this class",
 			detail  = "Available methods are #structKeyArray( this ).toString()#"
 		);
 	}

@@ -344,30 +344,36 @@ A mock generator
 		</cfif>
 	</cffunction>
 
-	<!--- generateCFC --->
+	<!--- generateClass --->
 	<cffunction
-		name      ="generateCFC"
+		name      ="generateClass"
 		output    ="false"
 		access    ="public"
 		returntype="any"
-		hint      ="Generate CFC's according to specs"
+		hint      ="Generate classes according to specs"
 	>
-		<cfargument name="extends" type="string" required="false" default="" hint="The class the CFC should extend"/>
+		<cfargument
+			name    ="extends"
+			type    ="string"
+			required="false"
+			default =""
+			hint    ="The class the class should extend"
+		/>
 		<cfargument
 			name    ="implements"
 			type    ="string"
 			required="false"
 			default =""
-			hint    ="The class(es) the CFC should implement"
+			hint    ="The class(es) the class should implement"
 		/>
 		<cfscript>
-		var udfOut   = createObject( "java", "java.lang.StringBuilder" ).init( "" );
-		var genPath  = expandPath( instance.mockBox.getGenerationPath() );
-		var tmpFile  = "";
-		var cfcPath  = "";
-		var oStub    = "";
-		var local    = {};
-		var stubCode = "";
+		var udfOut    = createObject( "java", "java.lang.StringBuilder" ).init( "" );
+		var genPath   = expandPath( instance.mockBox.getGenerationPath() );
+		var tmpFile   = "";
+		var classPath = "";
+		var oStub     = "";
+		var local     = {};
+		var stubCode  = "";
 
 		// Create CFC Signature
 		udfOut.append( "<cfcomponent output=""false"" hint=""A MockBox awesome Component""" );
@@ -401,14 +407,14 @@ A mock generator
 
 		try {
 			// create stub + clean first . if found.
-			cfcPath = replace(
+			classPath = replace(
 				instance.mockBox.getGenerationPath(),
 				"/",
 				".",
 				"all"
 			) & listFirst( tmpFile, "." );
-			cfcPath = reReplace( cfcPath, "^\.", "" );
-			oStub   = createObject( "component", cfcPath );
+			classPath = reReplace( classPath, "^\.", "" );
+			oStub     = createObject( "component", classPath );
 			// Remove Stub
 			removeStub( genPath & tmpFile );
 			// Return it

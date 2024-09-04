@@ -1,0 +1,33 @@
+{
+    "app":{
+        "cfengine":"boxlang@be",
+        "serverHomeDirectory":".engine/boxlang"
+    },
+    "name":"coldbox-boxlang",
+    "force":true,
+    "openBrowser":false,
+    "web":{
+        "directoryBrowsing":true,
+        "http":{
+            "port":"8599"
+        },
+        "rewrites":{
+            "enable":true
+        },
+        "aliases":{
+            "/testbox":"./"
+        }
+    },
+    "JVM":{
+        "heapSize":"1024"
+    },
+    "cfconfig":{
+        "file":".cfconfig.json"
+    },
+    "env":{
+		"BOXLANG_DEBUG": true
+    },
+	"scripts" : {
+		"onServerInitialInstall":"install bx-compat"
+	}
+}

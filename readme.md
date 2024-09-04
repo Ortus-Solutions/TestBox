@@ -17,7 +17,7 @@
 
 ----
 
-TestBox is a Behavior Driven Development (BDD) and Test Driven Development (TDD) framework for ColdFusion (CFML). It also includes mocking and stubbing capabilities via its internal MockBox library.
+TestBox is a Behavior Driven Development (BDD) and Test Driven Development (TDD) framework for [BoxLang JVM Language](https://www.boxlang.io) and ColdFusion (CFML). It also includes mocking and stubbing capabilities via its internal MockBox library.
 
 ## License
 
@@ -70,6 +70,7 @@ Join us in our Ortus Community and become a valuable member of this project [Tes
 
 ## Requirements
 
+* BoxLang 1+
 * Lucee 5+
 * Adobe ColdFusion 2018+
 
@@ -77,8 +78,7 @@ Join us in our Ortus Community and become a valuable member of this project [Tes
 
 You can visit the TestBox documentation page to view all of its features and
 capabilities.  To install TestBox just drop it in your web root as `/testbox` or
-create a mapping in your CFML administrator or `Application.cfc` that points to the
-directory you installed TestBox and create the mapping `/testbox` that points to it.
+create a mapping `/testbox` that points to it.
 
 You can also use [CommandBox](https://www.ortussolutions.com/products/commandbox) to install and leverage TestBox for commandline executions, test generations, watchers and much more:
 

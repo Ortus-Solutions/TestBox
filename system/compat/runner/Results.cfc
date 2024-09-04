@@ -61,9 +61,9 @@ component {
 	private function filterExcludes( required path ){
 		var excludes = getOptions().excludes;
 
-		var cfcName = listFirst( getFileFromPath( arguments.path ), "." );
+		var className = listFirst( getFileFromPath( arguments.path ), "." );
 
-		return ( listFindNoCase( excludes, cfcName ) ? false : true );
+		return ( listFindNoCase( excludes, className ) ? false : true );
 	}
 
 }

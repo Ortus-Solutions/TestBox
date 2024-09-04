@@ -194,7 +194,7 @@ component accessors=true {
 					// Overrides for buggyiness ************************************************************************
 
 
-					// On Adobe, the first line of CFCs seems to always report as being executable but not running whether it's a comment or a component declaration
+					// On Adobe, the first line of classes seems to always report as being executable but not running whether it's a comment or a component declaration
 					if (
 						theFile.right( 4 ) == ".cfc" && currentLineNum == 1 && !covered && line.startsWith(
 							"/" & "*"
