@@ -3,6 +3,7 @@
 /settings.xml
 .settings/
 .engine/
+grapher/**
 
 # Test Results
 tests/results/**

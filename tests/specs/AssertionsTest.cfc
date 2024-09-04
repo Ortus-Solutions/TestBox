@@ -1,7 +1,7 @@
 component
 	displayName="TestBox xUnit suite for cf10 and above"
 	labels     ="lucee,cf"
-	extends    ="Assertionscf9Test"
+	extends    ="BaseAssertionsTest"
 {
 
 	function beforeTests(){

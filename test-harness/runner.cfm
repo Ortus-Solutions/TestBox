@@ -10,13 +10,13 @@
 <cfparam name="url.propertiesFilename" 	default="TEST.properties">
 <cfparam name="url.propertiesSummary" 	default="false" type="boolean">
 <cfparam name="url.editor" 				default="vscode">
-<cfparam name="url.bundlesPattern" 		default="*Spec*.cfc|*Test*.cfc">
+<cfparam name="url.bundlesPattern" 		default="*Spec*.cfc|*Test*.cfc|*Spec*.bx|*Test*.bx">
 
 <!--- Code Coverage requires FusionReactor --->
 <cfparam name="url.coverageEnabled"					default="true">
 <cfparam name="url.coveragePathToCapture"			default="#expandPath( '/root' )#">
 <cfparam name="url.coverageWhitelist"				default="">
-<cfparam name="url.coverageBlacklist"				default="/testbox,/coldbox,/tests,/modules,Application.cfc,/index.cfm">
+<cfparam name="url.coverageBlacklist"				default="/testbox,/coldbox,/tests,/modules,Application.cfc,/index.cfm,Application.bx,/index.bxm">
 <!---<cfparam name="url.coverageBrowserOutputDir"		default="#expandPath( '/tests/results/coverageReport' )#">--->
 <!---<cfparam name="url.coverageSonarQubeXMLOutputPath"	default="#expandPath( '/tests/results/SonarQubeCoverage.xml' )#">--->
 <!--- Enable batched code coverage reporter, useful for large test bundles which require spreading over multiple testbox run commands. --->

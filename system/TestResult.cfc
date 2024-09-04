@@ -93,9 +93,9 @@ component accessors="true" {
 		variables.coverageData    = {};
 
 		// CFML Engine + Version
-		variables.CFMLEngine        = server.coldfusion.productName;
+		variables.CFMLEngine        = server.keyExists( "boxlang" ) ? "BoxLang" : server.coldfusion.productName;
 		variables.CFMLEngineVersion = (
-			structKeyExists( server, "lucee" ) ? server.lucee.version : server.coldfusion.productVersion
+			server.keyExists( "boxlang" ) ? server.boxlang.version : server.keyExists( "lucee" ) ? server.lucee.version : server.coldfusion.productVersion
 		);
 
 		return this;

@@ -3,7 +3,7 @@
         "cfengine":"boxlang@be",
         "serverHomeDirectory":".engine/boxlang"
     },
-    "name":"coldbox-boxlang",
+    "name":"testbox-boxlang",
     "force":true,
     "openBrowser":false,
     "web":{
@@ -19,15 +19,16 @@
         }
     },
     "JVM":{
-        "heapSize":"1024"
+        "heapSize":"1024",
+        "javaVersion":"openjdk21_jdk"
     },
     "cfconfig":{
         "file":".cfconfig.json"
     },
     "env":{
-		"BOXLANG_DEBUG": true
+        "BOXLANG_DEBUG":true
     },
-	"scripts" : {
-		"onServerInitialInstall":"install bx-compat"
-	}
+    "scripts":{
+        "onServerInitialInstall":"install bx-compat,bx-unsafe-evaluate"
+    }
 }

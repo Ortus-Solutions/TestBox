@@ -480,9 +480,14 @@ A mock generator
 			udfOut.append( "</cffunction>#instance.lb#" );
 		}
 
+		writeDump( var = arguments.md, top = 10 );
+
 		// Check extends and recurse
 		if ( structKeyExists( arguments.md, "extends" ) ) {
 			for ( var thisKey in arguments.md.extends ) {
+				writeDump( var = thisKey, top = 10 );
+				writeDump( var = arguments.md.extends[ thisKey ], top = 10 );
+				abort;
 				generateMethodsFromMD( udfOut, arguments.md.extends[ thisKey ] );
 			}
 		}

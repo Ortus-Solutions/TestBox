@@ -29,11 +29,12 @@ component accessors="true" {
 	property name="coverageService";
 	// TestBox Modules Registry
 	property name="modules";
-	// A list of globbing patterns to match bundles to test ONLY! Ex: *Spec,*Test
+	// A list of globbing patterns to match bundles to test ONLY! Ex: *Spec|*Test
 	property name="bundlesPattern";
 
 	// Constants
 	variables.TESTBOX_PATH = expandPath( "/testbox" );
+	variables.IS_BOXLANG   = server.keyExists( "boxlang" );
 
 	/**
 	 * Constructor
@@ -54,14 +55,14 @@ component accessors="true" {
 		any labels            = [],
 		any excludes          = [],
 		struct options        = {},
-		string bundlesPattern = "*.cfc"
+		string bundlesPattern = "*.bx|*.cfc"
 	){
 		// TestBox version
 		variables.version  = "@build.version@+@build.number@";
 		variables.codename = "";
 		// Bundles pattern
 		if ( !len( arguments.bundlesPattern ) ) {
-			arguments.bundlesPattern = "*.cfc";
+			arguments.bundlesPattern = "*.bx|*.cfc";
 		}
 		variables.bundlesPattern = arguments.bundlesPattern;
 		// Utility and mappings
@@ -820,7 +821,8 @@ component accessors="true" {
 	 * @directory The directory information struct to test: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the class found, it must return true to process or false to continue process ]
 	 */
 	private function getSpecPaths( required directory ){
-		var results = [];
+		var results            = [];
+		var pathPatternMatcher = new testbox.system.modules.globber.models.PathPatternMatcher();
 
 		// recurse default
 		arguments.directory.recurse = (
@@ -835,9 +837,12 @@ component accessors="true" {
 			bundleExpandedPath,
 			arguments.directory.recurse,
 			"path",
-			variables.bundlesPattern,
-			"asc"
-		);
+			"",
+			"asc",
+			"file"
+		).filter( ( path ) => {
+			return pathPatternMatcher.matchPatterns( variables.bundlesPattern.listToArray( "|" ), path );
+		} );
 
 		// cleanup paths and store them for usage
 		for ( var x = 1; x lte arrayLen( bundlesFound ); x++ ) {
@@ -850,9 +855,14 @@ component accessors="true" {
 				continue;
 			}
 
+			// If not in BoxLang, skip bx bundles
+			if ( !variables.IS_BOXLANG and bundlesFound[ x ].listLast( "." ) eq "bx" ) {
+				continue;
+			}
+
 			// standardize paths
 			bundlesFound[ x ] = reReplace(
-				replaceNoCase( bundlesFound[ x ], ".cfc", "" ),
+				reReplaceNoCase( bundlesFound[ x ], "\.(bx|cfc)", "" ),
 				"(\\|/)",
 				"/",
 				"all"
@@ -861,7 +871,6 @@ component accessors="true" {
 			bundlesFound[ x ] = replace( bundlesFound[ x ], bundleExpandedPath, "" );
 			// Clean out slashes and append the mapping.
 			bundlesFound[ x ] = arguments.directory.mapping & reReplace( bundlesFound[ x ], "(\\|/)", ".", "all" );
-
 			arrayAppend( results, bundlesFound[ x ] );
 		}
 

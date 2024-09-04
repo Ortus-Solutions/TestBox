@@ -1,7 +1,9 @@
 /**
- * This tests the BDD functionality in TestBox.
+ * This tests the BDD functionality in TestBox and BoxLang
  */
-component extends="testbox.system.BaseSpec" {
+class extends="testbox.system.BaseSpec" {
+
+	variables.coldbox = 0;
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -89,10 +91,10 @@ component extends="testbox.system.BaseSpec" {
 
 				it( "can validate instance types", function(){
 					expect( this ).toBeInstanceOf( "testbox.system.BaseSpec" );
-					expect( createObject( "java", "java.util.Date" ).init() ).toBeInstanceOf( "java.util.Date" );
+					expect( now() ).toBeInstanceOf( "java.util.Date" );
 					expect( [] ).toBeInstanceOf( "java.util.List" );
 					expect( {} ).toBeInstanceOf( "java.util.Map" );
-					expect( [] ).notToBeInstanceOf( "Query" );
+					expect( queryNew( "" ) ).notToBeInstanceOf( "Query" );
 				} );
 
 				it( "can validate json", function(){
@@ -171,24 +173,6 @@ component extends="testbox.system.BaseSpec" {
 				xit( "can have tests that can be skipped easily like this one", function(){
 					fail( "xit() this should skip" );
 				} );
-
-				// acf dynamic skips
-				it(
-					title = "can have tests that execute if the right environment exists (Lucee only)",
-					body  = function(){
-						expect( server ).toHaveKey( "Lucee" );
-					},
-					skip = ( !isLucee() )
-				);
-
-				// Lucee dynamic skips
-				it(
-					title = "can have tests that execute if the right environment exists (acf only)",
-					body  = function(){
-						expect( server ).notToHaveKey( "Lucee" );
-					},
-					skip = ( isLucee() )
-				);
 
 				// specs with a random skip closure
 				it(
@@ -335,16 +319,6 @@ component extends="testbox.system.BaseSpec" {
 			}
 		);
 
-		// Skip by env suite
-		describe(
-			title = "A Lucee only suite",
-			body  = function(){
-				it( "should only execute for Lucee", function(){
-					expect( server ).toHaveKey( "Lucee" );
-				} );
-			},
-			skip = ( !isLucee() )
-		);
 
 		// xdescribe() skips the entire suite
 		xdescribe( "A suite that is skipped via xdescribe()", function(){
@@ -356,7 +330,6 @@ component extends="testbox.system.BaseSpec" {
 		describe( "A calculator test suite", function(){
 			// before each spec in THIS suite group
 			beforeEach( function(){
-				// using request until Lucee fixes their closure bugs
 				request.calc = calc = new testbox.tests.resources.Calculator();
 			} );
 
@@ -448,10 +421,6 @@ component extends="testbox.system.BaseSpec" {
 				} ).toThrow( "TestBox.AssertionFailed" );
 			} );
 		} );
-	}
-
-	private function isLucee(){
-		return ( structKeyExists( server, "lucee" ) );
 	}
 
 }
