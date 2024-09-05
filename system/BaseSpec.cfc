@@ -1658,6 +1658,7 @@ component {
 			this.$exceptionAnnotation,
 			"false"
 		);
+
 		if ( eAnnotation != false ) {
 			// incorporate it.
 			this.$expectedException = {
@@ -1714,28 +1715,28 @@ component {
 	 * ------------------------------------------------------------------
 	 */
 
-	 function isAdobe(){
+	function isAdobe(){
 		return server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion Server" );
-	 }
+	}
 
-	 function isLucee(){
+	function isLucee(){
 		return server.keyExists( "lucee" );
-	 }
+	}
 
-	 function isBoxLang(){
+	function isBoxLang(){
 		return server.keyExists( "boxlang" );
-	 }
+	}
 
-	 function isWindows(){
+	function isWindows(){
 		return server.keyExists( "os" ) && server.os.name.findNoCase( "windows" );
-	 }
+	}
 
-	 function isLinux(){
+	function isLinux(){
 		return server.keyExists( "os" ) && server.os.name.findNoCase( "unix" );
-	 }
+	}
 
-	 function isMac(){
+	function isMac(){
 		return server.keyExists( "os" ) && server.os.name.findNoCase( "mac" );
-	 }
+	}
 
 }
