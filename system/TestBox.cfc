@@ -721,7 +721,14 @@ component accessors="true" {
 		// create new target bundle and get its metadata
 		try {
 			var target = getBundle( arguments.bundlePath );
-		} catch ( "AbstractComponentException" e ) {
+		}
+		// CFML
+		catch ( "AbstractComponentException" e ) {
+			// Skip abstract components
+			return this;
+		}
+		// BoxLang
+		catch ( "AbstractClassException" e ) {
 			// Skip abstract components
 			return this;
 		}
