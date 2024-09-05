@@ -144,7 +144,10 @@ component labels="lucee,cf" extends="testbox.system.BaseSpec" {
 		);
 	}
 
-	function testIsEqualQuery(){
+	/**
+	 * Skipped until BoxLang supports query of queries
+	 */
+	function testIsEqualQuery() skip="isBoxLang"{
 		var a         = "";
 		var b         = "";
 		var testQuery = queryNew( "column_a,column_b" );

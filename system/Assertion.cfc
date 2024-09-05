@@ -22,9 +22,9 @@ component {
 	}
 
 	/**
-	 * Skip Test
+	 * Skip a Test
 	 *
-	 * @message The message to send in the skip
+	 * @message The message to send in the skip information dialog
 	 * @detail  The detail to add in the exception
 	 */
 	function skip( message = "", detail = "" ){
