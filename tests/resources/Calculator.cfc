@@ -1,5 +1,5 @@
 component{
-	
+
 	function init(){
 		return this;
 	}
@@ -21,7 +21,7 @@ component{
 	}
 
 	function divideNoMessage(a,b){
-		throw(type="DivideByZero");
+		throw( type="DivideByZero" );
 	}
 
 	function divideWithDetail(a,b){
