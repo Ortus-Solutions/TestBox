@@ -4,6 +4,8 @@
 class extends="testbox.system.BaseSpec" {
 
 	variables.coldbox = 0;
+	variables.foo = 0;
+	variables.foofoo = 0;
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -91,14 +93,14 @@ class extends="testbox.system.BaseSpec" {
 
 				it( "can validate instance types", function(){
 					expect( this ).toBeInstanceOf( "testbox.system.BaseSpec" );
-					expect( now() ).toBeInstanceOf( "java.util.Date" );
+					expect( createObject( "java", "java.util.Date" ).init() ).toBeInstanceOf( "java.util.Date" );
 					expect( [] ).toBeInstanceOf( "java.util.List" );
 					expect( {} ).toBeInstanceOf( "java.util.Map" );
-					expect( queryNew( "" ) ).notToBeInstanceOf( "Query" );
+					expect( [] ).notToBeInstanceOf( "Query" );
 				} );
 
 				it( "can validate json", function(){
-					var data = serializeJSON( { name : "luis", when : now() } );
+					var data = jsonSerialize( { name : "luis", when : now() } );
 					expect( "luis" ).notToBeJSON();
 					expect( data ).toBeJSON();
 				} );
@@ -330,7 +332,7 @@ class extends="testbox.system.BaseSpec" {
 		describe( "A calculator test suite", function(){
 			// before each spec in THIS suite group
 			beforeEach( function(){
-				request.calc = calc = new testbox.tests.resources.Calculator();
+				request.calc = variables.calc = new testbox.tests.resources.Calculator();
 			} );
 
 			// after each spec in THIS suite group
