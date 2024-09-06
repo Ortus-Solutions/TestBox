@@ -411,7 +411,7 @@ component accessors="true" {
 	 * @templatePath The template path to include
 	 */
 	private function $include( required string templatePath ){
-		include template="#arguments.templatePath#";
+		include "#arguments.templatePath#";
 	}
 
 }
