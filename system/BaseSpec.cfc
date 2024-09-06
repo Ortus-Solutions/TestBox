@@ -1002,6 +1002,7 @@ component {
 			specStats.failExtendedInfo = e.extendedInfo;
 			specStats.failStacktrace   = e.stackTrace;
 			specStats.failOrigin       = e.tagContext;
+			specStats.debugBuffer      = duplicate( this.$debugBuffer );
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type = "fail", stats = specStats );
@@ -1030,6 +1031,7 @@ component {
 			specStats.failDetail       = e.detail;
 			specStats.failExtendedInfo = e.extendedInfo;
 			specStats.failStacktrace   = e.stackTrace;
+			specStats.debugBuffer      = duplicate( this.$debugBuffer );
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type = "error", stats = specStats );
@@ -1356,6 +1358,7 @@ component {
 			specStats.failExtendedInfo = e.extendedInfo;
 			specStats.failStacktrace   = e.stackTrace;
 			specStats.failOrigin       = e.tagContext;
+			specStats.debugBuffer      = duplicate( this.$debugBuffer );
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type = "fail", stats = specStats );
