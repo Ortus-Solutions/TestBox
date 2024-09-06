@@ -367,7 +367,9 @@ component accessors="true" {
 				// the failure stack trace
 				"failStacktrace"   : "",
 				// the failure origin
-				"failOrigin"       : {}
+				"failOrigin"       : {},
+				// the debug buffer
+				"debugBuffer"      : []
 			};
 
 			// append to the parent stats
