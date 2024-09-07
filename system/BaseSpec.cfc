@@ -17,7 +17,7 @@ component {
 	this.$suites               = [];
 	// A reverse lookup for the suite definitions
 	this.$suiteReverseLookup   = {};
-	// The suite context
+	// The suite context, denotes the current suite being defined
 	this.$suiteContext         = "";
 	// ExpectedException Annotation
 	this.$exceptionAnnotation  = "expectedException";
@@ -31,7 +31,6 @@ component {
 	this.$currentExecutingSpec = "";
 	// Focused Structures
 	this.$focusedTargets       = { "suites" : [], "specs" : [] };
-
 	// Setup Request Utilities struct
 	if ( !request.keyExists( "testbox" ) ) {
 		request.testbox = {};
@@ -173,35 +172,38 @@ component {
 
 		var suite = {
 			// suite name
-			name           : arguments.title,
+			"name"           : arguments.title,
 			// async flag
-			asyncAll       : arguments.asyncAll,
+			"asyncAll"       : arguments.asyncAll,
 			// skip suite testing
-			skip           : arguments.skip,
+			"skip"           : arguments.skip,
 			// labels attached to the suite for execution
-			labels         : ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
+			"labels"         : ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
 			// the test specs for this suite
-			specs          : [],
+			"specs"          : [],
 			// the recursive suites
-			suites         : [],
+			"suites"         : [],
 			// the beforeEach closure
-			beforeEach     : variables.closureStub,
-			beforeEachData : {},
+			"beforeEach"     : variables.closureStub,
+			"beforeEachData" : {},
 			// the afterEach closure
-			afterEach      : variables.closureStub,
-			afterEachData  : {},
+			"afterEach"      : variables.closureStub,
+			"afterEachData"  : {},
 			// the aroundEach closure, init to empty to distinguish
-			aroundEach     : variables.aroundStub,
-			aroundEachData : {},
+			"aroundEach"     : variables.aroundStub,
+			"aroundEachData" : {},
 			// the parent suite
-			parent         : "",
+			"parent"         : "",
 			// the parent ref
-			parentRef      : "",
+			"parentRef"      : "",
 			// hierarchy slug
-			slug           : ""
+			"slug"           : "",
+			// Focused
+			"focused"        : arguments.focused
 		};
 
 		// skip constraint for suite as a closure
+		// Todo: move this to the runner, so it can be delayed.
 		if ( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ) {
 			suite.skip = arguments.skip(
 				title    = arguments.title,
@@ -488,6 +490,9 @@ component {
 	 * @skip    A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
 	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
 	 * @focused A flag that tells TestBox to only run this spec and no other
+	 *
+	 * @throws TestBox.InvalidBody If the body is not a closure
+	 * @throws TestBox.InvalidContext If the spec is not defined within a suite
 	 */
 	any function it(
 		required string title,
@@ -515,21 +520,24 @@ component {
 
 		// define the spec
 		var spec = {
-			// spec title
-			name   : arguments.title,
-			// skip spec testing
-			skip   : arguments.skip,
-			// labels attached to the spec for execution
-			labels : ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
 			// the spec body
-			body   : arguments.body,
-			// the order of execution
-			order  : this.$specOrderIndex++,
+			"body"   : arguments.body,
 			// the data binding
-			data   : arguments.data
+			"data"   : arguments.data,
+			// Focus flag
+			"focused": arguments.focused,
+			// labels attached to the spec for execution
+			"labels" : ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
+			// spec title
+			"name"   : arguments.title,
+			// the order of execution
+			"order"  : this.$specOrderIndex++,
+			// skip spec testing
+			"skip"   : arguments.skip
 		};
 
-		// skip constraint for suite as a closure
+		// Executes the skip constraint for the spec and stores it's value
+		// TODO: move this to the runner, so it can be delayed.
 		if ( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ) {
 			spec.skip = arguments.skip(
 				title  = arguments.title,
@@ -547,7 +555,6 @@ component {
 			var thisSuite = this.$suitesReverseLookup[ this.$suiteContext ];
 			arrayAppend( this.$focusedTargets.specs, thisSuite.slug & "/" & thisSuite.name & "/" & spec.name );
 		}
-
 		return this;
 	}
 
