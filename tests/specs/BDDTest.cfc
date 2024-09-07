@@ -365,16 +365,16 @@ component extends="testbox.system.BaseSpec" {
 				structDelete( variables, "calc" );
 			} );
 
-			it( "Can have a separate beforeEach for this suite", function(){
+			test( "Can have a separate beforeEach for this suite", function(){
 				expect( request.calc ).toBeComponent();
 			} );
 
-			xit( "can add incorrectly and fail", function(){
+			xtest( "can add incorrectly and fail (Skipped)", function(){
 				var r = calc.add( 2, 2 );
 				expect( r ).toBe( 5 );
 			} );
 
-			it( "cannot divide by zero", function(){
+			test( "cannot divide by zero", function(){
 				expect( function(){
 					request.calc.divide( 4, 0 );
 				} ).toThrow( regex = "zero" );
