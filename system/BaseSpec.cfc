@@ -172,7 +172,7 @@ component {
 
 		var suite = {
 			// The unique id of the spec that can be reproducible
-			"id"     : hash( this.$suiteContext & arguments.title ),
+			"id"             : hash( this.$suiteContext & arguments.title ),
 			// suite name
 			"name"           : arguments.title,
 			// async flag
@@ -493,7 +493,7 @@ component {
 	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
 	 * @focused A flag that tells TestBox to only run this spec and no other
 	 *
-	 * @throws TestBox.InvalidBody If the body is not a closure
+	 * @throws TestBox.InvalidBody    If the body is not a closure
 	 * @throws TestBox.InvalidContext If the spec is not defined within a suite
 	 */
 	any function it(
@@ -523,21 +523,21 @@ component {
 		// define the spec
 		var spec = {
 			// The unique id of the spec that can be reproducible
-			"id"     : hash( this.$suiteContext & arguments.title ),
+			"id"      : hash( this.$suiteContext & arguments.title ),
 			// the spec body
-			"body"   : arguments.body,
+			"body"    : arguments.body,
 			// the data binding
-			"data"   : arguments.data,
+			"data"    : arguments.data,
 			// Focus flag
-			"focused": arguments.focused,
+			"focused" : arguments.focused,
 			// labels attached to the spec for execution
-			"labels" : ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
+			"labels"  : ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
 			// spec title
-			"name"   : arguments.title,
+			"name"    : arguments.title,
 			// the order of execution
-			"order"  : this.$specOrderIndex++,
+			"order"   : this.$specOrderIndex++,
 			// skip spec testing
-			"skip"   : arguments.skip
+			"skip"    : arguments.skip
 		};
 
 		// Executes the skip constraint for the spec and stores it's value
