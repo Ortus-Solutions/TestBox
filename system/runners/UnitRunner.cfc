@@ -425,7 +425,7 @@ component
 	/**
 	 * Retrieve the testing methods/specs from a given target.
 	 *
-	 * @target The target to get the methods from
+	 * @target      The target to get the methods from
 	 * @testResults The test results object
 	 *
 	 * @return An array of method specs
@@ -438,18 +438,26 @@ component
 		for ( var thisMethod in methodArray ) {
 			// only valid functions and test functions allowed
 			if (
-				( isCustomFunction( arguments.target[ thisMethod ] ) || isClosure( arguments.target[ thisMethod ] ) )
+				(
+					isCustomFunction( arguments.target[ thisMethod ] ) || isClosure(
+						arguments.target[ thisMethod ]
+					)
+				)
 				&&
 				isValidTestMethod( thisMethod, arguments.target )
 			) {
 				// Build the spec data packet
 				var specMD = getMetadata( arguments.target[ thisMethod ] );
 				var spec   = {
-					"id" : hash( specMD.name ),
-					"name"              : specMD.name,
-					"hint"              : ( structKeyExists( specMD, "hint" ) ? specMD.hint : "" ),
-					"skip"              : ( structKeyExists( specMD, "skip" ) ? ( len( specMD.skip ) ? specMD.skip : true ) : false ),
-					"focused"              : ( structKeyExists( specMD, "focused" ) ? ( len( specMD.focused ) ? specMD.focused : true ) : false ),
+					"id"   : hash( specMD.name ),
+					"name" : specMD.name,
+					"hint" : ( structKeyExists( specMD, "hint" ) ? specMD.hint : "" ),
+					"skip" : (
+						structKeyExists( specMD, "skip" ) ? ( len( specMD.skip ) ? specMD.skip : true ) : false
+					),
+					"focused" : (
+						structKeyExists( specMD, "focused" ) ? ( len( specMD.focused ) ? specMD.focused : true ) : false
+					),
 					"labels"            : ( structKeyExists( specMD, "labels" ) ? listToArray( specMD.labels ) : [] ),
 					"order"             : ( structKeyExists( specMD, "order" ) ? listToArray( specMD.order ) : index++ ),
 					"expectedException" : (
