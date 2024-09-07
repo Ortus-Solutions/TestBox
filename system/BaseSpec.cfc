@@ -566,18 +566,18 @@ component {
 	 * An alias to the it() function to provide a more natural language for BDD.
 	 *
 	 * @title   The title of this test
-	 * @body   The closure that represents the test
-	 * @labels The list or array of labels this spec belongs to
-	 * @skip   A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
-	 * @data   A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @body    The closure that represents the test
+	 * @labels  The list or array of labels this spec belongs to
+	 * @skip    A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
 	 * @focused A flag that tells TestBox to only run this spec and no other
 	 */
 	any function test(
 		required string title,
 		required any body,
-		any labels  = [],
-		any skip    = false,
-		struct data = {},
+		any labels      = [],
+		any skip        = false,
+		struct data     = {},
 		boolean focused = false
 	){
 		return this.it( argumentCollection = arguments );
@@ -586,19 +586,19 @@ component {
 	/**
 	 * A focused alias to the fit() function to provide a more natural language for BDD.
 	 *
-	 * @then   The title of this spec
-	 * @body   The closure that represents the test
-	 * @labels The list or array of labels this spec belongs to
-	 * @skip   A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
-	 * @data   A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @then    The title of this spec
+	 * @body    The closure that represents the test
+	 * @labels  The list or array of labels this spec belongs to
+	 * @skip    A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
 	 * @focused A flag that tells TestBox to only run this spec and no other
 	 */
 	any function ftest(
 		required string title,
 		required any body,
-		any labels  = [],
-		any skip    = false,
-		struct data = {},
+		any labels      = [],
+		any skip        = false,
+		struct data     = {},
 		boolean focused = false
 	){
 		return this.fit( argumentCollection = arguments );
@@ -608,19 +608,19 @@ component {
 	 * The then() function describes a spec or a test in TestBox and is an alias for it.  The body argument is the closure that implements
 	 * the test which usually contains one or more expectations that test the state of the code under test.
 	 *
-	 * @then   The title of this spec
-	 * @body   The closure that represents the test
-	 * @labels The list or array of labels this spec belongs to
-	 * @skip   A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
-	 * @data   A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @then    The title of this spec
+	 * @body    The closure that represents the test
+	 * @labels  The list or array of labels this spec belongs to
+	 * @skip    A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
 	 * @focused A flag that tells TestBox to only run this spec and no other
 	 */
 	any function then(
 		required string then,
 		required any body,
-		any labels  = [],
-		any skip    = false,
-		struct data = {},
+		any labels      = [],
+		any skip        = false,
+		struct data     = {},
 		boolean focused = false
 	){
 		return it( argumentCollection = arguments, title = "Then " & arguments.then );
@@ -629,19 +629,19 @@ component {
 	/**
 	 * A focused then
 	 *
-	 * @then   The title of this spec
-	 * @body   The closure that represents the test
-	 * @labels The list or array of labels this spec belongs to
-	 * @skip   A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
-	 * @data   A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @then    The title of this spec
+	 * @body    The closure that represents the test
+	 * @labels  The list or array of labels this spec belongs to
+	 * @skip    A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
 	 * @focused A flag that tells TestBox to only run this spec and no other
 	 */
 	any function fthen(
 		required string then,
 		required any body,
-		any labels  = [],
-		any skip    = false,
-		struct data = {},
+		any labels      = [],
+		any skip        = false,
+		struct data     = {},
 		boolean focused = false
 	){
 		return fit( argumentCollection = arguments, title = "Then " & arguments.then );
@@ -804,17 +804,17 @@ component {
 	/**
 	 * This is a convenience method that makes sure the test spec is skipped from execution
 	 *
-	 * @title  The title of this spec
-	 * @body   The closure that represents the test
-	 * @labels The list or array of labels this spec belongs to
-	 * @data   A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @title   The title of this spec
+	 * @body    The closure that represents the test
+	 * @labels  The list or array of labels this spec belongs to
+	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
 	 * @focused A flag that tells TestBox to only run this spec and no other
 	 */
 	any function xtest(
 		required string title,
 		required any body,
-		any labels  = [],
-		struct data = {},
+		any labels      = [],
+		struct data     = {},
 		boolean focused = false
 	){
 		arguments.skip = true;
