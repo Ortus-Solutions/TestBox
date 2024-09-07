@@ -45,15 +45,18 @@ component {
 	/**
 	 * Checks if we can run the spec due to using testSpec arguments or incoming URL filters.
 	 *
-	 * @name        The spec name
+	 * @spec        The spec reference
 	 * @testResults The testing results object
 	 */
-	boolean function canRunSpec( required name, required testResults ){
+	boolean function canRunSpec( required spec, required testResults ){
 		var testSpecs = arguments.testResults.getTestSpecs();
 
 		// verify we have some?
 		if ( arrayLen( testSpecs ) ) {
-			return ( arrayFindNoCase( testSpecs, arguments.name ) ? true : false );
+			// Test by id first
+			return ( arrayFindNoCase( testSpecs, arguments.spec.id ) ? true : false );
+			// Test by name second
+			return ( arrayFindNoCase( testSpecs, arguments.spec.name ) ? true : false );
 		}
 
 		// we can run it.

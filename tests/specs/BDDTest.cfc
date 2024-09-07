@@ -49,7 +49,7 @@ component extends="testbox.system.BaseSpec" {
 					} );
 				} );
 
-				it( "can match strings with no case sensitivity", function(){
+				it( "can match strings with no case sensitivity and, has, commas in the title", function(){
 					expect( "Luis" ).toMatch( "^luis" );
 				} );
 				it( "can match strings with case sensitivity", function(){

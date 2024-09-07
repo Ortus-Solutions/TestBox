@@ -1022,7 +1022,7 @@ component {
 				!arguments.spec.skip && // Not skipping
 				isSpecFocused( arguments.suite.slug & "/" & arguments.suite.name & "/" & arguments.spec.name ) && // Is the spec focused
 				arguments.runner.canRunLabel( consolidatedLabels, arguments.testResults ) && // In label or no labels
-				arguments.runner.canRunSpec( arguments.spec.name, arguments.testResults ) // In test results
+				arguments.runner.canRunSpec( arguments.spec, arguments.testResults ) // In test results
 			) {
 				// setup the current executing spec for debug purposes
 				this.$currentExecutingSpec = arguments.suite.slug & "/" & arguments.suite.name & "/" & arguments.spec.name;
@@ -1366,7 +1366,7 @@ component {
 			if (
 				!arguments.spec.skip &&
 				arguments.runner.canRunLabel( arguments.spec.labels, arguments.testResults ) &&
-				arguments.runner.canRunSpec( arguments.spec.name, arguments.testResults )
+				arguments.runner.canRunSpec( arguments.spec, arguments.testResults )
 			) {
 				// Reset expected exceptions: Only works on synchronous testing.
 				this.$expectedException    = {};
