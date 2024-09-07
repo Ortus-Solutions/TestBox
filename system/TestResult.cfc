@@ -262,37 +262,30 @@ component accessors="true" {
 	/**
 	 * Start a new suite stats and return its reference
 	 *
-	 * @name        The name of the suite
+	 * @name        The suite struct reference this belongs to
 	 * @bundleStats The bundle stats reference this belongs to.
 	 * @parentStats If passed, the parent stats this suite belongs to
 	 */
 	struct function startSuiteStats(
-		required string name,
+		required struct suite,
 		required struct bundleStats,
 		struct parentStats = {}
 	){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
 			// setup stats data for incoming suite
 			var stats = {
-				// suite id
-				"id"            : hash( getTickCount() + randRange( 1, 10000000 ) ),
-				// parent suite id
+				// suite identifiers
+				"id"            : arguments.suite.id,
 				"parentID"      : "",
-				// bundle id
 				"bundleID"      : arguments.bundleStats.id,
-				// The suite name
-				"name"          : arguments.name,
-				// test status
+				"name"          : arguments.suite.name,
+				// Initial status: Updated by the suite runner
 				"status"        : "not executed",
-				// Total specs found to test
+				// Reporting
 				"totalSpecs"    : 0,
-				// Total passed specs
 				"totalPass"     : 0,
-				// Total failed specs
 				"totalFail"     : 0,
-				// Total error in specs
 				"totalError"    : 0,
-				// Total skipped specs/suites
 				"totalSkipped"  : 0,
 				// Durations
 				"startTime"     : getTickCount(),
@@ -337,21 +330,27 @@ component accessors="true" {
 	/**
 	 * Start a new spec stats and return its reference
 	 *
-	 * @name       The name of the suite
+	 * @spec       The spec reference this belongs to
 	 * @suiteStats The suite stats reference this belongs to.
 	 */
-	struct function startSpecStats( required string name, required struct suiteStats ){
+	struct function startSpecStats( required struct spec, required struct suiteStats ){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
 			// spec stats
 			var stats = {
 				// suite id
-				"id"               : hash( getTickCount() + randRange( 1, 10000000 ) ),
+				"id"               : arguments.spec.id,
 				// suite id
 				"suiteID"          : arguments.suiteStats.id,
 				// name of the spec
-				"name"             : arguments.name,
+				"name"             : arguments.spec.name,
 				// spec status
 				"status"           : "na",
+				// Focused
+				"focused"          : arguments.spec.focused,
+				// Skip
+				"skip"             : arguments.spec.skip,
+				// Labels
+				"labels"           : arguments.spec.labels,
 				// durations
 				"startTime"        : getTickCount(),
 				"endTime"          : 0,

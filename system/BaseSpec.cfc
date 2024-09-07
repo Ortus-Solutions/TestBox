@@ -171,6 +171,8 @@ component {
 		}
 
 		var suite = {
+			// The unique id of the spec that can be reproducible
+			"id"     : hash( this.$suiteContext & arguments.title ),
 			// suite name
 			"name"           : arguments.title,
 			// async flag
@@ -242,7 +244,7 @@ component {
 			this.$suiteContext   = parentContext;
 			this.$specOrderIndex = parentSpecIndex;
 		} else {
-			// Append this spec definition to the master root
+			// Append this spec definition to the master root to track it
 			arrayAppend( this.$suites, suite );
 			// setup pivot context now and reverse lookups
 			this.$suiteContext                           = arguments.title;
@@ -520,6 +522,8 @@ component {
 
 		// define the spec
 		var spec = {
+			// The unique id of the spec that can be reproducible
+			"id"     : hash( this.$suiteContext & arguments.title ),
 			// the spec body
 			"body"   : arguments.body,
 			// the data binding
@@ -977,7 +981,7 @@ component {
 	){
 		try {
 			// init spec tests
-			var specStats          = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
+			var specStats          = arguments.testResults.startSpecStats( arguments.spec, arguments.suiteStats );
 			// init consolidated spec labels
 			var consolidatedLabels = arguments.spec.labels;
 			var md                 = getMetadata( this );
@@ -1356,7 +1360,7 @@ component {
 	){
 		try {
 			// init spec tests
-			var specStats = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
+			var specStats = arguments.testResults.startSpecStats( arguments.spec, arguments.suiteStats );
 
 			// Verify we can execute
 			if (
@@ -1500,10 +1504,10 @@ component {
 		arrayAppend(
 			this.$debugBuffer,
 			{
-				data      : newVar,
-				label     : arguments.label,
-				timestamp : now(),
-				top       : arguments.top
+				"data"      : newVar,
+				"label"     : arguments.label,
+				"timestamp" : now(),
+				"top"       : arguments.top
 			}
 		);
 		return this;

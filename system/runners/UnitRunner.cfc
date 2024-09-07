@@ -187,7 +187,7 @@ component
 		required callbacks = {}
 	){
 		// Start suite stats
-		var suiteStats = arguments.testResults.startSuiteStats( arguments.suite.name, arguments.bundleStats );
+		var suiteStats = arguments.testResults.startSuiteStats( arguments.suite, arguments.bundleStats );
 
 		// Record bundle + suite + global initial stats
 		suiteStats.totalSpecs = arrayLen( arguments.suite.specs );

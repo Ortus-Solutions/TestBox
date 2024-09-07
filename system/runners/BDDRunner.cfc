@@ -188,7 +188,7 @@ component
 	){
 		// Start suite stats
 		var suiteStats = arguments.testResults.startSuiteStats(
-			arguments.suite.name,
+			arguments.suite,
 			arguments.bundleStats,
 			arguments.parentStats
 		);
