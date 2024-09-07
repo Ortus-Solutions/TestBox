@@ -386,26 +386,28 @@ component
 		required testResults
 	){
 		var suite = {
+			// ID
+			"id"   : hash( arguments.targetMD.name ),
 			// suite name
-			name : (
+			"name" : (
 				structKeyExists( arguments.targetMD, "displayName" ) ? arguments.targetMD.displayname : arguments.targetMD.name
 			),
 			// async flag
-			asyncAll : ( structKeyExists( arguments.targetMD, "asyncAll" ) ? arguments.targetMD.asyncAll : false ),
+			"asyncAll" : ( structKeyExists( arguments.targetMD, "asyncAll" ) ? arguments.targetMD.asyncAll : false ),
 			// skip suite testing flag
-			skip     : (
+			"skip"     : (
 				structKeyExists( arguments.targetMD, "skip" ) ? (
 					len( arguments.targetMD.skip ) ? arguments.targetMD.skip : true
 				) : false
 			),
 			// labels attached to the suite for execution
-			labels : (
+			"labels" : (
 				structKeyExists( arguments.targetMD, "labels" ) ? listToArray( arguments.targetMD.labels ) : []
 			),
 			// the specs attached to this suite.
-			specs  : getTestMethods( arguments.target, arguments.testResults ),
-			// the recursive suites
-			suites : []
+			"specs"  : getTestMethods( arguments.target, arguments.testResults ),
+			// nested suites
+			"suites" : []
 		};
 
 		// skip constraint for suite?
@@ -423,7 +425,10 @@ component
 	/**
 	 * Retrieve the testing methods/specs from a given target.
 	 *
-	 * @target.hint The target to get the methods from
+	 * @target The target to get the methods from
+	 * @testResults The test results object
+	 *
+	 * @return An array of method specs
 	 */
 	private array function getTestMethods( required any target, required any testResults ){
 		var mResults    = [];
@@ -433,25 +438,28 @@ component
 		for ( var thisMethod in methodArray ) {
 			// only valid functions and test functions allowed
 			if (
-				isCustomFunction( arguments.target[ thisMethod ] ) &&
+				( isCustomFunction( arguments.target[ thisMethod ] ) || isClosure( arguments.target[ thisMethod ] ) )
+				&&
 				isValidTestMethod( thisMethod, arguments.target )
 			) {
 				// Build the spec data packet
 				var specMD = getMetadata( arguments.target[ thisMethod ] );
 				var spec   = {
-					name              : specMD.name,
-					hint              : ( structKeyExists( specMD, "hint" ) ? specMD.hint : "" ),
-					skip              : ( structKeyExists( specMD, "skip" ) ? ( len( specMD.skip ) ? specMD.skip : true ) : false ),
-					labels            : ( structKeyExists( specMD, "labels" ) ? listToArray( specMD.labels ) : [] ),
-					order             : ( structKeyExists( specMD, "order" ) ? listToArray( specMD.order ) : index++ ),
-					expectedException : (
+					"id" : hash( specMD.name ),
+					"name"              : specMD.name,
+					"hint"              : ( structKeyExists( specMD, "hint" ) ? specMD.hint : "" ),
+					"skip"              : ( structKeyExists( specMD, "skip" ) ? ( len( specMD.skip ) ? specMD.skip : true ) : false ),
+					"focused"              : ( structKeyExists( specMD, "focused" ) ? ( len( specMD.focused ) ? specMD.focused : true ) : false ),
+					"labels"            : ( structKeyExists( specMD, "labels" ) ? listToArray( specMD.labels ) : [] ),
+					"order"             : ( structKeyExists( specMD, "order" ) ? listToArray( specMD.order ) : index++ ),
+					"expectedException" : (
 						structKeyExists( specMD, "expectedException" ) ? specMD.expectedException : ""
 					)
 				};
 
 				// skip constraint?
 				if ( !isBoolean( spec.skip ) && isCustomFunction( arguments.target[ spec.skip ] ) ) {
-					spec.skip = invoke( arguments.target, "#spec.skip#" );
+					spec.skip = invoke( arguments.target, spec.skip );
 				}
 
 				// do we have labels applied?

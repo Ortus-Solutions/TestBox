@@ -223,6 +223,12 @@ component {
 		if ( structKeyExists( getMetadata( arguments.target[ arguments.methodName ] ), "test" ) ) {
 			return true;
 		}
+
+		// Skip: test, ftest, xtest which are internal methods
+		if ( reFindNoCase( "^(f|x)?test$", arguments.methodName ) ) {
+			return false;
+		}
+
 		// All xUnit test methods must start or end with the term, "test".
 		return ( !!reFindNoCase( "(^test|test$)", arguments.methodName ) );
 	}
