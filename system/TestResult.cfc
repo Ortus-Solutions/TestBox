@@ -424,11 +424,13 @@ component accessors="true" {
 			"CFMLEngineVersion"
 		];
 
+
+
 		var result = { "coverage" : {} };
 
 		// Do simple properties only
 		for ( var thisProp in pList ) {
-			if ( structKeyExists( variables, thisProp ) ) {
+			if ( structKeyExists( variables, thisProp ) && !isNull( variables[ thisProp ] ) ) {
 				result[ thisProp ] = variables[ thisProp ];
 
 				// Do we need to strip out the buffer?

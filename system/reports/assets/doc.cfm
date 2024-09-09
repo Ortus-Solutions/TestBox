@@ -22,6 +22,10 @@
 
 <!--- Bundle Info --->
 <cfloop array="#variables.bundleStats#" index="thisBundle">
+	<!--- Skip if not in the includes list --->
+	<cfif len( url.testBundles ) and !listFindNoCase( url.testBundles, thisBundle.path )>
+		<cfcontinue>
+	</cfif>
 	<section class="bundle" id="bundle-#thisBundle.path#">
 
 		<!--- bundle stats --->

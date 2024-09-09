@@ -16,6 +16,10 @@
 #chr(10)#
 
 <cfloop array="#variables.bundleStats#" index="thisBundle">
+<!--- Skip if not in the includes list --->
+<cfif len( url.testBundles ) and !listFindNoCase( url.testBundles, thisBundle.path )>
+	<cfcontinue>
+</cfif>
 = #thisBundle.path# (#thisBundle.totalDuration# ms) =
 
 * '''Suites/Specs:''' #thisBundle.totalSuites#/#thisBundle.totalSpecs#

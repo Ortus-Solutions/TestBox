@@ -1,6 +1,10 @@
 <cfoutput>█▓▒▒░░░ TestBox v#testbox.getVersion()# ░░░▒▒▓█
 <!--- Iterate over each bundle tested --->
 <cfloop array="#variables.bundleStats#" index="thisBundle">
+<!--- Skip if not in the includes list --->
+<cfif len( url.testBundles ) and !listFindNoCase( url.testBundles, thisBundle.path )>
+<cfcontinue>
+</cfif>
 _____________________________________________________________
 #space()#
 <!--- Bundle Name --->

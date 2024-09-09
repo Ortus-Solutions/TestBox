@@ -79,4 +79,34 @@ component {
 		}
 	}
 
+	/**
+	 * Prepare incoming params for reports:
+	 * - testMethod
+	 * - testSpecs
+	 * - testSuites
+	 * - testBundles
+	 * - directory
+	 * - editor
+	 */
+	function prepareIncomingParams(){
+		if ( !structKeyExists( url, "testMethod" ) ) {
+			url.testMethod = "";
+		}
+		if ( !structKeyExists( url, "testSpecs" ) ) {
+			url.testSpecs = "";
+		}
+		if ( !structKeyExists( url, "testSuites" ) ) {
+			url.testSuites = "";
+		}
+		if ( !structKeyExists( url, "testBundles" ) ) {
+			url.testBundles = "";
+		}
+		if ( !structKeyExists( url, "directory" ) ) {
+			url.directory = "";
+		}
+		if ( !structKeyExists( url, "editor" ) ) {
+			url.editor = "vscode";
+		}
+	}
+
 }

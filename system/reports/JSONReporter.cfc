@@ -34,6 +34,9 @@ component extends="BaseReporter" {
 			getPageContextResponse().setContentType( "application/json" );
 		}
 
+		// prepare incoming params
+		prepareIncomingParams();
+
 		return serializeJSON( arguments.results.getMemento( includeDebugBuffer = true ) );
 	}
 

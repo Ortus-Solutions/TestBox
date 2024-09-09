@@ -38,7 +38,9 @@
     "dependencies":{
         "cbstreams":"^2.0.0",
         "mockdatacfc":"^3",
-        "globber":"^3.1.3"
+        "globber":"^3.1.3",
+        "bx-compat":"^1.3.0+6",
+        "bx-unsafe-evaluate":"^1.0.0+2"
     },
     "devDependencies":{
         "commandbox-dotenv":"*",
@@ -48,7 +50,9 @@
     "installPaths":{
         "cbstreams":"system/modules/cbstreams/",
         "mockdatacfc":"system/modules/mockdatacfc/",
-        "globber":"system/modules/globber/"
+        "globber":"system/modules/globber/",
+        "bx-compat":".engine/boxlang/WEB-INF/boxlang/modules/bx-compat/",
+        "bx-unsafe-evaluate":".engine/boxlang/WEB-INF/boxlang/modules/bx-unsafe-evaluate/"
     },
     "scripts":{
         "release":"recipe build/release.boxr",
