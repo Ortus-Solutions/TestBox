@@ -523,23 +523,23 @@ component {
 		// define the spec
 		var spec = {
 			// The unique id of the spec that can be reproducible
-			"id"      : hash( this.$suiteContext & arguments.title ),
+			"id"          : hash( this.$suiteContext & arguments.title ),
 			// the spec body
-			"body"    : arguments.body,
+			"body"        : arguments.body,
 			// the data binding
-			"data"    : arguments.data,
+			"data"        : arguments.data,
 			// Focus flag
-			"focused" : arguments.focused,
+			"focused"     : arguments.focused,
 			// labels attached to the spec for execution
-			"labels"  : ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
+			"labels"      : ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
 			// spec title
-			"name"    : arguments.title,
+			"name"        : arguments.title,
 			// Display name
 			"displayName" : arguments.title,
 			// the order of execution
-			"order"   : this.$specOrderIndex++,
+			"order"       : this.$specOrderIndex++,
 			// skip spec testing
-			"skip"    : arguments.skip
+			"skip"        : arguments.skip
 		};
 
 		// Executes the skip constraint for the spec and stores it's value
