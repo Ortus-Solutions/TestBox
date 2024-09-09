@@ -449,11 +449,11 @@ component
 				// Build the spec data packet
 				var specMD = getMetadata( arguments.target[ thisMethod ] );
 				var spec   = {
-					"id"   : hash( specMD.name ),
-					"name" : specMD.name,
+					"id"          : hash( specMD.name ),
+					"name"        : specMD.name,
 					"displayName" : ( structKeyExists( specMD, "displayName" ) ? specMD.displayName : specMD.name ),
-					"hint" : ( structKeyExists( specMD, "hint" ) ? specMD.hint : "" ),
-					"skip" : (
+					"hint"        : ( structKeyExists( specMD, "hint" ) ? specMD.hint : "" ),
+					"skip"        : (
 						structKeyExists( specMD, "skip" ) ? ( len( specMD.skip ) ? specMD.skip : true ) : false
 					),
 					"focused" : (
