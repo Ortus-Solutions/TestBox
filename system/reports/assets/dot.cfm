@@ -135,8 +135,15 @@
 												<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#thisBundle.id#">
 													<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
 													<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
-														<h6>#thisDebug.label#</h6>
-														<cfdump var="#thisDebug.data#" label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#" top="#thisDebug.top#" />
+														<cfif !IsNull( thisDebug )>
+															<h6>#thisDebug.label#</h6>
+															<cfdump
+																var="#thisDebug.data#"
+																label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#"
+																top="#thisDebug.top#"
+																showUDfs="#thisDebug.showUDFs#"
+																/>
+														</cfif>
 													</cfloop>
 												</div>
 											</li>
@@ -158,7 +165,7 @@
 		$(".expand-collapse").click(function (event) {
 			let icon = $(this).children(".svg-inline--fa");
 			var icon_fa_icon = icon.attr('data-icon');
-	
+
 			if (icon_fa_icon === "minus-square") {
 					icon.attr('data-icon', 'plus-square');
 			} else if (icon_fa_icon === "plus-square") {

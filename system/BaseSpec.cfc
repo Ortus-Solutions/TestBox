@@ -1485,7 +1485,8 @@ component {
 		any var,
 		string label     = "",
 		boolean deepCopy = false,
-		numeric top      = "999"
+		numeric top      = "999",
+		boolean showUDFs = false
 	){
 		// null check
 		if ( isNull( arguments.var ) ) {
@@ -1500,6 +1501,7 @@ component {
 			// Check if executing spec is set, else most likely this is called from a request scoped debug method
 			arguments.label = !isNull( this.$currentExecutingSpec ) ? this.$currentExecutingSpec : "request";
 		}
+
 		// add to debug output
 		arrayAppend(
 			this.$debugBuffer,
@@ -1507,7 +1509,8 @@ component {
 				"data"      : newVar,
 				"label"     : arguments.label,
 				"timestamp" : now(),
-				"top"       : arguments.top
+				"top"       : arguments.top,
+				"showUDFs" : arguments.showUDFs
 			}
 		);
 		return this;
