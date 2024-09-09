@@ -1837,14 +1837,16 @@ component {
 	 * ------------------------------------------------------------------
 	 */
 
-	 function onMissingMethod( missingMethodName, missingMethodArguments ){
+	function onMissingMethod( missingMethodName, missingMethodArguments ){
 		// If the method follows the pattern "assert{target}" then get the target into a variable
-		if( left( arguments.missingMethodName, 6 ) == "assert" && len( arguments.missingMethodName ) > 6 ){
+		if ( left( arguments.missingMethodName, 6 ) == "assert" && len( arguments.missingMethodName ) > 6 ) {
 			var target = right( arguments.missingMethodName, len( arguments.missingMethodName ) - 6 );
-			return invoke( this.$assert, target, arguments.missingMethodArguments );
+			return invoke(
+				this.$assert,
+				target,
+				arguments.missingMethodArguments
+			);
 		}
-
-	 }
-
+	}
 
 }
