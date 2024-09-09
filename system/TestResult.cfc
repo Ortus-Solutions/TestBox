@@ -177,7 +177,7 @@ component accessors="true" {
 	 * Start a new bundle stats and return its reference
 	 *
 	 * @bundlePath The path of the bundle
-	 * @name      The display name of the bundle
+	 * @name       The display name of the bundle
 	 *
 	 * @return The bundle stats struct reference
 	 */
