@@ -1463,12 +1463,16 @@ component {
 	 *
 	 * @var The data to send
 	 * @top Apply a top to the dump, by default it does 9999 levels
+	 * @showUDFs Show UDFs in the dump, by default it does not
+	 * @label A label to add to the console output
 	 */
-	any function console( required var, top = 9999 ){
+	any function console( required var, numeric top = 9999, boolean showUDFs = false, string label="" ){
 		writeDump(
-			var    = arguments.var,
 			output = "console",
-			top    = arguments.top
+			var    = arguments.var,
+			label = "TestBox Console: #arguments.label#",
+			top    = arguments.top,
+			showUDFs = arguments.showUDFs
 		);
 		return this;
 	}
