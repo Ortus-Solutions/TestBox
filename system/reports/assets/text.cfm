@@ -8,7 +8,7 @@
 _____________________________________________________________
 #space()#
 <!--- Bundle Name --->
-#getBundleIndicator( thisBundle )##thisBundle.path# (#thisBundle.totalDuration# ms)
+#getBundleIndicator( thisBundle )##thisBundle.name# (#thisBundle.totalDuration# ms)
 <!--- Bundle Report --->
 [Passed: #thisBundle.totalPass#] [Failed: #thisBundle.totalFail#] [Errors: #thisBundle.totalError#] [Skipped: #thisBundle.totalSkipped#] [Suites/Specs: #thisBundle.totalSuites#/#thisBundle.totalSpecs#]
 #space()#<!--- Bundle Exception Output --->

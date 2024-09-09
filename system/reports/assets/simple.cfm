@@ -127,6 +127,8 @@
 					</span>
 				</div>
 			</div>
+
+			<!--- BUNDLE REPORTS --->
 			<div class="list-group-item accordion pl-0" id="bundles">
 				<!--- Bundle Info --->
 				<cfloop array="#variables.bundleStats#" index="thisBundle">
@@ -154,7 +156,7 @@
 									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true&coverageEnabled=false"
 									title="Run only this bundle"
 								>
-									#thisBundle.path# (#numberFormat( thisBundle.totalDuration )# ms)
+									#thisBundle.name# (#numberFormat( thisBundle.totalDuration )# ms)
 								</a>
 								<button
 										class="btn btn-link float-right py-0 bundle-btn"

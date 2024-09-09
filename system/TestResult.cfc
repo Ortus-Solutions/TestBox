@@ -175,6 +175,11 @@ component accessors="true" {
 
 	/**
 	 * Start a new bundle stats and return its reference
+	 *
+	 * @bundlePath The path of the bundle
+	 * @name      The display name of the bundle
+	 *
+	 * @return The bundle stats struct reference
 	 */
 	struct function startBundleStats( required string bundlePath, required string name ){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
@@ -182,7 +187,7 @@ component accessors="true" {
 			var stats = {
 				// bundle id
 				"id"              : hash( getTickCount() + randRange( 1, 10000000 ) ),
-				// The bundle name
+				// The bundle display name
 				"name"            : arguments.name,
 				// Path of the bundle
 				"path"            : arguments.bundlePath,

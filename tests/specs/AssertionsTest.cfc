@@ -1,5 +1,5 @@
 component
-	displayName="TestBox xUnit suite for cf10 and above"
+	displayName="TestBox xUnit suite using all kinds of assertions"
 	labels     ="lucee,cf"
 	extends    ="BaseAssertionsTest"
 {

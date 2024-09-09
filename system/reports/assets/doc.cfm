@@ -29,7 +29,7 @@
 	<section class="bundle" id="bundle-#thisBundle.path#">
 
 		<!--- bundle stats --->
-		<h2>#thisBundle.path# (#thisBundle.totalDuration# ms)</h2>
+		<h2>#thisBundle.name# (#thisBundle.totalDuration# ms)</h2>
 		<p>
 			Suites/Specs: #thisBundle.totalSuites#/#thisBundle.totalSpecs#
 			<br>

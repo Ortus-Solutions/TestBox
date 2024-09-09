@@ -118,7 +118,7 @@
 										<cfif arrayLen( thisBundle.debugBuffer )>
 											<li class="list-group-item list-group-item-info">
 												<span class="alert-link h5">
-													<strong>Debug Stream: #thisBundle.path#</strong>
+													<strong>Debug Stream: #thisBundle.name#</strong>
 												</span>
 												<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#thisBundle.id#" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">
 													<i class="fas fa-plus-square"></i>

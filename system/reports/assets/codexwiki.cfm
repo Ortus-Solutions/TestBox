@@ -20,7 +20,7 @@
 <cfif len( url.testBundles ) and !listFindNoCase( url.testBundles, thisBundle.path )>
 	<cfcontinue>
 </cfif>
-= #thisBundle.path# (#thisBundle.totalDuration# ms) =
+= #thisBundle.name# (#thisBundle.totalDuration# ms) =
 
 * '''Suites/Specs:''' #thisBundle.totalSuites#/#thisBundle.totalSpecs#
 * '''Pass:''' #thisBundle.totalPass#
