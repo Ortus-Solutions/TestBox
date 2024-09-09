@@ -534,6 +534,8 @@ component {
 			"labels"  : ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
 			// spec title
 			"name"    : arguments.title,
+			// Display name
+			"displayName" : arguments.title,
 			// the order of execution
 			"order"   : this.$specOrderIndex++,
 			// skip spec testing
