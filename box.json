@@ -40,7 +40,8 @@
         "mockdatacfc":"^3",
         "globber":"^3.1.3",
         "bx-compat":"^1.3.0+6",
-        "bx-unsafe-evaluate":"^1.0.0+2"
+        "bx-unsafe-evaluate":"^1.0.0+2",
+        "testbox":"^5.4.0+7"
     },
     "devDependencies":{
         "commandbox-dotenv":"*",
@@ -52,7 +53,8 @@
         "mockdatacfc":"system/modules/mockdatacfc/",
         "globber":"system/modules/globber/",
         "bx-compat":".engine/boxlang/WEB-INF/boxlang/modules/bx-compat/",
-        "bx-unsafe-evaluate":".engine/boxlang/WEB-INF/boxlang/modules/bx-unsafe-evaluate/"
+        "bx-unsafe-evaluate":".engine/boxlang/WEB-INF/boxlang/modules/bx-unsafe-evaluate/",
+        "testbox":"/Users/lmajano/Sites/projects/commandbox-modules/testbox-cli/testbox/"
     },
     "scripts":{
         "release":"recipe build/release.boxr",

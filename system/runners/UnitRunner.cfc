@@ -451,6 +451,7 @@ component
 				var spec   = {
 					"id"   : hash( specMD.name ),
 					"name" : specMD.name,
+					"displayName" : ( structKeyExists( specMD, "displayName" ) ? specMD.displayName : specMD.name ),
 					"hint" : ( structKeyExists( specMD, "hint" ) ? specMD.hint : "" ),
 					"skip" : (
 						structKeyExists( specMD, "skip" ) ? ( len( specMD.skip ) ? specMD.skip : true ) : false

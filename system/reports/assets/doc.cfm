@@ -88,7 +88,7 @@
 				<cfset thisSpecStatusClass = statusToBootstrapClass(local.thisSpec.status)>
 
 				<dt class="spec #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
-					#local.thisSpec.name# (#local.thisSpec.totalDuration# ms)
+					#local.thisSpec.displayName# (#local.thisSpec.totalDuration# ms)
 				</dt>
 
 				<cfif local.thisSpec.status eq "failed">

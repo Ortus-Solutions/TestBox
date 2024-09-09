@@ -74,7 +74,7 @@ Labels: #space( 7 )# #arrayToList( results.getLabels() )#<cfif !arrayLen( result
 			Specs
 
 		---><cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec"><!---
-		--->#tabsNext#( #getStatusIndicator( local.thisSpec.status )# ) #local.thisSpec.name# (#local.thisSpec.totalDuration# ms) #chr(13)#<!---
+		--->#tabsNext#( #getStatusIndicator( local.thisSpec.status )# ) #local.thisSpec.displayName# (#local.thisSpec.totalDuration# ms) #chr(13)#<!---
 
 			If Spec Failed
 

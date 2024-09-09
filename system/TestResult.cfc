@@ -348,6 +348,8 @@ component accessors="true" {
 				"suiteID"          : arguments.suiteStats.id,
 				// name of the spec
 				"name"             : arguments.spec.name,
+				// Display Name
+				"displayName"      : arguments.spec.displayName,
 				// spec status
 				"status"           : "na",
 				// Focused

@@ -57,7 +57,7 @@
 <cfset arguments.level++>
 
 <cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
-<p>#local.thisSpec.name# (#local.thisSpec.totalDuration# ms)</p>
+<p>#local.thisSpec.displayName# (#local.thisSpec.totalDuration# ms)</p>
 
 <cfif local.thisSpec.status eq "failed">
 * '''#encodeForHTML( local.thisSpec.failMessage )#'''

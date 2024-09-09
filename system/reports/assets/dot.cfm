@@ -230,7 +230,7 @@ function toggleDebug( specid ) {
 						<cfelse>
 							void( 0 )
 						</cfif>
-						" title="#encodeForHTML( thisSpec.name )# (#thisSpec.totalDuration# ms)" data-info="#encodeForHTML( thisSpec.failMessage )#">
+						" title="#encodeForHTML( thisSpec.displayname )# (#thisSpec.totalDuration# ms)" data-info="#encodeForHTML( thisSpec.failMessage )#">
 					<span class="#statusPlusBootstrapClass( thisSpec.status )#">&middot;</span>
 				</a>
 				<div style="display:none;" id="error_#thisSpec.id#">
