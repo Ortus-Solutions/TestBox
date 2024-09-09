@@ -126,7 +126,7 @@ component extends="testbox.system.BaseSpec" {
 					numExecutableLines : 0,
 					percCoverage       : 0,
 					filePathHash       : hash( fileName ),
-					lineData           : createObject( "java", "java.util.LinkedHashMap" ).init()
+					lineData           : structNew( "ordered" )
 				}
 			);
 			qryData[ "lineData" ][ rowN ] = {};
