@@ -1510,7 +1510,7 @@ component {
 				"label"     : arguments.label,
 				"timestamp" : now(),
 				"top"       : arguments.top,
-				"showUDFs" : arguments.showUDFs
+				"showUDFs"  : arguments.showUDFs
 			}
 		);
 		return this;
