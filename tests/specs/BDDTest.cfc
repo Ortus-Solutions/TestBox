@@ -49,6 +49,12 @@ component extends="testbox.system.BaseSpec" {
 					} );
 				} );
 
+				it( "can have a spec with passthrough assertions", function(){
+					this.assertIsEqual( 1, 1 );
+					this.assertIsTrue( true );
+					this.assertIsFalse( false );
+				} );
+
 				it( "can match strings with no case sensitivity and, has, commas in the title", function(){
 					expect( "Luis" ).toMatch( "^luis" );
 				} );
