@@ -1839,6 +1839,12 @@ component {
 	 * ------------------------------------------------------------------
 	 */
 
+	 /**
+	  * On missing method handler for dynamic assertions
+	  *
+	  * @missingMethodName The name of the missing method
+	  * @missingMethodArguments The arguments passed to the missing method
+	  */
 	function onMissingMethod( missingMethodName, missingMethodArguments ){
 		// If the method follows the pattern "assert{target}" then get the target into a variable
 		if ( left( arguments.missingMethodName, 6 ) == "assert" && len( arguments.missingMethodName ) > 6 ) {
@@ -1849,6 +1855,12 @@ component {
 				arguments.missingMethodArguments
 			);
 		}
+
+		// Throw an exception
+		throw(
+			type    = "InvalidMethod",
+			message = "The method #arguments.missingMethodName# does not exist."
+		);
 	}
 
 }
