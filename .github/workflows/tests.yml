@@ -20,6 +20,10 @@ jobs:
         jdkVersion: [ "11" ]
         experimental: [false]
         include:
+          - cfengine: "boxlang@1"
+            commandbox_version: "6.0.1"
+            jdkVersion: "21"
+            experimental: false
           - cfengine: "lucee@6"
             commandbox_version: "6.0.1"
             jdkVersion: "17"
@@ -33,7 +37,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: ${{ matrix.jdkVersion }}
@@ -65,7 +69,7 @@ jobs:
 
       - name: Upload Test Results Artifacts
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: testbox-test-results-${{ matrix.cfengine }}-${{ matrix.jdkVersion }}
           path: |
