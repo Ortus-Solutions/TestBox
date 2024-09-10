@@ -1,17 +1,17 @@
 /**
  * This tests the CoverageReporter functionality in TestBox.
  */
-component extends="testbox.system.BaseSpec"{
+component extends="testbox.system.BaseSpec" {
 
 	function run(){
-
 		// TODO: This is a temporary fix for a bug in the BoxLang query engine
 		// https://ortussolutions.atlassian.net/browse/BL-535
-		if( isBoxLang() ){
+		if ( isBoxLang() ) {
 			describe(
 				title: "Skipped in BoxLang due to query issue",
-				body : ()=>{},
-				skip : true
+				body : () => {
+				},
+				skip: true
 			);
 			return;
 		}
