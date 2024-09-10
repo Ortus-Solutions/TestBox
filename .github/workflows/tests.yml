@@ -76,7 +76,6 @@ jobs:
             tests/results/**/*
 
       - name: Failure Debugging Info
-        if: ${{ failure() }}
         run: |
           box server log serverConfigFile="server-${{ matrix.cfengine }}.json"
 
