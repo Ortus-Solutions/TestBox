@@ -65,10 +65,11 @@ If you discover a security vulnerability, please send an email to the developmen
 
 ## Language Compatiblity
 
-Please make sure your code runs on the following CFML Engines:
+Please make sure your code runs on the following engines:
 
+- BoxLang 1+
 - Lucee 5+
-- Adobe ColdFusion 2018+
+- Adobe ColdFusion 2021+
 
 ## Coding Styles & Formatting
 

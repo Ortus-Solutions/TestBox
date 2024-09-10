@@ -72,7 +72,7 @@ Join us in our Ortus Community and become a valuable member of this project [Tes
 
 * BoxLang 1+
 * Lucee 5+
-* Adobe ColdFusion 2018+
+* Adobe ColdFusion 2021+
 
 ## Installation
 
