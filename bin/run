@@ -1,0 +1,20 @@
+#!/usr/bin/env boxlang
+
+/**
+ * TestBox Runner for BoxLang
+ */
+
+executionPath = server.java.executionPath
+testsDirectory = "tests.specs"
+executionArgs = jsonDeserialize( server.java.executionArgs )
+
+// No Arguments, execute the entire suite
+testArgs = {}
+if( executionArgs.isEmpty() ){
+	testArgs = {
+		"directory" : testsDirectory,
+		"recurse" : true
+	}
+}
+
+println( new testbox.system.TestBox( argumentCollection = testArgs ).run() )

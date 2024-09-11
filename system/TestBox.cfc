@@ -32,9 +32,15 @@ component accessors="true" {
 	// A list of globbing patterns to match bundles to test ONLY! Ex: *Spec|*Test
 	property name="bundlesPattern";
 
-	// Constants
+	// Static Variables
 	variables.TESTBOX_PATH = expandPath( "/testbox" );
 	variables.IS_BOXLANG   = server.keyExists( "boxlang" );
+	variables.IS_CLI = !getFunctionList().keyExists( "getPageContext" );
+	variables.DEFAULT_REPORTER = variables.IS_CLI ? "text" : "simple";
+	variables.DEFAULT_BUNDLES_PATTERN = "*.bx|*.cfc";
+	// TestBox Info : Modified by the build process.
+	variables.VERSION  = "@build.version@+@build.number@";
+	variables.CODENAME = "";
 
 	/**
 	 * Constructor
@@ -51,18 +57,15 @@ component accessors="true" {
 		any bundles           = [],
 		any directory         = {},
 		any directories       = {},
-		any reporter          = "simple",
+		any reporter          = variables.DEFAULT_REPORTER,
 		any labels            = [],
 		any excludes          = [],
 		struct options        = {},
-		string bundlesPattern = "*.bx|*.cfc"
+		string bundlesPattern = variables.DEFAULT_BUNDLES_PATTERN
 	){
-		// TestBox version
-		variables.version  = "@build.version@+@build.number@";
-		variables.codename = "";
 		// Bundles pattern
 		if ( !len( arguments.bundlesPattern ) ) {
-			arguments.bundlesPattern = "*.bx|*.cfc";
+			arguments.bundlesPattern = variables.DEFAULT_BUNDLES_PATTERN;
 		}
 		variables.bundlesPattern = arguments.bundlesPattern;
 		// Utility and mappings
@@ -203,10 +206,10 @@ component accessors="true" {
 			moduleRecord.moduleConfig.onLoad();
 		} catch ( any e ) {
 			moduleRecord.activationFailure = e;
-			writeDump(
-				var    = "**** Error activating (#arguments.name#) TestBox Module: #e.message & e.detail#",
-				output = "console"
-			);
+			// writeDump(
+			// 	var    = "**** Error activating (#arguments.name#) TestBox Module: #e.message & e.detail#",
+			// 	output = "console"
+			// );
 		}
 
 		return this;

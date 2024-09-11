@@ -17,6 +17,15 @@ component {
 	 * Helper method to deal with ACF2016's overload of the page context response, come on Adobe, get your act together!
 	 */
 	function getPageContextResponse(){
+		// If running in CLI mode, we don't have a page context
+		if( !getFunctionList().keyExists( "pageContext" ) ){
+			return {
+				"setContentType" : function(){
+					// do nothing
+				}
+			};
+		}
+
 		if ( server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" ) ) {
 			return getPageContext().getResponse().getResponse();
 		} else {
@@ -28,6 +37,10 @@ component {
 	 * Reset the HTML response
 	 */
 	function resetHTMLResponse(){
+		// If running in CLI mode, we don't have a page context
+		if( !getFunctionList().keyExists( "pageContext" ) ){
+			return;
+		}
 		// reset cfhtmlhead from integration tests
 		if ( structKeyExists( server, "lucee" ) ) {
 			try {

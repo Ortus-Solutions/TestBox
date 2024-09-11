@@ -16,3 +16,8 @@ WEB-INF
 build/build.number
 .artifacts
 .tmp
+
+# Harness Testers
+bx/testbox
+bx/grapher
+cfml/testbox

@@ -12,7 +12,6 @@ class {
 	this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() );
 	// The mapping to easily access the root application usually the parent folder
 	this.mappings[ "/root" ] = expandPath( "/../" );
-	//this.mappings[ "/testbox" ] = expandPath( "/../" );
 
 	// Any application settings go here
 

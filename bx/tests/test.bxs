@@ -1,0 +1,3 @@
+// Run all the specs in the tests.specs directory and subdirectories
+r = new testbox.system.TestBox( directory="tests.specs" )
+println( r.run() )
