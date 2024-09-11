@@ -18,7 +18,7 @@ component {
 	 */
 	function getPageContextResponse(){
 		// If running in CLI mode, we don't have a page context
-		if( !getFunctionList().keyExists( "pageContext" ) ){
+		if ( !getFunctionList().keyExists( "pageContext" ) ) {
 			return {
 				"setContentType" : function(){
 					// do nothing
@@ -38,7 +38,7 @@ component {
 	 */
 	function resetHTMLResponse(){
 		// If running in CLI mode, we don't have a page context
-		if( !getFunctionList().keyExists( "pageContext" ) ){
+		if ( !getFunctionList().keyExists( "pageContext" ) ) {
 			return;
 		}
 		// reset cfhtmlhead from integration tests

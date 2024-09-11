@@ -33,14 +33,14 @@ component accessors="true" {
 	property name="bundlesPattern";
 
 	// Static Variables
-	variables.TESTBOX_PATH = expandPath( "/testbox" );
-	variables.IS_BOXLANG   = server.keyExists( "boxlang" );
-	variables.IS_CLI = !getFunctionList().keyExists( "getPageContext" );
-	variables.DEFAULT_REPORTER = variables.IS_CLI ? "text" : "simple";
+	variables.TESTBOX_PATH            = expandPath( "/testbox" );
+	variables.IS_BOXLANG              = server.keyExists( "boxlang" );
+	variables.IS_CLI                  = !getFunctionList().keyExists( "getPageContext" );
+	variables.DEFAULT_REPORTER        = variables.IS_CLI ? "text" : "simple";
 	variables.DEFAULT_BUNDLES_PATTERN = "*.bx|*.cfc";
 	// TestBox Info : Modified by the build process.
-	variables.VERSION  = "@build.version@+@build.number@";
-	variables.CODENAME = "";
+	variables.VERSION                 = "@build.version@+@build.number@";
+	variables.CODENAME                = "";
 
 	/**
 	 * Constructor
