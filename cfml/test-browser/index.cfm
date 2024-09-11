@@ -1,23 +1,29 @@
 <cfscript>
 	// No cf debugging
 	cfsetting( showdebugoutput="false" );
-	// Path Navigation
-	param name="url.path" default="";
-	// Root Tests Directory
+	// GLOBAL VARIABLES
+	ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
+	TESTBOX_VERSION = new testBox.system.TestBox().getVersion();
+	// TEST LOCATIONS -> UPDATE AS YOU SEE FIT
 	rootMapping = "/tests/specs";
+
+	// Local Variables
 	rootPath 	= expandPath( rootMapping );
 	targetPath 	= rootPath;
-	// Append navigation path
+
+	// Incoming Navigation
+	param name="url.path" default="";
 	if( len( url.path ) ){
 		targetPath = getCanonicalPath( rootpath & "/" & url.path );
-		// Avoid traversals
+		// Avoid traversals, reset to root
 		if( !findNoCase( rootpath, targetPath ) ){
 			targetPath = rootpath;
 		}
 	}
+
 	// Get the actual execution path
 	executePath = rootMapping & ( len( url.path ) ? "/#url.path#" : "/" );
-	// Directory Runner
+	// Execute an incoming path
 	if( !isNull( url.action ) ){
 		if( directoryExists( targetPath ) ){
 			writeOutput( "#new testbox.system.TestBox( directory=executePath ).run()#" );
@@ -26,17 +32,16 @@
 		}
 		abort;
 	}
-	// Get target path listing
+
+	// Get the tests to navigate
 	qResults = directoryList( targetPath, false, "query", "", "name" );
-	// Get the back path
+
+	// Calculate the back navigation path
 	if( len( url.path ) ){
 		backPath = url.path.listToArray( "/\" );
 		backPath.pop();
 		backPath = backPath.toList( "/" );
 	}
-	// TestBox Assets
-	ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
-	TESTBOX_VERSION = new testBox.system.TestBox().getVersion();
 </cfscript>
 <!DOCTYPE html>
 <html>

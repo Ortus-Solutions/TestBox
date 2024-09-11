@@ -3,13 +3,25 @@
  */
 component extends="testbox.system.BaseSpec" {
 
+	/**
+	 * You can prepare variables here that will be available to all specs in this spec file
+	 */
+	property testbox;
+	property foo;
+	property salvador;
+
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
+	/**
+	 * Executes BEFORE all suites in this spec file
+	 */
 	function beforeAll(){
-		// setup the entire test bundle here
 		variables.salvador = 1;
 	}
 
+	/**
+	 * Executes AFTER all suites in this spec file
+	 */
 	function afterAll(){
 		// do cleanup here
 	}
@@ -53,7 +65,7 @@ component extends="testbox.system.BaseSpec" {
 
 			/**
 			 * it() describes a spec to test. Usually the title is prefixed with the suite name to create an expression.
-			 * You can also use the aliases: then() to create fluent chains of human-readable expressions.
+			 * You can also use the aliases: then(), test() to create fluent chains of human-readable expressions.
 			 *
 			 * Arguments:
 			 *
@@ -93,25 +105,21 @@ component extends="testbox.system.BaseSpec" {
 			} );
 
 			it(
-				title = "can have tests that execute if the right environment exists (lucee only)",
+				title = "can have tests that execute if the right environment exists (Windows Only)",
 				body  = () => {
-					expect( server ).toHaveKey( "lucee" );
+					expect( server.os.name ).toInclude( "Windows" );
 				},
-				skip = ( !isLucee() )
+				skip = ( !isWindows() )
 			);
 
 			it(
-				title = "can have tests that execute if the right environment exists (Adobe only)",
+				title = "can have tests that execute if the right environment exists (Mac Only)",
 				body  = () => {
-					expect( server ).notToHaveKey( "lucee" );
+					expect( server.os.name ).toInclude( "Mac" );
 				},
-				skip = ( isLucee() )
+				skip = ( !isMac() )
 			);
 		} );
-	}
-
-	private function isLucee(){
-		return ( structKeyExists( server, "lucee" ) );
 	}
 
 }
