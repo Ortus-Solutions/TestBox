@@ -50,6 +50,7 @@ component accessors="true" {
 	 * @directories    Same as @directory, but accepts an array or list
 	 * @reporter       The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a testbox.system.reports.IReporter
 	 * @labels         The list or array of labels that a suite or spec must have in order to execute.
+	 * @excludes       The list or array of labels that a suite or spec must not have in order to execute.
 	 * @options        A structure of configuration options that are optionally used to configure a runner.
 	 * @bundlesPattern A globbing pattern list to match bundles to test ONLY, matches directoryList() filters! Ex: *Spec|*Test
 	 */
