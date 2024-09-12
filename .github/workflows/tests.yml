@@ -76,7 +76,8 @@ jobs:
           path: |
             tests/results/**/*
 
-      - name: Failure Debugging Info
+      - name: Debugging Info
+        if: always()
         run: |
           box server log serverConfigFile="server-${{ matrix.cfengine }}.json"
 
