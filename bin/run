@@ -2,12 +2,20 @@
 
 /**
  * TestBox Runner for BoxLang
+ * This script will run TestBox tests from the command line using the BoxLang CLI
+ *
+ * Examples:
+ * 	- `./testbox/bin/run`
+ * 	- `./testbox/bin/run my.bundle`
+ * 	- `./testbox/bin/run --test-directory=tests.specs`
+ * 	- `./testbox/bin/run --test-bundles=my.bundle`
+ *
  * Options:
  * --test-bundles: A list of test bundles to run, defaults to `*`, ex: `path.to.bundle1,path.to.bundle2`, . Mutually exclusive with `--test-directory`
+ * --test-bundles-pattern: A pattern to match test bundles, defaults to `"*Spec*.cfc|*Test*.cfc|*Spec*.bx|*Test*.bx"`
  * --test-directory : A list of directories to look for tests to execute.  Please use dot-notation not absolute notation.
  * 		Mutually exclusive with `--test-bundles`. Ex: `tests.specs`.  Defaults to `tests.specs`
  * --test-reporter : The reporter to use.
- * --test-reporter-options : The reporter options to use as a JSON struct literal. Ex: `{"verbose"=true}`
  * --test-labels : A list of labels to run, defaults to `*`
  * --test-excludes : A list of labels to exclude, defaults to empty
  * --test-recurse : Recurse into subdirectories, defaults to `true`
@@ -17,16 +25,40 @@
  * --test-eager-failure : Fail fast, defaults to `false`
  * --test-runner-options: A JSON struct literal of options to pass into the test runner. Ex: `{"verbose"=true}`
  * --test-verbose : Verbose output, defaults to `false`. This will stream the output of the status of the tests as they run.
+ * --test-properties-summary : Generate a properties file with the summary of the test results, defaults to `true`.
+ * --test-properties-filename : The name of the properties file to generate, defaults to `TEST.properties`
+ * 	If true, it will write them to the report path.
+ * --test-reportpath : The path to write the report file to, defaults to the `/tests/results` folder by convention
+ * --test-write-report : Write the report to a file in the report path folder, defaults to `true`
+ * --test-write-json-report : Write the report as JSON alongside the requested report, defaults to `false`
+ * --test-write-visualizer : Write the visualizer to a file in the report path folder, defaults to `false`
  */
 
-// Defaults
-DEFAULT_TEST_DIRECTORY = "tests.specs"
-DEFAULT_REPORTER = "text"
+function escapePropertyValue( required string value ) {
+	if ( len( arguments.value ) == 0 ) {
+		return arguments.value;
+	}
+	local.value = replaceNoCase( arguments.value, '\', '\\', 'all' );
+	value = replaceNoCase( value, char(13), '\r', 'all' );
+	value = replaceNoCase( value, char(10), '\n', 'all' );
+	value = replaceNoCase( value, char(9), '\t', 'all' );
+	value = replaceNoCase( value, char(60), '\u003c', 'all' );
+	value = replaceNoCase( value, char(62), '\u003e', 'all' );
+	value = replaceNoCase( value, char(47), '\u002f', 'all' );
+	return replaceNoCase( value, char(32), '\u0020', 'all' );
+}
 
 // CLI variables
 rootPath = server.cli.executionPath
 options = server.cli.parsed.options;
 positional = server.cli.parsed.positionals;
+
+// Defaults
+DEFAULT_TEST_DIRECTORY = "tests.specs"
+DEFAULT_REPORTER = "text"
+DEFAULT_REPORT_PATH = rootPath & "/tests/results"
+DEFAULT_PROPERTIES_FILENAME = "TEST.properties"
+DEFAULT_PROPERTIES_SUMMARY = true
 
 // Gather the test arguments from the options
 initArgs = {
@@ -38,7 +70,8 @@ initArgs = {
 	reporter = options[ "test-reporter" ] ?: DEFAULT_REPORTER,
 	labels = options[ "test-labels" ] ?: "",
 	excludes = options[ "test-excludes" ] ?: "",
-	options = options[ "test-runner-options" ] ?: {}
+	options = options[ "test-runner-options" ] ?: {},
+	bundlesPattern = options[ "test-bundles-pattern" ] ?: ""
 };
 
 // Deserialize the JSON options
@@ -53,6 +86,16 @@ runArgs = {
 	testSpecs = options[ "test-filter-specs" ] ?: [],
 	eagerFailure = options[ "test-eager-failure" ] ?: false,
 	verbose = options[ "test-verbose" ] ?: false
+};
+
+// Prepare the after run arguments
+afterRunArgs = {
+	propertiesSummary = options[ "test-properties-summary" ] ?: DEFAULT_PROPERTIES_SUMMARY,
+	propertiesFilename = options[ "test-properties-filename" ] ?: DEFAULT_PROPERTIES_FILENAME,
+	reportPath = options[ "test-reportpath" ] ?: DEFAULT_REPORT_PATH,
+	writeReport = options[ "test-write-report" ] ?: true,
+	writeVisualizer = options[ "test-write-visualizer" ] ?: false,
+	writeJsonReport = options[ "test-write-json-report" ] ?: false
 };
 
 // Verbose Listeners
@@ -95,9 +138,7 @@ if( runArgs.verbose ){
 	println( "Starting TestBox Runner with the following init arguments" );
 	println( initArgs );
 }
-
-tb = new testbox.system.TestBox( argumentCollection = initArgs )
-
+testbox = new testbox.system.TestBox( argumentCollection = initArgs )
 if( runArgs.verbose ){
 	println( "TestBox Runner started in #getTickCount() - startTime# ms" );
 	println( "Running your tests with the following run arguments" );
@@ -106,5 +147,102 @@ if( runArgs.verbose ){
 	println( "Running your tests..." )
 }
 
+// RUN BABY RUN
 println( "" )
-println( tb.run( argumentCollection = runArgs )  )
+report = testbox.run( argumentCollection = runArgs )
+testResults = testbox.getResult()
+testResultsAsJson = jsonSerialize( testResults.getMemento( includeDebugBuffer = true ) )
+println( report )
+
+// PREPARE RESULTS FOR REPORTING
+if( !directoryExists( afterRunArgs.reportPath ) ){
+	directoryCreate( afterRunArgs.reportPath );
+} else {
+	directoryDelete( afterRunArgs.reportPath, true );
+	directoryCreate( afterRunArgs.reportPath );
+}
+
+// REPORTING TIME
+fileWrite(
+	afterRunArgs.reportPath & "/latestrun.log",
+	"Tests ran at #dateTimeFormat( now(), 'medium' )#"
+)
+
+// WRITE THE REPORT
+if( afterRunArgs.writeReport ){
+	reportFile = afterRunArgs.reportPath & "/report."
+	switch( initArgs.reporter ){
+		case  "min": case "simple" :
+			reportFile &= "html";
+			break;
+		case "json":
+			reportFile &= "json";
+			break;
+		case "xml": case "ANTJunit":
+			reportFile &= "xml";
+			break;
+		default:
+			reportFile &= "txt";
+	}
+	fileWrite(
+		reportFile,
+		report
+	)
+}
+
+// WRITE THE JSON REPORT
+if( afterRunArgs.writeJsonReport ){
+	fileWrite(
+		afterRunArgs.reportPath & "/report.json",
+		testResultsAsJson
+	)
+}
+
+// WRITE THE VISUALIZER
+if( afterRunArgs.writeVisualizer ){
+	directoryCopy(
+		expandPath( "/testbox/test-visualizer" ),
+		afterRunArgs.reportPath & "/visualizer"
+	)
+	fileWrite(
+		afterRunArgs.reportPath & "/visualizer/test-results.json",
+		testResultsAsJson
+	)
+}
+
+// WRITE THE SUMMARIES
+if( afterRunArgs.propertiesSummary ) {
+	errors = testResults.getTotalFail() + testResults.getTotalError();
+	propertiesReport = "## TestBox Summary Report
+test.datetime=#now().toISOString()#
+test.#errors ? 'failed' : 'passed'#=true
+test.labels=#escapePropertyValue( arrayToList( testResults.getLabels() ) )#
+test.excludes=#escapePropertyValue( arrayToList( testResults.getExcludes() ) )#
+test.bundles=#escapePropertyValue( initArgs.bundles )#
+test.directory=#escapePropertyValue( initArgs.directory.mapping )#
+total.bundles=#escapePropertyValue( testResults.getTotalBundles() )#
+total.suites=#escapePropertyValue( testResults.getTotalSuites() )#
+total.specs=#escapePropertyValue( testResults.getTotalSpecs() )#
+total.pass=#escapePropertyValue( testResults.getTotalPass() )#
+total.fail=#escapePropertyValue( testResults.getTotalFail() )#
+total.error=#escapePropertyValue( testResults.getTotalError() )#
+total.skipped=#escapePropertyValue( testResults.getTotalSkipped() )#";
+
+	if( !trim( lcase( afterRunArgs.propertiesfilename ) ).endsWith( '.properties' ) ) {
+		afterRunArgs.propertiesfilename &= '.properties';
+	}
+
+	fileWrite(
+		afterRunArgs.reportPath & "/" & afterRunArgs.propertiesFilename,
+		propertiesReport
+	)
+}
+
+// do stupid JUnitReport task processing, if the report is ANTJunit
+if( initArgs.reporter eq "ANTJunit" ){
+	// Produce individual test files due to how ANT JUnit report parses these.
+	xmlReport = xmlParse( report );
+	for( thisSuite in xmlReport.testsuites.XMLChildren ){
+		fileWrite( afterRunArgs.reportpath & "/TEST-" & thisSuite.XMLAttributes.package & ".xml", toString( thisSuite ) );
+	}
+}

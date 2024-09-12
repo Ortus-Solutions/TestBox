@@ -37,7 +37,7 @@ component accessors="true" {
 	variables.IS_BOXLANG              = server.keyExists( "boxlang" );
 	variables.IS_CLI                  = !getFunctionList().keyExists( "getPageContext" );
 	variables.DEFAULT_REPORTER        = variables.IS_CLI ? "text" : "simple";
-	variables.DEFAULT_BUNDLES_PATTERN = "*.bx|*.cfc";
+	variables.DEFAULT_BUNDLES_PATTERN = "*Spec*.cfc|*Test*.cfc|*Spec*.bx|*Test*.bx";
 	// TestBox Info : Modified by the build process.
 	variables.VERSION                 = "@build.version@+@build.number@";
 	variables.CODENAME                = "";
