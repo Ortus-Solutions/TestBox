@@ -3,7 +3,7 @@
 	ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
 	TESTBOX_VERSION = new testBox.system.TestBox().getVersion();
 	// TEST LOCATIONS -> UPDATE AS YOU SEE FIT
-	rootMapping = "/tests/specs";
+	rootMapping = "/tests/";
 
 	// Local Variables
 	rootPath 	= expandPath( rootMapping );
@@ -85,12 +85,22 @@
 		<div class="col-md-12 mb-4">
 			<h2>Availble Test Runners: </h2>
 			<p>
-				Below is a listing of the runners matching the "runner*.cfm" pattern.
+				Below is a listing of the runners matching the "runner*.(cfm|bxm)" pattern.
 			</p>
 
-			<bx:set runners = directoryList( expandPath( "./" ), false, "query", "runner*.cfm" )>
+			<bx:set runners = directoryList( executePath, false, "query", "runner*.cfm|runner*.bxm" )>
 			<bx:output query="runners">
-				<a href="#runners.name#" target="_blank" class="btn btn-secondary btn-sm my-1 mx-1">#runners.name#</a>
+				<a
+					href="#runners.name#"
+					target="_blank"
+					<bx:if listLast( runners.name, "." ) eq "bxm">
+						class="btn btn-success btn-sm my-1 mx-1"
+					<bx:else>
+						class="btn btn-info btn-sm my-1 mx-1"
+					</bx:if>
+				>
+					#runners.name#
+				</a>
 			</bx:output>
 		</div>
 	</div>
@@ -111,7 +121,7 @@
 
 					<!--- Show Back If we are traversing --->
 					<bx:if len( url.path )>
-						<a href="index.cfm?path=#URLEncodedFormat( backPath )#">
+						<a href="index.bxm?path=#URLEncodedFormat( backPath )#">
 							<button type="button" class="btn btn-secondary btn-sm my-1">&##xAB; Back</button>
 						</a>
 						<br>
@@ -119,20 +129,26 @@
 					</bx:if>
 
 					<bx:loop query="qResults">
-						<!--- Skip . folder file names --->
-						<bx:if refind( "^\.", qResults.name )>
+						<!--- Skip . folder file names and runners and Application.bx, cfc--->
+						<bx:if
+							refind( "^\.", qResults.name )
+							OR
+							( listLast( qresults.name, ".") eq "cfm" OR listLast( qresults.name, ".") eq "bxm" )
+							OR
+							( qResults.name eq "Application.cfc" OR qResults.name eq "Application.bx" )
+						>
 							<bx:continue>
 						</bx:if>
 
 						<bx:if qResults.type eq "Dir">
 							<a
 								class="btn btn-secondary btn-sm my-1"
-								href="index.cfm?path=#urlEncodedFormat( url.path & "/" & qResults.name )#"
+								href="index.bxm?path=#urlEncodedFormat( url.path & "/" & qResults.name )#"
 							>
 								&##x271A; #qResults.name#
 							</a>
 							<br />
-						<bx:elseif listLast( qresults.name, ".") eq "cfm">
+						<bx:elseif listLast( qresults.name, ".") eq "cfm" || listLast( qresults.name, ".") eq "bxm">
 							<a
 								class="btn btn-primary btn-sm my-1"
 								href="#executePath & "/" & qResults.name#"
@@ -141,18 +157,23 @@
 								#qResults.name#
 							</a>
 							<br />
-						<bx:elseif listLast( qresults.name, ".") eq "cfc" and qresults.name neq "Application.cfc">
+						<bx:elseif
+							listLast( qresults.name, ".") eq "cfc" || listLast( qresults.name, ".") eq "bx"
+						>
 							<a
-								class="btn btn-primary btn-sm my-1"
+								<bx:if listLast( qresults.name, ".") eq "bx">
+									data-bx="true"
+									class="btn btn-success btn-sm my-1"
+								<bx:else>
+									data-bx="false"
+									class="btn btn-info btn-sm my-1"
+								</bx:if>
 								href="#executePath & "/" & qResults.name#?method=runRemote"
 								target="_blank"
 							>
 								#qResults.name#
 							</a>
 							<br />
-						<bx:else>
-							#qResults.name#
-							<br/>
 						</bx:if>
 					</bx:loop>
 				</fieldset>

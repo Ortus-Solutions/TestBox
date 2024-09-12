@@ -87,12 +87,22 @@
 		<div class="col-md-12 mb-4">
 			<h2>Availble Test Runners: </h2>
 			<p>
-				Below is a listing of the runners matching the "runner*.cfm" pattern.
+				Below is a listing of the runners matching the "runner*.(cfm|bxm)" pattern.
 			</p>
 
-			<cfset runners = directoryList( expandPath( "./" ), false, "query", "runner*.cfm" )>
+			<cfset runners = directoryList( executePath, false, "query", "runner*.cfm|runner*.bxm" )>
 			<cfoutput query="runners">
-				<a href="#runners.name#" target="_blank" class="btn btn-secondary btn-sm my-1 mx-1">#runners.name#</a>
+				<a
+					href="#runners.name#"
+					target="_blank"
+					<cfif listLast( runners.name, "." ) eq "bxm">
+						class="btn btn-success btn-sm my-1 mx-1"
+					<cfelse>
+						class="btn btn-info btn-sm my-1 mx-1"
+					</cfif>
+				>
+					#runners.name#
+				</a>
 			</cfoutput>
 		</div>
 	</div>
@@ -121,8 +131,14 @@
 					</cfif>
 
 					<cfloop query="qResults">
-						<!--- Skip . folder file names --->
-						<cfif refind( "^\.", qResults.name )>
+						<!--- Skip . folder file names and runners and Application.bx, cfc--->
+						<cfif
+							refind( "^\.", qResults.name )
+							OR
+							( listLast( qresults.name, ".") eq "cfm" OR listLast( qresults.name, ".") eq "bxm" )
+							OR
+							( qResults.name eq "Application.cfc" OR qResults.name eq "Application.bx" )
+						>
 							<cfcontinue>
 						</cfif>
 
@@ -134,7 +150,7 @@
 								&##x271A; #qResults.name#
 							</a>
 							<br />
-						<cfelseif listLast( qresults.name, ".") eq "cfm">
+						<cfelseif listLast( qresults.name, ".") eq "cfm" OR listLast( qresults.name, ".") eq "bxm">
 							<a
 								class="btn btn-primary btn-sm my-1"
 								href="#executePath & "/" & qResults.name#"
@@ -143,18 +159,23 @@
 								#qResults.name#
 							</a>
 							<br />
-						<cfelseif listLast( qresults.name, ".") eq "cfc" and qresults.name neq "Application.cfc">
+						<cfelseif
+							listLast( qresults.name, ".") eq "cfc" OR listLast( qresults.name, ".") eq "bx"
+						>
 							<a
-								class="btn btn-primary btn-sm my-1"
+								<cfif listLast( qresults.name, ".") eq "bx">
+									data-bx="true"
+									class="btn btn-success btn-sm my-1"
+								<cfelse>
+									data-bx="false"
+									class="btn btn-info btn-sm my-1"
+								</cfif>
 								href="#executePath & "/" & qResults.name#?method=runRemote"
 								target="_blank"
 							>
 								#qResults.name#
 							</a>
 							<br />
-						<cfelse>
-							#qResults.name#
-							<br/>
 						</cfif>
 
 					</cfloop>
