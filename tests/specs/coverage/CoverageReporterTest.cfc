@@ -17,7 +17,6 @@ component extends="testbox.system.BaseSpec" {
 		}
 
 		describe( "CoverageReporter", function(){
-
 			it( "can init", function(){
 				expect( new system.coverage.CoverageReporter() ).toBeComponent();
 			} );
