@@ -4,7 +4,20 @@
 component extends="testbox.system.BaseSpec" {
 
 	function run(){
+		// TODO: This is a temporary fix for a bug in the BoxLang query engine
+		// https://ortussolutions.atlassian.net/browse/BL-535
+		if ( isBoxLang() ) {
+			describe(
+				title: "Skipped in BoxLang due to query issue",
+				body : () => {
+				},
+				skip: true
+			);
+			return;
+		}
+
 		describe( "CoverageReporter", function(){
+
 			it( "can init", function(){
 				expect( new system.coverage.CoverageReporter() ).toBeComponent();
 			} );
