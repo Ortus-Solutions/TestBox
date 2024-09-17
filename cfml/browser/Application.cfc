@@ -5,7 +5,7 @@
  */
 component {
 
-	this.name              = "A TestBox Runner Suite";
+	this.name              = "A TestBox Browser";
 	// any other application.cfc stuff goes below:
 	this.sessionManagement = true;
 
