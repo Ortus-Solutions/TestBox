@@ -119,25 +119,27 @@ class{
 		}
 
 		// If we have a positional argument, then we will assume it is a test bundle: Ex: `run my.bundle`
+		// Mutually exclusive with `--directory`, so wipe out the directory
 		if( positional.len() ) {
-			initArgs.bundles = positional[ 1 ];
+			initArgs.bundles = positional[ 1 ]
+			initArgs.directory = {}
 		}
 
-		// If we don't have test-bundles or test-directory, then default to the DEFAULT_TEST_DIRECTORY
+		// If we don't have test-bundles or a test-directory, then default to the DEFAULT_TEST_DIRECTORY
 		if( !initArgs.bundles.len() && !initArgs.directory.mapping.len() ) {
-			initArgs.directory = static.DEFAULT_TEST_DIRECTORY;
+			initArgs.directory = static.DEFAULT_TEST_DIRECTORY
 		}
 
 		if( runArgs.verbose ){
-			startTime = getTickCount();
-			println( "Starting TestBox Runner with the following init arguments" );
-			println( initArgs );
+			startTime = getTickCount()
+			println( "Starting TestBox Runner with the following init arguments" )
+			println( initArgs )
 		}
 		var testbox = new testbox.system.TestBox( argumentCollection = initArgs )
 		if( runArgs.verbose ){
-			println( "TestBox Runner started in #getTickCount() - startTime# ms" );
-			println( "Running your tests with the following run arguments" );
-			println( runArgs );
+			println( "TestBox Runner started in #getTickCount() - startTime# ms" )
+			println( "Running your tests with the following arguments" )
+			println( runArgs )
 		} else{
 			println( "Running your tests..." )
 		}
@@ -255,7 +257,7 @@ test.#errors ? 'failed' : 'passed'#=true
 test.labels=#escapePropertyValue( arrayToList( testResults.getLabels() ) )#
 test.excludes=#escapePropertyValue( arrayToList( testResults.getExcludes() ) )#
 test.bundles=#escapePropertyValue( initArgs.bundles )#
-test.directory=#escapePropertyValue( initArgs.directory.mapping )#
+test.directory=#escapePropertyValue( initArgs.directory?.mapping )#
 total.bundles=#escapePropertyValue( testResults.getTotalBundles() )#
 total.suites=#escapePropertyValue( testResults.getTotalSuites() )#
 total.specs=#escapePropertyValue( testResults.getTotalSpecs() )#
