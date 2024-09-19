@@ -408,15 +408,15 @@ component {
 	/**
 	 * Assert that a given key exists in the passed in struct/object
 	 *
-	 * @target  The target object/struct
-	 * @key     The key to check for existence
-	 * @message The message to send in the failure
+	 * @target        The target object/struct
+	 * @key           The key to check for existence
+	 * @message       The message to send in the failure
 	 * @caseSensitive If the key check is case sensitive
 	 */
 	function key(
 		required any target,
 		required string key,
-		message = "",
+		message               = "",
 		boolean caseSensitive = false
 	){
 		arguments.target = normalizeToStruct( arguments.target );
@@ -430,7 +430,7 @@ component {
 			arguments.key
 				.listToArray()
 				.filter( function( thisKey ){
-					if( caseSensitive ){
+					if ( caseSensitive ) {
 						return target.keyList().find( arguments.thisKey );
 					} else {
 						return structKeyExists( target, arguments.thisKey );
@@ -446,15 +446,15 @@ component {
 	/**
 	 * Assert that a given key DOES NOT exist in the passed in struct/object
 	 *
-	 * @target  The target object/struct
-	 * @key     The key to check for existence
-	 * @message The message to send in the failure
+	 * @target        The target object/struct
+	 * @key           The key to check for existence
+	 * @message       The message to send in the failure
 	 * @caseSensitive If the key check is case sensitive
 	 */
 	function notKey(
 		required any target,
 		required string key,
-		message = "",
+		message               = "",
 		boolean caseSensitive = false
 	){
 		arguments.target  = normalizeToStruct( arguments.target );
@@ -467,7 +467,7 @@ component {
 			arguments.key
 				.listToArray()
 				.filter( function( thisKey ){
-					if( caseSensitive ){
+					if ( caseSensitive ) {
 						return target.keyList().find( arguments.thisKey );
 					} else {
 						return structKeyExists( target, arguments.thisKey );
