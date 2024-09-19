@@ -196,7 +196,7 @@ component accessors="true" {
 		// If no path provided to capture
 		if ( !len( opts.pathToCapture ) ) {
 			// Look for a /root mapping which is a common ColdBox convention
-			if ( !isNull( getApplicationMetadata().mappings ) ) {
+			if ( structKeyExists(getApplicationMetadata(), 'mappings') ) {
 				var mappings = getApplicationMetadata().mappings;
 			} else {
 				var mappings = {};
