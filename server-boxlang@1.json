@@ -23,6 +23,6 @@
         "BOXLANG_DEBUG":true
     },
     "scripts":{
-        "onServerInitialInstall":"install bx-compat,bx-unsafe-evaluate"
+        "onServerInitialInstall":"install bx-compat-cfml,bx-unsafe-evaluate"
     }
 }
