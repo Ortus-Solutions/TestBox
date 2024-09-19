@@ -88,20 +88,24 @@
 				Below is a listing of the runners matching the "runner*.(cfm|bxm)" pattern.
 			</p>
 
-			<bx:set runners = directoryList( executePath, false, "query", "runner*.cfm|runner*.bxm" )>
-			<bx:output query="runners">
-				<a
-					href="#runners.name#"
-					target="_blank"
-					<bx:if listLast( runners.name, "." ) eq "bxm">
-						class="btn btn-success btn-sm my-1 mx-1"
-					<bx:else>
-						class="btn btn-info btn-sm my-1 mx-1"
-					</bx:if>
-				>
-					#runners.name#
-				</a>
-			</bx:output>
+			<bx:set runners = directoryList( targetPath, false, "query", "runner*.cfm|runner*.bxm" )>
+			<bx:if runners.recordCount eq 0>
+				<p class="alert alert-warning">No runners found in this directory</p>
+			<bx:else>
+				<bx:loop query="runners">
+					<a
+						href="#runners.name#"
+						target="_blank"
+						<bx:if listLast( runners.name, "." ) eq "bxm">
+							class="btn btn-success btn-sm my-1 mx-1"
+						<bx:else>
+							class="btn btn-info btn-sm my-1 mx-1"
+						</bx:if>
+					>
+						#runners.name#
+					</a>
+				</bx:loop>
+			</bx:if>
 		</div>
 	</div>
 

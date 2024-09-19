@@ -5,7 +5,7 @@
 	ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
 	TESTBOX_VERSION = new testBox.system.TestBox().getVersion();
 	// TEST LOCATIONS -> UPDATE AS YOU SEE FIT
-	rootMapping = "/tests/specs";
+	rootMapping = "/tests";
 
 	// Local Variables
 	rootPath 	= expandPath( rootMapping );
@@ -90,20 +90,24 @@
 				Below is a listing of the runners matching the "runner*.(cfm|bxm)" pattern.
 			</p>
 
-			<cfset runners = directoryList( executePath, false, "query", "runner*.cfm|runner*.bxm" )>
-			<cfoutput query="runners">
-				<a
-					href="#runners.name#"
-					target="_blank"
-					<cfif listLast( runners.name, "." ) eq "bxm">
-						class="btn btn-success btn-sm my-1 mx-1"
-					<cfelse>
-						class="btn btn-info btn-sm my-1 mx-1"
-					</cfif>
-				>
-					#runners.name#
-				</a>
-			</cfoutput>
+			<cfset runners = directoryList( targetPath, false, "query", "runner*.cfm|runner*.bxm" )>
+			<cfif runners.recordCount eq 0>
+				<p class="alert alert-warning">No runners found in this directory</p>
+			<cfelse>
+				<cloop query="runners">
+					<a
+						href="#runners.name#"
+						target="_blank"
+						<cfif listLast( runners.name, "." ) eq "bxm">
+							class="btn btn-success btn-sm my-1 mx-1"
+						<cfelse>
+							class="btn btn-info btn-sm my-1 mx-1"
+						</cfif>
+					>
+						#runners.name#
+					</a>
+				</cloop>
+			</cfif>
 		</div>
 	</div>
 
