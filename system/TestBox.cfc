@@ -33,9 +33,9 @@ component accessors="true" {
 	property name="bundlesPattern";
 
 	// Static Variables
-	variables.TESTBOX_PATH            = expandPath( "/testbox" );
-	variables.IS_BOXLANG              = server.keyExists( "boxlang" );
-	variables.IS_CLI                  = !getFunctionList().keyExists( "getPageContext" );
+	variables.TESTBOX_PATH = expandPath( "/testbox" );
+	variables.IS_BOXLANG = server.keyExists( "boxlang" );
+	variables.IS_CLI = variables.IS_BOXLANG && server.boxlang.cliMode ? true : false;
 	variables.DEFAULT_REPORTER        = variables.IS_CLI ? "text" : "simple";
 	variables.DEFAULT_BUNDLES_PATTERN = "*Spec*.cfc|*Test*.cfc|*Spec*.bx|*Test*.bx";
 	// TestBox Info : Modified by the build process.
