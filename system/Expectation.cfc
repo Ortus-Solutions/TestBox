@@ -392,6 +392,22 @@ component accessors="true" {
 	}
 
 	/**
+	 * Assert that a given key exists in the passed in struct/object with case sensitivity
+	 *
+	 * @key     A key or a list of keys to check that the structure MUST contain
+	 * @message The message to send in the failure
+	 */
+	function toHaveKeyWithCase( required string key, message = "" ){
+		arguments.target = this.actual;
+		if ( this.isNot ) {
+			variables.assert.notKey( argumentCollection = arguments );
+		} else {
+			variables.assert.key( argumentCollection = arguments );
+		}
+		return this;
+	}
+
+	/**
 	 * Assert that a given key exists in the passed in struct by searching the entire nested structure
 	 *
 	 * @key     The key to check for existence anywhere in the nested structure

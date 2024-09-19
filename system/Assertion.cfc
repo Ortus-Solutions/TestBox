@@ -411,11 +411,13 @@ component {
 	 * @target  The target object/struct
 	 * @key     The key to check for existence
 	 * @message The message to send in the failure
+	 * @caseSensitive If the key check is case sensitive
 	 */
 	function key(
 		required any target,
 		required string key,
-		message = ""
+		message = "",
+		boolean caseSensitive = false
 	){
 		arguments.target = normalizeToStruct( arguments.target );
 
@@ -428,7 +430,11 @@ component {
 			arguments.key
 				.listToArray()
 				.filter( function( thisKey ){
-					return structKeyExists( target, arguments.thisKey );
+					if( caseSensitive ){
+						return target.keyList().find( arguments.thisKey );
+					} else {
+						return structKeyExists( target, arguments.thisKey );
+					}
 				} )
 				.len() != listLen( arguments.key )
 		) {
@@ -443,32 +449,35 @@ component {
 	 * @target  The target object/struct
 	 * @key     The key to check for existence
 	 * @message The message to send in the failure
+	 * @caseSensitive If the key check is case sensitive
 	 */
 	function notKey(
 		required any target,
 		required string key,
-		message = ""
+		message = "",
+		boolean caseSensitive = false
 	){
 		arguments.target  = normalizeToStruct( arguments.target );
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The key [#arguments.key#] exists in the target object. Found keys are [#structKeyArray( arguments.target ).toString()#]"
 		);
 
-		if ( !structKeyExists( arguments.target, arguments.key ) ) {
-			return this;
-		}
-
 		// Inflate Key and process
 		if (
 			arguments.key
 				.listToArray()
 				.filter( function( thisKey ){
-					return structKeyExists( target, arguments.thisKey );
+					if( caseSensitive ){
+						return target.keyList().find( arguments.thisKey );
+					} else {
+						return structKeyExists( target, arguments.thisKey );
+					}
 				} )
 				.len() > 0
 		) {
 			fail( arguments.message );
 		}
+		return this;
 	}
 
 	/**
