@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.0.0] - 2024-09-27
+
 ### New Features
 
 - TESTBOX-391 MockBox converted to script
@@ -37,3 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Tasks
 
 - TESTBOX-400 Drop Adobe 2018 support
+
+[Unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v6.0.0...HEAD
+
+[6.0.0]: https://github.com/Ortus-Solutions/TestBox/compare/bc7774b4cc681cd8dfab08b2f3bba26a75f5601b...v6.0.0
