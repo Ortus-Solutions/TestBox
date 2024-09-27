@@ -47,24 +47,7 @@ component extends="BaseReporter" {
 		}
 
 		// prepare incoming params
-		if ( !structKeyExists( url, "testMethod" ) ) {
-			url.testMethod = "";
-		}
-		if ( !structKeyExists( url, "testSpecs" ) ) {
-			url.testSpecs = "";
-		}
-		if ( !structKeyExists( url, "testSuites" ) ) {
-			url.testSuites = "";
-		}
-		if ( !structKeyExists( url, "testBundles" ) ) {
-			url.testBundles = "";
-		}
-		if ( !structKeyExists( url, "directory" ) ) {
-			url.directory = "";
-		}
-		if ( !structKeyExists( url, "editor" ) ) {
-			url.editor = "vscode";
-		}
+		prepareIncomingParams();
 
 		// prepare the report
 		savecontent variable="local.report" {

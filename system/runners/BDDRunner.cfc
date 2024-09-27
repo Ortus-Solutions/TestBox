@@ -31,9 +31,9 @@ component
 	/**
 	 * Execute a BDD test on the incoming target and store the results in the incoming test results
 	 *
-	 * @target      The target bundle CFC to test
+	 * @target      The target bundle class to test
 	 * @testResults The test results object to keep track of results for this test case
-	 * @callbacks   A struct of listener callbacks or a CFC with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
+	 * @callbacks   A struct of listener callbacks or a class with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
 	 */
 	any function run(
 		required any target,
@@ -171,12 +171,12 @@ component
 	/**
 	 * Test the incoming suite definition
 	 *
-	 * @target      The target bundle CFC
+	 * @target      The target bundle class
 	 * @method      The method definition to test
 	 * @testResults The testing results object
 	 * @bundleStats The bundle stats this suite belongs to
 	 * @parentStats If this is a nested test suite, then it will have some parentStats goodness
-	 * @callbacks   The CFC or struct of callback listener methods
+	 * @callbacks   The class or struct of callback listener methods
 	 */
 	private function testSuite(
 		required target,
@@ -188,7 +188,7 @@ component
 	){
 		// Start suite stats
 		var suiteStats = arguments.testResults.startSuiteStats(
-			arguments.suite.name,
+			arguments.suite,
 			arguments.bundleStats,
 			arguments.parentStats
 		);

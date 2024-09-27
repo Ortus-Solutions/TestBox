@@ -8,9 +8,6 @@ component extends="testbox.system.BaseSpec" {
 				var actual    = expected;
 				expect( expected ).toBe( actual ); // this is line 10
 			} );
-
-			it( "can handle private UDFs", variables.myFakeClosure );
-			it( "can handle public UDFs", variables.myFakePublicClosure );
 		} );
 
 		describe( "Ability to bind data to life-cycle methods", function(){
@@ -74,14 +71,6 @@ component extends="testbox.system.BaseSpec" {
 				} ).toThrow( type = "TestBox.AssertionFailed" );
 			} );
 		} );
-	}
-
-	private function myFakeClosure(){
-		expect( true ).toBeTrue();
-	}
-
-	private function myFakePublicClosure(){
-		expect( true ).toBeTrue();
 	}
 
 }

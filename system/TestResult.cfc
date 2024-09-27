@@ -34,7 +34,7 @@ component accessors="true" {
 	property name="coverageEnabled" type="boolean";
 	property name="coverageData"    type="struct";
 
-	// CFML Engine Information
+	// Engine Information
 	property name="CFMLEngine";
 	property name="CFMLEngineVersion";
 
@@ -93,9 +93,9 @@ component accessors="true" {
 		variables.coverageData    = {};
 
 		// CFML Engine + Version
-		variables.CFMLEngine        = server.coldfusion.productName;
+		variables.CFMLEngine        = server.keyExists( "boxlang" ) ? "BoxLang" : server.coldfusion.productName;
 		variables.CFMLEngineVersion = (
-			structKeyExists( server, "lucee" ) ? server.lucee.version : server.coldfusion.productVersion
+			server.keyExists( "boxlang" ) ? server.boxlang.version : server.keyExists( "lucee" ) ? server.lucee.version : server.coldfusion.productVersion
 		);
 
 		return this;
@@ -175,6 +175,11 @@ component accessors="true" {
 
 	/**
 	 * Start a new bundle stats and return its reference
+	 *
+	 * @bundlePath The path of the bundle
+	 * @name       The display name of the bundle
+	 *
+	 * @return The bundle stats struct reference
 	 */
 	struct function startBundleStats( required string bundlePath, required string name ){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
@@ -182,7 +187,7 @@ component accessors="true" {
 			var stats = {
 				// bundle id
 				"id"              : hash( getTickCount() + randRange( 1, 10000000 ) ),
-				// The bundle name
+				// The bundle display name
 				"name"            : arguments.name,
 				// Path of the bundle
 				"path"            : arguments.bundlePath,
@@ -262,37 +267,30 @@ component accessors="true" {
 	/**
 	 * Start a new suite stats and return its reference
 	 *
-	 * @name        The name of the suite
+	 * @name        The suite struct reference this belongs to
 	 * @bundleStats The bundle stats reference this belongs to.
 	 * @parentStats If passed, the parent stats this suite belongs to
 	 */
 	struct function startSuiteStats(
-		required string name,
+		required struct suite,
 		required struct bundleStats,
 		struct parentStats = {}
 	){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
 			// setup stats data for incoming suite
 			var stats = {
-				// suite id
-				"id"            : hash( getTickCount() + randRange( 1, 10000000 ) ),
-				// parent suite id
+				// suite identifiers
+				"id"            : arguments.suite.id,
 				"parentID"      : "",
-				// bundle id
 				"bundleID"      : arguments.bundleStats.id,
-				// The suite name
-				"name"          : arguments.name,
-				// test status
+				"name"          : arguments.suite.name,
+				// Initial status: Updated by the suite runner
 				"status"        : "not executed",
-				// Total specs found to test
+				// Reporting
 				"totalSpecs"    : 0,
-				// Total passed specs
 				"totalPass"     : 0,
-				// Total failed specs
 				"totalFail"     : 0,
-				// Total error in specs
 				"totalError"    : 0,
-				// Total skipped specs/suites
 				"totalSkipped"  : 0,
 				// Durations
 				"startTime"     : getTickCount(),
@@ -337,21 +335,29 @@ component accessors="true" {
 	/**
 	 * Start a new spec stats and return its reference
 	 *
-	 * @name       The name of the suite
+	 * @spec       The spec reference this belongs to
 	 * @suiteStats The suite stats reference this belongs to.
 	 */
-	struct function startSpecStats( required string name, required struct suiteStats ){
+	struct function startSpecStats( required struct spec, required struct suiteStats ){
 		lock name="tb-results-#variables.resultsID#" type="exclusive" timeout="10" {
 			// spec stats
 			var stats = {
 				// suite id
-				"id"               : hash( getTickCount() + randRange( 1, 10000000 ) ),
+				"id"               : arguments.spec.id,
 				// suite id
 				"suiteID"          : arguments.suiteStats.id,
 				// name of the spec
-				"name"             : arguments.name,
+				"name"             : arguments.spec.name,
+				// Display Name
+				"displayName"      : arguments.spec.displayName,
 				// spec status
 				"status"           : "na",
+				// Focused
+				"focused"          : arguments.spec.focused,
+				// Skip
+				"skip"             : arguments.spec.skip,
+				// Labels
+				"labels"           : arguments.spec.labels,
 				// durations
 				"startTime"        : getTickCount(),
 				"endTime"          : 0,
@@ -367,7 +373,9 @@ component accessors="true" {
 				// the failure stack trace
 				"failStacktrace"   : "",
 				// the failure origin
-				"failOrigin"       : {}
+				"failOrigin"       : {},
+				// the debug buffer
+				"debugBuffer"      : []
 			};
 
 			// append to the parent stats
@@ -423,11 +431,13 @@ component accessors="true" {
 			"CFMLEngineVersion"
 		];
 
+
+
 		var result = { "coverage" : {} };
 
 		// Do simple properties only
 		for ( var thisProp in pList ) {
-			if ( structKeyExists( variables, thisProp ) ) {
+			if ( structKeyExists( variables, thisProp ) && !isNull( variables[ thisProp ] ) ) {
 				result[ thisProp ] = variables[ thisProp ];
 
 				// Do we need to strip out the buffer?

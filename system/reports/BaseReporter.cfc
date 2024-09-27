@@ -17,6 +17,15 @@ component {
 	 * Helper method to deal with ACF2016's overload of the page context response, come on Adobe, get your act together!
 	 */
 	function getPageContextResponse(){
+		// If running in CLI mode, we don't have a page context
+		if ( !getFunctionList().keyExists( "pageContext" ) ) {
+			return {
+				"setContentType" : function(){
+					// do nothing
+				}
+			};
+		}
+
 		if ( server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" ) ) {
 			return getPageContext().getResponse().getResponse();
 		} else {
@@ -28,6 +37,10 @@ component {
 	 * Reset the HTML response
 	 */
 	function resetHTMLResponse(){
+		// If running in CLI mode, we don't have a page context
+		if ( !getFunctionList().keyExists( "pageContext" ) ) {
+			return;
+		}
 		// reset cfhtmlhead from integration tests
 		if ( structKeyExists( server, "lucee" ) ) {
 			try {
@@ -76,6 +89,36 @@ component {
 				return "x-espresso://open?filepath=#arguments.template#&lines=#arguments.line#";
 			default:
 				return "#arguments.template#:#arguments.line#";
+		}
+	}
+
+	/**
+	 * Prepare incoming params for reports:
+	 * - testMethod
+	 * - testSpecs
+	 * - testSuites
+	 * - testBundles
+	 * - directory
+	 * - editor
+	 */
+	function prepareIncomingParams(){
+		if ( !structKeyExists( url, "testMethod" ) ) {
+			url.testMethod = "";
+		}
+		if ( !structKeyExists( url, "testSpecs" ) ) {
+			url.testSpecs = "";
+		}
+		if ( !structKeyExists( url, "testSuites" ) ) {
+			url.testSuites = "";
+		}
+		if ( !structKeyExists( url, "testBundles" ) ) {
+			url.testBundles = "";
+		}
+		if ( !structKeyExists( url, "directory" ) ) {
+			url.directory = "";
+		}
+		if ( !structKeyExists( url, "editor" ) ) {
+			url.editor = "vscode";
 		}
 	}
 

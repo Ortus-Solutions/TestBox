@@ -1,0 +1,28 @@
+{
+	"name":"testbox-boxlang",
+	"force":true,
+	"openBrowser":false,
+	"web":{
+        "directoryBrowsing":true,
+        "http":{
+            "port":"49616"
+        }
+    },
+    "app":{
+        "cfengine":"boxlang@be",
+        "serverHomeDirectory":".engine/boxlang"
+    },
+    "JVM":{
+        "javaVersion":"openjdk21_jdk",
+		"args": "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8888"
+    },
+    "cfconfig":{
+        "file":".cfconfig.json"
+    },
+    "env":{
+        "BOXLANG_DEBUG":true
+    },
+    "scripts":{
+        "onServerInitialInstall":"install bx-compat-cfml,bx-unsafe-evaluate"
+    }
+}

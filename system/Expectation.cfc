@@ -2,7 +2,7 @@
  * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * The Expectation CFC holds a current expectation with all the required matcher methods to provide you
+ * The Expectation class holds a current expectation with all the required matcher methods to provide you
  * with awesome BDD expressions and testing.
  */
 component accessors="true" {
@@ -113,7 +113,7 @@ component accessors="true" {
 		// throw exception
 		throw(
 			type    = "InvalidMethod",
-			message = "The dynamic/static method: #arguments.missingMethodName# does not exist in this CFC",
+			message = "The dynamic/static method: #arguments.missingMethodName# does not exist in this class",
 			detail  = "Available methods are #structKeyArray( this ).toString()#"
 		);
 	}
@@ -382,6 +382,22 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toHaveKey( required string key, message = "" ){
+		arguments.target = this.actual;
+		if ( this.isNot ) {
+			variables.assert.notKey( argumentCollection = arguments );
+		} else {
+			variables.assert.key( argumentCollection = arguments );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that a given key exists in the passed in struct/object with case sensitivity
+	 *
+	 * @key     A key or a list of keys to check that the structure MUST contain
+	 * @message The message to send in the failure
+	 */
+	function toHaveKeyWithCase( required string key, message = "" ){
 		arguments.target = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notKey( argumentCollection = arguments );

@@ -16,7 +16,7 @@
 <cfparam name="url.coverageSonarQubeXMLOutputPath"	default="">
 <cfparam name="url.coveragePathToCapture"			default="#expandPath( '/testbox/system/' )#">
 <cfparam name="url.coverageWhitelist"				default="">
-<cfparam name="url.coverageBlacklist"				default="/stubs/**,/modules/**,/coverage/**,Application.cfc">
+<cfparam name="url.coverageBlacklist"				default="/stubs/**,/modules/**,/coverage/**,Application.cfc,Application.bx">
 
 <!--- FYI the "coverageBrowserOutputDir" folder will be DELETED and RECREATED each time
 	  you generate the report. Don't point this setting to a folder that has other important

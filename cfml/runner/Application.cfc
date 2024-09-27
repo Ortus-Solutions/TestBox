@@ -5,7 +5,7 @@
  */
 component {
 
-	this.name              = "A TestBox Runner Suite " & hash( getCurrentTemplatePath() );
+	this.name              = "A TestBox Global Runner";
 	// any other application.cfc stuff goes below:
 	this.sessionManagement = true;
 

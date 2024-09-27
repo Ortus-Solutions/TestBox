@@ -17,7 +17,7 @@
 			<body>
 	</cfif>
 				<div class="container-fluid my-3">
-					<!-- Header -->					
+					<!-- Header -->
 					<div class="d-flex justify-content-between align-items-end">
 						<div>
 							<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75">
@@ -118,7 +118,7 @@
 										<cfif arrayLen( thisBundle.debugBuffer )>
 											<li class="list-group-item list-group-item-info">
 												<span class="alert-link h5">
-													<strong>Debug Stream: #thisBundle.path#</strong>
+													<strong>Debug Stream: #thisBundle.name#</strong>
 												</span>
 												<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#thisBundle.id#" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">
 													<i class="fas fa-plus-square"></i>
@@ -126,8 +126,15 @@
 												<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#thisBundle.id#">
 													<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
 													<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
-														<h6>#thisDebug.label#</h6>
-														<cfdump var="#thisDebug.data#" label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#" top="#thisDebug.top#" />
+														<cfif !IsNull( thisDebug )>
+															<h6>#thisDebug.label#</h6>
+															<cfdump
+																var="#thisDebug.data#"
+																label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#"
+																top="#thisDebug.top#"
+																showUDfs="#thisDebug.showUDFs#"
+																/>
+														</cfif>
 													</cfloop>
 												</div>
 											</li>

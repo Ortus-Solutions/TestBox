@@ -37,6 +37,9 @@ component extends="BaseReporter" {
 		// bundle stats
 		variables.bundleStats = arguments.results.getBundleStats();
 
+		// prepare incoming params
+		prepareIncomingParams();
+
 		// prepare the report
 		savecontent variable="local.report" {
 			include "assets/tap.cfm";

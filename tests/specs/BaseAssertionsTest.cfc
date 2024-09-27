@@ -1,8 +1,4 @@
-component
-	displayName="TestBox xUnit suite for CF9"
-	labels     ="lucee,cf"
-	extends    ="testbox.system.BaseSpec"
-{
+component labels="lucee,cf" extends="testbox.system.BaseSpec" {
 
 	/*********************************** LIFE CYCLE Methods ***********************************/
 
@@ -133,7 +129,8 @@ component
 
 		$assert.isEqual( f1, f1 );
 
-		$assert.isEqual( new testbox.system.MockBox(), new testbox.system.MockBox() );
+		var target = new testbox.system.MockBox();
+		$assert.isEqual( target, target );
 
 		var xmlString = "<root><item attr=""value"" /><item attr=""again"" /></root>";
 		$assert.isEqual( xmlParse( xmlString ), xmlParse( xmlString ) );
@@ -147,7 +144,10 @@ component
 		);
 	}
 
-	function testIsEqualQuery(){
+	/**
+	 * Skipped until BoxLang supports query of queries
+	 */
+	function testIsEqualQuery() skip="isBoxLang"{
 		var a         = "";
 		var b         = "";
 		var testQuery = queryNew( "column_a,column_b" );

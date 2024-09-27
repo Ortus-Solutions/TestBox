@@ -1,26 +1,24 @@
-<cfsetting showDebugOutput="false">
 <!--- Executes all tests in the 'specs' folder with simple reporter by default --->
-<cfparam name="url.reporter" default="simple">
-<cfparam name="url.directory" default="tests.specs">
-<cfparam name="url.recurse" default="false" type="boolean">
-<cfparam name="url.bundles" default="">
-<cfparam name="url.labels" default="">
-<cfparam name="url.excludes" default="">
-<cfparam name="url.reportpath" default="#expandPath( "/tests/results" )#">
-<cfparam name="url.propertiesFilename" default="TEST.properties">
-<cfparam name="url.propertiesSummary" default="false" type="boolean">
-<cfparam name="url.editor" 				default="vscode">
-<cfparam name="url.bundlesPattern" 		default="*Spec*.cfc|*Test*.cfc">
+<bx:param name="url.reporter" default="simple">
+<bx:param name="url.directory" default="tests.specs">
+<bx:param name="url.recurse" default="false" type="boolean">
+<bx:param name="url.bundles" default="">
+<bx:param name="url.labels" default="">
+<bx:param name="url.excludes" default="">
+<bx:param name="url.reportpath" default="#expandPath( "/tests/results" )#">
+<bx:param name="url.propertiesFilename" default="TEST.properties">
+<bx:param name="url.propertiesSummary" default="false" type="boolean">
+<bx:param name="url.editor" 				default="vscode">
+<bx:param name="url.bundlesPattern" 		default="*Spec*.cfc|*Test*.cfc|*Spec*.bx|*Test*.bx">
 
-<cfparam name="url.coverageEnabled" default="false">
-<cfparam name="url.coverageSonarQubeXMLOutputPath" default="">
-<cfparam name="url.coveragePathToCapture" default="#expandPath( '/testbox/system' )#">
-<cfparam name="url.coverageWhitelist" default="">
-<cfparam name="url.coverageBlacklist" default="/stubs/**">
-<cfparam name="url.coverageBrowserOutputDir" default="#expandPath( '/tests/results/coverageReport' )#">
-
-<cfparam name="url.opt_run" default="false">
-<cfscript>
+<bx:param name="url.coverageEnabled" default="false">
+<bx:param name="url.coverageSonarQubeXMLOutputPath" default="">
+<bx:param name="url.coveragePathToCapture" default="#expandPath( '/testbox/system' )#">
+<bx:param name="url.coverageWhitelist" default="">
+<bx:param name="url.coverageBlacklist" default="/stubs/**">
+<bx:param name="url.coverageBrowserOutputDir" default="#expandPath( '/tests/results/coverageReport' )#">
+<bx:param name="url.opt_run" default="false">
+<bx:script>
 	// create reporters
 	reporters = [ "ANTJunit", "Console", "Codexwiki", "Doc", "Dot", "JSON", "JUnit", "Min", "Raw", "Simple", "Tap", "Text", "XML" ];
 	ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
@@ -30,8 +28,7 @@
 		include "/testbox/system/runners/HTMLRunner.cfm";
 		abort;
 	}
-</cfscript>
-
+</bx:script>
 <!DOCTYPE html>
 <html>
 
@@ -40,18 +37,18 @@
 		<meta name="generator" content="TestBox v#testbox.getVersion()#">
 		<title>TestBox Runner</title>
 
-		<cfoutput>
+		<bx:output>
 			<style>#fileRead( '#ASSETS_DIR#/css/main.css' )#</style>
 			<script>#fileRead( '#ASSETS_DIR#/js/jquery-3.3.1.min.js' )#</script>
 			<script>#fileRead( '#ASSETS_DIR#/js/popper.min.js' )#</script>
 			<script>#fileRead( '#ASSETS_DIR#/js/bootstrap.min.js' )#</script>
 			<script>#fileRead( '#ASSETS_DIR#/js/stupidtable.min.js' )#</script>
-		</cfoutput>
+		</bx:output>
 
 		<script>
-		$(document).ready(function() {
-			toggleInputsLinkedCheckbox('propertiesSummary', 'propertiesInputs');
-			toggleInputsLinkedCheckbox('coverageEnabled', 'coverageInputs');
+		$( document ).ready( function() {
+			toggleInputsLinkedCheckbox( 'propertiesSummary', 'propertiesInputs' );
+			toggleInputsLinkedCheckbox( 'coverageEnabled', 'coverageInputs' );
 		});
 
 		function toggleInputsLinkedCheckbox(checkboxId, inputsDivId) {
@@ -78,7 +75,7 @@
 				.css("opacity", "0.5");
 
 			$("#tb-results")
-				.load("index.cfm", $("#runnerForm").serialize(), function(data) {
+				.load("index.bxm", $("#runnerForm").serialize(), function(data) {
 					$("#btn-run").removeAttr("disabled").html('Run').css("opacity", "1");
 				});
 		}
@@ -90,7 +87,7 @@
 		}
 		</script>
 	</head>
-	<cfoutput>
+	<bx:output>
 
 		<body>
 			<!--- Title --->
@@ -111,9 +108,9 @@
 							<div class="form-group">
 								<label for="reporter">Reporter</label>
 								<select name="reporter" id="reporter" class="custom-select">
-									<cfloop array="#reporters#" index="thisReporter">
-										<option <cfif url.reporter eq thisReporter>selected="selected"</cfif> value="#thisReporter#">#thisReporter# Reporter</option>
-									</cfloop>
+									<bx:loop array="#reporters#" index="thisReporter">
+										<option <bx:if url.reporter eq thisReporter>selected="selected"</bx:if> value="#thisReporter#">#thisReporter# Reporter</option>
+									</bx:loop>
 								</select>
 							</div>
 							<div class="form-group">
@@ -121,7 +118,7 @@
 								<input class="form-control" type="text" name="directory" id="directory" value="#trim( url.directory )#" placeholder="Directory" />
 							</div>
 							<div class="form-group form-check">
-								<input class="form-check-input" title="Enable directory recursion for directory runner" name="recurse" id="recurse" type="checkbox" value="true" <cfif url.recurse>checked="true"</cfif> />
+								<input class="form-check-input" title="Enable directory recursion for directory runner" name="recurse" id="recurse" type="checkbox" value="true" <bx:if url.recurse>checked="true"</bx:if> />
 								<label class="form-check-label" for="recurse"> Recurse Directories</label>
 							</div>
 							<div class="form-group">
@@ -141,7 +138,7 @@
 								<input class="form-control" title="Report Path" type="text" name="reportpath" id="reportpath" value="#url.reportpath#" placeholder="Report Path" />
 							</div>
 							<div class="form-group form-check">
-								<input class="form-check-input" title="Include Properties Summary" name="propertiesSummary" id="propertiesSummary" type="checkbox" value="true" <cfif url.propertiesSummary>checked="true"</cfif> />
+								<input class="form-check-input" title="Include Properties Summary" name="propertiesSummary" id="propertiesSummary" type="checkbox" value="true" <bx:if url.propertiesSummary>checked="true"</bx:if> />
 								<label class="form-check-label" for="propertiesSummary"> Include Properties Summary</label>
 							</div>
 							<div class="form-group" id="propertiesInputs">
@@ -151,7 +148,7 @@
 								</div>
 							</div>
 							<div class="form-group form-check">
-								<input class="form-check-input" title="Enable code coverage report" name="coverageEnabled" id="coverageEnabled" type="checkbox" value="true" <cfif url.coverageEnabled>checked="true"</cfif> />
+								<input class="form-check-input" title="Enable code coverage report" name="coverageEnabled" id="coverageEnabled" type="checkbox" value="true" <bx:if url.coverageEnabled>checked="true"</bx:if> />
 								<label class="form-check-label" for="coverageEnabled"> Enable code coverage report</label>
 							</div>
 							<div class="form-group" id="coverageInputs">
@@ -193,4 +190,4 @@
 		</body>
 
 </html>
-</cfoutput>
+</bx:output>

@@ -113,7 +113,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Injects a method into the CFC
+	 * Injects a method into the class
 	 */
 	function injectMixin( required name, required udf ){
 		variables[ arguments.name ] = arguments.udf;
@@ -151,7 +151,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Removes a method in a CFC
+	 * Removes a method in a class
 	 */
 	function removeMixin( required UDFName ){
 		structDelete( this, arguments.udfName );
@@ -161,7 +161,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Removes a method in a CFC
+	 * Removes a method in a class
 	 */
 	function removePropertyMixin( required propertyName, scope = "variables" ){
 		if ( arguments.scope eq "variables" ) {

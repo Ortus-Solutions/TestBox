@@ -1,10 +1,14 @@
 <cfoutput>█▓▒▒░░░ TestBox v#testbox.getVersion()# ░░░▒▒▓█
 <!--- Iterate over each bundle tested --->
 <cfloop array="#variables.bundleStats#" index="thisBundle">
+<!--- Skip if not in the includes list --->
+<cfif len( url.testBundles ) and !listFindNoCase( url.testBundles, thisBundle.path )>
+<cfcontinue>
+</cfif>
 _____________________________________________________________
 #space()#
 <!--- Bundle Name --->
-#getBundleIndicator( thisBundle )##thisBundle.path# (#thisBundle.totalDuration# ms)
+#getBundleIndicator( thisBundle )##thisBundle.name# (#thisBundle.totalDuration# ms)
 <!--- Bundle Report --->
 [Passed: #thisBundle.totalPass#] [Failed: #thisBundle.totalFail#] [Errors: #thisBundle.totalError#] [Skipped: #thisBundle.totalSkipped#] [Suites/Specs: #thisBundle.totalSuites#/#thisBundle.totalSpecs#]
 #space()#<!--- Bundle Exception Output --->
@@ -70,7 +74,7 @@ Labels: #space( 7 )# #arrayToList( results.getLabels() )#<cfif !arrayLen( result
 			Specs
 
 		---><cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec"><!---
-		--->#tabsNext#( #getStatusIndicator( local.thisSpec.status )# ) #local.thisSpec.name# (#local.thisSpec.totalDuration# ms) #chr(13)#<!---
+		--->#tabsNext#( #getStatusIndicator( local.thisSpec.status )# ) #local.thisSpec.displayName# (#local.thisSpec.totalDuration# ms) #chr(13)#<!---
 
 			If Spec Failed
 

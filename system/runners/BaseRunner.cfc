@@ -45,15 +45,18 @@ component {
 	/**
 	 * Checks if we can run the spec due to using testSpec arguments or incoming URL filters.
 	 *
-	 * @name        The spec name
+	 * @spec        The spec reference
 	 * @testResults The testing results object
 	 */
-	boolean function canRunSpec( required name, required testResults ){
+	boolean function canRunSpec( required spec, required testResults ){
 		var testSpecs = arguments.testResults.getTestSpecs();
 
 		// verify we have some?
 		if ( arrayLen( testSpecs ) ) {
-			return ( arrayFindNoCase( testSpecs, arguments.name ) ? true : false );
+			// Test by id first
+			return ( arrayFindNoCase( testSpecs, arguments.spec.id ) ? true : false );
+			// Test by name second
+			return ( arrayFindNoCase( testSpecs, arguments.spec.name ) ? true : false );
 		}
 
 		// we can run it.
@@ -220,6 +223,12 @@ component {
 		if ( structKeyExists( getMetadata( arguments.target[ arguments.methodName ] ), "test" ) ) {
 			return true;
 		}
+
+		// Skip: test, ftest, xtest which are internal methods
+		if ( reFindNoCase( "^(f|x)?test$", arguments.methodName ) ) {
+			return false;
+		}
+
 		// All xUnit test methods must start or end with the term, "test".
 		return ( !!reFindNoCase( "(^test|test$)", arguments.methodName ) );
 	}

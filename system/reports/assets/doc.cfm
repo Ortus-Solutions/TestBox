@@ -22,10 +22,14 @@
 
 <!--- Bundle Info --->
 <cfloop array="#variables.bundleStats#" index="thisBundle">
+	<!--- Skip if not in the includes list --->
+	<cfif len( url.testBundles ) and !listFindNoCase( url.testBundles, thisBundle.path )>
+		<cfcontinue>
+	</cfif>
 	<section class="bundle" id="bundle-#thisBundle.path#">
 
 		<!--- bundle stats --->
-		<h2>#thisBundle.path# (#thisBundle.totalDuration# ms)</h2>
+		<h2>#thisBundle.name# (#thisBundle.totalDuration# ms)</h2>
 		<p>
 			Suites/Specs: #thisBundle.totalSuites#/#thisBundle.totalSpecs#
 			<br>
@@ -84,7 +88,7 @@
 				<cfset thisSpecStatusClass = statusToBootstrapClass(local.thisSpec.status)>
 
 				<dt class="spec #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
-					#local.thisSpec.name# (#local.thisSpec.totalDuration# ms)
+					#local.thisSpec.displayName# (#local.thisSpec.totalDuration# ms)
 				</dt>
 
 				<cfif local.thisSpec.status eq "failed">

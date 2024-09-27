@@ -16,7 +16,11 @@
 #chr(10)#
 
 <cfloop array="#variables.bundleStats#" index="thisBundle">
-= #thisBundle.path# (#thisBundle.totalDuration# ms) =
+<!--- Skip if not in the includes list --->
+<cfif len( url.testBundles ) and !listFindNoCase( url.testBundles, thisBundle.path )>
+	<cfcontinue>
+</cfif>
+= #thisBundle.name# (#thisBundle.totalDuration# ms) =
 
 * '''Suites/Specs:''' #thisBundle.totalSuites#/#thisBundle.totalSpecs#
 * '''Pass:''' #thisBundle.totalPass#
@@ -53,7 +57,7 @@
 <cfset arguments.level++>
 
 <cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
-<p>#local.thisSpec.name# (#local.thisSpec.totalDuration# ms)</p>
+<p>#local.thisSpec.displayName# (#local.thisSpec.totalDuration# ms)</p>
 
 <cfif local.thisSpec.status eq "failed">
 * '''#encodeForHTML( local.thisSpec.failMessage )#'''

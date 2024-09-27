@@ -34,6 +34,9 @@ component extends="BaseReporter" {
 			getPageContextResponse().setContentType( "application/xml" );
 		}
 
+		// prepare incoming params
+		prepareIncomingParams();
+
 		return toJUnit( arguments.results );
 	}
 

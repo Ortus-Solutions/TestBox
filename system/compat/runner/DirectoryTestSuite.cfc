@@ -24,7 +24,7 @@
 			name    ="excludes"
 			required="false"
 			default =""
-			hint    ="list of Tests, in cfc notation, to exclude. uses ListContains so it's as greedy as possible. Currently does not support ant-style syntax or whole-directory filtering"
+			hint    ="list of Tests, in class notation, to exclude. uses ListContains so it's as greedy as possible. Currently does not support ant-style syntax or whole-directory filtering"
 		>
 
 		<cfscript>
@@ -39,7 +39,7 @@
 		name      ="getComponentPath"
 		access    ="remote"
 		returntype="string"
-		hint      ="Given a directory path, returns the corresponding CFC package according to CFMX"
+		hint      ="Given a directory path, returns the corresponding class package according to CFMX"
 		output    ="false"
 	>
 		<cfargument name="path" type="string" required="true"/>

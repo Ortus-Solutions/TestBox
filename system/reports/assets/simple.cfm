@@ -17,287 +17,294 @@
 			</head>
 			<body>
 	</cfif>
-				<div class="container-fluid my-3">
+	<div class="container-fluid my-3">
 
-					<!--- Filter--->
-					<div class="d-flex justify-content-between align-items-end">
+		<!--- Filter--->
+		<div class="d-flex justify-content-between align-items-end">
 
-						<div>
-							<!--- Header --->
-							<div>
-								<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75">
-								<span class="badge badge-info">v#testbox.getVersion()#</span>
-							</div>
-						</div>
+			<div>
+				<!--- Header --->
+				<div>
+					<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75">
+					<span class="badge badge-info">v#testbox.getVersion()#</span>
+				</div>
+			</div>
 
-						<div>
-							<input class="d-inline col-7 ml-2 form-control float-right mb-1" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
-							<div class="buttonBar mb-1 float-right">
-								<a 	class="ml-1 btn btn-sm btn-primary float-right"
-									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&opt_run=true"
-									title="Run all tests"
-								>
-									<i class="fas fa-running"></i> Run All Tests
-								</a>
-								<button
-									id="collapse-bundles"
-									class="ml-1 btn btn-sm btn-primary float-right"
-									title="Collapse all bundles"
-									>
-										<i class="fas fa-minus-square"></i> Collapse All Bundles
-								</button>
-								<button
-									id="expand-bundles"
-									class="ml-1 btn btn-sm btn-primary float-right"
-									title="Expand all bundles"
-									>
-										<i class="fas fa-plus-square"></i> Expand All Bundles
-								</button>
-							</div>
-						</div>
+			<div>
+				<input class="d-inline col-7 ml-2 form-control float-right mb-1" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
+				<div class="buttonBar mb-1 float-right">
+					<a 	class="ml-1 btn btn-sm btn-primary float-right"
+						href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&opt_run=true"
+						title="Run all tests"
+					>
+						<i class="fas fa-running"></i> Run All Tests
+					</a>
+					<button
+						id="collapse-bundles"
+						class="ml-1 btn btn-sm btn-primary float-right"
+						title="Collapse all bundles"
+						>
+							<i class="fas fa-minus-square"></i> Collapse All Bundles
+					</button>
+					<button
+						id="expand-bundles"
+						class="ml-1 btn btn-sm btn-primary float-right"
+						title="Expand all bundles"
+						>
+							<i class="fas fa-plus-square"></i> Expand All Bundles
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!--- Code Coverage Stats --->
+		<cfif results.getCoverageEnabled()>
+			#testbox.getCoverageService().renderStats( results.getCoverageData(), false )#
+		</cfif>
+
+		<!--- Global Stats --->
+		<div class="list-group">
+
+			<!--- Test Results Stats --->
+			<div class="list-group-item list-group-item-info p-2 d-flex justify-content-between align-items-end" id="globalStats">
+				<div>
+					<h3><i class="fas fa-chart-line"></i> Test Results Stats (#numberFormat( results.getTotalDuration() )# ms)</h3>
+					<div>
+						<h5 class="mt-2">
+							<span>Bundles:<span class="badge badge-info ml-1">#results.getTotalBundles()#</span></span>
+							<span class="ml-3">Suites:<span class="badge badge-info ml-1">#results.getTotalSuites()#</span></span>
+							<span class="ml-3">Specs:<span class="badge badge-info ml-1">#results.getTotalSpecs()#</span></span>
+						</h5>
+						<cfif arrayLen( results.getLabels() )>
+							<h5 class="mt-2 mb-0">
+								<span>Labels Applied: <span class="badge badge-info ml-1">#arrayToList( results.getLabels() )#</u></span>
+							</h5>
+						</cfif>
+						<cfif arrayLen( results.getExcludes() )>
+							<h5 class="mt-2 mb-0">
+								<span>Excludes Applied: <span class="badge badge-info ml-1">#arrayToList( results.getExcludes() )#</u></span>
+							</h5>
+						</cfif>
+						<h5 class="mt-2 mb-0">
+							<span class="badge badge-info">
+								#results.getCFMLEngine()#
+								#results.getCFMLEngineVersion()#
+							</span>
+						</h5>
 					</div>
+				</div>
 
-					<!--- Code Coverage Stats --->
-					<cfif results.getCoverageEnabled()>
-						#testbox.getCoverageService().renderStats( results.getCoverageData(), false )#
+				<div>
+					<span
+						class="spec-status btn btn-sm btn-success Passed"
+						data-status="passed"
+					>
+						<i class="fas fa-check"></i> Pass: #results.getTotalPass()#
+					</span>
+					<span
+						class="spec-status btn btn-sm btn-warning Failed"
+						data-status="failed"
+					>
+						<i class="fas fa-exclamation-triangle"></i> Failures: #results.getTotalFail()#
+					</span>
+					<span
+						class="spec-status btn btn-sm btn-danger Error"
+						data-status="error"
+					>
+						<i class="fas fa-times"></i> Errors: #results.getTotalError()#
+					</span>
+					<span
+						class="spec-status btn btn-sm btn-secondary Skipped"
+						data-status="skipped"
+					>
+						<i class="fas fa-minus-circle"></i> Skipped: #results.getTotalSkipped()#
+					</span>
+					<span
+						class="reset btn btn-sm btn-dark"
+						title="Clear status filters"
+					>
+						<i class="fas fa-broom"></i> Reset
+					</span>
+				</div>
+			</div>
+
+			<!--- BUNDLE REPORTS --->
+			<div class="list-group-item accordion pl-0" id="bundles">
+				<!--- Bundle Info --->
+				<cfloop array="#variables.bundleStats#" index="thisBundle">
+
+					<!--- Skip if not in the includes list --->
+					<cfif len( url.testBundles ) and !listFindNoCase( url.testBundles, thisBundle.path )>
+						<cfcontinue>
 					</cfif>
 
-					<!--- Global Stats --->
-					<div class="list-group">
-
-						<!--- Test Results Stats --->
-						<div class="list-group-item list-group-item-info p-2 d-flex justify-content-between align-items-end" id="globalStats">
-							<div>
-								<h3><i class="fas fa-chart-line"></i> Test Results Stats (#numberFormat( results.getTotalDuration() )# ms)</h3>
-								<div>
-									<h5 class="mt-2">
-										<span>Bundles:<span class="badge badge-info ml-1">#results.getTotalBundles()#</span></span>
-										<span class="ml-3">Suites:<span class="badge badge-info ml-1">#results.getTotalSuites()#</span></span>
-										<span class="ml-3">Specs:<span class="badge badge-info ml-1">#results.getTotalSpecs()#</span></span>
-									</h5>
-									<cfif arrayLen( results.getLabels() )>
-										<h5 class="mt-2 mb-0">
-											<span>Labels Applied: <span class="badge badge-info ml-1">#arrayToList( results.getLabels() )#</u></span>
-										</h5>
-									</cfif>
-									<cfif arrayLen( results.getExcludes() )>
-										<h5 class="mt-2 mb-0">
-											<span>Excludes Applied: <span class="badge badge-info ml-1">#arrayToList( results.getExcludes() )#</u></span>
-										</h5>
-									</cfif>
-									<h5 class="mt-2 mb-0">
-										<span class="badge badge-info">
-											#results.getCFMLEngine()#
-											#results.getCFMLEngineVersion()#
-										</span>
-									</h5>
-								</div>
-							</div>
-
-							<div>
+					<!--- Bundle div --->
+					<div class="bundle card" id="#thisBundle.path#" data-bundle="#thisBundle.path#">
+						<div
+							class="card-header expand-collapse"
+							id="header_#thisBundle.id#"
+							data-toggle="collapse"
+							data-target="##details_#thisBundle.id#"
+							aria-expanded="false"
+							aria-controls="details_#thisBundle.id#"
+							style="cursor: pointer;"
+						>
+							<h5 class="mb-0 clearfix">
+								<!--- bundle stats --->
+								<a
+									class="alert-link h5"
+									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true&coverageEnabled=false"
+									title="Run only this bundle"
+								>
+									#thisBundle.name# (#numberFormat( thisBundle.totalDuration )# ms)
+								</a>
+								<button
+										class="btn btn-link float-right py-0 bundle-btn"
+										style="text-decoration: none;"
+										type="button"
+									>
+									<i class="fas fa-minus-square plus-minus"></i>
+								</button>
+							</h5>
+							<div class="float-right">
 								<span
 									class="spec-status btn btn-sm btn-success Passed"
-									data-status="passed"
+									data-status="passed" data-bundleid="#thisBundle.id#"
 								>
-									<i class="fas fa-check"></i> Pass: #results.getTotalPass()#
+									<i class="fas fa-check"></i> Pass: #thisBundle.totalPass#
 								</span>
 								<span
 									class="spec-status btn btn-sm btn-warning Failed"
-									data-status="failed"
+									data-status="failed" data-bundleid="#thisBundle.id#"
 								>
-									<i class="fas fa-exclamation-triangle"></i> Failures: #results.getTotalFail()#
+									<i class="fas fa-exclamation-triangle"></i> Failures: #thisBundle.totalFail#
 								</span>
 								<span
 									class="spec-status btn btn-sm btn-danger Error"
-									data-status="error"
+									data-status="error" data-bundleid="#thisBundle.id#"
 								>
-									<i class="fas fa-times"></i> Errors: #results.getTotalError()#
+									<i class="fas fa-times"></i> Errors: #thisBundle.totalError#
 								</span>
 								<span
 									class="spec-status btn btn-sm btn-secondary Skipped"
-									data-status="skipped"
+									data-status="skipped" data-bundleid="#thisBundle.id#"
 								>
-									<i class="fas fa-minus-circle"></i> Skipped: #results.getTotalSkipped()#
+									<i class="fas fa-minus-circle"></i> Skipped: #thisBundle.totalSkipped#
 								</span>
 								<span
 									class="reset btn btn-sm btn-dark"
+									data-bundleid="#thisBundle.id#"
 									title="Clear status filters"
 								>
 									<i class="fas fa-broom"></i> Reset
 								</span>
 							</div>
+							<h5 class="d-inline-block">
+								<span>Suites:<span class="badge badge-info ml-1">#thisBundle.totalSuites#</span></span>
+								<span class="ml-3">Specs:<span class="badge badge-info ml-1">#thisBundle.totalSpecs#</span></span>
+							</h5>
 						</div>
-						<div class="list-group-item accordion pl-0" id="bundles">
-							<!--- Bundle Info --->
-							<cfloop array="#variables.bundleStats#" index="thisBundle">
 
-								<!--- Skip if not in the includes list --->
-								<cfif len( url.testBundles ) and !listFindNoCase( url.testBundles, thisBundle.path )>
-									<cfcontinue>
-								</cfif>
+						<div
+							id="details_#thisBundle.id#"
+							class="collapse details-panel show"
+							aria-labelledby="header_#thisBundle.id#"
+							data-bundle="#thisBundle.path#"
+						>
+							<div class="card-body suite list-group"
+									data-bundleid="#thisBundle.id#">
+								<ul class="list-group">
 
-								<!--- Bundle div --->
-								<div class="bundle card" id="#thisBundle.path#" data-bundle="#thisBundle.path#">
-									<div
-										class="card-header expand-collapse"
-										id="header_#thisBundle.id#"
-										data-toggle="collapse"
-										data-target="##details_#thisBundle.id#"
-										aria-expanded="false"
-										aria-controls="details_#thisBundle.id#"
-										style="cursor: pointer;"
-									>
-										<h5 class="mb-0 clearfix">
-											<!--- bundle stats --->
-											<a
-												class="alert-link h5"
-												href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true&coverageEnabled=false"
-												title="Run only this bundle"
+									<!--- Global Exception --->
+									<cfif !isSimpleValue( thisBundle.globalException )>
+										<li>
+											<div
+												class="list-group-item list-group-item-danger py-3 expand-collapse"
+												data-toggle="collapse"
+												data-target="##globalException_#thisBundle.id#"
+												aria-expanded="false"
+												aria-controls="globalException_#thisBundle.id#"
+												style="cursor: pointer;"
 											>
-												#thisBundle.path# (#numberFormat( thisBundle.totalDuration )# ms)
-											</a>
-											<button
-													class="btn btn-link float-right py-0 bundle-btn"
+												<span class="h5">
+													<strong>
+														<i class="fas fa-times"></i> Global Bundle Exception
+													</strong>(#numberFormat( thisBundle.totalDuration )# ms)
+												</span>
+												<button
+													class="btn btn-link float-right py-0"
 													style="text-decoration: none;"
-													type="button"
+													id="btn_globalException_#thisBundle.id#"
+													title="Show more information"
 												>
-												<i class="fas fa-minus-square plus-minus"></i>
-											</button>
-										</h5>
-										<div class="float-right">
-											<span
-												class="spec-status btn btn-sm btn-success Passed"
-												data-status="passed" data-bundleid="#thisBundle.id#"
-											>
-												<i class="fas fa-check"></i> Pass: #thisBundle.totalPass#
-											</span>
-											<span
-												class="spec-status btn btn-sm btn-warning Failed"
-												data-status="failed" data-bundleid="#thisBundle.id#"
-											>
-												<i class="fas fa-exclamation-triangle"></i> Failures: #thisBundle.totalFail#
-											</span>
-											<span
-												class="spec-status btn btn-sm btn-danger Error"
-												data-status="error" data-bundleid="#thisBundle.id#"
-											>
-												<i class="fas fa-times"></i> Errors: #thisBundle.totalError#
-											</span>
-											<span
-												class="spec-status btn btn-sm btn-secondary Skipped"
-												data-status="skipped" data-bundleid="#thisBundle.id#"
-											>
-												<i class="fas fa-minus-circle"></i> Skipped: #thisBundle.totalSkipped#
-											</span>
-											<span
-												class="reset btn btn-sm btn-dark"
-												data-bundleid="#thisBundle.id#"
-												title="Clear status filters"
-											>
-												<i class="fas fa-broom"></i> Reset
-											</span>
-										</div>
-										<h5 class="d-inline-block">
-											<span>Suites:<span class="badge badge-info ml-1">#thisBundle.totalSuites#</span></span>
-											<span class="ml-3">Specs:<span class="badge badge-info ml-1">#thisBundle.totalSpecs#</span></span>
-										</h5>
-									</div>
+													<i class="fas fa-plus-square plus-minus"></i>
+												</button>
+												<div>#encodeForHtml( thisBundle.globalException.Message )#</div>
+												<div class="bg-light p-2 ">
+													<cfif arrayLen( thisBundle.globalException.TagContext ) && structKeyExists( thisBundle.globalException.TagContext[ 1 ], "codePrintHTML" )>
+														<code>#thisBundle.globalException.TagContext[ 1 ].codePrintHTML#</code>
+													</cfif>
+												</div>
+											</div>
+											<div class="overflow-auto my-2 collapse details-panel" id="globalException_#thisBundle.id#" data-specid="globalException_#thisBundle.id#">
+												<cfdump var="#thisBundle.globalException#" />
+											</div>
+										</li>
+									</cfif>
 
-									<div
-										id="details_#thisBundle.id#"
-										class="collapse details-panel show"
-										aria-labelledby="header_#thisBundle.id#"
-										data-bundle="#thisBundle.path#"
-									>
-										<div class="card-body suite list-group"
-												data-bundleid="#thisBundle.id#">
-											<ul class="list-group">
+									<!-- Iterate over bundle suites -->
+									<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
+										#genSuiteReport( suiteStats, thisBundle )#
+									</cfloop>
 
-												<!--- Global Exception --->
-												<cfif !isSimpleValue( thisBundle.globalException )>
-													<li>
-														<div
-															class="list-group-item list-group-item-danger py-3 expand-collapse"
-															data-toggle="collapse"
-															data-target="##globalException_#thisBundle.id#"
-															aria-expanded="false"
-															aria-controls="globalException_#thisBundle.id#"
-															style="cursor: pointer;"
-														>
-															<span class="h5">
-																<strong>
-																	<i class="fas fa-times"></i> Global Bundle Exception
-																</strong>(#numberFormat( thisBundle.totalDuration )# ms)
-															</span>
-															<button
-																class="btn btn-link float-right py-0"
-																style="text-decoration: none;"
-																id="btn_globalException_#thisBundle.id#"
-																title="Show more information"
-															>
-																<i class="fas fa-plus-square plus-minus"></i>
-															</button>
-															<div>#encodeForHtml( thisBundle.globalException.Message )#</div>
-															<div class="bg-light p-2 ">
-																<cfif arrayLen( thisBundle.globalException.TagContext ) && structKeyExists( thisBundle.globalException.TagContext[ 1 ], "codePrintHTML" )>
-																	<code>#thisBundle.globalException.TagContext[ 1 ].codePrintHTML#</code>
-																</cfif>
-															</div>
-														</div>
-														<div class="overflow-auto my-2 collapse details-panel" id="globalException_#thisBundle.id#" data-specid="globalException_#thisBundle.id#">
-															<cfdump var="#thisBundle.globalException#" />
-														</div>
-													</li>
-												</cfif>
+									<!--- Debug Panel --->
+									<cfif thisBundle.keyExists( "debugBuffer" ) && arrayLen( thisBundle.debugBuffer )>
+										<li>
+											<div class="list-group-item list-group-item-primary py-3 expand-collapse"
+												title="Toggle Debug Stream"
+												data-toggle="collapse"
+												data-target="##debugdata_#thisBundle.id#"
+												aria-expanded="false"
+												aria-controls="debugdata_#thisBundle.id#"
+												style="cursor: pointer;"
+											>
+												<span class="alert-link h5 text-info">
+													<strong><i class="fas fa-bug"></i> Debug Stream</strong>
+												</span>
 
-												<!-- Iterate over bundle suites -->
-												<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
-													#genSuiteReport( suiteStats, thisBundle )#
+												<button
+													class="btn btn-link float-right py-0"
+													style="text-decoration: none;"
+													id="btn_#thisBundle.id#"
+													title="Toggle the test debug stream"
+												>
+													<i class="fas fa-plus-square plus-minus"></i>
+												</button>
+											</div>
+											<div id="debugdata_#thisBundle.id#" class="overflow-auto bg-light p-2 collapse" data-specid="#thisBundle.id#">
+												<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
+												<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
+													<cfif !IsNull( thisDebug )>
+														<h6>#thisDebug.label#</h6>
+														<cfdump
+															var="#thisDebug.data#"
+															label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#"
+															top="#thisDebug.top#"
+															showUDfs="#thisDebug.showUDFs#"
+															/>
+													</cfif>
 												</cfloop>
-
-												<!--- Debug Panel --->
-												<cfif thisBundle.keyExists( "debugBuffer" ) && arrayLen( thisBundle.debugBuffer )>
-													<li>
-														<div class="list-group-item list-group-item-primary py-3 expand-collapse"
-															title="Toggle Debug Stream"
-															data-toggle="collapse"
-															data-target="##debugdata_#thisBundle.id#"
-															aria-expanded="false"
-															aria-controls="debugdata_#thisBundle.id#"
-															style="cursor: pointer;"
-														>
-															<span class="alert-link h5 text-info">
-																<strong><i class="fas fa-bug"></i> Debug Stream</strong>
-															</span>
-
-															<button
-																class="btn btn-link float-right py-0"
-																style="text-decoration: none;"
-																id="btn_#thisBundle.id#"
-																title="Toggle the test debug stream"
-															>
-																<i class="fas fa-plus-square plus-minus"></i>
-															</button>
-														</div>
-														<div id="debugdata_#thisBundle.id#" class="overflow-auto bg-light p-2 collapse" data-specid="#thisBundle.id#">
-															<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
-															<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
-																<cfif !IsNull(thisDebug)>
-																	<h6>#thisDebug.label#</h6>
-																	<cfdump var="#thisDebug.data#" label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#" top="#thisDebug.top#" />
-																</cfif>
-															</cfloop>
-														</div>
-													</li>
-												</cfif>
-											</ul>
-										</div>
-									</div>
-								</div>
-							</cfloop>
+											</div>
+										</li>
+									</cfif>
+								</ul>
+							</div>
 						</div>
 					</div>
-				</div>
+				</cfloop>
+			</div>
+		</div>
+	</div>
 	<script>
 $( document ).ready( function() {
 	// spec toggler
@@ -504,9 +511,9 @@ code {
 							<div class="clearfix">
 								<a
 									class="alert-link text-#statusToBootstrapClass( local.thisSpec.status )#"
-									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( local.thisSpec.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
+									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( local.thisSpec.id )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
 								>
-									#statusToIcon( local.thisSpec.status )# #local.thisSpec.name# (#numberFormat( local.thisSpec.totalDuration )# ms)
+									#statusToIcon( local.thisSpec.status )# #local.thisSpec.displayName# (#numberFormat( local.thisSpec.totalDuration )# ms)
 								</a>
 
 								<!--- Compose message according to status --->

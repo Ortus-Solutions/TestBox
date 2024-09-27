@@ -2,7 +2,7 @@
  * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * The CollectionExpectation CFC holds a collection and behaves like an expectation
+ * The CollectionExpectation holds a collection and behaves like an expectation
  * that automatically unrolls the collection to verify every element
  */
 component accessors="true" {

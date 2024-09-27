@@ -127,7 +127,7 @@
 										<cfif arrayLen( thisBundle.debugBuffer )>
 											<li class="list-group-item list-group-item-info">
 												<span class="alert-link h5">
-													<strong>Debug Stream: #thisBundle.path#</strong>
+													<strong>Debug Stream: #thisBundle.name#</strong>
 												</span>
 												<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#thisBundle.id#" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">
 													<i class="fas fa-plus-square"></i>
@@ -135,8 +135,15 @@
 												<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#thisBundle.id#">
 													<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
 													<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
-														<h6>#thisDebug.label#</h6>
-														<cfdump var="#thisDebug.data#" label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#" top="#thisDebug.top#" />
+														<cfif !IsNull( thisDebug )>
+															<h6>#thisDebug.label#</h6>
+															<cfdump
+																var="#thisDebug.data#"
+																label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#"
+																top="#thisDebug.top#"
+																showUDfs="#thisDebug.showUDFs#"
+																/>
+														</cfif>
 													</cfloop>
 												</div>
 											</li>
@@ -158,7 +165,7 @@
 		$(".expand-collapse").click(function (event) {
 			let icon = $(this).children(".svg-inline--fa");
 			var icon_fa_icon = icon.attr('data-icon');
-	
+
 			if (icon_fa_icon === "minus-square") {
 					icon.attr('data-icon', 'plus-square');
 			} else if (icon_fa_icon === "plus-square") {
@@ -223,7 +230,7 @@ function toggleDebug( specid ) {
 						<cfelse>
 							void( 0 )
 						</cfif>
-						" title="#encodeForHTML( thisSpec.name )# (#thisSpec.totalDuration# ms)" data-info="#encodeForHTML( thisSpec.failMessage )#">
+						" title="#encodeForHTML( thisSpec.displayname )# (#thisSpec.totalDuration# ms)" data-info="#encodeForHTML( thisSpec.failMessage )#">
 					<span class="#statusPlusBootstrapClass( thisSpec.status )#">&middot;</span>
 				</a>
 				<div style="display:none;" id="error_#thisSpec.id#">

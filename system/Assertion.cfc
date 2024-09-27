@@ -22,9 +22,9 @@ component {
 	}
 
 	/**
-	 * Skip Test
+	 * Skip a Test
 	 *
-	 * @message The message to send in the skip
+	 * @message The message to send in the skip information dialog
 	 * @detail  The detail to add in the exception
 	 */
 	function skip( message = "", detail = "" ){
@@ -408,14 +408,16 @@ component {
 	/**
 	 * Assert that a given key exists in the passed in struct/object
 	 *
-	 * @target  The target object/struct
-	 * @key     The key to check for existence
-	 * @message The message to send in the failure
+	 * @target        The target object/struct
+	 * @key           The key to check for existence
+	 * @message       The message to send in the failure
+	 * @caseSensitive If the key check is case sensitive
 	 */
 	function key(
 		required any target,
 		required string key,
-		message = ""
+		message               = "",
+		boolean caseSensitive = false
 	){
 		arguments.target = normalizeToStruct( arguments.target );
 
@@ -428,7 +430,11 @@ component {
 			arguments.key
 				.listToArray()
 				.filter( function( thisKey ){
-					return structKeyExists( target, arguments.thisKey );
+					if ( caseSensitive ) {
+						return target.keyList().find( arguments.thisKey );
+					} else {
+						return structKeyExists( target, arguments.thisKey );
+					}
 				} )
 				.len() != listLen( arguments.key )
 		) {
@@ -440,35 +446,38 @@ component {
 	/**
 	 * Assert that a given key DOES NOT exist in the passed in struct/object
 	 *
-	 * @target  The target object/struct
-	 * @key     The key to check for existence
-	 * @message The message to send in the failure
+	 * @target        The target object/struct
+	 * @key           The key to check for existence
+	 * @message       The message to send in the failure
+	 * @caseSensitive If the key check is case sensitive
 	 */
 	function notKey(
 		required any target,
 		required string key,
-		message = ""
+		message               = "",
+		boolean caseSensitive = false
 	){
 		arguments.target  = normalizeToStruct( arguments.target );
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The key [#arguments.key#] exists in the target object. Found keys are [#structKeyArray( arguments.target ).toString()#]"
 		);
 
-		if ( !structKeyExists( arguments.target, arguments.key ) ) {
-			return this;
-		}
-
 		// Inflate Key and process
 		if (
 			arguments.key
 				.listToArray()
 				.filter( function( thisKey ){
-					return structKeyExists( target, arguments.thisKey );
+					if ( caseSensitive ) {
+						return target.keyList().find( arguments.thisKey );
+					} else {
+						return structKeyExists( target, arguments.thisKey );
+					}
 				} )
 				.len() > 0
 		) {
 			fail( arguments.message );
 		}
+		return this;
 	}
 
 	/**
@@ -649,7 +658,7 @@ component {
 			}
 			// diff message types
 			arguments.message = (
-				len( arguments.message ) ? arguments.message : "The incoming function threw exception [#e.type#] [#e.message#] [#e.detail#] different than expected params type=[#arguments.type#], regex=[#arguments.regex#]"
+				len( arguments.message ) ? arguments.message : "The incoming function threw exception [type: #e.type#] [message: #e.message#] [#e.detail#] different than expected params type=[#arguments.type#], regex=[#arguments.regex#]"
 			);
 			detail = e.stackTrace;
 		}

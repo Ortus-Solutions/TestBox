@@ -14,7 +14,7 @@
 			case "error" : { return "not ok"; }
 			case "skipped" : { return "ok"; }
 			default : { return "ok"; }
-		}		
+		}
 	</cfscript>
 </cffunction>
 
@@ -37,7 +37,7 @@
 	<cfargument name="bundleStats">
 
 <cfsavecontent variable="local.report"><cfoutput><cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec"><!---
---->#getStatusBit( local.thisSpec.status )# #totalIndex# #arguments.suiteStats.name# #local.thisSpec.name#<!---
+--->#getStatusBit( local.thisSpec.status )# #totalIndex# #arguments.suiteStats.name# #local.thisSpec.displayName#<!---
 ---><cfif local.thisSpec.status eq "failed"> ## TODO #local.thisSpec.failMessage# #chr(13)#
 #renderOrigin( local.thisSpec.failorigin )#<!---
 ---><cfelseif local.thisSpec.status eq "skipped"> ## SKIP #chr(13)#<!---
@@ -48,7 +48,7 @@
 ---></cfloop><!---
 ---><cfif arrayLen( arguments.suiteStats.suiteStats )>
 <cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">#genSuiteReport( local.nestedSuite, arguments.bundleStats )#</cfloop>
-</cfif>	
+</cfif>
 </cfoutput>
 </cfsavecontent>
 <cfreturn local.report>

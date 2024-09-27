@@ -6,7 +6,7 @@
  */
 component {
 
-	// Param default URL method runner.
+	// Param default URL method runner when it runs remotely
 	param name="url.method" default="runRemote";
 
 	// Assertions object
@@ -17,7 +17,7 @@ component {
 	this.$suites               = [];
 	// A reverse lookup for the suite definitions
 	this.$suiteReverseLookup   = {};
-	// The suite context
+	// The suite context, denotes the current suite being defined
 	this.$suiteContext         = "";
 	// ExpectedException Annotation
 	this.$exceptionAnnotation  = "expectedException";
@@ -31,7 +31,6 @@ component {
 	this.$currentExecutingSpec = "";
 	// Focused Structures
 	this.$focusedTargets       = { "suites" : [], "specs" : [] };
-
 	// Setup Request Utilities struct
 	if ( !request.keyExists( "testbox" ) ) {
 		request.testbox = {};
@@ -80,7 +79,8 @@ component {
 	/**
 	 * Skip a test
 	 *
-	 * @facade
+	 * @message The message to send in the skip information dialog
+	 * @detail  The detail to add in the exception
 	 */
 	function skip( message = "", detail = "" ){
 		this.$assert.skip( argumentCollection = arguments );
@@ -171,36 +171,41 @@ component {
 		}
 
 		var suite = {
+			// The unique id of the spec that can be reproducible
+			"id"             : hash( this.$suiteContext & arguments.title ),
 			// suite name
-			name           : arguments.title,
+			"name"           : arguments.title,
 			// async flag
-			asyncAll       : arguments.asyncAll,
+			"asyncAll"       : arguments.asyncAll,
 			// skip suite testing
-			skip           : arguments.skip,
+			"skip"           : arguments.skip,
 			// labels attached to the suite for execution
-			labels         : ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
+			"labels"         : ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
 			// the test specs for this suite
-			specs          : [],
+			"specs"          : [],
 			// the recursive suites
-			suites         : [],
+			"suites"         : [],
 			// the beforeEach closure
-			beforeEach     : variables.closureStub,
-			beforeEachData : {},
+			"beforeEach"     : variables.closureStub,
+			"beforeEachData" : {},
 			// the afterEach closure
-			afterEach      : variables.closureStub,
-			afterEachData  : {},
+			"afterEach"      : variables.closureStub,
+			"afterEachData"  : {},
 			// the aroundEach closure, init to empty to distinguish
-			aroundEach     : variables.aroundStub,
-			aroundEachData : {},
+			"aroundEach"     : variables.aroundStub,
+			"aroundEachData" : {},
 			// the parent suite
-			parent         : "",
+			"parent"         : "",
 			// the parent ref
-			parentRef      : "",
+			"parentRef"      : "",
 			// hierarchy slug
-			slug           : ""
+			"slug"           : "",
+			// Focused
+			"focused"        : arguments.focused
 		};
 
 		// skip constraint for suite as a closure
+		// Todo: move this to the runner, so it can be delayed.
 		if ( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ) {
 			suite.skip = arguments.skip(
 				title    = arguments.title,
@@ -239,7 +244,7 @@ component {
 			this.$suiteContext   = parentContext;
 			this.$specOrderIndex = parentSpecIndex;
 		} else {
-			// Append this spec definition to the master root
+			// Append this spec definition to the master root to track it
 			arrayAppend( this.$suites, suite );
 			// setup pivot context now and reverse lookups
 			this.$suiteContext                           = arguments.title;
@@ -487,6 +492,9 @@ component {
 	 * @skip    A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
 	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
 	 * @focused A flag that tells TestBox to only run this spec and no other
+	 *
+	 * @throws TestBox.InvalidBody    If the body is not a closure
+	 * @throws TestBox.InvalidContext If the spec is not defined within a suite
 	 */
 	any function it(
 		required string title,
@@ -514,21 +522,28 @@ component {
 
 		// define the spec
 		var spec = {
-			// spec title
-			name   : arguments.title,
-			// skip spec testing
-			skip   : arguments.skip,
-			// labels attached to the spec for execution
-			labels : ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
+			// The unique id of the spec that can be reproducible
+			"id"          : hash( this.$suiteContext & arguments.title ),
 			// the spec body
-			body   : arguments.body,
-			// the order of execution
-			order  : this.$specOrderIndex++,
+			"body"        : arguments.body,
 			// the data binding
-			data   : arguments.data
+			"data"        : arguments.data,
+			// Focus flag
+			"focused"     : arguments.focused,
+			// labels attached to the spec for execution
+			"labels"      : ( isSimpleValue( arguments.labels ) ? listToArray( arguments.labels ) : arguments.labels ),
+			// spec title
+			"name"        : arguments.title,
+			// Display name
+			"displayName" : arguments.title,
+			// the order of execution
+			"order"       : this.$specOrderIndex++,
+			// skip spec testing
+			"skip"        : arguments.skip
 		};
 
-		// skip constraint for suite as a closure
+		// Executes the skip constraint for the spec and stores it's value
+		// TODO: move this to the runner, so it can be delayed.
 		if ( isClosure( arguments.skip ) || isCustomFunction( arguments.skip ) ) {
 			spec.skip = arguments.skip(
 				title  = arguments.title,
@@ -546,26 +561,69 @@ component {
 			var thisSuite = this.$suitesReverseLookup[ this.$suiteContext ];
 			arrayAppend( this.$focusedTargets.specs, thisSuite.slug & "/" & thisSuite.name & "/" & spec.name );
 		}
-
 		return this;
+	}
+
+	/**
+	 * An alias to the it() function to provide a more natural language for BDD.
+	 *
+	 * @title   The title of this test
+	 * @body    The closure that represents the test
+	 * @labels  The list or array of labels this spec belongs to
+	 * @skip    A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @focused A flag that tells TestBox to only run this spec and no other
+	 */
+	any function test(
+		required string title,
+		required any body,
+		any labels      = [],
+		any skip        = false,
+		struct data     = {},
+		boolean focused = false
+	){
+		return this.it( argumentCollection = arguments );
+	}
+
+	/**
+	 * A focused alias to the fit() function to provide a more natural language for BDD.
+	 *
+	 * @then    The title of this spec
+	 * @body    The closure that represents the test
+	 * @labels  The list or array of labels this spec belongs to
+	 * @skip    A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @focused A flag that tells TestBox to only run this spec and no other
+	 */
+	any function ftest(
+		required string title,
+		required any body,
+		any labels      = [],
+		any skip        = false,
+		struct data     = {},
+		boolean focused = false
+	){
+		return this.fit( argumentCollection = arguments );
 	}
 
 	/**
 	 * The then() function describes a spec or a test in TestBox and is an alias for it.  The body argument is the closure that implements
 	 * the test which usually contains one or more expectations that test the state of the code under test.
 	 *
-	 * @then   The title of this spec
-	 * @body   The closure that represents the test
-	 * @labels The list or array of labels this spec belongs to
-	 * @skip   A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
-	 * @data   A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @then    The title of this spec
+	 * @body    The closure that represents the test
+	 * @labels  The list or array of labels this spec belongs to
+	 * @skip    A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @focused A flag that tells TestBox to only run this spec and no other
 	 */
 	any function then(
 		required string then,
 		required any body,
-		any labels  = [],
-		any skip    = false,
-		struct data = {}
+		any labels      = [],
+		any skip        = false,
+		struct data     = {},
+		boolean focused = false
 	){
 		return it( argumentCollection = arguments, title = "Then " & arguments.then );
 	}
@@ -573,18 +631,20 @@ component {
 	/**
 	 * A focused then
 	 *
-	 * @then   The title of this spec
-	 * @body   The closure that represents the test
-	 * @labels The list or array of labels this spec belongs to
-	 * @skip   A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
-	 * @data   A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @then    The title of this spec
+	 * @body    The closure that represents the test
+	 * @labels  The list or array of labels this spec belongs to
+	 * @skip    A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @focused A flag that tells TestBox to only run this spec and no other
 	 */
 	any function fthen(
 		required string then,
 		required any body,
-		any labels  = [],
-		any skip    = false,
-		struct data = {}
+		any labels      = [],
+		any skip        = false,
+		struct data     = {},
+		boolean focused = false
 	){
 		return fit( argumentCollection = arguments, title = "Then " & arguments.then );
 	}
@@ -744,6 +804,26 @@ component {
 	}
 
 	/**
+	 * This is a convenience method that makes sure the test spec is skipped from execution
+	 *
+	 * @title   The title of this spec
+	 * @body    The closure that represents the test
+	 * @labels  The list or array of labels this spec belongs to
+	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @focused A flag that tells TestBox to only run this spec and no other
+	 */
+	any function xtest(
+		required string title,
+		required any body,
+		any labels      = [],
+		struct data     = {},
+		boolean focused = false
+	){
+		arguments.skip = true;
+		return this.test( argumentCollection = arguments );
+	}
+
+	/**
 	 * Start an expectation expression. This returns an instance of Expectation so you can work with its matchers.
 	 *
 	 * @actual The actual value, it is not required as it can be null.
@@ -786,7 +866,7 @@ component {
 	/**
 	 * Add custom matchers to your expectations
 	 *
-	 * @matchers The structure of custom matcher functions to register or a path or instance of a CFC containing all the matcher functions to register
+	 * @matchers The structure of custom matcher functions to register or a path or instance of a class containing all the matcher functions to register
 	 */
 	function addMatchers( required any matchers ){
 		// register structure
@@ -796,7 +876,7 @@ component {
 			return this;
 		}
 
-		// Build the Matcher CFC
+		// Build the Matcher
 		var oMatchers = "";
 		if ( isSimpleValue( arguments.matchers ) ) {
 			oMatchers = new "#arguments.matchers#"( );
@@ -821,7 +901,7 @@ component {
 	/**
 	 * Add custom assertions to the $assert object
 	 *
-	 * @assertions The structure of custom assertion functions to register or a path or instance of a CFC containing all the assertion functions to register
+	 * @assertions The structure of custom assertion functions to register or a path or instance of a class containing all the assertion functions to register
 	 */
 	function addAssertions( required any assertions ){
 		// register structure
@@ -831,7 +911,7 @@ component {
 			return this;
 		}
 
-		// Build the Custom Assertion CFC
+		// Build the Custom Assertion
 		var oAssertions = "";
 		if ( isSimpleValue( arguments.assertions ) ) {
 			oAssertions = new "#arguments.assertions#"( );
@@ -886,7 +966,7 @@ component {
 	}
 
 	/**
-	 * Run a BDD test in this target CFC
+	 * Run a BDD test in this target
 	 *
 	 * @spec        The spec definition to test
 	 * @suite       The suite definition this spec belongs to
@@ -903,7 +983,7 @@ component {
 	){
 		try {
 			// init spec tests
-			var specStats          = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
+			var specStats          = arguments.testResults.startSpecStats( arguments.spec, arguments.suiteStats );
 			// init consolidated spec labels
 			var consolidatedLabels = arguments.spec.labels;
 			var md                 = getMetadata( this );
@@ -944,7 +1024,7 @@ component {
 				!arguments.spec.skip && // Not skipping
 				isSpecFocused( arguments.suite.slug & "/" & arguments.suite.name & "/" & arguments.spec.name ) && // Is the spec focused
 				arguments.runner.canRunLabel( consolidatedLabels, arguments.testResults ) && // In label or no labels
-				arguments.runner.canRunSpec( arguments.spec.name, arguments.testResults ) // In test results
+				arguments.runner.canRunSpec( arguments.spec, arguments.testResults ) // In test results
 			) {
 				// setup the current executing spec for debug purposes
 				this.$currentExecutingSpec = arguments.suite.slug & "/" & arguments.suite.name & "/" & arguments.spec.name;
@@ -1001,6 +1081,7 @@ component {
 			specStats.failExtendedInfo = e.extendedInfo;
 			specStats.failStacktrace   = e.stackTrace;
 			specStats.failOrigin       = e.tagContext;
+			specStats.debugBuffer      = duplicate( this.$debugBuffer );
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type = "fail", stats = specStats );
@@ -1029,6 +1110,7 @@ component {
 			specStats.failDetail       = e.detail;
 			specStats.failExtendedInfo = e.extendedInfo;
 			specStats.failStacktrace   = e.stackTrace;
+			specStats.debugBuffer      = duplicate( this.$debugBuffer );
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type = "error", stats = specStats );
@@ -1265,7 +1347,7 @@ component {
 	}
 
 	/**
-	 * Runs a xUnit style test method in this target CFC
+	 * Runs a xUnit style test method in this target
 	 *
 	 * @spec        The spec definition to test
 	 * @testResults The testing results object
@@ -1280,13 +1362,13 @@ component {
 	){
 		try {
 			// init spec tests
-			var specStats = arguments.testResults.startSpecStats( arguments.spec.name, arguments.suiteStats );
+			var specStats = arguments.testResults.startSpecStats( arguments.spec, arguments.suiteStats );
 
 			// Verify we can execute
 			if (
 				!arguments.spec.skip &&
 				arguments.runner.canRunLabel( arguments.spec.labels, arguments.testResults ) &&
-				arguments.runner.canRunSpec( arguments.spec.name, arguments.testResults )
+				arguments.runner.canRunSpec( arguments.spec, arguments.testResults )
 			) {
 				// Reset expected exceptions: Only works on synchronous testing.
 				this.$expectedException    = {};
@@ -1355,6 +1437,7 @@ component {
 			specStats.failExtendedInfo = e.extendedInfo;
 			specStats.failStacktrace   = e.stackTrace;
 			specStats.failOrigin       = e.tagContext;
+			specStats.debugBuffer      = duplicate( this.$debugBuffer );
 
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type = "fail", stats = specStats );
@@ -1380,14 +1463,23 @@ component {
 	/**
 	 * Send some information to the console via writedump( output="console" )
 	 *
-	 * @var The data to send
-	 * @top Apply a top to the dump, by default it does 9999 levels
+	 * @var      The data to send
+	 * @top      Apply a top to the dump, by default it does 9999 levels
+	 * @showUDFs Show UDFs in the dump, by default it does not
+	 * @label    A label to add to the console output
 	 */
-	any function console( required var, top = 9999 ){
+	any function console(
+		required var,
+		numeric top      = 9999,
+		boolean showUDFs = false,
+		string label     = ""
+	){
 		writeDump(
-			var    = arguments.var,
-			output = "console",
-			top    = arguments.top
+			output   = "console",
+			var      = arguments.var,
+			label    = "TestBox Console: #arguments.label#",
+			top      = arguments.top,
+			showUDFs = arguments.showUDFs
 		);
 		return this;
 	}
@@ -1404,7 +1496,8 @@ component {
 		any var,
 		string label     = "",
 		boolean deepCopy = false,
-		numeric top      = "999"
+		numeric top      = "999",
+		boolean showUDFs = false
 	){
 		// null check
 		if ( isNull( arguments.var ) ) {
@@ -1419,14 +1512,16 @@ component {
 			// Check if executing spec is set, else most likely this is called from a request scoped debug method
 			arguments.label = !isNull( this.$currentExecutingSpec ) ? this.$currentExecutingSpec : "request";
 		}
+
 		// add to debug output
 		arrayAppend(
 			this.$debugBuffer,
 			{
-				data      : newVar,
-				label     : arguments.label,
-				timestamp : now(),
-				top       : arguments.top
+				"data"      : newVar,
+				"label"     : arguments.label,
+				"timestamp" : now(),
+				"top"       : arguments.top,
+				"showUDFs"  : arguments.showUDFs
 			}
 		);
 		return this;
@@ -1465,7 +1560,7 @@ component {
 	/************************************** MOCKING METHODS *********************************************/
 
 	/**
-	 * Make a private method on a CFC public with or without a new name and returns the target object
+	 * Make a private method on a class public with or without a new name and returns the target object
 	 *
 	 * @target  The target object to expose the method
 	 * @method  The private method to expose
@@ -1627,7 +1722,7 @@ component {
 	 * Create an empty stub object that you can use for mocking
 	 *
 	 * @callLogging Add method call logging for all mocked methods. Defaults to true
-	 * @extends     Make the stub extend from certain CFC
+	 * @extends     Make the stub extend from certain class
 	 * @implements  Make the stub adhere to an interface
 	 */
 	function createStub(
@@ -1657,6 +1752,7 @@ component {
 			this.$exceptionAnnotation,
 			"false"
 		);
+
 		if ( eAnnotation != false ) {
 			// incorporate it.
 			this.$expectedException = {
@@ -1705,6 +1801,63 @@ component {
 		}
 
 		return results;
+	}
+
+	/**
+	 * ------------------------------------------------------------------
+	 * Environment Skipping Helpers
+	 * ------------------------------------------------------------------
+	 */
+
+	function isAdobe(){
+		return server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion Server" );
+	}
+
+	function isLucee(){
+		return server.keyExists( "lucee" );
+	}
+
+	function isBoxLang(){
+		return server.keyExists( "boxlang" );
+	}
+
+	function isWindows(){
+		return server.keyExists( "os" ) && server.os.name.findNoCase( "windows" );
+	}
+
+	function isLinux(){
+		return server.keyExists( "os" ) && server.os.name.findNoCase( "unix" );
+	}
+
+	function isMac(){
+		return server.keyExists( "os" ) && server.os.name.findNoCase( "mac" );
+	}
+
+	/**
+	 * ------------------------------------------------------------------
+	 * Pass-through assertions
+	 * ------------------------------------------------------------------
+	 */
+
+	/**
+	 * On missing method handler for dynamic assertions
+	 *
+	 * @missingMethodName      The name of the missing method
+	 * @missingMethodArguments The arguments passed to the missing method
+	 */
+	function onMissingMethod( missingMethodName, missingMethodArguments ){
+		// If the method follows the pattern "assert{target}" then get the target into a variable
+		if ( left( arguments.missingMethodName, 6 ) == "assert" && len( arguments.missingMethodName ) > 6 ) {
+			var target = right( arguments.missingMethodName, len( arguments.missingMethodName ) - 6 );
+			return invoke(
+				this.$assert,
+				target,
+				arguments.missingMethodArguments
+			);
+		}
+
+		// Throw an exception
+		throw( type = "InvalidMethod", message = "The method #arguments.missingMethodName# does not exist." );
 	}
 
 }

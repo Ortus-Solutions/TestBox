@@ -1,6 +1,10 @@
 <cfoutput>█▓▒▒░░░ TestBox v#testbox.getVersion()# ░░░▒▒▓█
 <!--- Iterate over each bundle tested --->
 <cfloop array="#variables.bundleStats#" index="thisBundle">
+<!--- Skip if not in the includes list --->
+<cfif len( url.testBundles ) and !listFindNoCase( url.testBundles, thisBundle.path )>
+<cfcontinue>
+</cfif>
 _____________________________________________________________
 #space()#
 <!--- Bundle Name --->
@@ -80,7 +84,7 @@ Labels: #space( 7 )# #arrayToList( results.getLabels() )#<cfif !arrayLen( result
 
 	 ---><cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec"><!---
 	 	---><cfif !listFindNoCase( "failed,error", local.thisSpec.status )><cfcontinue></cfif><!---
-		--->#tabsNext# ( #getStatusIndicator( local.thisSpec.status )# ) #local.thisSpec.name# (#local.thisSpec.totalDuration# ms) #chr(13)#<!---
+		--->#tabsNext# ( #getStatusIndicator( local.thisSpec.status )# ) #local.thisSpec.displayName# (#local.thisSpec.totalDuration# ms) #chr(13)#<!---
 
 			If Spec Failed
 

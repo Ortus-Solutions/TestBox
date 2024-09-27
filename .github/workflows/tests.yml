@@ -15,17 +15,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        commandbox_version: [ "6.0.1" ]
-        cfengine: [ "lucee@5", "lucee@6", "adobe@2018", "adobe@2021", "adobe@2023" ]
+        commandbox_version: [ "6.1.0-rc" ]
+        cfengine: [ "lucee@5", "lucee@6", "adobe@2021", "adobe@2023" ]
         jdkVersion: [ "11" ]
         experimental: [false]
         include:
+          - cfengine: "boxlang@1"
+            commandbox_version: "6.1.0-rc"
+            jdkVersion: "21"
+            experimental: false
           - cfengine: "lucee@6"
-            commandbox_version: "6.0.1"
+            commandbox_version: "6.1.0-rc"
             jdkVersion: "17"
             experimental: true
           - cfengine: "adobe@2023"
-            commandbox_version: "6.0.1"
+            commandbox_version: "6.1.0-rc"
             jdkVersion: "17"
             experimental: true
     steps:
@@ -33,7 +37,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: ${{ matrix.jdkVersion }}
@@ -46,6 +50,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          box install commandbox-boxlang
           box install --production
 
       - name: Start ${{ matrix.cfengine }}/${{ matrix.jdkVersion }} Server
@@ -65,14 +70,14 @@ jobs:
 
       - name: Upload Test Results Artifacts
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: testbox-test-results-${{ matrix.cfengine }}-${{ matrix.jdkVersion }}
           path: |
             tests/results/**/*
 
-      - name: Failure Debugging Info
-        if: ${{ failure() }}
+      - name: Debugging Info
+        if: always()
         run: |
           box server log serverConfigFile="server-${{ matrix.cfengine }}.json"
 

@@ -1,0 +1,4 @@
+#!/usr/bin/env boxlang
+
+// Go baby go!
+new testbox.system.runners.BoxLangRunner().main();

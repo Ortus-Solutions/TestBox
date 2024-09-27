@@ -49,7 +49,13 @@ component extends="testbox.system.BaseSpec" {
 					} );
 				} );
 
-				it( "can match strings with no case sensitivity", function(){
+				it( "can have a spec with passthrough assertions", function(){
+					this.assertIsEqual( 1, 1 );
+					this.assertIsTrue( true );
+					this.assertIsFalse( false );
+				} );
+
+				it( "can match strings with no case sensitivity and, has, commas in the title", function(){
 					expect( "Luis" ).toMatch( "^luis" );
 				} );
 				it( "can match strings with case sensitivity", function(){
@@ -89,10 +95,10 @@ component extends="testbox.system.BaseSpec" {
 
 				it( "can validate instance types", function(){
 					expect( this ).toBeInstanceOf( "testbox.system.BaseSpec" );
-					expect( now() ).toBeInstanceOf( "java.util.Date" );
+					expect( createObject( "java", "java.util.Date" ).init() ).toBeInstanceOf( "java.util.Date" );
 					expect( [] ).toBeInstanceOf( "java.util.List" );
 					expect( {} ).toBeInstanceOf( "java.util.Map" );
-					expect( queryNew( "" ) ).notToBeInstanceOf( "Query" );
+					expect( [] ).notToBeInstanceOf( "Query" );
 				} );
 
 				it( "can validate json", function(){
@@ -365,16 +371,16 @@ component extends="testbox.system.BaseSpec" {
 				structDelete( variables, "calc" );
 			} );
 
-			it( "Can have a separate beforeEach for this suite", function(){
+			test( "Can have a separate beforeEach for this suite", function(){
 				expect( request.calc ).toBeComponent();
 			} );
 
-			xit( "can add incorrectly and fail", function(){
+			xtest( "can add incorrectly and fail (Skipped)", function(){
 				var r = calc.add( 2, 2 );
 				expect( r ).toBe( 5 );
 			} );
 
-			it( "cannot divide by zero", function(){
+			test( "cannot divide by zero", function(){
 				expect( function(){
 					request.calc.divide( 4, 0 );
 				} ).toThrow( regex = "zero" );
