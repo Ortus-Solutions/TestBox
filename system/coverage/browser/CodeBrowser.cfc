@@ -16,7 +16,7 @@ component accessors=true {
 	 * @coverageThresholds Options for threshold
 	 */
 	function init( required struct coverageThresholds ){
-		variables.streamBuilder     = new testbox.system.modules.cbstreams.models.StreamBuilder();
+		variables.streamBuilder      = new testbox.system.modules.cbstreams.models.StreamBuilder();
 		variables.coverageThresholds = arguments.coverageThresholds;
 
 		return this;

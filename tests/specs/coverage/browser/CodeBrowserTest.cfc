@@ -6,7 +6,7 @@ component extends="testbox.system.BaseSpec" {
 	function run(){
 		describe( "CodeBrowser", function(){
 			it( "can init", function(){
-				expect( new system.coverage.browser.CodeBrowser ( {} ) ).toBeComponent();
+				expect( new system.coverage.browser.CodeBrowser( {} ) ).toBeComponent();
 			} );
 		} );
 	}
