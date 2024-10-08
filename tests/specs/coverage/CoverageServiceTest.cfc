@@ -16,7 +16,8 @@ component extends="testbox.system.BaseSpec" {
 					.toHaveKey( "blacklist" )
 					.toHaveKey( "whitelist" )
 					.toHaveKey( "browser" )
-					.toHaveKey( "sonarqube" );
+					.toHaveKey( "sonarqube" )
+					.toHaveKey( "coverageThresholds" );
 
 				if ( isFRLoaded() ) {
 					expect( model.getCoverageEnabled() ).toBeTrue(
