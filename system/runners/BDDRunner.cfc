@@ -197,7 +197,7 @@ component
 		// Build labels from nested suites, so suites inherit from parent suite labels
 		var parentSuite        = arguments.suite;
 		while ( !isSimpleValue( parentSuite ) ) {
-			consolidatedLabels.addAll( parentSuite.labels );
+			consolidatedLabels.append( parentSuite.labels, true );
 			parentSuite = parentSuite.parentref;
 		}
 

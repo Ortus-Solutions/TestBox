@@ -19,13 +19,13 @@ component accessors="true" {
 
 	remote function addTest( required componentName, required method ){
 		arrayAppend( variables.bundles, arguments.componentName );
-		variables.testSpecs.addAll( listToArray( arguments.method ) );
+		variables.testSpecs.append( listToArray( arguments.method ), true );
 		return this;
 	}
 
 	remote function add( required componentName, required methods ){
 		arrayAppend( variables.bundles, arguments.componentName );
-		variables.testSpecs.addAll( listToArray( arguments.methods ) );
+		variables.testSpecs.append( listToArray( arguments.methods ), true );
 		return this;
 	}
 
@@ -36,7 +36,7 @@ component accessors="true" {
 
 	remote function run( testMethod = "" ){
 		if ( len( arguments.testMethod ) ) {
-			variables.testSpecs.addAll( listToArray( arguments.testMethod ) );
+			variables.testSpecs.append( listToArray( arguments.testMethod ), true );
 		}
 		return new Results( variables.bundles, variables.testSpecs );
 	}

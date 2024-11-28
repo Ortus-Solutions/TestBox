@@ -1,6 +1,6 @@
 <cfsetting showdebugoutput="false" >
 <cfset suite = new testbox.system.compat.framework.TestSuite().TestSuite()>
-<cfset suite.addAll( "testbox.tests.specs.MXUnitCompatTest" )>
+<cfset suite.append( "testbox.tests.specs.MXUnitCompatTest" )>
 <cfset r = suite.run()>
 <cfoutput>#r.getResultsOutput( reporter="simple" )#</cfoutput>
 
