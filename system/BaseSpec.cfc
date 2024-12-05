@@ -988,11 +988,11 @@ component {
 			var consolidatedLabels = arguments.spec.labels;
 			var md                 = getMetadata( this );
 			param md.labels        = "";
-			consolidatedLabels.addAll( listToArray( md.labels ) );
+			consolidatedLabels.append( listToArray( md.labels, true ) );
 			// Build labels from nested suites, so suites inherit from parent suite labels
 			var parentSuite = arguments.suite;
 			while ( !isSimpleValue( parentSuite ) ) {
-				consolidatedLabels.addAll( parentSuite.labels );
+				consolidatedLabels.append( parentSuite.labels, true );
 				parentSuite = parentSuite.parentref;
 			}
 

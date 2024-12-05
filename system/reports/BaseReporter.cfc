@@ -18,7 +18,7 @@ component {
 	 */
 	function getPageContextResponse(){
 		// If running in CLI mode, we don't have a page context
-		if ( !getFunctionList().keyExists( "pageContext" ) ) {
+		if ( !getFunctionList().keyExists( "getPageContext" ) ) {
 			return {
 				"setContentType" : function(){
 					// do nothing

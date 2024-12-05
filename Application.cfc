@@ -4,7 +4,7 @@
  */
 component {
 
-	this.name                   = "TestBox Development Suite " & hash( getCurrentTemplatePath() );
+	this.name                   = "TestBox Development Suite";
 	this.sessionManagement      = true;
 	// Local mappings
 	this.mappings[ "/testbox" ] = getDirectoryFromPath( getCurrentTemplatePath() );
