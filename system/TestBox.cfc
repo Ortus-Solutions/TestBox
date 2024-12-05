@@ -406,16 +406,16 @@ component accessors="true" {
 
 		// Verify URL conventions for bundle, suites and specs exclusions.
 		if ( !isNull( url.testBundles ) ) {
-			testBundles.addAll( listToArray( urlDecode( url.testBundles ) ) );
+			testBundles.append( listToArray( urlDecode( url.testBundles ) ), true );
 		}
 		if ( !isNull( url.testSuites ) ) {
-			arguments.testSuites.addAll( listToArray( urlDecode( url.testSuites ) ) );
+			arguments.testSuites.append( listToArray( urlDecode( url.testSuites ) ), true );
 		}
 		if ( !isNull( url.testSpecs ) ) {
-			arguments.testSpecs.addAll( listToArray( urlDecode( url.testSpecs ) ) );
+			arguments.testSpecs.append( listToArray( urlDecode( url.testSpecs ) ), true );
 		}
 		if ( !isNull( url.testMethod ) ) {
-			arguments.testSpecs.addAll( listToArray( urlDecode( url.testMethod ) ) );
+			arguments.testSpecs.append( listToArray( urlDecode( url.testMethod ) ), true );
 		}
 
 		// Using a directory runner?
