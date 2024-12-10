@@ -1454,16 +1454,13 @@ component {
 	 * @throws InvalidTargetType - If we can normalize it to a struct
 	 */
 	private function normalizeToStruct( any target ){
-		if ( isStruct( arguments.target ) ) {
-			return arguments.target;
-		}
 		if ( isQuery( arguments.target ) ) {
 			return getMetadata( arguments.target ).reduce( ( results, item ) => {
 				results[ item.name ] = {};
 				return results;
 			}, {} );
 		}
-		throw( "InvalidTargetType", "The target is not a struct or query" );
+		return arguments.target;
 	}
 
 }
