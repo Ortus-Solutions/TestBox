@@ -16,6 +16,8 @@ component{
 	this.mappings[ "/testbox" ] = rootPath;
 	// Map resources
 	this.mappings[ "/coldbox" ] = this.mappings[ "/tests" ] & "resources/coldbox";
+	// Turn on/off remote cfc content whitespace
+	this.suppressRemoteComponentContent = false;
 
 	// any orm definitions go here.
 
