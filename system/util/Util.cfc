@@ -205,7 +205,11 @@ component {
 		// Lazy load the helper
 		if ( isNull( variables.engineMappingHelper ) ) {
 			// Detect server
-			if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {
+			var engine = server.coldfusion.productname ?: '';
+			if( engine == '' && server.keyExists( "boxlang" ) ){
+				engine = 'lucee';
+			}
+			if ( listFindNoCase( "Lucee", engine ) ) {
 				variables.engineMappingHelper = new LuceeMappingHelper();
 			} else {
 				variables.engineMappingHelper = new CFMappingHelper();

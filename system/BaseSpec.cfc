@@ -987,8 +987,8 @@ component {
 			// init consolidated spec labels
 			var consolidatedLabels = arguments.spec.labels;
 			var md                 = getMetadata( this );
-			param md.labels        = "";
-			consolidatedLabels.append( listToArray( md.labels, true ) );
+			var mdLabels = md.labels ?: '';
+			consolidatedLabels.append( listToArray( mdLabels, true ) );
 			// Build labels from nested suites, so suites inherit from parent suite labels
 			var parentSuite = arguments.suite;
 			while ( !isSimpleValue( parentSuite ) ) {
@@ -1077,6 +1077,7 @@ component {
 			// store spec status and debug data
 			specStats.status           = "Failed";
 			specStats.failMessage      = e.message;
+			specStats.error            = e;
 			specStats.failDetail       = e.detail;
 			specStats.failExtendedInfo = e.extendedInfo;
 			specStats.failStacktrace   = e.stackTrace;
@@ -1434,6 +1435,7 @@ component {
 			// store spec status and debug data
 			specStats.status           = "Failed";
 			specStats.failMessage      = e.message;
+			specStats.error            = e;
 			specStats.failExtendedInfo = e.extendedInfo;
 			specStats.failStacktrace   = e.stackTrace;
 			specStats.failOrigin       = e.tagContext;
