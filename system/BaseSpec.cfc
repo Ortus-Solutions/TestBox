@@ -987,7 +987,7 @@ component {
 			// init consolidated spec labels
 			var consolidatedLabels = arguments.spec.labels;
 			var md                 = getMetadata( this );
-			var mdLabels = md.labels ?: '';
+			var mdLabels           = md.labels ?: "";
 			consolidatedLabels.append( listToArray( mdLabels, true ) );
 			// Build labels from nested suites, so suites inherit from parent suite labels
 			var parentSuite = arguments.suite;
