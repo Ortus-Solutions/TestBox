@@ -143,12 +143,12 @@ component accessors="true" {
 	 * @path The invocationPath path to the module. Ex: tests.resources.myModule
 	 */
 	function registerModule( required path ){
-		var moduleName                           = listLast( arguments.path, "." );
-		var absolutePath                         = expandPath( "/" & arguments.path.replace( ".", "/", "all" ) );
+		var moduleName                                 = listLast( arguments.path, "." );
+		var absolutePath                               = expandPath( "/" & arguments.path.replace( ".", "/", "all" ) );
 		// Register Mapping
 		variables.modules.mappings[ "/" & moduleName ] = absolutePath;
 		// Register Module
-		variables.modules.registry[ moduleName ] = {
+		variables.modules.registry[ moduleName ]       = {
 			"name"              : moduleName,
 			"settings"          : {},
 			"moduleConfig"      : "",
