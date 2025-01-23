@@ -146,7 +146,7 @@ component accessors="true" {
 		var moduleName                           = listLast( arguments.path, "." );
 		var absolutePath                         = expandPath( "/" & arguments.path.replace( ".", "/", "all" ) );
 		// Register Mapping
-		variables.modules.mappings[ moduleName ] = absolutePath;
+		variables.modules.mappings[ "/" & moduleName ] = absolutePath;
 		// Register Module
 		variables.modules.registry[ moduleName ] = {
 			"name"              : moduleName,
@@ -225,7 +225,7 @@ component accessors="true" {
 	function registerAndActivateModule( required path ){
 		var moduleName = listLast( arguments.path, "." );
 		registerModule( arguments.path ).activateModule( moduleName );
-		variables.utility.addMapping( name: "/" + moduleName, path: variables.modules.registry[ moduleName ].path );
+		variables.utility.addMapping( name: "/" & moduleName, path: variables.modules.registry[ moduleName ].path );
 		return this;
 	}
 
