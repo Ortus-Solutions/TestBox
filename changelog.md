@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### New Features
+
+- [TESTBOX-412](https://ortussolutions.atlassian.net/browse/TESTBOX-412) Updated to use cbMockData now instead of MockDataCFC
+
+### Improvements
+
+- [TESTBOX-409](https://ortussolutions.atlassian.net/browse/TESTBOX-409) Support BoxLang without needing compat
+
+### Bugs
+
+- [TESTBOX-408](https://ortussolutions.atlassian.net/browse/TESTBOX-408) Allow toHaveKey to support struct like objects
+- [TESTBOX-410](https://ortussolutions.atlassian.net/browse/TESTBOX-410) Error when using the url.excludes with the HTML runner
+- [TESTBOX-411](https://ortussolutions.atlassian.net/browse/TESTBOX-411) fix missing \`cfloop\` on test browser
+
 ## [6.0.1] - 2024-12-05
 
 ## [6.0.0] - 2024-09-27
