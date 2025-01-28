@@ -143,12 +143,12 @@ component accessors="true" {
 	 * @path The invocationPath path to the module. Ex: tests.resources.myModule
 	 */
 	function registerModule( required path ){
-		var moduleName                           = listLast( arguments.path, "." );
-		var absolutePath                         = expandPath( "/" & arguments.path.replace( ".", "/", "all" ) );
+		var moduleName                                 = listLast( arguments.path, "." );
+		var absolutePath                               = expandPath( "/" & arguments.path.replace( ".", "/", "all" ) );
 		// Register Mapping
-		variables.modules.mappings[ moduleName ] = absolutePath;
+		variables.modules.mappings[ "/" & moduleName ] = absolutePath;
 		// Register Module
-		variables.modules.registry[ moduleName ] = {
+		variables.modules.registry[ moduleName ]       = {
 			"name"              : moduleName,
 			"settings"          : {},
 			"moduleConfig"      : "",
@@ -225,7 +225,7 @@ component accessors="true" {
 	function registerAndActivateModule( required path ){
 		var moduleName = listLast( arguments.path, "." );
 		registerModule( arguments.path ).activateModule( moduleName );
-		variables.utility.addMapping( name: moduleName, path: variables.modules.registry[ moduleName ].path );
+		variables.utility.addMapping( name: "/" & moduleName, path: variables.modules.registry[ moduleName ].path );
 		return this;
 	}
 
@@ -451,7 +451,12 @@ component accessors="true" {
 		// iterate and run the test bundles
 		for ( var thisBundlePath in variables.bundles ) {
 			// Skip interfaces, they are not testable
-			if ( getComponentMetadata( thisBundlePath ).type eq "interface" ) {
+			if ( server.keyExists( "boxlang" ) ) {
+				var thisMD = getClassMetadata( thisBundlePath );
+			} else {
+				var thisMD = getComponentMetadata( thisBundlePath );
+			}
+			if ( thisMD.type eq "interface" ) {
 				continue;
 			}
 

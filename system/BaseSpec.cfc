@@ -987,8 +987,8 @@ component {
 			// init consolidated spec labels
 			var consolidatedLabels = arguments.spec.labels;
 			var md                 = getMetadata( this );
-			param md.labels        = "";
-			consolidatedLabels.append( listToArray( md.labels, true ) );
+			var mdLabels           = md.labels ?: "";
+			consolidatedLabels.append( listToArray( mdLabels ), true );
 			// Build labels from nested suites, so suites inherit from parent suite labels
 			var parentSuite = arguments.suite;
 			while ( !isSimpleValue( parentSuite ) ) {
@@ -1077,6 +1077,7 @@ component {
 			// store spec status and debug data
 			specStats.status           = "Failed";
 			specStats.failMessage      = e.message;
+			specStats.error            = e;
 			specStats.failDetail       = e.detail;
 			specStats.failExtendedInfo = e.extendedInfo;
 			specStats.failStacktrace   = e.stackTrace;
@@ -1434,6 +1435,7 @@ component {
 			// store spec status and debug data
 			specStats.status           = "Failed";
 			specStats.failMessage      = e.message;
+			specStats.error            = e;
 			specStats.failExtendedInfo = e.extendedInfo;
 			specStats.failStacktrace   = e.stackTrace;
 			specStats.failOrigin       = e.tagContext;
@@ -1608,25 +1610,25 @@ component {
 	}
 
 	/**
-	 * Use MockDataCFC to mock whatever data you want by executing the `mock()` function in MockDataCFC
+	 * Use cbMockData to mock whatever data you want by executing the `mock()` function in cbMockData
 	 *
 	 * @return The mock data you desire sir!
 	 */
 	function mockData(){
-		return getMockDataCFC().mock( argumentCollection = arguments );
+		return getCBMockData().mock( argumentCollection = arguments );
 	}
 
 	/**
-	 * Get the MockData CFC object
+	 * Get the MockData Class object
 	 *
-	 * @return testbox.system.modules.mockdatacfc.models.MockData
+	 * @return testbox.system.modules.cbMockData.models.MockData
 	 */
-	function getMockDataCFC(){
+	function getCBMockData(){
 		// Lazy Load it
-		if ( isNull( variables.$mockDataCFC ) ) {
-			variables.$mockDataCFC = new testbox.system.modules.mockdatacfc.models.MockData();
+		if ( isNull( variables.$cbMockData ) ) {
+			variables.$cbMockData = new testbox.system.modules.cbMockData.models.MockData();
 		}
-		return variables.$mockDataCFC;
+		return variables.$cbMockData;
 	}
 
 	/**

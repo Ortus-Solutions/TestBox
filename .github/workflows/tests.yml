@@ -5,7 +5,7 @@ on:
   workflow_call:
     secrets:
       SLACK_WEBHOOK_URL:
-        required: true
+        required: false
 
 jobs:
   tests:
@@ -15,22 +15,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        commandbox_version: [ "6.1.0-rc" ]
+        commandbox_version: [ "6.1.0" ]
         cfengine: [ "lucee@5", "lucee@6", "adobe@2021", "adobe@2023" ]
         jdkVersion: [ "11" ]
         experimental: [false]
         include:
           - cfengine: "boxlang@1"
-            commandbox_version: "6.1.0-rc"
+            commandbox_version: "6.1.0"
             jdkVersion: "21"
             experimental: false
           - cfengine: "lucee@6"
-            commandbox_version: "6.1.0-rc"
-            jdkVersion: "17"
+            commandbox_version: "6.1.0"
+            jdkVersion: "21"
             experimental: true
           - cfengine: "adobe@2023"
-            commandbox_version: "6.1.0-rc"
-            jdkVersion: "17"
+            commandbox_version: "6.1.0"
+            jdkVersion: "21"
             experimental: true
     steps:
       - name: Checkout Repository
