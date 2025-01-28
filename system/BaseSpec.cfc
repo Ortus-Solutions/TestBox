@@ -1610,25 +1610,25 @@ component {
 	}
 
 	/**
-	 * Use MockDataCFC to mock whatever data you want by executing the `mock()` function in MockDataCFC
+	 * Use cbMockData to mock whatever data you want by executing the `mock()` function in cbMockData
 	 *
 	 * @return The mock data you desire sir!
 	 */
 	function mockData(){
-		return getMockDataCFC().mock( argumentCollection = arguments );
+		return getCBMockData().mock( argumentCollection = arguments );
 	}
 
 	/**
-	 * Get the MockData CFC object
+	 * Get the MockData Class object
 	 *
-	 * @return testbox.system.modules.mockdatacfc.models.MockData
+	 * @return testbox.system.modules.cbMockData.models.MockData
 	 */
-	function getMockDataCFC(){
+	function getCBMockData(){
 		// Lazy Load it
-		if ( isNull( variables.$mockDataCFC ) ) {
-			variables.$mockDataCFC = new testbox.system.modules.mockdatacfc.models.MockData();
+		if ( isNull( variables.$cbMockData ) ) {
+			variables.$cbMockData = new testbox.system.modules.cbMockData.models.MockData();
 		}
-		return variables.$mockDataCFC;
+		return variables.$cbMockData;
 	}
 
 	/**

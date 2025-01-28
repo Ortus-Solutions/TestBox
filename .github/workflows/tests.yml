@@ -26,11 +26,11 @@ jobs:
             experimental: false
           - cfengine: "lucee@6"
             commandbox_version: "6.1.0"
-            jdkVersion: "17"
+            jdkVersion: "21"
             experimental: true
           - cfengine: "adobe@2023"
             commandbox_version: "6.1.0"
-            jdkVersion: "17"
+            jdkVersion: "21"
             experimental: true
     steps:
       - name: Checkout Repository
