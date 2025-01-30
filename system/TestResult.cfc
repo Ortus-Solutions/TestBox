@@ -246,7 +246,7 @@ component accessors="true" {
 	any function getBundleStats( string id ){
 		lock name="tb-results-#variables.resultsID#" type="readonly" timeout="10" {
 			// search in reverse lookup
-			if ( structKeyExists( arguments, "id" ) ) {
+			if ( !isNull( arguments.id ) ) {
 				return variables.bundleReverseLookup[ arguments.id ];
 			}
 			// else return the bundle stats array
