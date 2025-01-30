@@ -195,12 +195,12 @@ return;
 						}
 					}
 				}
-				if ( len( stats.failDetail ) ) {
+				if ( !isNull( stats.failDetail ) && len( stats.failDetail ) ) {
 					out.append(
 						"Failure Details: #stats.failDetail#"
 					);
 				}
-				if ( len( stats.failExtendedInfo ) ) {
+				if ( !isNull( stats.failExtendedInfo ) &&  len( stats.failExtendedInfo ) ) {
 					out.append(
 						"Failure Extended Info: #stats.failExtendedInfo#"
 					);

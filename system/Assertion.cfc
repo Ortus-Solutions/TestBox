@@ -1419,18 +1419,11 @@ component {
 		if ( isQuery( arguments.target ) ) {
 			aLength = arguments.target.recordcount;
 		}
-
-		if ( listFirst( server.coldfusion.productversion ) lt 10 ) {
-			if ( isCustomFunction( arguments.target ) ) {
-				throw( type = "InvalidType", message = "You sent an invalid type for length checking (function)" );
-			}
-		} else {
-			if ( isCustomFunction( arguments.target ) or isClosure( arguments.target ) ) {
-				throw(
-					type    = "InvalidType",
-					message = "You sent an invalid type for length checking (closure/function)"
-				);
-			}
+		if ( isCustomFunction( arguments.target ) or isClosure( arguments.target ) ) {
+			throw(
+				type    = "InvalidType",
+				message = "You sent an invalid type for length checking (closure/function)"
+			);
 		}
 
 		return aLength;
