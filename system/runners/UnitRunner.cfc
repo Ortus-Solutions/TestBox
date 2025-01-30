@@ -446,23 +446,26 @@ component
 				&&
 				isValidTestMethod( thisMethod, arguments.target )
 			) {
+
 				// Build the spec data packet
 				var specMD = getMetadata( arguments.target[ thisMethod ] );
+				var specAnnotations = server.keyExists( "boxlang" ) ? specMD.annotations : specMD;
+				var specDocumentation = server.keyExists( "boxlang" ) ? specMD.documentation : specMD;
 				var spec   = {
 					"id"          : hash( specMD.name ),
 					"name"        : specMD.name,
-					"displayName" : ( structKeyExists( specMD, "displayName" ) ? specMD.displayName : specMD.name ),
-					"hint"        : ( structKeyExists( specMD, "hint" ) ? specMD.hint : "" ),
+					"displayName" : ( structKeyExists( specAnnotations, "displayName" ) ? specAnnotations.displayName : specMD.name ),
+					"hint"        : ( structKeyExists( specDocumentation, "hint" ) ? specDocumentation.hint : "" ),
 					"skip"        : (
-						structKeyExists( specMD, "skip" ) ? ( len( specMD.skip ) ? specMD.skip : true ) : false
+						structKeyExists( specAnnotations, "skip" ) ? ( len( specAnnotations.skip ) ? specAnnotations.skip : true ) : false
 					),
 					"focused" : (
-						structKeyExists( specMD, "focused" ) ? ( len( specMD.focused ) ? specMD.focused : true ) : false
+						structKeyExists( specAnnotations, "focused" ) ? ( len( specAnnotations.focused ) ? specAnnotations.focused : true ) : false
 					),
-					"labels"            : ( structKeyExists( specMD, "labels" ) ? listToArray( specMD.labels ) : [] ),
-					"order"             : ( structKeyExists( specMD, "order" ) ? listToArray( specMD.order ) : index++ ),
+					"labels"            : ( structKeyExists( specAnnotations, "labels" ) ? listToArray( specAnnotations.labels ) : [] ),
+					"order"             : ( structKeyExists( specAnnotations, "order" ) ? listToArray( specAnnotations.order ) : index++ ),
 					"expectedException" : (
-						structKeyExists( specMD, "expectedException" ) ? specMD.expectedException : ""
+						structKeyExists( specAnnotations, "expectedException" ) ? ( len( specAnnotations.expectedException ) ? specAnnotations.expectedException : true ) : false
 					)
 				};
 

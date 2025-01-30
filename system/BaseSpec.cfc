@@ -1384,7 +1384,6 @@ component {
 				// Execute Spec
 				try {
 					invoke( this, arguments.spec.name );
-
 					// Where we expecting an exception and it did not throw?
 					if ( hasExpectedException( arguments.spec.name, arguments.runner ) ) {
 						$assert.fail(
