@@ -179,18 +179,31 @@ component accessors=true {
 		scope = "variables",
 		defaultValue
 	){
-		var targetScope = evaluate( "#arguments.scope#" );
-
-		if ( structKeyExists( targetScope, arguments.name ) ) {
-			return targetScope[ arguments.name ];
+		// Cleanup deep scopes if needed, only one level deep is allowed
+		if( arguments.scope.find( "." ) ){
+			var testScope = arguments.scope.getToken( 1, "." );
+			if( testScope == "variables" ){
+				// remove the variables. from the scope
+				arguments.scope = arguments.scope.getToken( 2, "." );
+			}
 		}
 
-		if ( !isNull( arguments.defaultValue ) ) {
-			return arguments.defaultValue;
-		}
+		// Direct Scope Lookups
+		if( !arguments.scope.find( "." ) ){
+			var targetScope = variables;
 
-		if ( !isNull( arguments.default ) ) {
-			return arguments.default;
+			if( arguments.scope == "this" ){
+				targetScope = this;
+			} else if( arguments.scope != "variables" && structKeyExists( variables, arguments.scope ) ){
+				targetScope = variables[ arguments.scope ];
+			}
+
+			if ( structKeyExists( targetScope, arguments.name ) ) {
+				return targetScope[ arguments.name ];
+			}
+			if ( !isNull( arguments.defaultValue ) ) {
+				return arguments.defaultValue;
+			}
 		}
 
 		throw(

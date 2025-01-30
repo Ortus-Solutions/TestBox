@@ -1,5 +1,5 @@
-﻿<cfcomponent extends="testbox.system.BaseSpec" displayname="MockBox Suite">
-	<cfscript>
+﻿component extends="testbox.system.BaseSpec"{
+
 	function setup(){
 		test = getMockBox().createEmptyMock( "testbox.tests.resources.Test" );
 	}
@@ -396,13 +396,20 @@
 	function testGetProperty(){
 		mock      = getMockBox().createStub();
 		mock.luis = "Majano";
-		mock.$property( "cool", "variables", true ).$property( "number", "variables.instance", 7 );
+		mock
+			.$property( "cool", "variables", true )
+			.$property( "number", "variables.instance", 7 );
 
 		$assert.isEqual( "Majano", mock.$getProperty( name = "luis", scope = "this" ) );
 		$assert.isEqual( true, mock.$getProperty( name = "cool" ) );
 		$assert.isEqual( true, mock.$getProperty( name = "cool", scope = "variables" ) );
 		$assert.isEqual( 7, mock.$getProperty( name = "number", scope = "instance" ) );
 		$assert.isEqual( 7, mock.$getProperty( name = "number", scope = "instance" ) );
+	}
+
+	function testGetPropertyDeep(){
+		mock = prepareMock( new tests.resources.Sut() );
+		$assert.isEqual( "TESTBOX", mock.$getProperty( "name", "variables.instance" ) );
 	}
 
 	function testStubWithInheritance(){
@@ -513,5 +520,6 @@
 	private function testFunction( string amigo = "Amigo" ){
 		return "Hola #arguments.amigo#!";
 	}
-	</cfscript>
-</cfcomponent>
+
+
+}

@@ -23,6 +23,6 @@
         "BOXLANG_DEBUG":true
     },
     "scripts":{
-        "onServerInitialInstall":""
+        "onServerInitialInstall":"install bx-compat-cfml"
     }
 }
