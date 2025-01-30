@@ -23,6 +23,5 @@
         "BOXLANG_DEBUG":true
     },
     "scripts":{
-        "onServerInitialInstall":""
     }
 }
