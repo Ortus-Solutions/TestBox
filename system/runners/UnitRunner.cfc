@@ -446,26 +446,37 @@ component
 				&&
 				isValidTestMethod( thisMethod, arguments.target )
 			) {
-
 				// Build the spec data packet
-				var specMD = getMetadata( arguments.target[ thisMethod ] );
-				var specAnnotations = server.keyExists( "boxlang" ) ? specMD.annotations : specMD;
+				var specMD            = getMetadata( arguments.target[ thisMethod ] );
+				var specAnnotations   = server.keyExists( "boxlang" ) ? specMD.annotations : specMD;
 				var specDocumentation = server.keyExists( "boxlang" ) ? specMD.documentation : specMD;
-				var spec   = {
+				var spec              = {
 					"id"          : hash( specMD.name ),
 					"name"        : specMD.name,
-					"displayName" : ( structKeyExists( specAnnotations, "displayName" ) ? specAnnotations.displayName : specMD.name ),
-					"hint"        : ( structKeyExists( specDocumentation, "hint" ) ? specDocumentation.hint : "" ),
-					"skip"        : (
-						structKeyExists( specAnnotations, "skip" ) ? ( len( specAnnotations.skip ) ? specAnnotations.skip : true ) : false
+					"displayName" : (
+						structKeyExists( specAnnotations, "displayName" ) ? specAnnotations.displayName : specMD.name
+					),
+					"hint" : ( structKeyExists( specDocumentation, "hint" ) ? specDocumentation.hint : "" ),
+					"skip" : (
+						structKeyExists( specAnnotations, "skip" ) ? (
+							len( specAnnotations.skip ) ? specAnnotations.skip : true
+						) : false
 					),
 					"focused" : (
-						structKeyExists( specAnnotations, "focused" ) ? ( len( specAnnotations.focused ) ? specAnnotations.focused : true ) : false
+						structKeyExists( specAnnotations, "focused" ) ? (
+							len( specAnnotations.focused ) ? specAnnotations.focused : true
+						) : false
 					),
-					"labels"            : ( structKeyExists( specAnnotations, "labels" ) ? listToArray( specAnnotations.labels ) : [] ),
-					"order"             : ( structKeyExists( specAnnotations, "order" ) ? listToArray( specAnnotations.order ) : index++ ),
+					"labels" : (
+						structKeyExists( specAnnotations, "labels" ) ? listToArray( specAnnotations.labels ) : []
+					),
+					"order" : (
+						structKeyExists( specAnnotations, "order" ) ? listToArray( specAnnotations.order ) : index++
+					),
 					"expectedException" : (
-						structKeyExists( specAnnotations, "expectedException" ) ? ( len( specAnnotations.expectedException ) ? specAnnotations.expectedException : true ) : false
+						structKeyExists( specAnnotations, "expectedException" ) ? (
+							len( specAnnotations.expectedException ) ? specAnnotations.expectedException : true
+						) : false
 					)
 				};
 
