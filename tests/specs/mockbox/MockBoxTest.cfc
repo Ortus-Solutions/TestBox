@@ -1,4 +1,4 @@
-﻿component extends="testbox.system.BaseSpec"{
+﻿component extends="testbox.system.BaseSpec" {
 
 	function setup(){
 		test = getMockBox().createEmptyMock( "testbox.tests.resources.Test" );
@@ -396,9 +396,7 @@
 	function testGetProperty(){
 		mock      = getMockBox().createStub();
 		mock.luis = "Majano";
-		mock
-			.$property( "cool", "variables", true )
-			.$property( "number", "variables.instance", 7 );
+		mock.$property( "cool", "variables", true ).$property( "number", "variables.instance", 7 );
 
 		$assert.isEqual( "Majano", mock.$getProperty( name = "luis", scope = "this" ) );
 		$assert.isEqual( true, mock.$getProperty( name = "cool" ) );
@@ -520,6 +518,5 @@
 	private function testFunction( string amigo = "Amigo" ){
 		return "Hola #arguments.amigo#!";
 	}
-
 
 }

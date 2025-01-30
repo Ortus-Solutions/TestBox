@@ -180,21 +180,21 @@ component accessors=true {
 		defaultValue
 	){
 		// Cleanup deep scopes if needed, only one level deep is allowed
-		if( arguments.scope.find( "." ) ){
+		if ( arguments.scope.find( "." ) ) {
 			var testScope = arguments.scope.getToken( 1, "." );
-			if( testScope == "variables" ){
+			if ( testScope == "variables" ) {
 				// remove the variables. from the scope
 				arguments.scope = arguments.scope.getToken( 2, "." );
 			}
 		}
 
 		// Direct Scope Lookups
-		if( !arguments.scope.find( "." ) ){
+		if ( !arguments.scope.find( "." ) ) {
 			var targetScope = variables;
 
-			if( arguments.scope == "this" ){
+			if ( arguments.scope == "this" ) {
 				targetScope = this;
-			} else if( arguments.scope != "variables" && structKeyExists( variables, arguments.scope ) ){
+			} else if ( arguments.scope != "variables" && structKeyExists( variables, arguments.scope ) ) {
 				targetScope = variables[ arguments.scope ];
 			}
 
