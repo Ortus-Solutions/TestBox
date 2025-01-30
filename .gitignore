@@ -21,3 +21,4 @@ build/build.number
 bx/testbox
 bx/grapher
 cfml/testbox
+tests/coverageReport.json
