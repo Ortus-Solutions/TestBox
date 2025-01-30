@@ -17,13 +17,16 @@ on:
         default: false
         type: boolean
 
+  # Manual Trigger for manual releases
+  workflow_dispatch:
+
 env:
   SNAPSHOT: ${{ inputs.snapshot || false }}
 
 jobs:
   build:
     name: Build & Publish Release
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -32,7 +35,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
-          java-version: "11"
+          java-version: "17"
 
       - name: Setup CommandBox
         uses: Ortus-Solutions/setup-commandbox@v2.0.1
