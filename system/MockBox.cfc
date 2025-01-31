@@ -443,22 +443,22 @@ component accessors=true {
 		var oMockGenerator = this.MockBox.getmockGenerator();
 
 		// Check if the method is existent in public scope
-		if ( structKeyExists( this, arguments.method ) ) {
+		if ( structKeyExists( this, arguments.method ) && !isNull( this[ arguments.method ] ) ) {
 			fncMD = getMetadata( this[ arguments.method ] );
 		}
 		// Else check in private scope
-		else if ( structKeyExists( variables, arguments.method ) ) {
+		else if ( structKeyExists( variables, arguments.method )  && !isNull( variables[ arguments.method ] )) {
 			fncMD = getMetadata( variables[ arguments.method ] );
 		}
 
 		// Prepare Metadata Existence, works on virtual methods also
-		if ( not structKeyExists( fncMD, "returntype" ) ) {
+		if ( not structKeyExists( fncMD, "returntype" ) || isNull( fncMD.returnType ) ) {
 			fncMD[ "returntype" ] = "any";
 		}
-		if ( not structKeyExists( fncMD, "access" ) ) {
+		if ( not structKeyExists( fncMD, "access" ) || isNull( fncMD.access ) ) {
 			fncMD[ "access" ] = "public";
 		}
-		if ( not structKeyExists( fncMD, "output" ) ) {
+		if ( not structKeyExists( fncMD, "output" ) || isNull( fncMD.output ) ) {
 			fncMD[ "output" ] = true;
 		}
 		// Preserve Return Type?
@@ -476,7 +476,7 @@ component accessors=true {
 		oMockGenerator.generate( argumentCollection = arguments );
 
 		// Results Setup For No Argument Definitions or base results
-		if ( structKeyExists( arguments, "returns" ) ) {
+		if ( structKeyExists( arguments, "returns" ) && !isNull( arguments.returns ) ) {
 			this._mockResults[ arguments.method ]      = arrayNew( 1 );
 			this._mockResults[ arguments.method ][ 1 ] = arguments.returns;
 		} else {
@@ -484,7 +484,7 @@ component accessors=true {
 		}
 
 		// Callbacks Setup For No Argument Definitions or base results
-		if ( structKeyExists( arguments, "callback" ) ) {
+		if ( structKeyExists( arguments, "callback" ) && !isNull( arguments.callback ) ) {
 			this._mockCallbacks[ arguments.method ]      = arrayNew( 1 );
 			this._mockCallbacks[ arguments.method ][ 1 ] = arguments.callback;
 		} else {

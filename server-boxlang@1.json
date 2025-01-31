@@ -1,8 +1,8 @@
 {
-	"name":"testbox-boxlang",
-	"force":true,
-	"openBrowser":false,
-	"web":{
+    "name":"testbox-boxlang",
+    "force":true,
+    "openBrowser":false,
+    "web":{
         "directoryBrowsing":true,
         "http":{
             "port":"49616"
@@ -14,7 +14,7 @@
     },
     "JVM":{
         "javaVersion":"openjdk21_jre",
-		"args": "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8888"
+        "args":"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8888"
     },
     "cfconfig":{
         "file":".cfconfig.json"
@@ -22,6 +22,5 @@
     "env":{
         "BOXLANG_DEBUG":true
     },
-    "scripts":{
-    }
+    "scripts":{}
 }
