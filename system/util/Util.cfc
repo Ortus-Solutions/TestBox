@@ -187,7 +187,7 @@ component {
 					arrayAppend( lifecycleMethods, thisFunction );
 				}
 				// BoxLang support
-				if( server.keyExists( "boxlang" ) && thisFunction.annotations.keyExists( arguments.annotation) ){
+				if ( server.keyExists( "boxlang" ) && thisFunction.annotations.keyExists( arguments.annotation ) ) {
 					arrayAppend( lifecycleMethods, thisFunction );
 				}
 			}
