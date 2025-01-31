@@ -1,5 +1,5 @@
-﻿<cfcomponent extends="testbox.system.BaseSpec" displayname="MockBox Suite">
-	<cfscript>
+﻿component extends="testbox.system.BaseSpec" {
+
 	function setup(){
 		test = getMockBox().createEmptyMock( "testbox.tests.resources.Test" );
 	}
@@ -405,6 +405,11 @@
 		$assert.isEqual( 7, mock.$getProperty( name = "number", scope = "instance" ) );
 	}
 
+	function testGetPropertyDeep(){
+		mock = prepareMock( new tests.resources.Sut() );
+		$assert.isEqual( "TESTBOX", mock.$getProperty( "name", "variables.instance" ) );
+	}
+
 	function testStubWithInheritance(){
 		mock = getMockBox().createStub( extends = "coldbox.system.EventHandler" );
 		$assert.isTrue( isInstanceOf( mock, "coldbox.system.EventHandler" ) );
@@ -513,5 +518,5 @@
 	private function testFunction( string amigo = "Amigo" ){
 		return "Hola #arguments.amigo#!";
 	}
-	</cfscript>
-</cfcomponent>
+
+}

@@ -451,11 +451,9 @@ component accessors="true" {
 		// iterate and run the test bundles
 		for ( var thisBundlePath in variables.bundles ) {
 			// Skip interfaces, they are not testable
-			if ( server.keyExists( "boxlang" ) ) {
-				var thisMD = getClassMetadata( thisBundlePath );
-			} else {
-				var thisMD = getComponentMetadata( thisBundlePath );
-			}
+			var thisMD = server.keyExists( "boxlang" ) ? getClassMetadata( thisBundlePath ) : getComponentMetadata(
+				thisBundlePath
+			);
 			if ( thisMD.type eq "interface" ) {
 				continue;
 			}

@@ -1,6 +1,9 @@
 component{
 
+	variables.instance = {};
+
 	function init(){
+		variables.instance.name = "testbox";
 		return this;
 	}
 

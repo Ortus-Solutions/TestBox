@@ -1,6 +1,5 @@
 ﻿<p align="center">
-	<img src="https://www.ortussolutions.com/__media/testbox-185.png">
-	<img src="https://www.ortussolutions.com/__media/mockbox-185.png">
+	<img src="https://raw.githubusercontent.com/Ortus-Solutions/artwork/refs/heads/main/testbox/banners/testbox-site-banner.png" alt="TESTBOX"/>
 </p>
 
 <p align="center">
@@ -17,7 +16,36 @@
 
 ----
 
-TestBox is a Behavior Driven Development (BDD) and Test Driven Development (TDD) framework for [BoxLang JVM Language](https://www.boxlang.io) and ColdFusion (CFML). It also includes mocking and stubbing capabilities via its internal MockBox library.
+> TestBox v6 Now Available: **[Read the announcement »](https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.0.0)**.
+
+
+TestBox is a Behavior Driven Development (BDD) and Test Driven Development (TDD) framework for [BoxLang JVM Language](https://www.boxlang.io) and ColdFusion (CFML). It also includes mocking and stubbing capabilities via its internal MockBox library.  We also recommend you install the `testbox-cli` (https://www.forgebox.io/view/testbox-cli) package to leverage commandline test runners, test generations and watchers using CommandBox.
+
+## Requirements
+
+* BoxLang 1+
+* Lucee 5+
+* Adobe ColdFusion 2021+
+
+## Installation
+
+You can visit the TestBox documentation page to view all of its features and
+capabilities.  To install TestBox just drop it in your web root as `/testbox` or
+create a mapping `/testbox` that points to it.
+
+You can also use [CommandBox](https://www.ortussolutions.com/products/commandbox) to install and leverage TestBox for commandline executions, test generations, watchers and much more:
+
+### Stable Release
+
+```bash
+box install testbox-cli testbox
+```
+
+### Bleeding Edge Release
+
+`box install testbox@be`
+
+Bleeding edge builds are updated automatically as code is committed.
 
 ## License
 
@@ -66,31 +94,8 @@ Join us in our Ortus Community and become a valuable member of this project [Tes
 
 ### Official Site
 
+* https://www.testbox.run
 * https://www.ortussolutions.com/products/testbox
-
-## Requirements
-
-* BoxLang 1+
-* Lucee 5+
-* Adobe ColdFusion 2021+
-
-## Installation
-
-You can visit the TestBox documentation page to view all of its features and
-capabilities.  To install TestBox just drop it in your web root as `/testbox` or
-create a mapping `/testbox` that points to it.
-
-You can also use [CommandBox](https://www.ortussolutions.com/products/commandbox) to install and leverage TestBox for commandline executions, test generations, watchers and much more:
-
-### Stable Release
-
-`box install testbox`
-
-### Bleeding Edge Release
-
-`box install testbox@be`
-
-Bleeding edge builds are updated automatically as code is committed.
 
 ----
 

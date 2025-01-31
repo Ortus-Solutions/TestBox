@@ -314,7 +314,10 @@ component accessors="true" {
 		// iterate over implementations
 		for ( local.x = 1; local.x lte listLen( arguments.implements ); local.x++ ) {
 			// generate interface methods
-			generateMethodsFromMD( udfOut, getComponentMetadata( listGetAt( arguments.implements, x ) ) );
+			var thisMD = server.keyExists( "boxlang" ) ? getClassMetadata( listGetAt( arguments.implements, x ) ) : getComponentMetadata(
+				listGetAt( arguments.implements, x )
+			);
+			generateMethodsFromMD( udfOut, thisMD );
 		}
 
 		// close it
