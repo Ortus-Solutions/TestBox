@@ -447,7 +447,7 @@ component accessors=true {
 			fncMD = getMetadata( this[ arguments.method ] );
 		}
 		// Else check in private scope
-		else if ( structKeyExists( variables, arguments.method )  && !isNull( variables[ arguments.method ] )) {
+		else if ( structKeyExists( variables, arguments.method ) && !isNull( variables[ arguments.method ] ) ) {
 			fncMD = getMetadata( variables[ arguments.method ] );
 		}
 
