@@ -186,6 +186,10 @@ component {
 				if ( structKeyExists( thisFunction, arguments.annotation ) ) {
 					arrayAppend( lifecycleMethods, thisFunction );
 				}
+				// BoxLang support
+				if( server.keyExists( "boxlang" ) && thisFunction.annotations.keyExists( arguments.annotation) ){
+					arrayAppend( lifecycleMethods, thisFunction );
+				}
 			}
 		}
 
