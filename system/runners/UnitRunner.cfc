@@ -448,8 +448,9 @@ component
 			) {
 				// Build the spec data packet
 				var specMD            = getMetadata( arguments.target[ thisMethod ] );
-				var specAnnotations   = server.keyExists( "boxlang" ) ? specMD.annotations : specMD;
-				var specDocumentation = server.keyExists( "boxlang" ) ? specMD.documentation : specMD;
+				// BoxLang when not in compat mode has annontations and documentation separated in metadata
+				var specAnnotations   = specMD.keyExists( "annotations" ) ? specMD.annotations : specMD;
+				var specDocumentation = specMD.keyExists( "documentation" ) ? specMD.documentation : specMD;
 				var spec              = {
 					"id"          : hash( specMD.name ),
 					"name"        : specMD.name,
