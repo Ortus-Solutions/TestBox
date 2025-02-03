@@ -245,9 +245,8 @@ component {
 		required name,
 		defaultValue = ""
 	){
-		var md = server.keyExists( "boxlang" ) ? getMetadata( arguments.target ).annotations : getMetadata(
-			arguments.target
-		);
+		var md = getMetadata( arguments.target );
+		var md = md.keyExists( "annotations" ) ? md.annotations : md;
 
 		if ( structKeyExists( md, arguments.name ) ) {
 			return ( len( md[ arguments.name ] ) ? md[ arguments.name ] : true );
