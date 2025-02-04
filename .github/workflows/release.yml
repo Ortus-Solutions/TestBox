@@ -45,9 +45,14 @@ jobs:
       - name: Setup Environment Variables For Build Process
         id: current_version
         run: |
-          echo "TESTBOX_VERSION=`cat box.json | jq '.version' -r`" >> $GITHUB_ENV
+          # Extract version from box.json and store it in TESTBOX_VERSION
+          TESTBOX_VERSION=$(cat box.json | jq -r '.version')
+          echo "TESTBOX_VERSION=$TESTBOX_VERSION" >> $GITHUB_ENV
+
+          # Set package version dynamically according to build process
           box package set version=@build.version@+@build.number@
-          # master or snapshot
+
+          # Snapshot builds are always on the development branch
           echo "Github Ref is $GITHUB_REF"
           echo "BRANCH=master" >> $GITHUB_ENV
           if [ $GITHUB_REF == 'refs/heads/development' ]
