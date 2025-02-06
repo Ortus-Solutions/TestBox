@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.2.1] - 2025-02-06
+
 ## [6.2.0] - 2025-01-31
 
 ## [6.1.0] - 2025-01-28
@@ -60,7 +62,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - TESTBOX-400 Drop Adobe 2018 support
 
-[Unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v6.2.0...HEAD
+[Unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v6.2.1...HEAD
+
+[6.2.1]: https://github.com/Ortus-Solutions/TestBox/compare/v6.2.0...v6.2.1
 
 [6.2.0]: https://github.com/Ortus-Solutions/TestBox/compare/v6.1.0...v6.2.0
 
