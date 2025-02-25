@@ -1,4 +1,4 @@
-name: Daily Test BE Engines
+name: Daily Tests
 
 on:
   schedule:
