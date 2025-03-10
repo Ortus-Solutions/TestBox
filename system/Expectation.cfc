@@ -93,7 +93,7 @@ component accessors="true" {
 		// detect toBeTypeOf dynamic shortcuts
 		if (
 			reFindNoCase(
-				"^toBe(array|binary|boolean|component|creditcard|date|time|email|eurodate|float|function|numeric|guid|integer|query|ssn|social_security_number|string|struct|telephone|url|UUID|usdate|zipcode|xml)$",
+				"^toBe(array|binary|boolean|class|component|creditcard|date|email|eurodate|float|function|guid|hex|integer|numeric|query|social_security_number|ssn|string|struct|telephone|time|url|usdate|UUID|xml|zipcode)$",
 				arguments.missingMethodName
 			)
 		) {
