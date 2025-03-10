@@ -589,9 +589,12 @@ component accessors="true" {
 	 * Send some status headers
 	 */
 	private function sendStatusHeaders( required results ){
+		// If we are not in a web enabled runtime, just skip
+		if( !getFunctionList().keyExists( "getPageContext" ) ){
+			return this;
+		}
 		try {
 			var response = getPageContext().getResponse();
-
 			response.addHeader( "x-testbox-totalDuration", javacast( "string", results.getTotalDuration() ) );
 			response.addHeader( "x-testbox-totalBundles", javacast( "string", results.getTotalBundles() ) );
 			response.addHeader( "x-testbox-totalSuites", javacast( "string", results.getTotalSuites() ) );
