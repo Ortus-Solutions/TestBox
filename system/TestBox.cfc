@@ -590,7 +590,7 @@ component accessors="true" {
 	 */
 	private function sendStatusHeaders( required results ){
 		// If we are not in a web enabled runtime, just skip
-		if( !getFunctionList().keyExists( "getPageContext" ) ){
+		if ( !getFunctionList().keyExists( "getPageContext" ) ) {
 			return this;
 		}
 		try {
