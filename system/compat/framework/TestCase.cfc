@@ -45,6 +45,10 @@ component extends="testbox.system.BaseSpec" {
 				arguments.output = "junit";
 				break;
 			}
+			case "xml": {
+				arguments.output = "xml";
+				break;
+			}
 			case "query":
 			case "array": {
 				arguments.output = "raw";
