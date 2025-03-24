@@ -7,11 +7,11 @@ component extends="testbox.system.BaseSpec" {
 
 	function beforeAll(){
 		// print( "<h2>BDD Testing is Awesome!</h2>" );
-		console( "Executed beforeAll() at #now()# " );
+		//console( "Executed beforeAll() at #now()# " );
 	}
 
 	function afterAll(){
-		console( "Executed afterAll() at #now()#" );
+		//console( "Executed afterAll() at #now()#" );
 	}
 
 	/*********************************** BDD SUITES ***********************************/

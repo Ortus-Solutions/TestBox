@@ -27,7 +27,6 @@
  * --filter-suites : A list of suites to filter by, defaults to `*`
  * --filter-specs : A list of test names or spec names to filter by, defaults to `*`
  * --eager-failure : Fail fast, defaults to `false`
- * --runner-options: A JSON struct literal of options to pass into the test runner. Ex: `{"verbose"=true}`
  * --verbose : Verbose output, defaults to `false`. This will stream the output of the status of the tests as they run.
  * --properties-summary : Generate a properties file with the summary of the test results, defaults to `true`.
  * --properties-filename : The name of the properties file to generate, defaults to `TEST.properties`
@@ -36,61 +35,75 @@
  * --write-report : Write the report to a file in the report path folder, defaults to `true`
  * --write-json-report : Write the report as JSON alongside the requested report, defaults to `false`
  * --write-visualizer : Write the visualizer to a file in the report path folder, defaults to `false`
+ *
+ * Runner Options:
+ * To create runner options just prefix it with the prefix `runner-{optionName}`
+ * For example, to pass a `verbose` option to the runner, you would do `--runner-verbose=true`
  */
 class{
 
 	// Defaults
 	static final DEFAULT_TEST_DIRECTORY = "tests.specs"
-	static final DEFAULT_REPORTER = "text"
+	static final DEFAULT_REPORTER = "console"
 	static final DEFAULT_PROPERTIES_FILENAME = "TEST.properties"
 	static final DEFAULT_PROPERTIES_SUMMARY = true
+
+	// Seed the location of testbox just in case
+	bx:application
+		action="update"
+		mappings=getApplicationMetadata().mappings.append( {
+			"/testbox" : this.$bx.meta.path.replacenocase( "system/runners/BoxLangRunner.bx", "" )
+		} );
 
 	/**
 	 * The main method to run the TestBox tests
 	 */
 	function main( args=[] ){
 		// CLI Incoming variables
-		var rootPath = server.cli.executionPath
-		var options = server.cli.parsed.options
-		var positional = server.cli.parsed.positionals
+		var rootPath          = server.cli.executionPath
+		var options           = server.cli.parsed.options
+		var positional         = server.cli.parsed.positionals
 		var defaultReportPath = rootPath & "/tests/results"
 
 		// Gather the test arguments from the options
 		var initArgs = {
-			bundles = options[ "bundles" ] ?: [],
-			directory = {
+			bundles        : options[ "bundles" ] ?: [],
+			directory       : {
 				mapping : options[ "directory" ] ?: "",
 				recurse : options[ "recurse" ] ?: true
 			},
-			reporter = options[ "reporter" ] ?: static.DEFAULT_REPORTER,
-			labels = options[ "labels" ] ?: "",
-			excludes = options[ "excludes" ] ?: "",
-			options = options[ "runner-options" ] ?: {},
-			bundlesPattern = options[ "bundles-pattern" ] ?: ""
+			reporter       : options[ "reporter" ] ?: static.DEFAULT_REPORTER,
+			labels          : options[ "labels" ] ?: "",
+			excludes       : options[ "excludes" ] ?: "",
+			bundlesPattern : options[ "bundles-pattern" ] ?: ""
 		};
-
-		// Deserialize the JSON options
-		if( isSimpleValue( initArgs.options ) && initArgs.options.len() ) {
-			initArgs.options = jsonDeserialize( initArgs.options );
-		}
 
 		// Prepare the run arguments
 		var runArgs = {
-			testBundles = options[ "filter-bundles" ] ?: [],
-			testSuites = options[ "filter-suites" ] ?: [],
-			testSpecs = options[ "filter-specs" ] ?: [],
-			eagerFailure = options[ "eager-failure" ] ?: false,
-			verbose = options[ "verbose" ] ?: false
+			testBundles   : options[ "filter-bundles" ] ?: [],
+			testSuites     : options[ "filter-suites" ] ?: [],
+			testSpecs     : options[ "filter-specs" ] ?: [],
+			eagerFailure   : options[ "eager-failure" ] ?: false,
+			verbose       : options[ "verbose" ] ?: false,
+			options 	   : {}
 		};
+
+		// Discover and add any runner options to the struct if
+		// they exist using the pattern: runner-{optionName}
+		for( var key in options ){
+			if( key.startsWith( "runner-" ) ){
+				runArgs.options[ key.replacenocase( "runner-", "" ) ] = options[ key ];
+			}
+		}
 
 		// Prepare the after run arguments
 		var afterRunArgs = {
-			propertiesSummary = options[ "properties-summary" ] ?: static.DEFAULT_PROPERTIES_SUMMARY,
-			propertiesFilename = options[ "properties-filename" ] ?: static.DEFAULT_PROPERTIES_FILENAME,
-			reportPath = options[ "reportpath" ] ?: defaultReportPath,
-			writeReport = options[ "write-report" ] ?: true,
-			writeVisualizer = options[ "write-visualizer" ] ?: false,
-			writeJsonReport = options[ "write-json-report" ] ?: false
+			propertiesSummary  : options[ "properties-summary" ] ?: static.DEFAULT_PROPERTIES_SUMMARY,
+			propertiesFilename  : options[ "properties-filename" ] ?: static.DEFAULT_PROPERTIES_FILENAME,
+			reportPath          : options[ "reportpath" ] ?: defaultReportPath,
+			writeReport         : options[ "write-report" ] ?: true,
+			writeVisualizer      : options[ "write-visualizer" ] ?: false,
+			writeJsonReport    : options[ "write-json-report" ] ?: false
 		};
 
 		// Verbose Listeners
@@ -130,25 +143,30 @@ class{
 			initArgs.directory = static.DEFAULT_TEST_DIRECTORY
 		}
 
+		// If we have testBundles, then wipe out the directory
+		if( initArgs.bundles.len() ) {
+			initArgs.directory = {}
+		}
+
 		if( runArgs.verbose ){
 			startTime = getTickCount()
 			println( "Starting TestBox Runner with the following init arguments" )
 			println( initArgs )
 		}
+
 		var testbox = new testbox.system.TestBox( argumentCollection = initArgs )
 		if( runArgs.verbose ){
 			println( "TestBox Runner started in #getTickCount() - startTime# ms" )
 			println( "Running your tests with the following arguments" )
 			println( runArgs )
-		} else{
-			println( "Running your tests..." )
 		}
 
 		// RUN BABY RUN
-		println( "" )
 		var report = testbox.run( argumentCollection = runArgs )
 		var testResults = testbox.getResult()
 		var testResultsAsJson = jsonSerialize( testResults.getMemento( includeDebugBuffer = true ) )
+
+		// Print the report
 		println( report )
 
 		// PREPARE RESULTS FOR REPORTING
