@@ -7,31 +7,29 @@
 component extends="TextReporter" {
 
 	variables.COLORS = {
-		reset       : chr(27) & "[0m",
-		bold        : chr(27) & "[1m",
-		dim         : chr(27) & "[2m",
-		underline    : chr(27) & "[4m",
-		blink        : chr(27) & "[5m",
-		reverse     : chr(27) & "[7m",
-		hidden      : chr(27) & "[8m",
-
-		black       : chr(27) & "[30m",
-		red         : chr(27) & "[31m",
-		green       : chr(27) & "[32m",
-		yellow      : chr(27) & "[33m",
-		blue        : chr(27) & "[34m",
-		magenta    : chr(27) & "[35m",
-		cyan        : chr(27) & "[36m",
-		white       : chr(27) & "[37m",
-
-		bgBlack     : chr(27) & "[40m",
-		bgRed       : chr(27) & "[41m",
-		bgGreen     : chr(27) & "[42m",
-		bgYellow    : chr(27) & "[43m",
-		bgBlue      : chr(27) & "[44m",
-		bgMagenta  : chr(27) & "[45m",
-		bgCyan      : chr(27) & "[46m",
-		bgWhite     : chr(27) & "[47m"
+		reset     : chr( 27 ) & "[0m",
+		bold      : chr( 27 ) & "[1m",
+		dim       : chr( 27 ) & "[2m",
+		underline : chr( 27 ) & "[4m",
+		blink     : chr( 27 ) & "[5m",
+		reverse   : chr( 27 ) & "[7m",
+		hidden    : chr( 27 ) & "[8m",
+		black     : chr( 27 ) & "[30m",
+		red       : chr( 27 ) & "[31m",
+		green     : chr( 27 ) & "[32m",
+		yellow    : chr( 27 ) & "[33m",
+		blue      : chr( 27 ) & "[34m",
+		magenta   : chr( 27 ) & "[35m",
+		cyan      : chr( 27 ) & "[36m",
+		white     : chr( 27 ) & "[37m",
+		bgBlack   : chr( 27 ) & "[40m",
+		bgRed     : chr( 27 ) & "[41m",
+		bgGreen   : chr( 27 ) & "[42m",
+		bgYellow  : chr( 27 ) & "[43m",
+		bgBlue    : chr( 27 ) & "[44m",
+		bgMagenta : chr( 27 ) & "[45m",
+		bgCyan    : chr( 27 ) & "[46m",
+		bgWhite   : chr( 27 ) & "[47m"
 	};
 
 	function init(){
@@ -94,12 +92,12 @@ component extends="TextReporter" {
 	 * Return a styled text
 	 *
 	 * @style The style to apply, more than one can be applied by using +, ie: bold+red
-	 * @text The text to style
+	 * @text  The text to style
 	 *
 	 * @return The styled text
 	 */
 	function color( required style, required text ){
-		var styleArray = listToArray( arguments.style, "+" );
+		var styleArray  = listToArray( arguments.style, "+" );
 		var styleString = "";
 
 		for ( var thisStyle in styleArray ) {
@@ -137,15 +135,15 @@ component extends="TextReporter" {
 	}
 
 	function getBundleIndicator( required bundle ){
-		var thisStatus = "pass";
+		var thisStatus      = "pass";
 		var thisStatusStyle = "green";
 
 		if ( arguments.bundle.totalFail > 0 || arguments.bundle.totalError > 0 ) {
-			thisStatus = "error";
+			thisStatus      = "error";
 			thisStatusStyle = "bold+red";
 		}
 		if ( arguments.bundle.totalSkipped == arguments.bundle.totalSpecs ) {
-			thisStatus = "skipped";
+			thisStatus      = "skipped";
 			thisStatusStyle = "dim+white";
 		}
 

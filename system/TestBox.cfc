@@ -626,7 +626,10 @@ component accessors="true" {
 
 		// If the type is a simple value then inflate it
 		if ( isSimpleValue( variables.reporter ) ) {
-			iData = { type : buildReporter( variables.reporter ), options : variables.options };
+			iData = {
+				type    : buildReporter( variables.reporter ),
+				options : variables.options
+			};
 		}
 		// If the incoming reporter is an object.
 		else if ( isObject( variables.reporter ) ) {
