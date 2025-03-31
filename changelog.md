@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.3.0] - 2025-03-31
+
 ### Bugs
 
 - [TESTBOX-418](https://ortussolutions.atlassian.net/browse/TESTBOX-418) initArgs.bundles can be an array or simple value, consolidate it in boxlang runner
@@ -76,7 +78,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v6.3.0...HEAD
 
-[6.3.0]: https://github.com/Ortus-Solutions/TestBox/compare/v6.2.1...v6.3.0
+[6.3.0]: https://github.com/Ortus-Solutions/TestBox/compare/v6.3.0...v6.3.0
+
 
 [6.2.1]: https://github.com/Ortus-Solutions/TestBox/compare/v6.2.0...v6.2.1
 
