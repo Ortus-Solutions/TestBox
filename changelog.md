@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Bugs
+
+- [TESTBOX-418](https://ortussolutions.atlassian.net/browse/TESTBOX-418) initArgs.bundles can be an array or simple value, consolidate it in boxlang runner
+- [TESTBOX-420](https://ortussolutions.atlassian.net/browse/TESTBOX-420) Reporter options not being passed correctly
+
+### Improvements
+
+- [TESTBOX-417](https://ortussolutions.atlassian.net/browse/TESTBOX-417) BoxLang only usage improvements
+- [TESTBOX-419](https://ortussolutions.atlassian.net/browse/TESTBOX-419) Console reporter now includes colors and abiliy to execute via boxlang
+
 ## [6.3.0] - 2025-02-25
 
 ## [6.2.1] - 2025-02-06
