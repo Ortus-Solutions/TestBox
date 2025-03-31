@@ -589,9 +589,12 @@ component accessors="true" {
 	 * Send some status headers
 	 */
 	private function sendStatusHeaders( required results ){
+		// If we are not in a web enabled runtime, just skip
+		if ( !getFunctionList().keyExists( "getPageContext" ) ) {
+			return this;
+		}
 		try {
 			var response = getPageContext().getResponse();
-
 			response.addHeader( "x-testbox-totalDuration", javacast( "string", results.getTotalDuration() ) );
 			response.addHeader( "x-testbox-totalBundles", javacast( "string", results.getTotalBundles() ) );
 			response.addHeader( "x-testbox-totalSuites", javacast( "string", results.getTotalSuites() ) );
@@ -623,19 +626,25 @@ component accessors="true" {
 
 		// If the type is a simple value then inflate it
 		if ( isSimpleValue( variables.reporter ) ) {
-			iData = { type : buildReporter( variables.reporter ), options : {} };
+			iData = {
+				type    : buildReporter( variables.reporter ),
+				options : variables.options
+			};
 		}
 		// If the incoming reporter is an object.
 		else if ( isObject( variables.reporter ) ) {
-			iData = { type : variables.reporter, options : {} };
+			iData = { type : variables.reporter, options : variables.options };
 		}
 		// Do we have reporter type and options
 		else if ( isStruct( variables.reporter ) ) {
 			iData.type = buildReporter( variables.reporter.type );
 			if ( structKeyExists( variables.reporter, "options" ) ) {
 				iData.options = variables.reporter.options;
+			} else {
+				iData.options = variables.options;
 			}
 		}
+
 		// build the report from the reporter
 		return iData.type.runReport( arguments.results, this, iData.options );
 	}

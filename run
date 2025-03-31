@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Go baby go!
+boxlang system/runners/BoxLangRunner.bx $@

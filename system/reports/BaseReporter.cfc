@@ -102,6 +102,8 @@ component {
 	 * - editor
 	 */
 	function prepareIncomingParams(){
+		param url = {};
+
 		if ( !structKeyExists( url, "testMethod" ) ) {
 			url.testMethod = "";
 		}

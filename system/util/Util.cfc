@@ -108,35 +108,24 @@ component {
 	 * Check if you are in cfthread or not for any CFML Engine
 	 */
 	boolean function inThread(){
-		var engine = "LUCEE";
-
+		// ACF
 		if ( server.keyExists( "coldfusion" ) && server.coldfusion.productname.findNoCase( "ColdFusion" ) ) {
-			engine = "ADOBE";
+			if (
+				findNoCase(
+					"cfthread",
+					createObject( "java", "java.lang.Thread" )
+						.currentThread()
+						.getThreadGroup()
+						.getName()
+				)
+			) {
+				return true;
+			}
+			return false;
 		}
 
-		switch ( engine ) {
-			case "ADOBE": {
-				if (
-					findNoCase(
-						"cfthread",
-						createObject( "java", "java.lang.Thread" )
-							.currentThread()
-							.getThreadGroup()
-							.getName()
-					)
-				) {
-					return true;
-				}
-				break;
-			}
-
-			case "LUCEE": {
-				return getPageContext().hasFamily();
-			}
-		}
-		// end switch statement.
-
-		return false;
+		// Lucee + BoxLang
+		return isInThread();
 	}
 
 	/**
