@@ -38,7 +38,7 @@ component {
 	 */
 	function resetHTMLResponse(){
 		// If running in CLI mode, we don't have a page context
-		if ( !getFunctionList().keyExists( "pageContext" ) ) {
+		if ( !getFunctionList().keyExists( "getPageContext" ) ) {
 			return;
 		}
 		// reset cfhtmlhead from integration tests
