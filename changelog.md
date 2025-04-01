@@ -9,9 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.3.1] - 2025-04-01
+
 ### Fixed
 
-* Fixed a typo in BaseReporter
+- Fixed a typo in BaseReporter
 
 ## [6.3.0] - 2025-03-31
 
@@ -80,10 +82,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - TESTBOX-400 Drop Adobe 2018 support
 
-[Unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v6.3.0...HEAD
+[Unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v6.3.1...HEAD
+
+[6.3.1]: https://github.com/Ortus-Solutions/TestBox/compare/v6.3.0...v6.3.1
 
 [6.3.0]: https://github.com/Ortus-Solutions/TestBox/compare/v6.3.0...v6.3.0
-
 
 [6.2.1]: https://github.com/Ortus-Solutions/TestBox/compare/v6.2.0...v6.2.1
 
