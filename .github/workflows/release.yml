@@ -157,7 +157,7 @@ jobs:
   prep_next_release:
     name: Prep Next Release
     if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [ build ]
     steps:
       # Checkout development
