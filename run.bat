@@ -1,2 +1,6 @@
-# Call the Runner
-boxlang system/runners/BoxLangRunner.bx
+@echo off
+setlocal
+
+set "DIR=%~dp0"
+
+boxlang "%DIR%system/runners/BoxLangRunner.bx"

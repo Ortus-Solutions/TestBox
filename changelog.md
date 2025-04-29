@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Update the `run` runners so they use the calculated location paths.
+
 ## [6.3.1] - 2025-04-01
 
 ### Fixed
