@@ -15,16 +15,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        commandbox_version: [ "6.1.0" ]
-        cfengine: [ "boxlang@1", "boxlang-cfml@1", "lucee@5", "lucee@6", "adobe@2023" ]
+        commandbox_version: [ "6.2.1" ]
+        cfengine: [ "boxlang@1", "boxlang-cfml@1", "lucee@5", "lucee@6", "adobe@2023", "adobe@2025" ]
         jdkVersion: [ "21" ]
         experimental: [ false ]
         include:
           # Old Supported One
           - cfengine: "adobe@2021"
-            commandbox_version: "6.1.0"
+            commandbox_version: "6.2.1"
             jdkVersion: "11"
             experimental: false
+          - cfengine: "boxlang@be"
+            commandbox_version: "6.2.1"
+            jdkVersion: "21"
+            experimental: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4

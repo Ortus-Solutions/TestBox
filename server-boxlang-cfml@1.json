@@ -1,5 +1,5 @@
 {
-	"name":"testbox-boxlang",
+	"name":"testbox-boxlang-cfml@1",
 	"force":true,
 	"openBrowser":false,
 	"web":{
@@ -9,8 +9,8 @@
         }
     },
     "app":{
-        "cfengine":"boxlang@be",
-        "serverHomeDirectory":".engine/boxlang"
+        "cfengine":"boxlang@1",
+        "serverHomeDirectory":".engine/boxlang-cfml-1"
     },
     "JVM":{
         "javaVersion":"openjdk21_jre",
