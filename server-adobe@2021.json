@@ -12,10 +12,13 @@
         "cfengine":"adobe@2021",
         "serverHomeDirectory":".engine/adobe2021"
     },
-	"cfconfig": {
-		"file" : ".cfconfig.json"
-	},
-	"scripts" : {
+    "JVM":{
+        "args":"-Dcoldfusion.runtime.remotemethod.matchArguments=false"
+    },
+    "cfconfig":{
+        "file":".cfconfig.json"
+    },
+    "scripts":{
         "onServerInstall":"cfpm install zip,debugger"
     }
 }

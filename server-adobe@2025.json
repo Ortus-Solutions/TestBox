@@ -9,13 +9,17 @@
     "web":{
         "directoryBrowsing":true,
         "http":{
-			"port":"49616"
-        },
+            "port":"49616"
+        }
     },
-	"cfconfig": {
-		"file" : ".cfconfig.json"
-	},
-	"scripts" : {
-		"onServerInstall":"cfpm install zip,debugger"
-	}
+    "JVM":{
+        "javaVersion":"openjdk21_jre",
+        "args":"-Dcoldfusion.runtime.remotemethod.matchArguments=false"
+    },
+    "cfconfig":{
+        "file":".cfconfig.json"
+    },
+    "scripts":{
+        "onServerInstall":"cfpm install zip,debugger"
+    }
 }
