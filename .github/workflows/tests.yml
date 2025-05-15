@@ -6,6 +6,8 @@ on:
     secrets:
       SLACK_WEBHOOK_URL:
         required: false
+  # Allow manual triggering
+  workflow_dispatch:
 
 jobs:
   tests:
