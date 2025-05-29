@@ -76,4 +76,12 @@ component
 		} );
 	}
 
+	function testJavaValues(){
+		var urlA = createObject( "java", "java.net.URL" ).init( "http://www.luismajano.com" );
+		var urlB = createObject( "java", "java.net.URL" ).init( "http://www.luismajano.com" );
+		var urlC = createObject( "java", "java.net.URL" ).init( "http://www.ortussolutions.com" );
+		$assert.isEqual( urlA, urlB );
+		$assert.isNotEqual( urlA, urlC );
+	}
+
 }
