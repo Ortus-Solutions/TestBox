@@ -1226,14 +1226,20 @@ component {
 		if ( isSimpleValue( arguments.obj ) ) {
 			return arguments.obj;
 		}
-		if ( isObject( arguments.obj ) ) {
-			try {
-				return getMetadata( arguments.obj ).name;
-			} catch ( any e ) {
-				return "Unknown Object";
-			}
+		var type = "";
+		try {
+			type = "[#getMetadata( arguments.obj ).name#]: ";
+		} catch ( any e ) {
+			type = "[Unknown Object]: ";
 		}
-		return arguments.obj.toString();
+
+		var toStringValue = "";
+		try {
+			toStringValue = limitString( arguments.obj.toString(), 200 );
+		} catch ( any e ) {
+			// do nothing
+		}
+		return type & toStringValue;
 	}
 
 	/**
@@ -1396,7 +1402,7 @@ component {
 			return true;
 		}
 
-		return false;
+		return arguments.actual.equals( arguments.expected );
 	}
 
 	/**
@@ -1454,6 +1460,18 @@ component {
 			}, {} );
 		}
 		return arguments.target;
+	}
+
+	private string function limitString(
+		required string str,
+		required numeric limit,
+		string end = "..."
+	){
+		if ( len( arguments.str ) <= arguments.limit ) {
+			return arguments.str;
+		}
+
+		return left( arguments.str, arguments.limit ) & arguments.end;
 	}
 
 }
