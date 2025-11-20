@@ -130,7 +130,7 @@ jobs:
           box forgebox publish --force
 
       - name: Create Github Release
-        uses: taiki-e/create-gh-release-action@v1.6.2
+        uses: taiki-e/create-gh-release-action@v1.9.1
         continue-on-error: true
         if: env.SNAPSHOT == 'false'
         with:
