@@ -76,7 +76,7 @@ jobs:
           box task run taskfile=build/Build target=run :version=${{ env.TESTBOX_VERSION }} :buildID=${{ github.run_number }} :branch=${{ env.BRANCH }}
 
       - name: Commit Changelog To Master
-        uses: EndBug/add-and-commit@v9.1.1
+        uses: EndBug/add-and-commit@v9.1.4
         if: env.SNAPSHOT == 'false'
         with:
           author_name: Github Actions
@@ -189,7 +189,7 @@ jobs:
 
       # Commit it back to development
       - name: Commit Version Bump
-        uses: EndBug/add-and-commit@v9.1.1
+        uses: EndBug/add-and-commit@v9.1.4
         with:
           author_name: Github Actions
           author_email: info@ortussolutions.com
