@@ -399,8 +399,8 @@ if (structKeyExists( this._mockCallbacks, resultsKey) ) {
 	 * @md     The metadata to generate from
 	 */
 	private function generateMethodsFromMD( required any buffer, required any md ){
-		var local  = {};
-		var udfOut = arguments.buffer;
+		var local         = {};
+		var udfOut        = arguments.buffer;
 		var methodIgnores = [ "nameAsKey", "lambda", "closure" ];
 		var paramIgnores  = [ "nameAsKey" ];
 
@@ -410,14 +410,19 @@ if (structKeyExists( this._mockCallbacks, resultsKey) ) {
 			aFunctions = arguments.md.functions;
 		}
 
-		for( var thisMethod in aFunctions ){
+		for ( var thisMethod in aFunctions ) {
 			// start function tag
 			udfOut.append( "<c" & "ffunction" );
 
 			// Iterate over the values of the function
 			for ( var methodAttribute in thisMethod ) {
 				// Do Simple values only
-				if ( isSimpleValue( thisMethod[ methodAttribute ] ) && not arrayFindNoCase( methodIgnores, methodAttribute ) ) {
+				if (
+					isSimpleValue( thisMethod[ methodAttribute ] ) && not arrayFindNoCase(
+						methodIgnores,
+						methodAttribute
+					)
+				) {
 					udfOut.append( " #lCase( methodAttribute )# = ""#thisMethod[ methodAttribute ]#""" );
 				}
 			}
@@ -426,14 +431,19 @@ if (structKeyExists( this._mockCallbacks, resultsKey) ) {
 			udfOut.append( ">#variables.lb#" );
 
 			// Do parameters if they exist
-			for( var thisParam in thisMethod.parameters ){
+			for ( var thisParam in thisMethod.parameters ) {
 				// start argument
 				udfOut.append( "<c" & "fargument" );
 
 				// do attributes
-				for( var paramAttribute in thisParam ) {
+				for ( var paramAttribute in thisParam ) {
 					// Do Simple values only
-					if ( isSimpleValue( thisParam[ paramAttribute ] ) && not arrayFindNoCase( paramIgnores, paramAttribute ) ) {
+					if (
+						isSimpleValue( thisParam[ paramAttribute ] ) && not arrayFindNoCase(
+							paramIgnores,
+							paramAttribute
+						)
+					) {
 						udfOut.append( " #lCase( paramAttribute )# = ""#thisParam[ paramAttribute ]#""" );
 					}
 				}
