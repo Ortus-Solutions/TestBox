@@ -657,49 +657,49 @@ component accessors="true" {
 	any function buildReporter( required reporter ){
 		switch ( arguments.reporter ) {
 			case "json": {
-				return new "testbox.system.reports.JSONReporter"( );
+				return new testbox.system.reports.JSONReporter();
 			}
 			case "xml": {
-				return new "testbox.system.reports.XMLReporter"( );
+				return new testbox.system.reports.XMLReporter();
 			}
 			case "raw": {
-				return new "testbox.system.reports.RawReporter"( );
+				return new testbox.system.reports.RawReporter();
 			}
 			case "simple": {
-				return new "testbox.system.reports.SimpleReporter"( );
+				return new testbox.system.reports.SimpleReporter();
 			}
 			case "dot": {
-				return new "testbox.system.reports.DotReporter"( );
+				return new testbox.system.reports.DotReporter();
 			}
 			case "text": {
-				return new "testbox.system.reports.TextReporter"( );
+				return new testbox.system.reports.TextReporter();
 			}
 			case "junit": {
-				return new "testbox.system.reports.JUnitReporter"( );
+				return new testbox.system.reports.JUnitReporter();
 			}
 			case "antjunit": {
-				return new "testbox.system.reports.ANTJUnitReporter"( );
+				return new testbox.system.reports.ANTJUnitReporter();
 			}
 			case "console": {
-				return new "testbox.system.reports.ConsoleReporter"( );
+				return new testbox.system.reports.ConsoleReporter();
 			}
 			case "min": {
-				return new "testbox.system.reports.MinReporter"( );
+				return new testbox.system.reports.MinReporter();
 			}
 			case "mintext": {
-				return new "testbox.system.reports.MinTextReporter"( );
+				return new testbox.system.reports.MinTextReporter();
 			}
 			case "tap": {
-				return new "testbox.system.reports.TapReporter"( );
+				return new testbox.system.reports.TapReporter();
 			}
 			case "doc": {
-				return new "testbox.system.reports.DocReporter"( );
+				return new testbox.system.reports.DocReporter();
 			}
 			case "codexwiki": {
-				return new "testbox.system.reports.CodexWikiReporter"( );
+				return new testbox.system.reports.CodexWikiReporter();
 			}
 			default: {
-				return new "#arguments.reporter#"( );
+				return new testbox.system.reports.DefaultReporter( );
 			}
 		}
 	}

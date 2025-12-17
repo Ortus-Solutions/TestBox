@@ -29,7 +29,7 @@ component extends="testbox.system.BaseSpec" {
 		describe( "A spec", function(){
 			// before each spec in THIS suite group
 			beforeEach( function(){
-				coldbox = 0;
+				coldbox = 90;
 				coldbox++;
 			} );
 
@@ -48,7 +48,7 @@ component extends="testbox.system.BaseSpec" {
 			 * @skip   A flag that tells TestBox to skip this spec from testing if true
 			 */
 			it( "is just a closure so it can contain code", function(){
-				expect( coldbox ).toBe( 1 );
+				expect( coldbox ).toBesss( 1 );
 			} );
 
 			// more than 1 expectation
