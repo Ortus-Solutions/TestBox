@@ -431,8 +431,6 @@ component accessors="true" {
 			"CFMLEngineVersion"
 		];
 
-
-
 		var result = { "coverage" : {} };
 
 		// Do simple properties only

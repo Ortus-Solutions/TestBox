@@ -823,18 +823,20 @@ component {
 		required any needle,
 		message = ""
 	){
-		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was not found in [#arguments.target.toString()#]"
-		);
-
 		// string
 		if ( isSimpleValue( arguments.target ) AND findNoCase( arguments.needle, arguments.target ) ) {
 			return this;
 		}
+
 		// array
 		if ( isArray( arguments.target ) AND arrayFindNoCase( arguments.target, arguments.needle ) ) {
 			return this;
 		}
+
+		// not found, fail
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was not found in [#arguments.target.toString()#]"
+		);
 
 		fail( arguments.message );
 	}
@@ -851,18 +853,19 @@ component {
 		required any needle,
 		message = ""
 	){
-		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was not found in [#arguments.target.toString()#]"
-		);
-
 		// string
 		if ( isSimpleValue( arguments.target ) AND find( arguments.needle, arguments.target ) ) {
 			return this;
 		}
+
 		// array
 		if ( isArray( arguments.target ) AND arrayContains( arguments.target, arguments.needle ) ) {
 			return this;
 		}
+
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was not found in [#arguments.target.toString()#]"
+		);
 
 		fail( arguments.message );
 	}
@@ -879,10 +882,6 @@ component {
 		required any needle,
 		message = ""
 	){
-		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was found in [#arguments.target.toString()#]"
-		);
-
 		// string
 		if ( isSimpleValue( arguments.target ) AND !find( arguments.needle, arguments.target ) ) {
 			return this;
@@ -891,6 +890,10 @@ component {
 		if ( isArray( arguments.target ) AND !arrayContains( arguments.target, arguments.needle ) ) {
 			return this;
 		}
+
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was found in [#arguments.target.toString()#]"
+		);
 
 		fail( arguments.message );
 	}
@@ -907,10 +910,6 @@ component {
 		required any needle,
 		message = ""
 	){
-		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was found in [#arguments.target.toString()#]"
-		);
-
 		// string
 		if ( isSimpleValue( arguments.target ) AND !findNoCase( arguments.needle, arguments.target ) ) {
 			return this;
@@ -919,6 +918,10 @@ component {
 		if ( isArray( arguments.target ) AND !arrayFindNoCase( arguments.target, arguments.needle ) ) {
 			return this;
 		}
+
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was found in [#arguments.target.toString()#]"
+		);
 
 		fail( arguments.message );
 	}
@@ -937,13 +940,14 @@ component {
 		required string needle,
 		message = ""
 	){
-		arguments.message = (
-			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't start with [#arguments.needle#]]"
-		);
 
 		if ( toString( lCase( arguments.target ) ).startsWith( lCase( arguments.needle ) ) ) {
 			return this;
 		}
+
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't start with [#arguments.needle#]]"
+		);
 
 		fail( arguments.message );
 	}
@@ -987,13 +991,13 @@ component {
 		required string needle,
 		message = ""
 	){
-		arguments.message = (
-			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't start with [#arguments.needle#]]"
-		);
-
 		if ( toString( arguments.target ).startsWith( arguments.needle ) ) {
 			return this;
 		}
+
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't start with [#arguments.needle#]]"
+		);
 
 		fail( arguments.message );
 	}
@@ -1037,13 +1041,13 @@ component {
 		required string needle,
 		message = ""
 	){
-		arguments.message = (
-			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't end with [#arguments.needle#]]"
-		);
-
 		if ( toString( lCase( arguments.target ) ).endsWith( lCase( arguments.needle ) ) ) {
 			return this;
 		}
+
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't end with [#arguments.needle#]]"
+		);
 
 		fail( arguments.message );
 	}
@@ -1087,13 +1091,13 @@ component {
 		required string needle,
 		message = ""
 	){
-		arguments.message = (
-			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't end with [#arguments.needle#]]"
-		);
-
 		if ( toString( arguments.target ).endsWith( arguments.needle ) ) {
 			return this;
 		}
+
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't end with [#arguments.needle#]]"
+		);
 
 		fail( arguments.message );
 	}
@@ -1135,13 +1139,13 @@ component {
 		required any target,
 		message = ""
 	){
-		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not greater than [#arguments.target#]"
-		);
-
 		if ( arguments.actual gt arguments.target ) {
 			return this;
 		}
+
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not greater than [#arguments.target#]"
+		);
 
 		fail( arguments.message );
 	}
@@ -1158,13 +1162,14 @@ component {
 		required any target,
 		message = ""
 	){
-		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not greater than or equal to [#arguments.target#]"
-		);
 
 		if ( arguments.actual gte arguments.target ) {
 			return this;
 		}
+
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not greater than or equal to [#arguments.target#]"
+		);
 
 		fail( arguments.message );
 	}
@@ -1181,13 +1186,14 @@ component {
 		required any target,
 		message = ""
 	){
-		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not less than [#arguments.target#]"
-		);
 
 		if ( arguments.actual lt arguments.target ) {
 			return this;
 		}
+
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not less than [#arguments.target#]"
+		);
 
 		fail( arguments.message );
 	}
@@ -1204,13 +1210,13 @@ component {
 		required any target,
 		message = ""
 	){
-		arguments.message = (
-			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not less than or equal to [#arguments.target#]"
-		);
-
 		if ( arguments.actual lte arguments.target ) {
 			return this;
 		}
+
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not less than or equal to [#arguments.target#]"
+		);
 
 		fail( arguments.message );
 	}
@@ -1249,12 +1255,14 @@ component {
 	 * @message The message to send in the failure
 	 */
 	function isJSON( required any actual, message = "" ){
-		arguments.message = (
-			len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be json"
-		);
 		if ( !isJSON( arguments.actual ) ) {
 			fail( arguments.message );
 		}
+
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be json"
+		);
+
 		return this;
 	}
 
