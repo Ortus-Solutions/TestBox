@@ -10,7 +10,8 @@ TestBox is the leading BDD/TDD testing framework for BoxLang and CFML applicatio
 - **TestBox.cfc** (`system/TestBox.cfc`): Main orchestrator handling test execution, bundle discovery, and result aggregation
 - **BaseSpec.cfc** (`system/BaseSpec.cfc`): Base class for all test specs - provides both BDD DSL (`describe()`, `it()`, `beforeEach()`) and xUnit methods (`setup()`, `test*()`, `tearDown()`)
 - **Expectation.cfc** (`system/Expectation.cfc`): BDD assertion engine with fluent matcher API (`expect().toBe()`, `expect().notToBeEmpty()`)
-- **MockBox.cfc** (`system/MockBox.cfc`): Standalone mocking framework for creating spies, stubs, and mocks
+- **CollectionExpectation.cfc** (`system/CollectionExpectation.cfc`): Collection-based expectations via `expectAll()` for testing arrays and collections
+- **MockBox.cfc** (`system/MockBox.cfc`): Standalone mocking framework for creating spies, stubs, and mocks (fully converted to script in v6.0+)
 
 ### Multi-Language Support Pattern
 - **BoxLang Primary**: `.bx` files supported with dedicated `BoxLangRunner.bx` CLI runner
@@ -64,11 +65,27 @@ component extends="testbox.system.BaseSpec" {
 
 ### CLI Testing via BoxLang Runner
 ```bash
-# Primary CLI execution method
-./testbox/bin/run                           # Run default tests.specs
-./testbox/bin/run --directory=my.tests      # Specific directory
-./testbox/bin/run --bundles=my.bundle       # Specific bundles
-./testbox/bin/run --reporter=json           # Custom reporter
+# Primary CLI execution method (root-level runner scripts)
+./run                                       # Run default tests.specs
+./run my.bundle                             # Run specific bundle
+./run --directory=my.tests                  # Specific directory
+./run --bundles=my.bundle                   # Specific bundles
+./run --reporter=json                       # Custom reporter
+./run.bat                                   # Windows equivalent
+
+# All options:
+# --bundles: Test bundles to run (comma-separated), defaults to `*`
+# --bundles-pattern: Pattern to match test bundles, defaults to `"*Spec*.cfc|*Test*.cfc|*Spec*.bx|*Test*.bx"`
+# --directory: Directories to look for tests (dot-notation), defaults to `tests.specs`
+# --reporter: Reporter to use (text, json, xml, etc.)
+# --labels: Labels to run, defaults to `*`
+# --excludes: Labels to exclude
+# --recurse: Recurse into subdirectories, defaults to `true`
+# --filter-bundles: Filter by bundle names
+# --filter-suites: Filter by suite names
+# --filter-specs: Filter by test/spec names
+# --eager-failure: Fail fast, defaults to `false`
+# --verbose: Stream test status as they run
 ```
 
 ### Web Testing Setup
@@ -81,9 +98,15 @@ component extends="testbox.system.BaseSpec" {
 # Format code (BoxLang + CFML)
 box run-script format
 
-# Multi-engine testing
-box run-script start:lucee
-box run-script start:2023
+# Multi-engine testing  
+box run-script start:lucee      # Lucee 5
+box run-script start:adobe      # Adobe CF 2025
+box run-script start:boxlang    # BoxLang server
+
+# View logs
+box run-script log:lucee
+box run-script log:adobe
+box run-script log:boxlang
 
 # Release process
 box run-script release
@@ -123,6 +146,14 @@ var emptyMock = createEmptyMock( "com.interfaces.IService" );
 // Verification patterns
 expect( mockService.$callLog().getData ).toHaveLength( 1 );
 expect( mockService.$times( 2, "methodName" ) ).toBeTrue();
+```
+
+### Collection Expectations
+```javascript
+// Test collections with expectAll() - returns CollectionExpectation instance
+expectAll( [ user1, user2, user3 ] ).toHaveKey( "name" );
+expectAll( arrayOfResults ).toBe( true );
+expectAll( [ obj1, obj2 ] ).toBeInstanceOf( "MyClass" );
 ```
 
 ### Expectation Chaining Architecture
@@ -189,7 +220,7 @@ box run-script format         # Format all code (.cfformat.json rules)
 box run-script format:check   # Check formatting without changes
 box run-script format:watch   # Auto-format on file changes
 box run-script start:lucee    # Start development server
-./testbox/bin/run             # Run tests via BoxLang CLI
+./run                         # Run tests via BoxLang CLI
 
 # Multi-engine testing
 box run-script start:adobe    # Adobe CF 2025
