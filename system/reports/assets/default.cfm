@@ -257,16 +257,18 @@ function statusToIcon( required status ){
 						>
 							<i class="fas fa-play"></i> Run All
 						</a>							<!-- Expand/Collapse All -->
-							<button
-								@click="expandAll = !expandAll"
-								class="btn btn-outline-secondary"
-								data-bs-toggle="tooltip"
-								data-bs-placement="bottom"
-								:data-bs-title="expandAll ? 'Collapse All' : 'Expand All'"
-							>
-								<i class="fas" :class="expandAll ? 'fa-compress' : 'fa-expand'"></i>
-								<span class="d-none d-md-inline" x-text="expandAll ? 'Collapse All' : 'Expand All'"></span>
-							</button>
+							<cfif arrayLen( variables.bundleStats ) gt 1>
+								<button
+									@click="toggleExpandAll()"
+									class="btn btn-outline-secondary"
+									data-bs-toggle="tooltip"
+									data-bs-placement="bottom"
+									:data-bs-title="expandAll ? 'Collapse All' : 'Expand All'"
+								>
+									<i class="fas" :class="expandAll ? 'fa-compress' : 'fa-expand'"></i>
+									<span class="d-none d-md-inline" x-text="expandAll ? 'Collapse All' : 'Expand All'"></span>
+								</button>
+							</cfif>
 						</div>
 
 						<!-- Filter Stats -->
@@ -286,146 +288,146 @@ function statusToIcon( required status ){
 							<cfcontinue>
 						</cfif>
 
-					<!-- Bundle Card -->
-					<div
-						class="bundle-card mb-3<cfif thisBundle.totalError gt 0> bundle-error<cfelseif thisBundle.totalFail gt 0> bundle-warning</cfif>"
-						data-bundle-id="#thisBundle.id#"
-						data-bundle-path="#thisBundle.path#"
-						data-bundle-name="#thisBundle.name#"
-						x-show="isBundleVisible('#thisBundle.id#')"
-						x-data="{
-							expanded: <cfif thisBundle.totalError gt 0 or thisBundle.totalFail gt 0>true<cfelse>false</cfif>,
-							hasIssues: <cfif thisBundle.totalError gt 0 or thisBundle.totalFail gt 0>true<cfelse>false</cfif>
-						}"
-						x-init="if (!hasIssues) { $watch('$root.expandAll', value => expanded = value) }"
-					>
-						<!-- Bundle Header -->
-						<div class="bundle-header" @click="expanded = !expanded">
-								<div class="d-flex justify-content-between align-items-start">
-									<div class="flex-grow-1">
-										<h5 class="bundle-title mb-2">
-											<i class="fas fa-folder-open text-primary"></i>
-											#thisBundle.name#
-											<span class="text-muted fs-6">(#numberFormat( thisBundle.totalDuration )# ms)</span>
-										</h5>
-
-										<div class="bundle-stats">
-											<span class="badge badge-neutral">
-												<i class="fas fa-layer-group"></i> #thisBundle.totalSuites# Suites
-											</span>
-											<span class="badge badge-neutral">
-												<i class="fas fa-vial"></i> #thisBundle.totalSpecs# Specs
-											</span>
-											<span class="badge" :class="{
-												'bg-success': #thisBundle.totalPass# > 0 && #thisBundle.totalFail# === 0 && #thisBundle.totalError# === 0,
-												'bg-danger': #thisBundle.totalError# > 0,
-												'bg-warning': #thisBundle.totalFail# > 0 && #thisBundle.totalError# === 0
-											}">
-												<i class="fas fa-check"></i> #thisBundle.totalPass#
-												<i class="fas fa-exclamation-triangle ms-2"></i> #thisBundle.totalFail#
-												<i class="fas fa-times ms-2"></i> #thisBundle.totalError#
-											</span>
-										</div>
-									</div>
-
-								<div class="d-flex gap-2 align-items-center">
-							<!-- Open in IDE -->
-							<a
-							href="vscode://file/#expandPath( thisBundle.path )#"
-							class="btn btn-sm btn-outline-secondary"
-							data-bs-toggle="tooltip"
-							data-bs-placement="bottom"
-							data-bs-title="Open in VS Code"
+						<!-- Bundle Card -->
+						<div
+							class="bundle-card mb-3<cfif thisBundle.totalError gt 0> bundle-error<cfelseif thisBundle.totalFail gt 0> bundle-warning</cfif>"
+							data-bundle-id="#thisBundle.id#"
+							data-bundle-path="#thisBundle.path#"
+							data-bundle-name="#thisBundle.name#"
+							x-show="isBundleVisible( '#thisBundle.id#' )"
+							x-data="{
+								expanded: <cfif thisBundle.totalError gt 0 or thisBundle.totalFail gt 0>true<cfelse>false</cfif>,
+								hasIssues: <cfif thisBundle.totalError gt 0 or thisBundle.totalFail gt 0>true<cfelse>false</cfif>
+							}"
 						>
-								<i class="fas fa-code"></i>
-							</a>
-						<!-- Run Bundle -->
-						<a
-								href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true&coverageEnabled=false"
-								class="btn btn-sm btn-outline-primary"
-								data-bs-toggle="tooltip"
-								data-bs-placement="bottom"
-								data-bs-title="Run this bundle (opens in new tab)"
-								target="_blank"
-							>
-								<i class="fas fa-play"></i>
-							</a>										<!-- Expand/Collapse Icon -->
-									<i class="fas fa-chevron-down expand-icon" :class="{'rotate': expanded}"></i>
-								</div>
-								</div>
-							</div>
+								<!-- Bundle Header -->
+								<div class="bundle-header" @click="expanded = !expanded">
+										<div class="d-flex justify-content-between align-items-start">
+											<div class="flex-grow-1">
+												<h5 class="bundle-title mb-2">
+													<i class="fas fa-folder-open text-primary"></i>
+													#thisBundle.name#
+													<span class="text-muted fs-6">(#numberFormat( thisBundle.totalDuration )# ms)</span>
+												</h5>
 
-							<!-- Bundle Body -->
-							<div class="bundle-body" x-show="expanded" x-collapse>
-
-								<!--- Global Exception --->
-								<cfif !isSimpleValue( thisBundle.globalException )>
-									<div class="alert alert-danger" role="alert">
-										<h6 class="alert-heading">
-											<i class="fas fa-exclamation-circle"></i>
-											Global Bundle Exception
-										</h6>
-										<p class="mb-2"><strong>#encodeForHtml( thisBundle.globalException.Message )#</strong></p>
-										<cfif arrayLen( thisBundle.globalException.TagContext ) && structKeyExists( thisBundle.globalException.TagContext[ 1 ], "codePrintHTML" )>
-											<div class="code-snippet mt-2">
-												<code>#thisBundle.globalException.TagContext[ 1 ].codePrintHTML#</code>
+												<div class="bundle-stats">
+													<span class="badge badge-neutral">
+														<i class="fas fa-layer-group"></i> #thisBundle.totalSuites# Suites
+													</span>
+													<span class="badge badge-neutral">
+														<i class="fas fa-vial"></i> #thisBundle.totalSpecs# Specs
+													</span>
+													<span class="badge" :class="{
+														'bg-success': #thisBundle.totalPass# > 0 && #thisBundle.totalFail# === 0 && #thisBundle.totalError# === 0,
+														'bg-danger': #thisBundle.totalError# > 0,
+														'bg-warning': #thisBundle.totalFail# > 0 && #thisBundle.totalError# === 0
+													}">
+														<i class="fas fa-check"></i> #thisBundle.totalPass#
+														<i class="fas fa-exclamation-triangle ms-2"></i> #thisBundle.totalFail#
+														<i class="fas fa-times ms-2"></i> #thisBundle.totalError#
+													</span>
+												</div>
 											</div>
-										</cfif>
-										<details class="mt-2">
-											<summary class="cursor-pointer">Show Exception Details</summary>
-											<div class="mt-2">
-												<cfdump var="#thisBundle.globalException#" />
+
+											<div class="d-flex gap-2 align-items-center">
+												<!-- Open in IDE -->
+												<a
+													href="vscode://file/#expandPath( thisBundle.path )#"
+													class="btn btn-sm btn-outline-secondary"
+													data-bs-toggle="tooltip"
+													data-bs-placement="bottom"
+													data-bs-title="Open in VS Code"
+												>
+													<i class="fas fa-code"></i>
+												</a>
+												<!-- Run Bundle -->
+												<a
+														href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true&coverageEnabled=false"
+														class="btn btn-sm btn-outline-primary"
+														data-bs-toggle="tooltip"
+														data-bs-placement="bottom"
+														data-bs-title="Run this bundle (opens in new tab)"
+														target="_blank"
+													>
+														<i class="fas fa-play"></i>
+													</a>
+													<!-- Expand/Collapse Icon -->
+													<i class="fas fa-chevron-down expand-icon" :class="{'rotate': expanded}"></i>
 											</div>
-										</details>
-									</div>
-								</cfif>
+										</div>
+								</div>
 
-								<!-- Iterate over bundle suites -->
-								<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
-									#genSuiteReport( suiteStats, thisBundle )#
-								</cfloop>
+								<!-- Bundle Body -->
+								<div class="bundle-body" x-show="expanded" x-collapse>
 
-								<!--- Debug Panel --->
-								<cfif thisBundle.keyExists( "debugBuffer" ) && arrayLen( thisBundle.debugBuffer )>
-									<div class="debug-panel mt-3" x-data="{ debugExpanded: false }">
-										<div class="debug-header" @click="debugExpanded = !debugExpanded">
-											<h6 class="mb-0">
-												<i class="fas fa-bug text-primary"></i>
-												Debug Stream
-												<span class="badge bg-info text-dark">#arrayLen( thisBundle.debugBuffer )# items</span>
+									<!--- Global Exception --->
+									<cfif !isSimpleValue( thisBundle.globalException )>
+										<div class="alert alert-danger" role="alert">
+											<h6 class="alert-heading">
+												<i class="fas fa-exclamation-circle"></i>
+												Global Bundle Exception
 											</h6>
-											<i class="fas fa-chevron-down" :class="{'rotate': debugExpanded}"></i>
+											<p class="mb-2"><strong>#encodeForHtml( thisBundle.globalException.Message )#</strong></p>
+											<cfif arrayLen( thisBundle.globalException.TagContext ) && structKeyExists( thisBundle.globalException.TagContext[ 1 ], "codePrintHTML" )>
+												<div class="code-snippet mt-2">
+													<code>#thisBundle.globalException.TagContext[ 1 ].codePrintHTML#</code>
+												</div>
+											</cfif>
+											<details class="mt-2">
+												<summary class="cursor-pointer">Show Exception Details</summary>
+												<div class="mt-2">
+													<cfdump var="#thisBundle.globalException#" />
+												</div>
+											</details>
 										</div>
-										<div class="debug-body" x-show="debugExpanded" x-collapse>
-											<p class="text-muted mb-3">
-												<i class="fas fa-info-circle"></i>
-												The following data was collected in order as your tests ran via the <code>debug()</code> method:
-											</p>
-											<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
-												<cfif !IsNull( thisDebug )>
-													<div class="debug-item">
-														<h6 class="debug-label">
-															<i class="fas fa-tag"></i>
-															#thisDebug.label#
-															<span class="text-muted fs-7">
-																- #dateFormat( thisDebug.timestamp, "short" )# at #timeFormat( thisDebug.timestamp, "full" )#
-															</span>
-														</h6>
-														<cfdump
-															var="#thisDebug.data#"
-															label="#thisDebug.label#"
-															top="#thisDebug.top#"
-															showUDfs="#thisDebug.showUDFs#"
-														/>
-													</div>
-												</cfif>
-											</cfloop>
+									</cfif>
+
+									<!-- Iterate over bundle suites -->
+									<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
+										#genSuiteReport( suiteStats, thisBundle )#
+									</cfloop>
+
+									<!--- Debug Panel --->
+									<cfif thisBundle.keyExists( "debugBuffer" ) && arrayLen( thisBundle.debugBuffer )>
+										<div class="debug-panel mt-3" x-data="{ debugExpanded: false }">
+											<div class="debug-header" @click="debugExpanded = !debugExpanded">
+												<h6 class="mb-0">
+													<i class="fas fa-bug text-primary"></i>
+													Debug Stream
+													<span class="badge bg-info text-dark">#arrayLen( thisBundle.debugBuffer )# items</span>
+												</h6>
+												<i class="fas fa-chevron-down" :class="{'rotate': debugExpanded}"></i>
+											</div>
+											<div class="debug-body" x-show="debugExpanded" x-collapse>
+												<p class="text-muted mb-3">
+													<i class="fas fa-info-circle"></i>
+													The following data was collected in order as your tests ran via the <code>debug()</code> method:
+												</p>
+												<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
+													<cfif !IsNull( thisDebug )>
+														<div class="debug-item">
+															<h6 class="debug-label">
+																<i class="fas fa-tag"></i>
+																#thisDebug.label#
+																<span class="text-muted fs-7">
+																	- #dateFormat( thisDebug.timestamp, "short" )# at #timeFormat( thisDebug.timestamp, "full" )#
+																</span>
+															</h6>
+															<cfdump
+																var="#thisDebug.data#"
+																label="#thisDebug.label#"
+																top="#thisDebug.top#"
+																showUDfs="#thisDebug.showUDFs#"
+															/>
+														</div>
+													</cfif>
+												</cfloop>
+											</div>
 										</div>
-									</div>
-								</cfif>
+									</cfif>
+								</div>
 							</div>
-						</div>
-					</cfloop>
+						</cfloop>
 				</div>
 			</div>
 		</div>
@@ -486,13 +488,18 @@ function statusToIcon( required status ){
 						}
 					});
 
-					// Watch for filter changes
-					this.$watch('searchText', () => this.updateVisibility());
-					this.$watch('statusFilter', () => this.updateVisibility());
-				},
+				// Watch for filter changes
+				this.$watch('searchText', () => this.updateVisibility());
+				this.$watch('statusFilter', () => this.updateVisibility());
+			},
 
-				// Toggle theme
-				toggleTheme() {
+			// Toggle expand/collapse all
+			toggleExpandAll() {
+				this.expandAll = !this.expandAll;
+			},
+
+			// Toggle theme
+			toggleTheme() {
 					this.theme = this.theme === 'dark' ? 'light' : 'dark';
 					localStorage.setItem('testbox-theme', this.theme);
 					document.documentElement.setAttribute('data-theme', this.theme);
@@ -504,7 +511,13 @@ function statusToIcon( required status ){
 				},
 
 				// Check if bundle is visible
-				isBundleVisible(bundleId) {
+				isBundleVisible( bundleId ) {
+
+					// Check if the global expandAll is set
+					if ( this.expandAll ) {
+						return true;
+					}
+
 					const bundleEl = document.querySelector(`[data-bundle-id="${bundleId}"]`);
 					if (!bundleEl) return true;
 
