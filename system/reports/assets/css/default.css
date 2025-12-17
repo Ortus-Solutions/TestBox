@@ -330,11 +330,27 @@ body {
 	margin: 0;
 }
 
+.bundle-title .text-muted {
+	color: var(--text-secondary) !important;
+}
+
 .bundle-stats {
 	display: flex;
 	gap: 0.5rem;
 	flex-wrap: wrap;
 	margin-top: 0.5rem;
+}
+
+.bundle-stats .badge {
+	color: var(--text-primary);
+	background-color: var(--bg-tertiary) !important;
+	border: 1px solid var(--border-color);
+}
+
+.bundle-stats .badge.bg-success,
+.bundle-stats .badge.bg-danger,
+.bundle-stats .badge.bg-warning {
+	border: none;
 }
 
 .bundle-body {
@@ -408,6 +424,12 @@ body {
 	background-color: var(--status-passed-bg);
 }
 
+.spec-skipped {
+	border-left-color: var(--status-skipped);
+	background-color: var(--status-skipped-bg);
+	opacity: 0.6;
+}
+
 .spec-failed {
 	border-left-color: var(--status-failed);
 	background-color: var(--status-failed-bg);
@@ -443,19 +465,20 @@ body {
 }
 
 .spec-icon-passed {
-	color: var(--status-passed);
+	color: var(--status-passed) !important;
 }
 
 .spec-icon-failed {
-	color: var(--status-failed);
+	color: var(--status-failed) !important;
 }
 
 .spec-icon-error {
-	color: var(--status-error);
+	color: var(--status-error) !important;
 }
 
 .spec-icon-skipped {
-	color: var(--status-skipped);
+	color: var(--status-skipped) !important;
+	opacity: 0.6;
 }
 
 .spec-message {

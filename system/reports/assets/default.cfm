@@ -242,16 +242,15 @@ function statusToIcon( required status ){
 
 						<!-- Bundle Controls -->
 						<div class="d-flex gap-2">
-							<!-- Run All Tests -->
-							<a
-								class="btn btn-primary"
-								href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&opt_run=true"
-								title="Run all tests"
-							>
-								<i class="fas fa-play"></i> Run All
-							</a>
-
-							<!-- Expand/Collapse All -->
+						<!-- Run All Tests -->
+						<a
+							class="btn btn-primary"
+							href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&opt_run=true"
+							title="Run all tests (opens in new tab)"
+							target="_blank"
+						>
+							<i class="fas fa-play"></i> Run All
+						</a>							<!-- Expand/Collapse All -->
 							<button
 								@click="expandAll = !expandAll"
 								class="btn btn-outline-secondary"
@@ -318,17 +317,15 @@ function statusToIcon( required status ){
 									</div>
 
 									<div class="d-flex gap-2 align-items-center">
-										<!-- Run Bundle -->
-										<a
-											href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true&coverageEnabled=false"
-											class="btn btn-sm btn-outline-primary"
-											@click.stop
-											title="Run this bundle"
-										>
-											<i class="fas fa-play"></i>
-										</a>
-
-										<!-- Expand/Collapse Icon -->
+							<!-- Run Bundle -->
+							<a
+								href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true&coverageEnabled=false"
+								class="btn btn-sm btn-outline-primary"
+								title="Run this bundle (opens in new tab)"
+								target="_blank"
+							>
+								<i class="fas fa-play"></i>
+							</a>										<!-- Expand/Collapse Icon -->
 										<i class="fas fa-chevron-down expand-icon" :class="{'rotate': expanded}"></i>
 									</div>
 								</div>
@@ -680,13 +677,15 @@ function statusToIcon( required status ){
 
 						<!-- Actions -->
 						<div class="spec-actions">
-							<a
-								href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( arguments.spec.id )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
-								class="btn btn-sm btn-outline-secondary"
-								title="Run this spec"
-							>
-								<i class="fas fa-play"></i>
-							</a>
+							<cfif arguments.spec.status neq "skipped">
+								<a
+									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( arguments.spec.id )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
+									class="btn btn-sm btn-outline-secondary"
+									title="Run this spec"
+								>
+									<i class="fas fa-play"></i>
+								</a>
+							</cfif>
 
 							<cfif arguments.spec.status eq "failed" or arguments.spec.status eq "error">
 								<button
