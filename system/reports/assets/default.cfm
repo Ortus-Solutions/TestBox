@@ -76,7 +76,9 @@ function statusToIcon( required status ){
 					<button
 						@click="toggleTheme()"
 						class="btn btn-outline-secondary btn-sm"
-						title="Toggle Dark/Light Theme"
+						data-bs-toggle="tooltip"
+						data-bs-placement="bottom"
+						data-bs-title="Toggle Dark/Light Theme"
 					>
 						<i class="fas" :class="theme === 'dark' ? 'fa-sun' : 'fa-moon'"></i>
 					</button>
@@ -92,7 +94,9 @@ function statusToIcon( required status ){
 				<button
 					@click="sidebarCollapsed = !sidebarCollapsed"
 					class="sidebar-toggle"
-					:title="sidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'"
+					data-bs-toggle="tooltip"
+					data-bs-placement="right"
+					:data-bs-title="sidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'"
 				>
 					<i class="fas" :class="sidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
 				</button>
@@ -246,7 +250,9 @@ function statusToIcon( required status ){
 						<a
 							class="btn btn-primary"
 							href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&opt_run=true"
-							title="Run all tests (opens in new tab)"
+							data-bs-toggle="tooltip"
+							data-bs-placement="bottom"
+							data-bs-title="Run all tests (opens in new tab)"
 							target="_blank"
 						>
 							<i class="fas fa-play"></i> Run All
@@ -254,7 +260,9 @@ function statusToIcon( required status ){
 							<button
 								@click="expandAll = !expandAll"
 								class="btn btn-outline-secondary"
-								:title="expandAll ? 'Collapse All' : 'Expand All'"
+								data-bs-toggle="tooltip"
+								data-bs-placement="bottom"
+								:data-bs-title="expandAll ? 'Collapse All' : 'Expand All'"
 							>
 								<i class="fas" :class="expandAll ? 'fa-compress' : 'fa-expand'"></i>
 								<span class="d-none d-md-inline" x-text="expandAll ? 'Collapse All' : 'Expand All'"></span>
@@ -285,7 +293,7 @@ function statusToIcon( required status ){
 						data-bundle-path="#thisBundle.path#"
 						data-bundle-name="#thisBundle.name#"
 						x-show="isBundleVisible('#thisBundle.id#')"
-						x-data="{ 
+						x-data="{
 							expanded: <cfif thisBundle.totalError gt 0 or thisBundle.totalFail gt 0>true<cfelse>false</cfif>,
 							hasIssues: <cfif thisBundle.totalError gt 0 or thisBundle.totalFail gt 0>true<cfelse>false</cfif>
 						}"
@@ -323,17 +331,21 @@ function statusToIcon( required status ){
 								<div class="d-flex gap-2 align-items-center">
 							<!-- Open in IDE -->
 							<a
-								href="vscode://file/#expandPath( thisBundle.path )#"
-								class="btn btn-sm btn-outline-secondary"
-								title="Open in VS Code"
-							>
+							href="vscode://file/#expandPath( thisBundle.path )#"
+							class="btn btn-sm btn-outline-secondary"
+							data-bs-toggle="tooltip"
+							data-bs-placement="bottom"
+							data-bs-title="Open in VS Code"
+						>
 								<i class="fas fa-code"></i>
 							</a>
-							<!-- Run Bundle -->
-							<a
+						<!-- Run Bundle -->
+						<a
 								href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true&coverageEnabled=false"
 								class="btn btn-sm btn-outline-primary"
-								title="Run this bundle (opens in new tab)"
+								data-bs-toggle="tooltip"
+								data-bs-placement="bottom"
+								data-bs-title="Run this bundle (opens in new tab)"
 								target="_blank"
 							>
 								<i class="fas fa-play"></i>
@@ -453,6 +465,12 @@ function statusToIcon( required status ){
 				init() {
 					// Apply theme
 					document.documentElement.setAttribute('data-theme', this.theme);
+
+					// Initialize Bootstrap tooltips
+					const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+					tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+						new bootstrap.Tooltip(tooltipTriggerEl);
+					});
 
 					// Set up keyboard shortcuts
 					document.addEventListener('keydown', (e) => {
@@ -586,7 +604,10 @@ function statusToIcon( required status ){
 								href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
 								class="btn btn-sm btn-outline-secondary"
 								@click.stop
-								title="Run this suite"
+								data-bs-toggle="tooltip"
+								data-bs-placement="bottom"
+								data-bs-title="Run this suite"
+								target="_blank"
 							>
 								<i class="fas fa-play"></i>
 							</a>
@@ -693,18 +714,22 @@ function statusToIcon( required status ){
 								<a
 									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( arguments.spec.id )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
 									class="btn btn-sm btn-outline-secondary"
-									title="Run this spec"
+									data-bs-toggle="tooltip"
+									data-bs-placement="bottom"
+									data-bs-title="Run this spec"
 								>
 									<i class="fas fa-play"></i>
 								</a>
 							</cfif>
 
-							<cfif arguments.spec.status eq "failed" or arguments.spec.status eq "error">
-								<button
-									@click="specExpanded = !specExpanded"
-									class="btn btn-sm btn-outline-secondary"
-									title="View full stack trace"
-								>
+						<cfif arguments.spec.status eq "failed" or arguments.spec.status eq "error">
+							<button
+								@click="specExpanded = !specExpanded"
+								class="btn btn-sm btn-outline-secondary"
+								data-bs-toggle="tooltip"
+								data-bs-placement="bottom"
+								data-bs-title="View full stack trace"
+							>
 									<i class="fas fa-code"></i>
 								</button>
 							</cfif>

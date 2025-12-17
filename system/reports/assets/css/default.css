@@ -939,6 +939,7 @@ body {
 	width: 35px;
 	height: 35px;
 	border-radius: 50%;
+	padding-top: 2px;
 	background: var(--primary-color);
 	color: white;
 	border: none;
