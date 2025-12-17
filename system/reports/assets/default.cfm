@@ -317,7 +317,15 @@ function statusToIcon( required status ){
 										</div>
 									</div>
 
-									<div class="d-flex gap-2 align-items-center">
+								<div class="d-flex gap-2 align-items-center">
+							<!-- Open in IDE -->
+							<a
+								href="vscode://file/#expandPath( thisBundle.path )#"
+								class="btn btn-sm btn-outline-secondary"
+								title="Open in VS Code"
+							>
+								<i class="fas fa-code"></i>
+							</a>
 							<!-- Run Bundle -->
 							<a
 								href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true&coverageEnabled=false"
@@ -327,8 +335,8 @@ function statusToIcon( required status ){
 							>
 								<i class="fas fa-play"></i>
 							</a>										<!-- Expand/Collapse Icon -->
-										<i class="fas fa-chevron-down expand-icon" :class="{'rotate': expanded}"></i>
-									</div>
+									<i class="fas fa-chevron-down expand-icon" :class="{'rotate': expanded}"></i>
+								</div>
 								</div>
 							</div>
 
