@@ -21,7 +21,7 @@ component extends="testbox.system.BaseSpec" {
 				given( "I am using TestBox", function(){
 					when( "I run this test suite", function(){
 						then( "it should be supported", function(){
-							expect( true ).toBe( true );
+							expect( true ).toBe( false );
 						} );
 					} );
 				} );

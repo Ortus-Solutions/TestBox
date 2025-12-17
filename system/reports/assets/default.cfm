@@ -278,17 +278,18 @@ function statusToIcon( required status ){
 							<cfcontinue>
 						</cfif>
 
-						<!-- Bundle Card -->
-						<div
-							class="bundle-card mb-3"
-							data-bundle-id="#thisBundle.id#"
-							data-bundle-path="#thisBundle.path#"
-							data-bundle-name="#thisBundle.name#"
-							x-show="isBundleVisible('#thisBundle.id#')"
-							x-data="{ expanded: expandAll }"
-						>
-							<!-- Bundle Header -->
-							<div class="bundle-header" @click="expanded = !expanded">
+					<!-- Bundle Card -->
+					<div
+						class="bundle-card mb-3<cfif thisBundle.totalError gt 0> bundle-error<cfelseif thisBundle.totalFail gt 0> bundle-warning</cfif>"
+						data-bundle-id="#thisBundle.id#"
+						data-bundle-path="#thisBundle.path#"
+						data-bundle-name="#thisBundle.name#"
+						x-show="isBundleVisible('#thisBundle.id#')"
+						x-data="{ expanded: false }"
+						x-effect="expanded = $root.expandAll"
+					>
+						<!-- Bundle Header -->
+						<div class="bundle-header" @click="expanded = !expanded">
 								<div class="d-flex justify-content-between align-items-start">
 									<div class="flex-grow-1">
 										<h5 class="bundle-title mb-2">
@@ -298,16 +299,16 @@ function statusToIcon( required status ){
 										</h5>
 
 										<div class="bundle-stats">
-											<span class="badge bg-light text-dark">
+											<span class="badge badge-neutral">
 												<i class="fas fa-layer-group"></i> #thisBundle.totalSuites# Suites
 											</span>
-											<span class="badge bg-light text-dark">
+											<span class="badge badge-neutral">
 												<i class="fas fa-vial"></i> #thisBundle.totalSpecs# Specs
 											</span>
 											<span class="badge" :class="{
 												'bg-success': #thisBundle.totalPass# > 0 && #thisBundle.totalFail# === 0 && #thisBundle.totalError# === 0,
 												'bg-danger': #thisBundle.totalError# > 0,
-												'bg-warning text-dark': #thisBundle.totalFail# > 0 && #thisBundle.totalError# === 0
+												'bg-warning': #thisBundle.totalFail# > 0 && #thisBundle.totalError# === 0
 											}">
 												<i class="fas fa-check"></i> #thisBundle.totalPass#
 												<i class="fas fa-exclamation-triangle ms-2"></i> #thisBundle.totalFail#
@@ -563,11 +564,11 @@ function statusToIcon( required status ){
 					<div class="d-flex justify-content-between align-items-center">
 						<div>
 							<i class="fas #statusToIcon( arguments.suiteStats.status )# text-#statusToClass( arguments.suiteStats.status )#"></i>
-							<strong>#arguments.suiteStats.name#</strong>
-							<span class="text-muted">(#numberFormat( arguments.suiteStats.totalDuration )# ms)</span>
-							<span class="badge bg-light text-dark ms-2">
-								#arguments.suiteStats.totalSpecs# specs
-							</span>
+						<strong>#arguments.suiteStats.name#</strong>
+						<span class="text-muted">(#numberFormat( arguments.suiteStats.totalDuration )# ms)</span>
+						<span class="badge badge-neutral ms-2">
+							#arguments.suiteStats.totalSpecs# specs
+						</span>
 						</div>
 						<div class="d-flex gap-2 align-items-center">
 							<a
