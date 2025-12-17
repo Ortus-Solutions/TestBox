@@ -285,8 +285,11 @@ function statusToIcon( required status ){
 						data-bundle-path="#thisBundle.path#"
 						data-bundle-name="#thisBundle.name#"
 						x-show="isBundleVisible('#thisBundle.id#')"
-						x-data="{ expanded: false }"
-						x-effect="expanded = $root.expandAll"
+						x-data="{ 
+							expanded: <cfif thisBundle.totalError gt 0 or thisBundle.totalFail gt 0>true<cfelse>false</cfif>,
+							hasIssues: <cfif thisBundle.totalError gt 0 or thisBundle.totalFail gt 0>true<cfelse>false</cfif>
+						}"
+						x-init="if (!hasIssues) { $watch('$root.expandAll', value => expanded = value) }"
 					>
 						<!-- Bundle Header -->
 						<div class="bundle-header" @click="expanded = !expanded">
