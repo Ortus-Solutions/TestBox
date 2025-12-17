@@ -101,6 +101,10 @@ body {
 	transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+.text-muted {
+	color: var(--text-secondary) !important;
+}
+
 .testbox-app {
 	min-height: 100vh;
 }
@@ -121,9 +125,14 @@ body {
 	color: var(--text-primary) !important;
 }
 
+.navbar-brand .fs-5 {
+	color: var(--text-primary) !important;
+}
+
 .navbar-brand small {
 	font-size: 0.7rem;
 	font-weight: 400;
+	color: var(--text-secondary) !important;
 }
 
 /* ========================================
@@ -914,7 +923,7 @@ body {
 	justify-content: center;
 	transition: all 0.2s ease;
 	z-index: 10;
-	font-size:23px;
+	font-size: 14px;
 }
 
 .sidebar-toggle:hover {
