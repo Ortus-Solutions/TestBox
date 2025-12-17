@@ -57,7 +57,7 @@ component extends="BaseReporter" {
     function getName() {
         return "Default";
     }
-    
+
     any function runReport(
         required testbox.system.TestResult results,
         required testbox.system.TestBox testbox,
@@ -95,7 +95,7 @@ function testBoxApp() {
         expandAll: true,
         visibleBundleCount: 0,
         visibleSpecCount: 0,
-        
+
         init() { /* Setup theme & keyboard shortcuts */ },
         toggleTheme() { /* Toggle dark/light */ },
         isBundleVisible(bundleId) { /* Filter logic */ },
@@ -116,7 +116,7 @@ Comprehensive stylesheet with dark/light theme support and BoxLang-inspired colo
     --boxlang-green: #00D991;
     --boxlang-teal: #00C2AD;
     --boxlang-dark-bg: #0A1F1F;
-    
+
     /* Status Colors */
     --status-passed: #28a745;
     --status-failed: #ffc107;

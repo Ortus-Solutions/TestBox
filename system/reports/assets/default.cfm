@@ -60,7 +60,7 @@ function statusToIcon( required status ){
 				<!-- Logo & Version -->
 				<div class="navbar-brand d-flex align-items-center gap-3">
 					<img
-						src="data:image/png;base64,#toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#"
+						src="data:image/png;base64,#toBase64( fileReadBinary( '#ASSETS_DIR#/images/testbox.png' ) )#"
 						height="40"
 						alt="TestBox"
 					>
@@ -417,7 +417,10 @@ function statusToIcon( required status ){
 		</div>
 	</div>
 
-	<!-- Alpine.js -->
+	<!-- Alpine.js Collapse Plugin (must load before Alpine core) -->
+	<script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.13.3/dist/cdn.min.js"></script>
+
+	<!-- Alpine.js Core -->
 	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
 
 	<!-- Bootstrap 5 JS -->

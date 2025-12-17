@@ -891,6 +891,7 @@ body {
 	justify-content: center;
 	transition: all 0.2s ease;
 	z-index: 10;
+	font-size:23px;
 }
 
 .sidebar-toggle:hover {
@@ -904,8 +905,6 @@ body {
 
 .sidebar-section {
 	margin-bottom: 2rem;
-	padding-bottom: 1.5rem;
-	border-bottom: 1px solid var(--border-color);
 }
 
 .sidebar-section:last-child {
@@ -1103,11 +1102,11 @@ body {
 		z-index: 1000;
 		box-shadow: var(--shadow-lg);
 	}
-	
+
 	.sidebar.collapsed {
 		transform: translateX(-260px);
 	}
-	
+
 	.main-content {
 		padding: 1.5rem;
 	}
@@ -1117,11 +1116,11 @@ body {
 	.main-content {
 		padding: 1rem;
 	}
-	
+
 	.bundle-control-bar {
 		padding: 1rem;
 	}
-	
+
 	.sidebar {
 		width: 280px;
 	}
