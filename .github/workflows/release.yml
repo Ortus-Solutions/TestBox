@@ -85,7 +85,7 @@ jobs:
           add: changelog.md
 
       - name: Tag Version
-        uses: rickstaa/action-create-tag@v1.6.1
+        uses: rickstaa/action-create-tag@v1.7.2
         if: env.SNAPSHOT == 'false'
         with:
           tag: "v${{ env.TESTBOX_VERSION }}"
