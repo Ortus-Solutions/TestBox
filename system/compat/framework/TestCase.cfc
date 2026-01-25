@@ -114,7 +114,6 @@ component extends="testbox.system.BaseSpec" {
 	 * @label.hint The label to add to the debug entry
 	 */
 	function debug( required var, string label = "" ){
-		arguments.deepCopy = true;
 		super.debug( argumentCollection = arguments );
 	}
 
