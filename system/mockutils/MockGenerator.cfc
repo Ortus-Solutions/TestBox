@@ -2,12 +2,23 @@
  * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * MockBox is in charge of all kinds of software mocking abilities.
+ * This is the MockGenerator class responsible for generating method and class stubs
+ * for mocking purposes.
  */
 component accessors="true" {
 
+	/**
+	 * MockBox instance
+	 */
 	property name="mockbox";
-	property name="removeStubs";
+
+	/**
+	 * Remove stubs after generation
+	 */
+	property
+		name   ="removeStubs"
+		type   ="boolean"
+		default="true";
 
 	/**
 	 * Constructor
@@ -70,48 +81,70 @@ component accessors="true" {
 		}
 
 		// Create Method Signature
+		// cfformat-ignore-start
 		udfOut.append(
 			"<c" & "fsc" & "ript>
 			variables[ ""#safeMethodName#"" ] = variables[ ""@@tmpMethodName@@"" ];
 			this[ ""#safeMethodName#"" ]           = variables[ ""@@tmpMethodName@@"" ];
+
 			// Clean up
 			structDelete( variables, ""@@tmpMethodName@@"" );
 			structDelete( this, ""@@tmpMethodName@@"" );
-
 			#fncMD.access# #fncMD.returntype# function @@tmpMethodName@@( #variables.lb#"
 		);
+
 
 		// Create Arguments Signature
 		if ( structKeyExists( fncMD, "parameters" ) AND arguments.preserveArguments ) {
 			for ( var x = 1; x lte arrayLen( fncMD.parameters ); x++ ) {
 				var thisParam = fncMD.parameters[ x ];
 				udfOut.append( "						" );
+
+				// Is it required?
 				if ( !isNull( thisParam.required ) && thisParam.required ) {
 					udfOut.append( "required " );
 				}
-				if ( !isNull( thisParam.type ) && len( thisParam.required ) ) {
+
+				// If we have a type, add it
+				if ( !isNull( thisParam.type ) ) {
 					udfOut.append( thisParam.type & " " );
 				}
+
+				// Param name and default
 				udfOut.append( thisParam.name & " " );
 				if ( !isNull( thisParam.default ) && thisParam.default != "[runtime expression]" ) {
 					udfOut.append( "= " & outputQuotedValue( thisParam.default ) & " " );
 				}
+
 				// Remove these standard keys
+				structDelete( thisParam, "default" );
+				structDelete( thisParam, "name" );
+				structDelete( thisParam, "nameAsKey" );
 				structDelete( thisParam, "required" );
 				structDelete( thisParam, "type" );
-				structDelete( thisParam, "name" );
-				structDelete( thisParam, "default" );
+				structDelete( thisParam, "documentation" );
+
+				// If we have an annotations block, merge it and remove it
+				if( structKeyExists( thisParam, "annotations" ) ) {
+					thisParam.append( thisParam.annotations, true );
+					structDelete( thisParam, "annotations" );
+				}
+
 				// Just loop over the rest and output them
 				for ( var thisParamProp in thisParam ) {
 					udfOut.append( thisParamProp & " = " & outputQuotedValue( thisParam[ thisParamProp ] ) & " " );
 				}
+
+				// Comma if not last
 				if ( x < arrayLen( fncMD.parameters ) ) {
 					udfOut.append( "," );
 				}
+
 				udfOut.append( "#variables.lb#" );
 			}
 		}
 
+		// Close Argument list and output
 		udfOut.append(
 			"
 			) output=#fncMD.output# {#variables.lb# "
@@ -130,27 +163,27 @@ component accessors="true" {
 			var fCallBack             = """";
 
 			// If Method & argument Hash Results, switch the results struct
-			if( structKeyExists( this._mockArgResults, argsHashKey ) ) {
-				// Check if it is a callback
-				if( isStruct( this._mockArgResults[ argsHashKey ] ) &&
-					  structKeyExists( this._mockArgResults[ argsHashKey ], ""type"" ) &&
-					  structKeyExists( this._mockArgResults[ argsHashKey ], ""target"" ) ) {
-					fCallBack = this._mockArgResults[ argsHashKey ].target;
-				} else {
-					// switch context and key
-					results       = this._mockArgResults;
-					resultsKey = argsHashKey;
-				}
+if (structKeyExists( this._mockArgResults, argsHashKey) ) {
+										// Check if it is a callback
+if (isStruct( this._mockArgResults[ argsHashKey ]) &&
+												structKeyExists( this._mockArgResults[ argsHashKey ], ""type"" ) &&
+												structKeyExists( this._mockArgResults[ argsHashKey ], ""target"" ) ) {
+																	fCallBack = this._mockArgResults[ argsHashKey ].target;
+} else {
+																	// switch context and key
+																	results       = this._mockArgResults;
+																	resultsKey = argsHashKey;
+										}
 			}
 
 			// Get the statemachine counter
-			if( isSimpleValue( fCallBack ) ) {
-				resultsLen = arrayLen( results[ resultsKey ] );
+if (isSimpleValue( fCallBack) ) {
+										resultsLen = arrayLen( results[ resultsKey ] );
 			}
 
 			// Get the callback counter, if it exists
-			if( structKeyExists( this._mockCallbacks, resultsKey ) ) {
-				callbackLen = arrayLen( this._mockCallbacks[ resultsKey ] );
+if (structKeyExists( this._mockCallbacks, resultsKey) ) {
+										callbackLen = arrayLen( this._mockCallbacks[ resultsKey ] );
 			}
 
 			// Log the Method Call
@@ -163,53 +196,59 @@ component accessors="true" {
 
 		// Call Logging argument or Global Flag
 		if ( arguments.callLogging OR arguments.targetObject._mockCallLoggingActive ) {
-			udfOut.append( "arrayAppend(this._mockCallLoggers[""#arguments.method#""], arguments);#variables.lb#" );
+			udfOut.append( "arrayAppend( this._mockCallLoggers[""#arguments.method#""], arguments );#variables.lb#" );
 		}
 
 		// Exceptions? To Throw
 		if ( arguments.throwException ) {
 			udfOut.append(
 				"
-
-				throw( #outputQuotedValue( arguments.throwMessage )#, #outputQuotedValue( arguments.throwType )#, #outputQuotedValue( arguments.throwDetail )#, #outputQuotedValue( arguments.throwErrorCode )# );#variables.lb#"
+				throw(
+					#outputQuotedValue( arguments.throwMessage )#,
+					#outputQuotedValue( arguments.throwType )#,
+					#outputQuotedValue( arguments.throwDetail )#,
+					#outputQuotedValue( arguments.throwErrorCode )#
+				);#variables.lb#"
 			);
 		}
 
 		// Returns Something according to metadata?
 		if ( fncMD[ "returntype" ] neq "void" ) {
-			/* Results Recycling Code, basically, state machine code */
 			udfOut.append(
 				"
-				if( resultsLen neq 0 ) {
-					if( internalCounter gt resultsLen ) {
-						resultsCounter = internalCounter - ( resultsLen*fix( (internalCounter-1)/resultsLen ) );
-						return results[resultsKey][resultsCounter];
-					} else {
-						return results[resultsKey][internalCounter];
+					if (resultsLen neq 0) {
+						if (internalCounter gt resultsLen) {
+							resultsCounter = internalCounter - ( resultsLen * fix( ( internalCounter - 1 ) / resultsLen ) );
+							return results[ resultsKey ][ resultsCounter ];
+						} else {
+							return results[ resultsKey ][ internalCounter ];
+						}
 					}
-				}
-				"
+					"
 			);
+
 			// Callback Single
 			udfOut.append(
 				"
-				if( callbackLen neq 0 ) {
-					fCallBack = this._mockCallbacks[ resultsKey ][ 1 ];
-					return fCallBack( argumentCollection = arguments );
-				}
-				"
+					if ( callbackLen neq 0 ) {
+						fCallBack = this._mockCallbacks[ resultsKey ].first();
+						return fCallBack( argumentCollection : arguments );
+					}
+					"
 			);
+
 			// Callback Args
 			udfOut.append(
 				"
-				if( not isSimpleValue( fCallBack ) ){
-					return fCallBack( argumentCollection = arguments );
-				}
+					if ( not isSimpleValue( fCallBack ) ){
+						return fCallBack( argumentCollection : arguments );
+					}
 				"
 			);
 		}
 		udfOut.append( "}#variables.lb#" );
 		udfOut.append( "</c" & "fsc" & "ript>" );
+		// cfformat-ignore-end
 
 		// Write it out
 		stubCode = trim( udfOUt.toString() );
@@ -299,10 +338,12 @@ component accessors="true" {
 
 		// Create CFC Signature
 		udfOut.append( "<c" & "fcomponent output=""false"" hint=""A MockBox awesome Component""" );
+
 		// extends
 		if ( len( trim( arguments.extends ) ) ) {
 			udfOut.append( " extends=""#arguments.extends#""" );
 		}
+
 		// implements
 		if ( len( trim( arguments.implements ) ) ) {
 			udfOut.append( " implements=""#arguments.implements#""" );
@@ -358,50 +399,66 @@ component accessors="true" {
 	 * @md     The metadata to generate from
 	 */
 	private function generateMethodsFromMD( required any buffer, required any md ){
-		var local  = {};
-		var udfOut = arguments.buffer;
+		var local         = {};
+		var udfOut        = arguments.buffer;
+		var methodIgnores = [ "nameAsKey", "lambda", "closure" ];
+		var paramIgnores  = [ "nameAsKey" ];
 
 		// local functions if they exist
-		local.oMD = [];
+		var aFunctions = [];
 		if ( structKeyExists( arguments.md, "functions" ) ) {
-			local.oMD = arguments.md.functions;
+			aFunctions = arguments.md.functions;
 		}
 
-		// iterate and create functions
-		for ( local.x = 1; local.x lte arrayLen( local.oMD ); local.x++ ) {
+		for ( var thisMethod in aFunctions ) {
 			// start function tag
 			udfOut.append( "<c" & "ffunction" );
 
-			// iterate over the values of the function
-			for ( local.fncKey in local.oMD[ x ] ) {
+			// Iterate over the values of the function
+			for ( var methodAttribute in thisMethod ) {
 				// Do Simple values only
-				if ( isSimpleValue( local.oMD[ x ][ local.fncKey ] ) ) {
-					udfOut.append( " #lCase( local.fncKey )#=""#local.oMD[ x ][ local.fncKey ]#""" );
+				if (
+					isSimpleValue( thisMethod[ methodAttribute ] ) && not arrayFindNoCase(
+						methodIgnores,
+						methodAttribute
+					)
+				) {
+					udfOut.append( " #lCase( methodAttribute )# = ""#thisMethod[ methodAttribute ]#""" );
 				}
 			}
+
 			// close function start tag
 			udfOut.append( ">#variables.lb#" );
 
 			// Do parameters if they exist
-			for ( local.y = 1; local.y lte arrayLen( local.oMD[ x ].parameters ); local.y++ ) {
+			for ( var thisParam in thisMethod.parameters ) {
 				// start argument
 				udfOut.append( "<c" & "fargument" );
+
 				// do attributes
-				for ( local.fncKey in local.oMD[ x ].parameters[ y ] ) {
-					udfOut.append(
-						" #lCase( local.fncKey )#=""#local.oMD[ x ].parameters[ y ][ local.fncKey ]#"""
-					);
+				for ( var paramAttribute in thisParam ) {
+					// Do Simple values only
+					if (
+						isSimpleValue( thisParam[ paramAttribute ] ) && not arrayFindNoCase(
+							paramIgnores,
+							paramAttribute
+						)
+					) {
+						udfOut.append( " #lCase( paramAttribute )# = ""#thisParam[ paramAttribute ]#""" );
+					}
 				}
-				// close argument
+
+				// end argument
 				udfOut.append( ">#variables.lb#" );
 			}
 
-			// close full function
+
+			// close function
 			udfOut.append( "</c" & "ffunction>#variables.lb#" );
 		}
 
 		// Check extends and recurse
-		if ( structKeyExists( arguments.md, "extends" ) ) {
+		if ( structKeyExists( arguments.md, "extends" ) && arguments.md.extends.count() ) {
 			for ( var thisKey in arguments.md.extends ) {
 				generateMethodsFromMD( udfOut, arguments.md.extends[ thisKey ] );
 			}

@@ -17,23 +17,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        commandbox_version: [ "6.2.1" ]
-        cfengine: [ "boxlang@1", "boxlang-cfml@1", "lucee@5", "lucee@6", "adobe@2023", "adobe@2025" ]
+        commandbox_version: [ "6.3.1" ]
+        cfengine: [ "boxlang@1", "boxlang-cfml@1", "lucee@5", "lucee@6", "lucee@7", "adobe@2023", "adobe@2025" ]
         jdkVersion: [ "21" ]
         experimental: [ false ]
         include:
           # Old Supported One
           - cfengine: "adobe@2021"
-            commandbox_version: "6.2.1"
+            commandbox_version: "6.3.1"
             jdkVersion: "11"
             experimental: false
           - cfengine: "boxlang@be"
-            commandbox_version: "6.2.1"
+            commandbox_version: "6.3.1"
             jdkVersion: "21"
             experimental: true
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Java
         uses: actions/setup-java@v5
@@ -69,7 +69,7 @@ jobs:
 
       - name: Upload Test Results Artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: testbox-test-results-${{ matrix.cfengine }}-${{ matrix.jdkVersion }}
           path: |
@@ -82,7 +82,7 @@ jobs:
 
       - name: Upload Debugging Info To Artifacts
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Failure Debugging Info - ${{ matrix.cfengine }} - ${{ matrix.jdkVersion }}
           path: |
