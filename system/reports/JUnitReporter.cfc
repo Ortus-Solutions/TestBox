@@ -90,6 +90,7 @@ component extends="BaseReporter" {
 
 			// build test suite header
 			// cfformat-ignore-start
+			var hostname = cgi.remote_host ?: "";
 			out.append(
 				"<testsuite
 				name=""#fullName#""
@@ -99,7 +100,7 @@ component extends="BaseReporter" {
 				time=""#thisSuite.totalDuration / 1000#""
 				skipped=""#thisSuite.totalSkipped#""
 				timestamp=""#dateFormat( now(), "mm/dd/yy" )# #timeFormat( now(), "medium" )#""
-				hostname=""#encodeForXMLAttribute( cgi.remote_host )#""
+				hostname=""#encodeForXMLAttribute( hostname )#""
 				package=""#encodeForXMLAttribute( arguments.bundleStats.path )#""
 				>"
 			);
