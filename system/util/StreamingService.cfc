@@ -30,7 +30,7 @@ component accessors="true" {
 	function streamEvent( required string eventType, required any data ){
 		writeOutput( "event: #arguments.eventType##chr( 10 )#" );
 		writeOutput( "data: #serializeJSON( arguments.data )##chr( 10 )##chr( 10 )#" );
-		cfflush();
+		cfflush(  );
 	}
 
 	/**

@@ -54,8 +54,8 @@ component extends="testbox.system.BaseSpec" {
 				it( "produces correct SSE format string", function(){
 					// Test the expected format by building it manually
 					// SSE format is: event: <type>\ndata: <json>\n\n
-					var eventType = "testEvent";
-					var data = { "key" : "value" };
+					var eventType      = "testEvent";
+					var data           = { "key" : "value" };
 					var expectedFormat = "event: #eventType##chr( 10 )#data: #serializeJSON( data )##chr( 10 )##chr( 10 )#";
 
 					expect( expectedFormat ).toInclude( "event: testEvent" );
@@ -74,11 +74,11 @@ component extends="testbox.system.BaseSpec" {
 
 					var json = serializeJSON( testData );
 
-					expect( json ).toInclude( '"id"' );
-					expect( json ).toInclude( '"test-123"' );
-					expect( json ).toInclude( '"nested"' );
-					expect( json ).toInclude( '"foo"' );
-					expect( json ).toInclude( '"bar"' );
+					expect( json ).toInclude( """id""" );
+					expect( json ).toInclude( """test-123""" );
+					expect( json ).toInclude( """nested""" );
+					expect( json ).toInclude( """foo""" );
+					expect( json ).toInclude( """bar""" );
 				} );
 			} );
 
@@ -91,7 +91,7 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "onBundleStart sends bundleStart event with metadata", function(){
-					var mockTarget = new testbox.system.BaseSpec();
+					var mockTarget  = new testbox.system.BaseSpec();
 					var mockResults = createMock( "testbox.system.TestResult" );
 
 					var callbacks = variables.mockService.createStreamingCallbacks();
@@ -107,7 +107,7 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "onBundleEnd sends bundleEnd event with statistics", function(){
-					var mockTarget = new testbox.system.BaseSpec();
+					var mockTarget  = new testbox.system.BaseSpec();
 					var mockResults = createMock( "testbox.system.TestResult" );
 
 					var bundleStats = [
@@ -139,12 +139,9 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "onSuiteStart sends suiteStart event with suite info", function(){
-					var mockTarget = new testbox.system.BaseSpec();
+					var mockTarget  = new testbox.system.BaseSpec();
 					var mockResults = createMock( "testbox.system.TestResult" );
-					var mockSuite = {
-						"id"   : "suite-123",
-						"name" : "Test Suite"
-					};
+					var mockSuite   = { "id" : "suite-123", "name" : "Test Suite" };
 
 					var callbacks = variables.mockService.createStreamingCallbacks();
 					callbacks.onSuiteStart( mockTarget, mockResults, mockSuite );
@@ -158,9 +155,9 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "onSuiteEnd sends suiteEnd event with statistics", function(){
-					var mockTarget = new testbox.system.BaseSpec();
+					var mockTarget  = new testbox.system.BaseSpec();
 					var mockResults = createMock( "testbox.system.TestResult" );
-					var mockSuite = { "id" : "suite-123", "name" : "Test Suite" };
+					var mockSuite   = { "id" : "suite-123", "name" : "Test Suite" };
 
 					var suiteStats = {
 						"totalDuration" : 50,
@@ -183,10 +180,10 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "onSpecStart sends specStart event with spec info", function(){
-					var mockTarget = new testbox.system.BaseSpec();
+					var mockTarget  = new testbox.system.BaseSpec();
 					var mockResults = createMock( "testbox.system.TestResult" );
-					var mockSuite = { "id" : "suite-123", "name" : "Test Suite" };
-					var mockSpec = {
+					var mockSuite   = { "id" : "suite-123", "name" : "Test Suite" };
+					var mockSpec    = {
 						"id"          : "spec-456",
 						"name"        : "should do something",
 						"displayName" : "should do something"
@@ -204,10 +201,10 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "onSpecEnd sends specEnd event with results", function(){
-					var mockTarget = new testbox.system.BaseSpec();
+					var mockTarget  = new testbox.system.BaseSpec();
 					var mockResults = createMock( "testbox.system.TestResult" );
-					var mockSuite = { "id" : "suite-123", "name" : "Test Suite" };
-					var mockSpec = {
+					var mockSuite   = { "id" : "suite-123", "name" : "Test Suite" };
+					var mockSpec    = {
 						"id"          : "spec-456",
 						"name"        : "should do something",
 						"displayName" : "should do something"
@@ -241,10 +238,10 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "onSpecEnd includes failure info for failed specs", function(){
-					var mockTarget = new testbox.system.BaseSpec();
+					var mockTarget  = new testbox.system.BaseSpec();
 					var mockResults = createMock( "testbox.system.TestResult" );
-					var mockSuite = { "id" : "suite-123", "name" : "Test Suite" };
-					var mockSpec = {
+					var mockSuite   = { "id" : "suite-123", "name" : "Test Suite" };
+					var mockSpec    = {
 						"id"          : "spec-789",
 						"name"        : "should fail gracefully",
 						"displayName" : "should fail gracefully"
