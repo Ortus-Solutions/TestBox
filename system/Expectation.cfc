@@ -399,7 +399,7 @@ component accessors="true" {
 	 */
 	function toHaveKeyWithCase( required string key, message = "" ){
 		arguments.caseSensitive = true;
-		arguments.target = this.actual;
+		arguments.target        = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notKey( argumentCollection = arguments );
 		} else {
