@@ -67,6 +67,8 @@ component extends="TextReporter" {
 
 		// bundle stats
 		variables.bundleStats = arguments.results.getBundleStats();
+		// hide skipped option for filtered runs
+		variables.hideSkipped = arguments.options.hideSkipped ?: false;
 		// prepare incoming params
 		prepareIncomingParams();
 

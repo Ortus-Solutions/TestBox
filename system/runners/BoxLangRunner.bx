@@ -35,6 +35,8 @@
  * --write-report : Write the report to a file in the report path folder, defaults to `true`
  * --write-json-report : Write the report as JSON alongside the requested report, defaults to `false`
  * --write-visualizer : Write the visualizer to a file in the report path folder, defaults to `false`
+ * --hide-skipped : Hide skipped specs and suites from the reporter output, defaults to `false`.
+ * 	Useful when running a single spec via `--filter-specs` to only show the targeted test.
  *
  * Runner Options:
  * To create runner options just prefix it with the prefix `runner-{optionName}`
@@ -85,7 +87,9 @@ class{
 			testSpecs     : options[ "filter-specs" ] ?: [],
 			eagerFailure   : options[ "eager-failure" ] ?: false,
 			verbose       : options[ "verbose" ] ?: false,
-			options 	   : {}
+			options 	   : {
+				hideSkipped : options[ "hide-skipped" ] ?: false
+			}
 		};
 
 		// Discover and add any runner options to the struct if

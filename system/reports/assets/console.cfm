@@ -57,6 +57,15 @@ Code Coverage
 	<cfsetting enablecfoutputonly="true">
 	<cfset var tabs = repeatString( tab(), arguments.level )>
 	<cfset var tabsNext = repeatString( tab(), arguments.level + 1 )>
+	<!--- Skip suites with no non-skipped content when hideSkipped is enabled.
+		 We can't rely on suiteStats.status alone because TestBox may mark a suite as
+		 "Skipped" even when it contains a passed spec (filter-specs bug), or mark a
+		 suite as "Passed" when all its specs are skipped. Instead, check the rolled-up
+		 counters: if totalPass + totalFail + totalError == 0, the suite has no
+		 non-skipped specs at any nesting level. --->
+	<cfif variables.hideSkipped AND (arguments.suiteStats.totalPass + arguments.suiteStats.totalFail + arguments.suiteStats.totalError) eq 0>
+		<cfreturn "">
+	</cfif>
 	<cfsavecontent variable="local.report"><cfoutput><!---
 
 			Suite Name
@@ -66,6 +75,7 @@ Code Coverage
 			Specs
 
 		---><cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec"><!---
+		---><cfif variables.hideSkipped AND local.thisSpec.status eq "skipped"><cfcontinue></cfif><!---
 		--->#tabsNext##getStatusIndicator( local.thisSpec.status )# #printByStatus( local.thisSpec.status, local.thisSpec.displayName)# #color( "dim", "(#local.thisSpec.totalDuration# ms)")# #chr(13)#<!---
 
 			If Spec Failed
