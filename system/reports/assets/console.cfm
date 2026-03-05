@@ -1,5 +1,4 @@
-<cfoutput>
-#color( "bold+cyan", "█▓▒▒░░░ " )##color( "bold+green", "TestBox v" & testbox.getVersion() )##color( "bold+cyan", " ░░░▒▒▓█" )#
+<cfoutput>#color( "bold+cyan", "█▓▒▒░░░ " )##color( "bold+green", "TestBox v" & testbox.getVersion() )##color( "bold+cyan", " ░░░▒▒▓█" )#
 <!--- Iterate over each bundle tested --->
 <cfloop array="#variables.bundleStats#" index="thisBundle">
 <!--- Skip if not in the includes list --->
