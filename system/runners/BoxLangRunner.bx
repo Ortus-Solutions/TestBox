@@ -54,7 +54,7 @@ class{
 	bx:application
 		action="update"
 		mappings=getApplicationMetadata().mappings.append( {
-			"/testbox" : this.$bx.meta.path.replacenocase( "system/runners/BoxLangRunner.bx", "" )
+			"/testbox" : this.$bx.meta.path.replacenocase( "system/runners/BoxLangRunner.bx", "" ).replacenocase( "system\runners\BoxLangRunner.bx", "" )
 		} );
 
 	/**
