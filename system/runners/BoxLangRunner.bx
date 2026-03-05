@@ -142,6 +142,13 @@ class{
 			initArgs.directory = {}
 		}
 
+		// If --bundles was specified but --directory was not, wipe the directory to prevent
+		// TestBox from scanning from the project root due to the default struct
+		// { mapping: "", recurse: true } having a blank mapping.
+		if( initArgs.bundles.len() && !initArgs.directory.mapping.len() ) {
+			initArgs.directory = {}
+		}
+
 		// If we don't have test-bundles or a test-directory, then default to the DEFAULT_TEST_DIRECTORY
 		if( !initArgs.bundles.len() && !initArgs.directory.mapping.len() ) {
 			initArgs.directory = static.DEFAULT_TEST_DIRECTORY
