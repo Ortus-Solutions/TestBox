@@ -3,4 +3,4 @@ setlocal
 
 set "DIR=%~dp0"
 
-boxlang "%DIR%system/runners/BoxLangRunner.bx"
+boxlang "%DIR%system/runners/BoxLangRunner.bx" %*
