@@ -223,8 +223,8 @@ component
 			// Determine if this suite is a DIRECT match for the testSuites filter,
 			// vs only matching because a descendant suite matched.
 			// If it's only a child match, we skip the parent's own specs but still recurse into child suites.
-			var testSuites       = arguments.testResults.getTestSuites();
-			var isDirectMatch    = true;
+			var testSuites    = arguments.testResults.getTestSuites();
+			var isDirectMatch = true;
 			if ( arrayLen( testSuites ) ) {
 				// Direct name match
 				isDirectMatch = arrayFindNoCase( testSuites, arguments.suite.name ) > 0;
@@ -244,7 +244,7 @@ component
 			if ( !isDirectMatch ) {
 				// Mark this suite's own specs as skipped so stats remain consistent
 				for ( var thisSpec in arguments.suite.specs ) {
-					var specStats = arguments.testResults.startSpecStats( thisSpec, suiteStats );
+					var specStats    = arguments.testResults.startSpecStats( thisSpec, suiteStats );
 					specStats.status = "Skipped";
 					arguments.testResults.incrementSpecStat( type = "skipped", stats = specStats );
 					arguments.testResults.endStats( specStats );
@@ -259,129 +259,130 @@ component
 
 				// iterate over suite specs and test them
 				for ( var thisSpec in arguments.suite.specs ) {
-				// is this async or not?
-				if ( arguments.suite.asyncAll ) {
-					// prepare thread name
-					var thisThreadName = variables.testBox
-						.getUtility()
-						.slugify( "tb-" & thisSpec.name & "-#hash( getTickCount() + randRange( 1, 10000000 ) )#" );
-					// append to used thread names
-					arrayAppend( threadNames, thisThreadName );
-					// thread it
-					thread
-						name      ="#thisThreadName#"
-						thisSpec  ="#thisSpec#"
-						suite     ="#arguments.suite#"
-						threadName="#thisThreadName#"
-						callbacks ="#arguments.callbacks#" {
+					// is this async or not?
+					if ( arguments.suite.asyncAll ) {
+						// prepare thread name
+						var thisThreadName = variables.testBox
+							.getUtility()
+							.slugify( "tb-" & thisSpec.name & "-#hash( getTickCount() + randRange( 1, 10000000 ) )#" );
+						// append to used thread names
+						arrayAppend( threadNames, thisThreadName );
+						// thread it
+						thread
+							name      ="#thisThreadName#"
+							thisSpec  ="#thisSpec#"
+							suite     ="#arguments.suite#"
+							threadName="#thisThreadName#"
+							callbacks ="#arguments.callbacks#" {
+							// verify call backs
+							if ( structKeyExists( attributes.callbacks, "onSpecStart" ) ) {
+								attributes.callbacks.onSpecStart(
+									thread.target,
+									thread.testResults,
+									attributes.suite,
+									attributes.thisSpec
+								);
+							}
+							// Module call backs
+							variables.testbox.announceToModules(
+								"onSpecStart",
+								[
+									thread.target,
+									thread.testResults,
+									attributes.suite,
+									attributes.thisSpec
+								]
+							);
+
+							// execute the test within the context of the spec target due to lucee closure bug, move back once it is resolved.
+							thread.target.runSpec(
+								spec        = attributes.thisSpec,
+								suite       = attributes.suite,
+								testResults = thread.testResults,
+								suiteStats  = thread.suiteStats,
+								runner      = this
+							);
+
+							// verify call backs
+							if ( structKeyExists( attributes.callbacks, "onSpecEnd" ) ) {
+								attributes.callbacks.onSpecEnd(
+									thread.target,
+									thread.testResults,
+									attributes.suite,
+									attributes.thisSpec
+								);
+							}
+							// Module call backs
+							variables.testbox.announceToModules(
+								"onSpecEnd",
+								[
+									thread.target,
+									thread.testResults,
+									attributes.suite,
+									attributes.thisSpec
+								]
+							);
+						}
+					} else {
 						// verify call backs
-						if ( structKeyExists( attributes.callbacks, "onSpecStart" ) ) {
-							attributes.callbacks.onSpecStart(
-								thread.target,
-								thread.testResults,
-								attributes.suite,
-								attributes.thisSpec
+						if ( structKeyExists( arguments.callbacks, "onSpecStart" ) ) {
+							arguments.callbacks.onSpecStart(
+								arguments.target,
+								arguments.testResults,
+								arguments.suite,
+								thisSpec
 							);
 						}
 						// Module call backs
 						variables.testbox.announceToModules(
 							"onSpecStart",
 							[
-								thread.target,
-								thread.testResults,
-								attributes.suite,
-								attributes.thisSpec
+								arguments.target,
+								arguments.testResults,
+								arguments.suite,
+								thisSpec
 							]
 						);
 
 						// execute the test within the context of the spec target due to lucee closure bug, move back once it is resolved.
 						thread.target.runSpec(
-							spec        = attributes.thisSpec,
-							suite       = attributes.suite,
-							testResults = thread.testResults,
-							suiteStats  = thread.suiteStats,
-							runner      = this
+							spec       : thisSpec,
+							suite      : arguments.suite,
+							testResults: thread.testResults,
+							suiteStats : thread.suiteStats,
+							runner     : this
 						);
 
 						// verify call backs
-						if ( structKeyExists( attributes.callbacks, "onSpecEnd" ) ) {
-							attributes.callbacks.onSpecEnd(
-								thread.target,
-								thread.testResults,
-								attributes.suite,
-								attributes.thisSpec
+						if ( structKeyExists( arguments.callbacks, "onSpecEnd" ) ) {
+							arguments.callbacks.onSpecEnd(
+								arguments.target,
+								arguments.testResults,
+								arguments.suite,
+								thisSpec
 							);
 						}
 						// Module call backs
 						variables.testbox.announceToModules(
 							"onSpecEnd",
 							[
-								thread.target,
-								thread.testResults,
-								attributes.suite,
-								attributes.thisSpec
+								arguments.target,
+								arguments.testResults,
+								arguments.suite,
+								thisSpec
 							]
 						);
 					}
-				} else {
-					// verify call backs
-					if ( structKeyExists( arguments.callbacks, "onSpecStart" ) ) {
-						arguments.callbacks.onSpecStart(
-							arguments.target,
-							arguments.testResults,
-							arguments.suite,
-							thisSpec
-						);
-					}
-					// Module call backs
-					variables.testbox.announceToModules(
-						"onSpecStart",
-						[
-							arguments.target,
-							arguments.testResults,
-							arguments.suite,
-							thisSpec
-						]
-					);
+				}
+				// end loop over specs
 
-					// execute the test within the context of the spec target due to lucee closure bug, move back once it is resolved.
-					thread.target.runSpec(
-						spec       : thisSpec,
-						suite      : arguments.suite,
-						testResults: thread.testResults,
-						suiteStats : thread.suiteStats,
-						runner     : this
-					);
-
-					// verify call backs
-					if ( structKeyExists( arguments.callbacks, "onSpecEnd" ) ) {
-						arguments.callbacks.onSpecEnd(
-							arguments.target,
-							arguments.testResults,
-							arguments.suite,
-							thisSpec
-						);
-					}
-					// Module call backs
-					variables.testbox.announceToModules(
-						"onSpecEnd",
-						[
-							arguments.target,
-							arguments.testResults,
-							arguments.suite,
-							thisSpec
-						]
-					);
+				// join threads if async
+				if ( arguments.suite.asyncAll ) {
+					thread action="join" name="#arrayToList( threadNames )#" {
+					};
 				}
 			}
-			// end loop over specs
-
-			// join threads if async
-			if ( arguments.suite.asyncAll ) {
-				thread action="join" name="#arrayToList( threadNames )#" {
-				};
-			}
-			} // end isDirectMatch else block
+			// end isDirectMatch else block
 
 			// Do we have any internal suites? If we do, test them recursively, go down the rabbit hole
 			for ( var thisInternalSuite in arguments.suite.suites ) {
