@@ -78,14 +78,7 @@ component extends="TextReporter" {
 		}
 
 		// send to console
-		variables.out.printLn(
-			reReplace(
-				local.report,
-				"[\r\n]+",
-				chr( 10 ),
-				"all"
-			)
-		);
+		variables.out.printLn( reReplace( local.report, "[\r\n]+", chr( 10 ), "all" ) );
 
 		return "";
 	}
