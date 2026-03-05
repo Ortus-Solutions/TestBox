@@ -220,15 +220,45 @@ component
 				arguments.target
 			)
 		) {
-			// prepare threaded names
-			var threadNames    = [];
-			// threaded variables just in case some suite is async and another is not.
-			thread.testResults = arguments.testResults;
-			thread.suiteStats  = suiteStats;
-			thread.target      = arguments.target;
+			// Determine if this suite is a DIRECT match for the testSuites filter,
+			// vs only matching because a descendant suite matched.
+			// If it's only a child match, we skip the parent's own specs but still recurse into child suites.
+			var testSuites       = arguments.testResults.getTestSuites();
+			var isDirectMatch    = true;
+			if ( arrayLen( testSuites ) ) {
+				// Direct name match
+				isDirectMatch = arrayFindNoCase( testSuites, arguments.suite.name ) > 0;
+				// Also check slug-based match (parent name in filter means run all descendants)
+				if ( !isDirectMatch && len( arguments.suite.slug ) ) {
+					var slugArray = listToArray( arguments.suite.slug, "/" );
+					for ( var thisSlug in slugArray ) {
+						if ( arrayFindNoCase( testSuites, thisSlug ) ) {
+							isDirectMatch = true;
+							break;
+						}
+					}
+				}
+			}
 
-			// iterate over suite specs and test them
-			for ( var thisSpec in arguments.suite.specs ) {
+			// If the suite only matched because of a descendant, skip its own specs
+			if ( !isDirectMatch ) {
+				// Mark this suite's own specs as skipped so stats remain consistent
+				for ( var thisSpec in arguments.suite.specs ) {
+					var specStats = arguments.testResults.startSpecStats( thisSpec, suiteStats );
+					specStats.status = "Skipped";
+					arguments.testResults.incrementSpecStat( type = "skipped", stats = specStats );
+					arguments.testResults.endStats( specStats );
+				}
+			} else {
+				// prepare threaded names
+				var threadNames    = [];
+				// threaded variables just in case some suite is async and another is not.
+				thread.testResults = arguments.testResults;
+				thread.suiteStats  = suiteStats;
+				thread.target      = arguments.target;
+
+				// iterate over suite specs and test them
+				for ( var thisSpec in arguments.suite.specs ) {
 				// is this async or not?
 				if ( arguments.suite.asyncAll ) {
 					// prepare thread name
@@ -351,6 +381,7 @@ component
 				thread action="join" name="#arrayToList( threadNames )#" {
 				};
 			}
+			} // end isDirectMatch else block
 
 			// Do we have any internal suites? If we do, test them recursively, go down the rabbit hole
 			for ( var thisInternalSuite in arguments.suite.suites ) {
