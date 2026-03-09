@@ -67,6 +67,12 @@ class{
 		var positional         = server.cli.parsed.positionals
 		var defaultReportPath = rootPath & "/tests/results"
 
+		// Discover and load Application.cfc/Application.bx mappings.
+		// This mimics how CFML engines resolve Application.cfc by walking up the directory
+		// tree from the test location. This ensures that mappings defined in the project's
+		// Application.cfc (e.g., /qb, /tests, /modules) are available to test bundles.
+		discoverAndLoadApplicationMappings( rootPath, options )
+
 		// Gather the test arguments from the options
 		var initArgs = {
 			bundles        : options[ "bundles" ] ?: [],
@@ -203,6 +209,130 @@ class{
 		// WRITE THE ANT JUNIT REPORTS
 		if( initArgs.reporter eq "ANTJunit" ){
 			generateAntReports( report, afterRunArgs );
+		}
+	}
+
+	/**
+	 * Discovers and loads mappings from an Application.cfc or Application.bx file.
+	 * Walks up the directory tree from the test location toward the project root,
+	 * looking for the first Application.cfc or Application.bx file, mimicking
+	 * how CFML engines resolve Application.cfc at runtime.
+	 *
+	 * @rootPath The project root (CLI execution path)
+	 * @options The parsed CLI options
+	 */
+	private function discoverAndLoadApplicationMappings( required string rootPath, required struct options ){
+		// Determine the starting directory for the upward search.
+		// For --bundles, convert dot-notation to a directory path.
+		// For --directory, use the directory mapping.
+		// Otherwise, start from the default test directory convention.
+		var startDir = ""
+		var bundles = arguments.options[ "bundles" ] ?: ""
+		var directory = arguments.options[ "directory" ] ?: ""
+
+		if( isSimpleValue( bundles ) && bundles.len() ) {
+			// Convert first bundle's dot-notation to a filesystem path and get its parent directory
+			var firstBundle = listFirst( bundles )
+			var bundlePath = arguments.rootPath & "/" & firstBundle.replace( ".", "/", "all" )
+			// The bundle path points to a class file (without extension), get its parent directory
+			startDir = getDirectoryFromPath( bundlePath & ".cfc" )
+		} else if( isSimpleValue( directory ) && directory.len() ) {
+			startDir = arguments.rootPath & "/" & directory.replace( ".", "/", "all" )
+		} else {
+			// Default: start from the conventional tests/specs directory
+			startDir = arguments.rootPath & "/tests/specs"
+		}
+
+		// Walk up from startDir to rootPath, looking for Application.cfc or Application.bx
+		var appFile = findApplicationFile( startDir, arguments.rootPath )
+		if( appFile.len() ) {
+			loadApplicationMappings( appFile )
+		}
+	}
+
+	/**
+	 * Walks up the directory tree from startDir to stopDir (inclusive),
+	 * looking for Application.cfc or Application.bx.
+	 *
+	 * @startDir The directory to start searching from
+	 * @stopDir The root directory to stop at (inclusive)
+	 *
+	 * @return The absolute path to the Application file, or empty string if not found
+	 */
+	private string function findApplicationFile( required string startDir, required string stopDir ){
+		var currentDir = arguments.startDir
+		// Normalize: remove trailing slashes for consistent comparison
+		if( currentDir.endsWith( "/" ) || currentDir.endsWith( "\" ) ) {
+			currentDir = currentDir.left( currentDir.len() - 1 )
+		}
+		var normalizedStop = arguments.stopDir
+		if( normalizedStop.endsWith( "/" ) || normalizedStop.endsWith( "\" ) ) {
+			normalizedStop = normalizedStop.left( normalizedStop.len() - 1 )
+		}
+
+		// Walk up the tree
+		while( currentDir.len() >= normalizedStop.len() ) {
+			// Check for Application.cfc first, then Application.bx
+			var cfcPath = currentDir & "/Application.cfc"
+			var bxPath = currentDir & "/Application.bx"
+			if( fileExists( cfcPath ) ) {
+				return cfcPath
+			}
+			if( fileExists( bxPath ) ) {
+				return bxPath
+			}
+
+			// Stop if we've reached the root
+			if( currentDir == normalizedStop ) {
+				break
+			}
+
+			// Move up one directory using Java's Path.getParent()
+			var parentPath = createObject( "java", "java.nio.file.Paths" ).get( currentDir ).getParent()
+			if( isNull( parentPath ) ) {
+				break
+			}
+			var parentDir = parentPath.toString()
+			// Safety: if we didn't actually go up, stop
+			if( parentDir == currentDir ) {
+				break
+			}
+			currentDir = parentDir
+		}
+
+		return ""
+	}
+
+	/**
+	 * Loads the mappings from an Application.cfc or Application.bx file
+	 * into the current application context.
+	 *
+	 * @appFilePath The absolute path to the Application file
+	 */
+	private function loadApplicationMappings( required string appFilePath ){
+		try {
+			// Register a temporary mapping for the Application file's directory
+			// so we can instantiate it via dot-notation.
+			var appDir = getDirectoryFromPath( arguments.appFilePath )
+			bx:application
+				action="update"
+				mappings=getApplicationMetadata().mappings.append( {
+					"/__testbox_app_loader" : appDir
+				} );
+
+			// Instantiate the Application component through the mapping
+			var appComponent = new __testbox_app_loader.Application()
+
+			// Pull in mappings if defined
+			if( structKeyExists( appComponent, "mappings" ) && isStruct( appComponent.mappings ) && !structIsEmpty( appComponent.mappings ) ) {
+				bx:application
+					action="update"
+					mappings=getApplicationMetadata().mappings.append( appComponent.mappings );
+			}
+		} catch( any e ) {
+			// If the Application file can't be loaded (e.g., missing dependencies),
+			// silently continue — the tests may still work without the mappings,
+			// or they'll fail with a more specific error.
 		}
 	}
 
