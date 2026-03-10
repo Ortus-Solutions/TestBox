@@ -5,11 +5,12 @@
  * Service for streaming test results via Server-Sent Events (SSE)
  * Compatible with Adobe ColdFusion 2021+, Lucee 5+, and BoxLang
  *
- * LIMITATION: When a test suite uses `asyncAll = true`, the `onSpecStart` and `onSpecEnd`
- * callbacks are invoked from within a cfthread block. Calling writeOutput and cfflush from
- * a child thread doesn't write to the parent request's HTTP response buffer, so spec events
- * for async suites will not be streamed in real-time. Bundle and suite start/end events will
- * still be streamed normally.
+ * When `asyncAll = true` is used in test suites, spec callbacks run inside cfthread blocks.
+ * Since writeOutput/cfflush from child threads don't write to the parent HTTP response buffer,
+ * this service supports a queue-based approach:
+ * - Events from thread contexts are automatically queued
+ * - Call drainQueue() from the main thread after threads join to flush queued events
+ * - Alternatively, enable queueMode to queue all events regardless of context
  */
 component accessors="true" {
 
@@ -20,6 +21,37 @@ component accessors="true" {
 		name   ="flushEnabled"
 		type   ="boolean"
 		default="true";
+
+	/**
+	 * Whether to queue events instead of streaming directly
+	 * When true, all events are queued regardless of thread context.
+	 * When false (default), events are auto-queued only when called from a thread.
+	 */
+	property
+		name   ="queueMode"
+		type   ="boolean"
+		default="false";
+
+	/**
+	 * Thread-safe event queue for async event buffering
+	 * Uses Java ConcurrentLinkedQueue for thread safety
+	 */
+	property name="eventQueue" type="any";
+
+	/**
+	 * Utility helper for thread detection
+	 */
+	property name="util" type="any";
+
+	/**
+	 * Constructor - initializes the thread-safe event queue
+	 */
+	function init(){
+		variables.eventQueue = createObject( "java", "java.util.concurrent.ConcurrentLinkedQueue" ).init();
+		variables.queueMode  = false;
+		variables.util       = new testbox.system.util.Util();
+		return this;
+	}
 
 	/**
 	 * Initialize streaming mode - sets SSE headers
@@ -50,12 +82,20 @@ component accessors="true" {
 
 	/**
 	 * Stream an SSE event to the client
+	 * When queueMode is enabled or when called from a thread context, events are queued
+	 * instead of streamed directly. Call drainQueue() from the main thread to flush.
 	 * Errors are caught and logged to prevent client disconnects from interrupting test execution.
 	 *
 	 * @eventType The type of event (e.g., bundleStart, specEnd)
 	 * @data      The data payload to send as JSON
 	 */
 	function streamEvent( required string eventType, required any data ){
+		// Queue events when queueMode is enabled OR when called from a thread context
+		if ( ( !isNull( variables.queueMode ) && variables.queueMode ) || variables.util.inThread() ) {
+			queueEvent( arguments.eventType, arguments.data );
+			return;
+		}
+
 		try {
 			writeOutput( formatSSEEvent( arguments.eventType, arguments.data ) );
 			// Only flush if enabled (disabled during unit testing to prevent response commit)
@@ -75,6 +115,81 @@ component accessors="true" {
 				// Ignore logging errors as well
 			}
 		}
+	}
+
+	/**
+	 * Queue an event for later streaming
+	 * This method is thread-safe and can be called from multiple threads concurrently.
+	 *
+	 * @eventType The type of event (e.g., specStart, specEnd)
+	 * @data      The data payload to queue
+	 */
+	function queueEvent( required string eventType, required any data ){
+		variables.eventQueue.add( {
+			"eventType" : arguments.eventType,
+			"data"      : arguments.data
+		} );
+	}
+
+	/**
+	 * Check if there are any queued events
+	 *
+	 * @return boolean True if there are events in the queue
+	 */
+	boolean function hasQueuedEvents(){
+		return !variables.eventQueue.isEmpty();
+	}
+
+	/**
+	 * Get all queued events without clearing the queue
+	 * Returns events in FIFO order.
+	 *
+	 * @return array Array of event structs with eventType and data keys
+	 */
+	array function getQueuedEvents(){
+		var events   = [];
+		var iterator = variables.eventQueue.iterator();
+		while ( iterator.hasNext() ) {
+			events.append( iterator.next() );
+		}
+		return events;
+	}
+
+	/**
+	 * Drain all queued events by streaming them to the client
+	 * This method should be called from the main thread after async specs complete.
+	 * The queue is cleared after draining.
+	 *
+	 * @return numeric The number of events that were drained
+	 */
+	numeric function drainQueue(){
+		var count = 0;
+		var event = variables.eventQueue.poll();
+
+		while ( !isNull( event ) ) {
+			try {
+				writeOutput( formatSSEEvent( event.eventType, event.data ) );
+				// Only flush if enabled (disabled during unit testing to prevent response commit)
+				if ( isNull( variables.flushEnabled ) || variables.flushEnabled ) {
+					cfflush(  );
+				}
+			} catch ( any e ) {
+				// Client may have disconnected - log and continue draining
+				try {
+					writeLog(
+						type = "information",
+						file = "testbox-streaming",
+						text = "StreamingService.drainQueue event failed: " & e.message
+					);
+				} catch ( any ignore ) {
+					// Ignore logging errors
+				}
+			}
+			count++;
+			event = variables.eventQueue.poll();
+		}
+
+		return count;
 	}
 
 	/**
@@ -199,6 +314,14 @@ component accessors="true" {
 						"error"          : currentSpec.error ?: {}
 					}
 				);
+			},
+			/**
+			 * Drain any queued events from async spec execution
+			 * This callback should be called by the runner after thread joins to flush
+			 * any events that were queued from thread contexts.
+			 */
+			"onAsyncDrain" : function(){
+				service.drainQueue();
 			}
 		};
 	}
