@@ -51,18 +51,10 @@ component extends="testbox.system.BaseSpec" {
 			} );
 
 			describe( "SSE event format", function(){
-				it( "streamEvent produces correct SSE format string", function(){
-					// Disable flushing to prevent response commit during testing
-					variables.streamingService.setFlushEnabled( false );
-
-					// Capture the actual output from streamEvent using savecontent
+				it( "formatSSEEvent produces correct SSE format string", function(){
 					var eventType = "testEvent";
 					var data      = { "key" : "value" };
-					var output    = "";
-
-					savecontent variable="output" {
-						variables.streamingService.streamEvent( eventType, data );
-					}
+					var output    = variables.streamingService.formatSSEEvent( eventType, data );
 
 					// Verify SSE format: event: <type>\ndata: <json>\n\n
 					expect( output ).toInclude( "event: testEvent" );
@@ -71,21 +63,14 @@ component extends="testbox.system.BaseSpec" {
 					expect( right( output, 2 ) ).toBe( chr( 10 ) & chr( 10 ) );
 				} );
 
-				it( "streamEvent serializes complex data to JSON correctly", function(){
-					// Disable flushing to prevent response commit during testing
-					variables.streamingService.setFlushEnabled( false );
-
+				it( "formatSSEEvent serializes complex data to JSON correctly", function(){
 					var testData = {
 						"id"       : "test-123",
 						"name"     : "Test Spec",
 						"nested"   : { "foo" : "bar" },
 						"arrayVal" : [ 1, 2, 3 ]
 					};
-					var output = "";
-
-					savecontent variable="output" {
-						variables.streamingService.streamEvent( "testEvent", testData );
-					}
+					var output = variables.streamingService.formatSSEEvent( "testEvent", testData );
 
 					expect( output ).toInclude( """id""" );
 					expect( output ).toInclude( """test-123""" );

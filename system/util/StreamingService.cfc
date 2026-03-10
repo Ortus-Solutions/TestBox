@@ -36,6 +36,19 @@ component accessors="true" {
 	}
 
 	/**
+	 * Format an SSE event as a string
+	 * Returns the properly formatted SSE event string without writing to output
+	 *
+	 * @eventType The type of event (e.g., bundleStart, specEnd)
+	 * @data      The data payload to serialize as JSON
+	 *
+	 * @return string The formatted SSE event string
+	 */
+	string function formatSSEEvent( required string eventType, required any data ){
+		return "event: #arguments.eventType##chr( 10 )#data: #serializeJSON( arguments.data )##chr( 10 )##chr( 10 )#";
+	}
+
+	/**
 	 * Stream an SSE event to the client
 	 * Errors are caught and logged to prevent client disconnects from interrupting test execution.
 	 *
@@ -44,8 +57,7 @@ component accessors="true" {
 	 */
 	function streamEvent( required string eventType, required any data ){
 		try {
-			writeOutput( "event: #arguments.eventType##chr( 10 )#" );
-			writeOutput( "data: #serializeJSON( arguments.data )##chr( 10 )##chr( 10 )#" );
+			writeOutput( formatSSEEvent( arguments.eventType, arguments.data ) );
 			// Only flush if enabled (disabled during unit testing to prevent response commit)
 			if ( isNull( variables.flushEnabled ) || variables.flushEnabled ) {
 				cfflush(  );
