@@ -38,7 +38,7 @@ component accessors="true" {
 		try {
 			writeOutput( "event: #arguments.eventType##chr( 10 )#" );
 			writeOutput( "data: #serializeJSON( arguments.data )##chr( 10 )##chr( 10 )#" );
-			cfflush();
+			cfflush(  );
 		} catch ( any e ) {
 			// Client may have disconnected during SSE streaming.
 			// Swallow the exception so it does not break the test run.
@@ -84,8 +84,8 @@ component accessors="true" {
 				);
 			},
 			"onBundleEnd" : function( target, testResults ){
-				var targetMD  = getMetadata( arguments.target );
-				var bundleId  = hash( targetMD.name );
+				var targetMD = getMetadata( arguments.target );
+				var bundleId = hash( targetMD.name );
 
 				// Look up bundle stats by path (internal stats use a different id scheme)
 				var bundleStats   = arguments.testResults.getBundleStats();
@@ -94,7 +94,9 @@ component accessors="true" {
 				} );
 
 				// Prefer stats matched by path; fall back to last entry if none found
-				var current = matchingStats.len() ? matchingStats[ matchingStats.len() ] : bundleStats[ bundleStats.len() ];
+				var current = matchingStats.len() ? matchingStats[ matchingStats.len() ] : bundleStats[
+					bundleStats.len()
+				];
 
 				service.streamEvent(
 					"bundleEnd",
