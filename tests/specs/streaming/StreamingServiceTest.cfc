@@ -51,34 +51,41 @@ component extends="testbox.system.BaseSpec" {
 			} );
 
 			describe( "SSE event format", function(){
-				it( "produces correct SSE format string", function(){
-					// Test the expected format by building it manually
-					// SSE format is: event: <type>\ndata: <json>\n\n
-					var eventType      = "testEvent";
-					var data           = { "key" : "value" };
-					var expectedFormat = "event: #eventType##chr( 10 )#data: #serializeJSON( data )##chr( 10 )##chr( 10 )#";
+				it( "streamEvent produces correct SSE format string", function(){
+					// Capture the actual output from streamEvent using savecontent
+					var eventType = "testEvent";
+					var data      = { "key" : "value" };
+					var output    = "";
 
-					expect( expectedFormat ).toInclude( "event: testEvent" );
-					expect( expectedFormat ).toInclude( "data: " );
+					savecontent variable="output" {
+						variables.streamingService.streamEvent( eventType, data );
+					}
+
+					// Verify SSE format: event: <type>\ndata: <json>\n\n
+					expect( output ).toInclude( "event: testEvent" );
+					expect( output ).toInclude( "data: " );
 					// Verify it ends with double newline
-					expect( right( expectedFormat, 2 ) ).toBe( chr( 10 ) & chr( 10 ) );
+					expect( right( output, 2 ) ).toBe( chr( 10 ) & chr( 10 ) );
 				} );
 
-				it( "serializes JSON correctly", function(){
+				it( "streamEvent serializes complex data to JSON correctly", function(){
 					var testData = {
 						"id"       : "test-123",
 						"name"     : "Test Spec",
 						"nested"   : { "foo" : "bar" },
 						"arrayVal" : [ 1, 2, 3 ]
 					};
+					var output = "";
 
-					var json = serializeJSON( testData );
+					savecontent variable="output" {
+						variables.streamingService.streamEvent( "testEvent", testData );
+					}
 
-					expect( json ).toInclude( """id""" );
-					expect( json ).toInclude( """test-123""" );
-					expect( json ).toInclude( """nested""" );
-					expect( json ).toInclude( """foo""" );
-					expect( json ).toInclude( """bar""" );
+					expect( output ).toInclude( """id""" );
+					expect( output ).toInclude( """test-123""" );
+					expect( output ).toInclude( """nested""" );
+					expect( output ).toInclude( """foo""" );
+					expect( output ).toInclude( """bar""" );
 				} );
 			} );
 
