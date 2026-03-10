@@ -4,6 +4,12 @@
  * ---
  * Service for streaming test results via Server-Sent Events (SSE)
  * Compatible with Adobe ColdFusion 2021+, Lucee 5+, and BoxLang
+ *
+ * LIMITATION: When a test suite uses `asyncAll = true`, the `onSpecStart` and `onSpecEnd`
+ * callbacks are invoked from within a cfthread block. Calling writeOutput and cfflush from
+ * a child thread doesn't write to the parent request's HTTP response buffer, so spec events
+ * for async suites will not be streamed in real-time. Bundle and suite start/end events will
+ * still be streamed normally.
  */
 component accessors="true" {
 
