@@ -79,7 +79,23 @@ streamingService.streamEvent(
 callbacks = streamingService.createStreamingCallbacks();
 
 // Run tests with streaming callbacks
-results = testbox.runRaw( callbacks = callbacks );
+try {
+	results = testbox.runRaw( callbacks = callbacks );
+} catch ( any e ) {
+	// Stream a fatal error event so SSE consumers can detect failure
+	streamingService.streamEvent(
+		"error",
+		{
+			"timestamp"  : getTickCount(),
+			"message"    : e.message,
+			"detail"     : e.detail ?: "",
+			"type"       : e.type ?: "Exception",
+			"tagContext" : e.tagContext ?: []
+		}
+	);
+
+	rethrow;
+}
 
 // Stream final event with full JSON results for outputFormats compatibility
 streamingService.streamEvent(
