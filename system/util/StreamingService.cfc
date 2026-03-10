@@ -66,15 +66,17 @@ component accessors="true" {
 		return {
 			"onBundleStart" : function( target, testResults ){
 				// Note: Bundle stats (including the id) are not yet created when onBundleStart fires.
-				// We get bundle info from the target's metadata instead.
-				// Consumers should use 'path' to correlate bundleStart with bundleEnd events.
+				// We generate a deterministic id from the path so consumers can correlate
+				// bundleStart with bundleEnd events.
 				var targetMD    = getMetadata( arguments.target );
 				var annotations = targetMD.keyExists( "annotations" ) ? targetMD.annotations : targetMD;
 				var bundleName  = structKeyExists( annotations, "displayName" ) ? annotations.displayName : targetMD.name;
+				var bundleId    = hash( targetMD.name );
 
 				service.streamEvent(
 					"bundleStart",
 					{
+						"id"        : bundleId,
 						"name"      : bundleName,
 						"path"      : targetMD.name,
 						"timestamp" : getTickCount()
@@ -82,19 +84,22 @@ component accessors="true" {
 				);
 			},
 			"onBundleEnd" : function( target, testResults ){
+				var targetMD  = getMetadata( arguments.target );
+				var bundleId  = hash( targetMD.name );
+
+				// Look up bundle stats by path (internal stats use a different id scheme)
 				var bundleStats   = arguments.testResults.getBundleStats();
-				var targetMD      = getMetadata( arguments.target );
 				var matchingStats = bundleStats.filter( function( s ){
 					return s.path == targetMD.name;
 				} );
 
-				// Prefer stats matched by bundle path; fall back to last entry if none found
+				// Prefer stats matched by path; fall back to last entry if none found
 				var current = matchingStats.len() ? matchingStats[ matchingStats.len() ] : bundleStats[ bundleStats.len() ];
 
 				service.streamEvent(
 					"bundleEnd",
 					{
-						"id"            : current.id,
+						"id"            : bundleId,
 						"name"          : current.name,
 						"path"          : current.path,
 						"totalDuration" : current.totalDuration,
