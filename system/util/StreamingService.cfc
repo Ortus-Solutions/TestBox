@@ -44,8 +44,9 @@ component accessors="true" {
 
 		return {
 			"onBundleStart" : function( target, testResults ){
-				// Note: Bundle stats are not yet created when onBundleStart fires
-				// We get bundle info from the target's metadata instead
+				// Note: Bundle stats (including the id) are not yet created when onBundleStart fires.
+				// We get bundle info from the target's metadata instead.
+				// Consumers should use 'path' to correlate bundleStart with bundleEnd events.
 				var targetMD    = getMetadata( arguments.target );
 				var annotations = targetMD.keyExists( "annotations" ) ? targetMD.annotations : targetMD;
 				var bundleName  = structKeyExists( annotations, "displayName" ) ? annotations.displayName : targetMD.name;
