@@ -23,14 +23,29 @@ component accessors="true" {
 
 	/**
 	 * Stream an SSE event to the client
+	 * Errors are caught and logged to prevent client disconnects from interrupting test execution.
 	 *
 	 * @eventType The type of event (e.g., bundleStart, specEnd)
 	 * @data      The data payload to send as JSON
 	 */
 	function streamEvent( required string eventType, required any data ){
-		writeOutput( "event: #arguments.eventType##chr( 10 )#" );
-		writeOutput( "data: #serializeJSON( arguments.data )##chr( 10 )##chr( 10 )#" );
-		cfflush(  );
+		try {
+			writeOutput( "event: #arguments.eventType##chr( 10 )#" );
+			writeOutput( "data: #serializeJSON( arguments.data )##chr( 10 )##chr( 10 )#" );
+			cfflush();
+		} catch ( any e ) {
+			// Client may have disconnected during SSE streaming.
+			// Swallow the exception so it does not break the test run.
+			try {
+				writeLog(
+					type = "information",
+					file = "testbox-streaming",
+					text = "StreamingService.streamEvent terminated early: " & e.message
+				);
+			} catch ( any ignore ) {
+				// Ignore logging errors as well
+			}
+		}
 	}
 
 	/**
