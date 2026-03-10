@@ -82,8 +82,15 @@ component accessors="true" {
 				);
 			},
 			"onBundleEnd" : function( target, testResults ){
-				var bundleStats = arguments.testResults.getBundleStats();
-				var current     = bundleStats[ bundleStats.len() ];
+				var bundleStats   = arguments.testResults.getBundleStats();
+				var targetMD      = getMetadata( arguments.target );
+				var matchingStats = bundleStats.filter( function( s ){
+					return s.path == targetMD.name;
+				} );
+
+				// Prefer stats matched by bundle path; fall back to last entry if none found
+				var current = matchingStats.len() ? matchingStats[ matchingStats.len() ] : bundleStats[ bundleStats.len() ];
+
 				service.streamEvent(
 					"bundleEnd",
 					{
