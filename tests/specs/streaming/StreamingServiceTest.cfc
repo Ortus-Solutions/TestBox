@@ -52,6 +52,9 @@ component extends="testbox.system.BaseSpec" {
 
 			describe( "SSE event format", function(){
 				it( "streamEvent produces correct SSE format string", function(){
+					// Disable flushing to prevent response commit during testing
+					variables.streamingService.setFlushEnabled( false );
+
 					// Capture the actual output from streamEvent using savecontent
 					var eventType = "testEvent";
 					var data      = { "key" : "value" };
@@ -69,6 +72,9 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "streamEvent serializes complex data to JSON correctly", function(){
+					// Disable flushing to prevent response commit during testing
+					variables.streamingService.setFlushEnabled( false );
+
 					var testData = {
 						"id"       : "test-123",
 						"name"     : "Test Spec",
@@ -117,11 +123,15 @@ component extends="testbox.system.BaseSpec" {
 					var mockTarget  = new testbox.system.BaseSpec();
 					var mockResults = createMock( "testbox.system.TestResult" );
 
+					// The id is now generated from hash(path) of the target, not from bundle stats
+					var targetMD   = getMetadata( mockTarget );
+					var expectedId = hash( targetMD.name );
+
 					var bundleStats = [
 						{
 							"id"            : "bundle-123",
 							"name"          : "Test Bundle",
-							"path"          : "tests.specs.TestBundle",
+							"path"          : targetMD.name, // Use the actual target path so stats lookup works
 							"totalDuration" : 100,
 							"totalSuites"   : 2,
 							"totalSpecs"    : 5,
@@ -139,7 +149,7 @@ component extends="testbox.system.BaseSpec" {
 					var callLog = variables.mockService.$callLog().streamEvent;
 					expect( callLog ).toHaveLength( 1 );
 					expect( callLog[ 1 ][ 1 ] ).toBe( "bundleEnd" );
-					expect( callLog[ 1 ][ 2 ].id ).toBe( "bundle-123" );
+					expect( callLog[ 1 ][ 2 ].id ).toBe( expectedId );
 					expect( callLog[ 1 ][ 2 ].totalSpecs ).toBe( 5 );
 					expect( callLog[ 1 ][ 2 ].totalPass ).toBe( 4 );
 					expect( callLog[ 1 ][ 2 ].totalFail ).toBe( 1 );

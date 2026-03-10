@@ -14,6 +14,14 @@
 component accessors="true" {
 
 	/**
+	 * Whether to actually flush output (set to false for unit testing)
+	 */
+	property
+		name   ="flushEnabled"
+		type   ="boolean"
+		default="true";
+
+	/**
 	 * Initialize streaming mode - sets SSE headers
 	 *
 	 * @return StreamingService
@@ -38,7 +46,10 @@ component accessors="true" {
 		try {
 			writeOutput( "event: #arguments.eventType##chr( 10 )#" );
 			writeOutput( "data: #serializeJSON( arguments.data )##chr( 10 )##chr( 10 )#" );
-			cfflush(  );
+			// Only flush if enabled (disabled during unit testing to prevent response commit)
+			if ( isNull( variables.flushEnabled ) || variables.flushEnabled ) {
+				cfflush(  );
+			}
 		} catch ( any e ) {
 			// Client may have disconnected during SSE streaming.
 			// Swallow the exception so it does not break the test run.
