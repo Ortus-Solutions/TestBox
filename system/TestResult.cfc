@@ -332,13 +332,11 @@ component accessors="true" {
 	 * @id Retrieve by id
 	 */
 	any function getSuiteStats( required string id ){
-		lock name="tb-results-#variables.resultsID#" type="readonly" timeout="10" {
-			if ( structKeyExists( variables.suiteReverseLookup, arguments.id ) ) {
-				return variables.suiteReverseLookup[ arguments.id ];
-			}
-
-			return {};
+		if ( structKeyExists( variables.suiteReverseLookup, arguments.id ) ) {
+			return variables.suiteReverseLookup[ arguments.id ];
 		}
+
+		return {};
 	}
 
 	/**
@@ -349,13 +347,11 @@ component accessors="true" {
 	 * @return The spec stats struct or an empty struct if not found
 	 */
 	any function getSpecStats( required string id ){
-		lock name="tb-results-#variables.resultsID#" type="readonly" timeout="10" {
-			if ( structKeyExists( variables.specReverseLookup, arguments.id ) ) {
-				return variables.specReverseLookup[ arguments.id ];
-			}
-
-			return {};
+		if ( structKeyExists( variables.specReverseLookup, arguments.id ) ) {
+			return variables.specReverseLookup[ arguments.id ];
 		}
+
+		return {};
 	}
 
 	/**
@@ -368,28 +364,26 @@ component accessors="true" {
 	 * @return The full spec stats struct, or an empty struct if not found
 	 */
 	struct function findSpecStats( required struct spec ){
-		lock name="tb-results-#variables.resultsID#" type="readonly" timeout="10" {
-			// Fast path: direct id lookup
-			if (
-				structKeyExists( arguments.spec, "id" ) && structKeyExists(
-					variables.specReverseLookup,
-					arguments.spec.id
-				)
-			) {
-				return variables.specReverseLookup[ arguments.spec.id ];
-			}
+		// Fast path: direct id lookup
+		if (
+			structKeyExists( arguments.spec, "id" ) && structKeyExists(
+				variables.specReverseLookup,
+				arguments.spec.id
+			)
+		) {
+			return variables.specReverseLookup[ arguments.spec.id ];
+		}
 
-			// Fallback: walk all spec stats by name
-			if ( structKeyExists( arguments.spec, "name" ) ) {
-				for ( var specStats in variables.specReverseLookup ) {
-					if ( variables.specReverseLookup[ specStats ].name == arguments.spec.name ) {
-						return variables.specReverseLookup[ specStats ];
-					}
+		// Fallback: walk all spec stats by name
+		if ( structKeyExists( arguments.spec, "name" ) ) {
+			for ( var specStats in variables.specReverseLookup ) {
+				if ( variables.specReverseLookup[ specStats ].name == arguments.spec.name ) {
+					return variables.specReverseLookup[ specStats ];
 				}
 			}
-
-			return {};
 		}
+
+		return {};
 	}
 
 	/**
@@ -400,28 +394,26 @@ component accessors="true" {
 	 * @return The full suite stats struct, or an empty struct if not found
 	 */
 	struct function findSuiteStats( required struct suite ){
-		lock name="tb-results-#variables.resultsID#" type="readonly" timeout="10" {
-			// Fast path: direct id lookup
-			if (
-				structKeyExists( arguments.suite, "id" ) && structKeyExists(
-					variables.suiteReverseLookup,
-					arguments.suite.id
-				)
-			) {
-				return variables.suiteReverseLookup[ arguments.suite.id ];
-			}
+		// Fast path: direct id lookup
+		if (
+			structKeyExists( arguments.suite, "id" ) && structKeyExists(
+				variables.suiteReverseLookup,
+				arguments.suite.id
+			)
+		) {
+			return variables.suiteReverseLookup[ arguments.suite.id ];
+		}
 
-			// Fallback: walk all suite stats by name
-			if ( structKeyExists( arguments.suite, "name" ) ) {
-				for ( var suiteStats in variables.suiteReverseLookup ) {
-					if ( variables.suiteReverseLookup[ suiteStats ].name == arguments.suite.name ) {
-						return variables.suiteReverseLookup[ suiteStats ];
-					}
+		// Fallback: walk all suite stats by name
+		if ( structKeyExists( arguments.suite, "name" ) ) {
+			for ( var suiteStats in variables.suiteReverseLookup ) {
+				if ( variables.suiteReverseLookup[ suiteStats ].name == arguments.suite.name ) {
+					return variables.suiteReverseLookup[ suiteStats ];
 				}
 			}
-
-			return {};
 		}
+
+		return {};
 	}
 
 	/**

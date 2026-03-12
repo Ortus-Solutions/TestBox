@@ -90,7 +90,7 @@ component extends="testbox.system.BaseSpec" {
 
 				it( "onBundleStart sends bundleStart event with metadata", function(){
 					var mockTarget  = new testbox.system.BaseSpec();
-					var mockResults = createMock( "testbox.system.TestResult" );
+					var mockResults = createMock( "testbox.system.TestResult" ).init();
 
 					var callbacks = variables.mockService.createStreamingCallbacks();
 					callbacks.onBundleStart( mockTarget, mockResults );
@@ -106,7 +106,7 @@ component extends="testbox.system.BaseSpec" {
 
 				it( "onBundleEnd sends bundleEnd event with statistics", function(){
 					var mockTarget  = new testbox.system.BaseSpec();
-					var mockResults = createMock( "testbox.system.TestResult" );
+					var mockResults = createMock( "testbox.system.TestResult" ).init();
 
 					// The id is now generated from hash(path) of the target, not from bundle stats
 					var targetMD   = getMetadata( mockTarget );
@@ -142,7 +142,7 @@ component extends="testbox.system.BaseSpec" {
 
 				it( "onSuiteStart sends suiteStart event with suite info", function(){
 					var mockTarget  = new testbox.system.BaseSpec();
-					var mockResults = createMock( "testbox.system.TestResult" );
+					var mockResults = createMock( "testbox.system.TestResult" ).init();
 					var mockSuite   = { "id" : "suite-123", "name" : "Test Suite" };
 
 					var callbacks = variables.mockService.createStreamingCallbacks();
@@ -158,7 +158,7 @@ component extends="testbox.system.BaseSpec" {
 
 				it( "onSuiteEnd sends suiteEnd event with statistics", function(){
 					var mockTarget  = new testbox.system.BaseSpec();
-					var mockResults = createMock( "testbox.system.TestResult" );
+					var mockResults = createMock( "testbox.system.TestResult" ).init();
 					var mockSuite   = { "id" : "suite-123", "name" : "Test Suite" };
 
 					var suiteStats = {
@@ -183,7 +183,7 @@ component extends="testbox.system.BaseSpec" {
 
 				it( "onSpecStart sends specStart event with spec info", function(){
 					var mockTarget  = new testbox.system.BaseSpec();
-					var mockResults = createMock( "testbox.system.TestResult" );
+					var mockResults = createMock( "testbox.system.TestResult" ).init();
 					var mockSuite   = { "id" : "suite-123", "name" : "Test Suite" };
 					var mockSpec    = {
 						"id"          : "spec-456",
@@ -204,7 +204,7 @@ component extends="testbox.system.BaseSpec" {
 
 				it( "onSpecEnd sends specEnd event with results", function(){
 					var mockTarget  = new testbox.system.BaseSpec();
-					var mockResults = createMock( "testbox.system.TestResult" );
+					var mockResults = createMock( "testbox.system.TestResult" ).init();
 					var mockSuite   = { "id" : "suite-123", "name" : "Test Suite" };
 					var mockSpec    = {
 						"id"          : "spec-456",
@@ -212,21 +212,17 @@ component extends="testbox.system.BaseSpec" {
 						"displayName" : "should do something"
 					};
 
-					var suiteStats = {
-						"specStats" : [
-							{
-								"id"             : "spec-456",
-								"status"         : "passed",
-								"totalDuration"  : 10,
-								"failMessage"    : "",
-								"failDetail"     : "",
-								"failStacktrace" : "",
-								"failOrigin"     : {},
-								"error"          : {}
-							}
-						]
+					var specStats = {
+						"id"             : "spec-456",
+						"status"         : "passed",
+						"totalDuration"  : 10,
+						"failMessage"    : "",
+						"failDetail"     : "",
+						"failStacktrace" : "",
+						"failOrigin"     : {},
+						"error"          : {}
 					};
-					mockResults.$( "getSuiteStats", suiteStats );
+					mockResults.$( "getSpecStats", specStats );
 
 					var callbacks = variables.mockService.createStreamingCallbacks();
 					callbacks.onSpecEnd( mockTarget, mockResults, mockSuite, mockSpec );
@@ -241,7 +237,7 @@ component extends="testbox.system.BaseSpec" {
 
 				it( "onSpecEnd includes failure info for failed specs", function(){
 					var mockTarget  = new testbox.system.BaseSpec();
-					var mockResults = createMock( "testbox.system.TestResult" );
+					var mockResults = createMock( "testbox.system.TestResult" ).init();
 					var mockSuite   = { "id" : "suite-123", "name" : "Test Suite" };
 					var mockSpec    = {
 						"id"          : "spec-789",
@@ -249,21 +245,17 @@ component extends="testbox.system.BaseSpec" {
 						"displayName" : "should fail gracefully"
 					};
 
-					var suiteStats = {
-						"specStats" : [
-							{
-								"id"             : "spec-789",
-								"status"         : "failed",
-								"totalDuration"  : 15,
-								"failMessage"    : "Expected true but got false",
-								"failDetail"     : "Assertion failed",
-								"failStacktrace" : "at line 42",
-								"failOrigin"     : { "template" : "test.cfc", "line" : 42 },
-								"error"          : {}
-							}
-						]
+					var specStats = {
+						"id"             : "spec-789",
+						"status"         : "failed",
+						"totalDuration"  : 15,
+						"failMessage"    : "Expected true but got false",
+						"failDetail"     : "Assertion failed",
+						"failStacktrace" : "at line 42",
+						"failOrigin"     : { "template" : "test.cfc", "line" : 42 },
+						"error"          : {}
 					};
-					mockResults.$( "getSuiteStats", suiteStats );
+					mockResults.$( "getSpecStats", specStats );
 
 					var callbacks = variables.mockService.createStreamingCallbacks();
 					callbacks.onSpecEnd( mockTarget, mockResults, mockSuite, mockSpec );
