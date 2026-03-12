@@ -546,21 +546,17 @@ component accessors="true" {
 			testSpecs   = arguments.testSpecs
 		);
 		var baseRunner = new testbox.system.runners.BaseRunner();
-		var discovery = {
-			"type"              : "dry-run",
-			"version"           : variables.version,
-			"labels"            : variables.labels,
-			"excludes"          : variables.excludes,
-			"filters"           : {
+		var discovery  = {
+			"type"     : "dry-run",
+			"version"  : variables.version,
+			"labels"   : variables.labels,
+			"excludes" : variables.excludes,
+			"filters"  : {
 				"testBundles" : arguments.testBundles,
 				"testSuites"  : arguments.testSuites,
 				"testSpecs"   : arguments.testSpecs
 			},
-			"summary"           : {
-				"totalBundles" : 0,
-				"totalSuites"  : 0,
-				"totalSpecs"   : 0
-			},
+			"summary"           : { "totalBundles" : 0, "totalSuites" : 0, "totalSpecs" : 0 },
 			"bundles"           : [],
 			"bundlesPattern"    : variables.bundlesPattern,
 			"CFMLEngine"        : server.keyExists( "boxlang" ) ? "BoxLang" : server.coldfusion.productName,
@@ -1001,11 +997,9 @@ component accessors="true" {
 	){
 		try {
 			var target = getBundle( arguments.bundlePath );
-		}
-		catch ( "AbstractComponentException" e ) {
+		} catch ( "AbstractComponentException" e ) {
 			return {};
-		}
-		catch ( "AbstractClassException" e ) {
+		} catch ( "AbstractClassException" e ) {
 			return {};
 		}
 
@@ -1014,7 +1008,7 @@ component accessors="true" {
 		var bundleName        = (
 			structKeyExists( targetAnnotations, "displayName" ) ? targetAnnotations.displayname : targetMD.name
 		);
-		var bundleLabels      = getMetadataLabels( targetMD );
+		var bundleLabels = getMetadataLabels( targetMD );
 
 		if (
 			!arguments.baseRunner.canRunBundle(
@@ -1026,7 +1020,7 @@ component accessors="true" {
 			return {};
 		}
 
-		var suites = [];
+		var suites     = [];
 		var bundleType = structKeyExists( target, "run" ) ? "bdd" : "xunit";
 
 		if ( bundleType eq "bdd" ) {
@@ -1101,7 +1095,11 @@ component accessors="true" {
 	){
 		if (
 			arguments.suite.skip ||
-			!arguments.baseRunner.canRunSuite( arguments.suite, arguments.testResults, arguments.target )
+			!arguments.baseRunner.canRunSuite(
+				arguments.suite,
+				arguments.testResults,
+				arguments.target
+			)
 		) {
 			return {};
 		}
@@ -1165,11 +1163,20 @@ component accessors="true" {
 		required any baseRunner,
 		required array bundleLabels
 	){
-		var effectiveLabels = getEffectiveBDDSpecLabels( arguments.spec, arguments.suite, arguments.bundleLabels );
+		var effectiveLabels = getEffectiveBDDSpecLabels(
+			arguments.spec,
+			arguments.suite,
+			arguments.bundleLabels
+		);
 
 		if (
 			arguments.spec.skip ||
-			!isDryRunBDDSpecFocused( arguments.spec, arguments.suite, arguments.target, arguments.baseRunner ) ||
+			!isDryRunBDDSpecFocused(
+				arguments.spec,
+				arguments.suite,
+				arguments.target,
+				arguments.baseRunner
+			) ||
 			!arguments.baseRunner.canRunLabel( effectiveLabels, arguments.testResults ) ||
 			!arguments.baseRunner.canRunSpec( arguments.spec, arguments.testResults )
 		) {
@@ -1217,16 +1224,16 @@ component accessors="true" {
 			structKeyExists( annotations, "displayName" ) ? annotations.displayname : arguments.targetMD.name
 		);
 		var suite = {
-			"id"       : hash( arguments.targetMD.name ),
-			"name"     : suiteName,
-			"path"     : "/" & suiteName,
-			"labels"   : duplicate( arguments.bundleLabels ),
-			"skip"     : (
+			"id"     : hash( arguments.targetMD.name ),
+			"name"   : suiteName,
+			"path"   : "/" & suiteName,
+			"labels" : duplicate( arguments.bundleLabels ),
+			"skip"   : (
 				structKeyExists( annotations, "skip" ) ? ( len( annotations.skip ) ? annotations.skip : true ) : false
 			),
-			"focused"  : false,
-			"specs"    : [],
-			"suites"   : []
+			"focused" : false,
+			"specs"   : [],
+			"suites"  : []
 		};
 
 		if ( !isBoolean( suite.skip ) && isCustomFunction( arguments.target[ suite.skip ] ) ) {
@@ -1267,7 +1274,9 @@ component accessors="true" {
 		for ( var thisMethod in methodArray ) {
 			if (
 				(
-					isCustomFunction( arguments.target[ thisMethod ] ) || isClosure( arguments.target[ thisMethod ] )
+					isCustomFunction( arguments.target[ thisMethod ] ) || isClosure(
+						arguments.target[ thisMethod ]
+					)
 				)
 				&&
 				arguments.baseRunner.isValidTestMethod( thisMethod, arguments.target )
@@ -1276,26 +1285,26 @@ component accessors="true" {
 				var specAnnotations   = specMD.keyExists( "annotations" ) ? specMD.annotations : specMD;
 				var specDocumentation = specMD.keyExists( "documentation" ) ? specMD.documentation : specMD;
 				var spec              = {
-					"id"                : hash( specMD.name ),
-					"name"              : specMD.name,
-					"displayName"       : (
+					"id"          : hash( specMD.name ),
+					"name"        : specMD.name,
+					"displayName" : (
 						structKeyExists( specAnnotations, "displayName" ) ? specAnnotations.displayName : specMD.name
 					),
-					"hint"              : ( structKeyExists( specDocumentation, "hint" ) ? specDocumentation : "" ),
-					"skip"              : (
+					"hint" : ( structKeyExists( specDocumentation, "hint" ) ? specDocumentation : "" ),
+					"skip" : (
 						structKeyExists( specAnnotations, "skip" ) ? (
 							len( specAnnotations.skip ) ? specAnnotations.skip : true
 						) : false
 					),
-					"focused"           : (
+					"focused" : (
 						structKeyExists( specAnnotations, "focused" ) ? (
 							len( specAnnotations.focused ) ? specAnnotations.focused : true
 						) : false
 					),
-					"labels"            : (
+					"labels" : (
 						structKeyExists( specAnnotations, "labels" ) ? listToArray( specAnnotations.labels ) : []
 					),
-					"order"             : (
+					"order" : (
 						structKeyExists( specAnnotations, "order" ) ? listToArray( specAnnotations.order ) : index++
 					),
 					"expectedException" : (
@@ -1320,15 +1329,18 @@ component accessors="true" {
 				var effectiveLabels = duplicate( spec.labels );
 				arrayAppend( effectiveLabels, arguments.suiteLabels, true );
 
-				arrayAppend( results, {
-					"id"              : spec.id,
-					"name"            : spec.name,
-					"displayName"     : spec.displayName,
-					"labels"          : duplicate( spec.labels ),
-					"effectiveLabels" : effectiveLabels,
-					"focused"         : spec.focused,
-					"skip"            : spec.skip
-				} );
+				arrayAppend(
+					results,
+					{
+						"id"              : spec.id,
+						"name"            : spec.name,
+						"displayName"     : spec.displayName,
+						"labels"          : duplicate( spec.labels ),
+						"effectiveLabels" : effectiveLabels,
+						"focused"         : spec.focused,
+						"skip"            : spec.skip
+					}
+				);
 			}
 		}
 
@@ -1362,13 +1374,22 @@ component accessors="true" {
 		required any target,
 		required any baseRunner
 	){
-		if ( arrayLen( arguments.target.$focusedTargets.specs ) == 0 && arrayLen( arguments.target.$focusedTargets.suites ) == 0 ) {
+		if (
+			arrayLen( arguments.target.$focusedTargets.specs ) == 0 && arrayLen(
+				arguments.target.$focusedTargets.suites
+			) == 0
+		) {
 			return true;
 		}
 
 		var specPath = formatDryRunSuitePath( arguments.suite ) & "/" & arguments.spec.name;
 
-		if ( arrayLen( arguments.target.$focusedTargets.specs ) && arrayFindNoCase( arguments.target.$focusedTargets.specs, specPath ) ) {
+		if (
+			arrayLen( arguments.target.$focusedTargets.specs ) && arrayFindNoCase(
+				arguments.target.$focusedTargets.specs,
+				specPath
+			)
+		) {
 			return true;
 		}
 
@@ -1401,7 +1422,11 @@ component accessors="true" {
 		required array bundleLabels
 	){
 		var consolidatedLabels = duplicate( arguments.spec.labels ?: [] );
-		arrayAppend( consolidatedLabels, arguments.bundleLabels, true );
+		arrayAppend(
+			consolidatedLabels,
+			arguments.bundleLabels,
+			true
+		);
 		var parentSuite = arguments.suite;
 
 		while ( !isSimpleValue( parentSuite ) ) {
@@ -1419,7 +1444,9 @@ component accessors="true" {
 			return [];
 		}
 
-		return isSimpleValue( annotations.labels ) ? listToArray( annotations.labels ) : duplicate( annotations.labels );
+		return isSimpleValue( annotations.labels ) ? listToArray( annotations.labels ) : duplicate(
+			annotations.labels
+		);
 	}
 
 	private string function formatDryRunSuitePath( required struct suite ){

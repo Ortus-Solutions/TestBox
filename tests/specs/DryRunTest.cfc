@@ -16,9 +16,9 @@ component extends="testbox.system.BaseSpec" {
 					options = { coverage : { enabled : false } }
 				);
 				var discovery = testbox.dryRun();
-				var bundle = discovery.bundles[ 1 ];
-				var suite = bundle.suites[ 1 ];
-				var spec = suite.specs[ 1 ];
+				var bundle    = discovery.bundles[ 1 ];
+				var suite     = bundle.suites[ 1 ];
+				var spec      = suite.specs[ 1 ];
 
 				expect( structKeyExists( request, "dryRunBDDBeforeAll" ) ).toBeFalse();
 				expect( structKeyExists( request, "dryRunBDDAfterAll" ) ).toBeFalse();
@@ -43,9 +43,9 @@ component extends="testbox.system.BaseSpec" {
 					options = { coverage : { enabled : false } }
 				);
 				var discovery = testbox.dryRun();
-				var bundle = discovery.bundles[ 1 ];
-				var suite = bundle.suites[ 1 ];
-				var spec = suite.specs[ 1 ];
+				var bundle    = discovery.bundles[ 1 ];
+				var suite     = bundle.suites[ 1 ];
+				var spec      = suite.specs[ 1 ];
 
 				expect( structKeyExists( request, "dryRunXBeforeTests" ) ).toBeFalse();
 				expect( structKeyExists( request, "dryRunXSetup" ) ).toBeFalse();
@@ -64,7 +64,7 @@ component extends="testbox.system.BaseSpec" {
 			it( "returns no runnable bundles when labels filter excludes all tests", function(){
 				var testbox = new testbox.system.TestBox(
 					bundles = "tests.resources.dryrun.DryRunBDDFixture",
-					labels = "missingLabel",
+					labels  = "missingLabel",
 					options = { coverage : { enabled : false } }
 				);
 				var discovery = testbox.dryRun();
@@ -93,7 +93,7 @@ component extends="testbox.system.BaseSpec" {
 			"dryRunXSkippedSpecRuns"
 		];
 
-		for( var key in keys ){
+		for ( var key in keys ) {
 			structDelete( request, key, false );
 		}
 	}
