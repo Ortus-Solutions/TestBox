@@ -122,23 +122,21 @@ class{
 		if( runArgs.verbose ){
 			runArgs.callbacks = {
 				onBundleStart = ( target, testResults ) => {
-					println( "> Testing Bundle: #target.$bx.meta.name#" )
+					println( "📦 Testing Bundle: #target.$bx.meta.name#" )
 				},
 				onBundleEnd = ( target, testResults ) => {
-					println( "> Bundle Completed: [#target.$bx.meta.name#]" )
 					println( "" );
 				},
 				onSuiteStart = ( target, testResults, suite ) => {
-					println( "+ Starting Suite: #suite.name#" )
+					println( "📁 Testing Suite: #suite.name#" )
 				},
 				onSuiteEnd = ( target, testResults, suite ) => {
-					//println( "+ Suite [#suite.name#] completed #suite.toString()#" )
+					println( "" );
 				},
 				onSpecStart = ( target, testResults, suite, spec ) => {
-					println( "+ Starting Spec/Test: #spec.name#" )
+					println( "🧪 Testing Spec/Test: #spec.name#" )
 				},
 				onSpecEnd = ( target, testResults, suite, spec ) => {
-					// println( "+ Spec [#spec.name#] completed #spec.toString()#" )
 				},
 			}
 		}
