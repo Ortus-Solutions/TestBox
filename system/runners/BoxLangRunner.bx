@@ -169,6 +169,13 @@ class{
 			println( runArgs )
 		}
 
+		// Print Streaming Header
+		if( runArgs.stream ){
+			var consoleUtil = getConsoleUtil()
+			println( consoleUtil.getBanner( testbox.getVersion() ) )
+			println( "" )
+		}
+
 		// RUN BABY RUN
 		var report = testbox.run( argumentCollection = runArgs )
 		var testResults = testbox.getResult()
@@ -256,7 +263,13 @@ class{
 			onSpecEnd = ( target, testResults, suite, spec ) => {
 				if( runnerArgs.stream ){
 					var specStatus = resolveStreamStatus( testResults, streamCounters, suite, spec )
-					var lineText = "#getConsoleUtil().getStatusIndicator( specStatus, 'console' )# #getStreamSuiteName( suite )# :: #getStreamSpecName( spec )##formatStreamDuration( suite, spec )#"
+
+					// Skip printing skipped specs if hideSkipped is enabled
+					if( runnerArgs.options.hideSkipped && specStatus == "skipped" ){
+						return
+					}
+
+					var lineText = "#getConsoleUtil().getStatusIndicator( specStatus )# #getStreamSpecName( spec )##formatStreamDuration( suite, spec )#"
 					println( "    #getConsoleUtil().printByStatus( specStatus, lineText )#" )
 
 					var detailText = getStreamOutcomeDetail( suite, spec, specStatus )
@@ -278,17 +291,14 @@ class{
 		var separator = consoleUtil.getDivider( 80, "=", "dim+white" )
 
 		println( separator )
-		println( consoleUtil.color( "bold+white", "Final Stats" ) )
+		println( consoleUtil.color( "bold+white", "Test Summary" ) )
 		println( separator )
-		println( consoleUtil.printByStatus( "passed", "[ #consoleUtil.getStatusIndicator( 'passed', 'console' )# Passed: #testResults.getTotalPass()# ]" ) )
-		println( consoleUtil.printByStatus( "failed", "[ #consoleUtil.getStatusIndicator( 'failed', 'console' )# Failed: #testResults.getTotalFail()# ]" ) )
-		println( consoleUtil.printByStatus( "error", "[ #consoleUtil.getStatusIndicator( 'error', 'console' )# Errors: #testResults.getTotalError()# ]" ) )
-		println( consoleUtil.printByStatus( "skipped", "[ #consoleUtil.getStatusIndicator( 'skipped', 'console' )# Skipped: #testResults.getTotalSkipped()# ]" ) )
+		println( consoleUtil.printByStatus( "passed", "[ #consoleUtil.getStatusIndicator( 'passed' )# Passed: #testResults.getTotalPass()# ]" ) )
+		println( consoleUtil.printByStatus( "failed", "[ #consoleUtil.getStatusIndicator( 'failed' )# Failed: #testResults.getTotalFail()# ]" ) )
+		println( consoleUtil.printByStatus( "error", "[ #consoleUtil.getStatusIndicator( 'error' )# Errors: #testResults.getTotalError()# ]" ) )
+		println( consoleUtil.printByStatus( "skipped", "[ #consoleUtil.getStatusIndicator( 'skipped' )# Skipped: #testResults.getTotalSkipped()# ]" ) )
 		println( consoleUtil.color( "bold+cyan", "[ ⏱️  Duration: #testResults.getTotalDuration()# ms ]" ) )
 		println( consoleUtil.color( "bold+yellow", "[ 📦 Bundles/Suites/Specs: #testResults.getTotalBundles()#/#testResults.getTotalSuites()#/#testResults.getTotalSpecs()# ]" ) )
-		println( separator )
-		println( consoleUtil.color( "bold", "TestBox:" ) & " v#testbox.getVersion()#" )
-		println( consoleUtil.color( "bold", "Engine:" ) & " #testResults.getCFMLEngine()# #testResults.getCFMLEngineVersion()#" )
 	}
 
 	/**
