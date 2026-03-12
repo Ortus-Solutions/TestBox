@@ -1,4 +1,4 @@
-<cfoutput>█▓▒▒░░░ TestBox v#testbox.getVersion()# ░░░▒▒▓█
+<cfoutput>#getHeaderBanner( testbox )#
 <!--- Iterate over each bundle tested --->
 <cfloop array="#variables.bundleStats#" index="thisBundle">
 <!--- Skip if not in the includes list --->
@@ -33,17 +33,17 @@ _____________________________________________________________
 <!--- Final Stats --->
 #space()#
 #space()#
-=================================================================================
+#getDividerLine()#
 Final Stats
-=================================================================================
+#getDividerLine()#
 #space()#
 [Passed: #results.getTotalPass()#] [Failed: #results.getTotalFail()#] [Errors: #results.getTotalError()#] [Skipped: #results.getTotalSkipped()#] [Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#]
 <!--- Code Coverage --->
 <cfif results.getCoverageEnabled()>
 #space()#
-=================================================================================
+#getDividerLine()#
 Code Coverage
-=================================================================================
+#getDividerLine()#
 [Total Coverage: #numberFormat( results.getCoverageData().stats.percTotalCoverage*100, '9.9' )#%]
 #space()#
 </cfif>

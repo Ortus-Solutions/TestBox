@@ -175,7 +175,7 @@ class{
 		var testResultsAsJson = jsonSerialize( testResults.getMemento( includeDebugBuffer = true ) )
 
 		if( runArgs.stream ){
-			printStreamSummary( testResults )
+			printStreamSummary( testbox, testResults )
 		} else {
 			// Print the report
 			println( report )
@@ -222,12 +222,12 @@ class{
 		}
 
 		return {
-			onBundleStart = ( target, testResults ) => {
+				onBundleStart = ( target, testResults ) => {
 				if( runnerArgs.verbose ){
 					println( "[BUNDLE] Testing Bundle: #target.$bx.meta.name#" )
 				}
 				if( runnerArgs.stream ){
-					println( "[BUNDLE] #target.$bx.meta.name#" )
+					println( getConsoleUtil().color( "bold+cyan", "📦 #target.$bx.meta.name#" ) )
 				}
 			},
 			onBundleEnd = ( target, testResults ) => {
@@ -240,7 +240,7 @@ class{
 					println( "[SUITE] Testing Suite: #suite.name#" )
 				}
 				if( runnerArgs.stream ){
-					println( "  [SUITE] #suite.name#" )
+					println( "  " & getConsoleUtil().color( "bold+white", "📁 #suite.name#" ) )
 				}
 			},
 			onSuiteEnd = ( target, testResults, suite ) => {
@@ -256,9 +256,13 @@ class{
 			onSpecEnd = ( target, testResults, suite, spec ) => {
 				if( runnerArgs.stream ){
 					var specStatus = resolveStreamStatus( testResults, streamCounters, suite, spec )
-					println(
-						"    [#formatStreamStatus( specStatus )#] #getStreamSuiteName( suite )# :: #getStreamSpecName( spec )##formatStreamDuration( suite, spec )#"
-					)
+					var lineText = "#getConsoleUtil().getStatusIndicator( specStatus, 'console' )# #getStreamSuiteName( suite )# :: #getStreamSpecName( spec )##formatStreamDuration( suite, spec )#"
+					println( "    #getConsoleUtil().printByStatus( specStatus, lineText )#" )
+
+					var detailText = getStreamOutcomeDetail( suite, spec, specStatus )
+					if( detailText.len() ){
+						println( "      " & getConsoleUtil().printByStatus( specStatus, detailText ) )
+					}
 				}
 			},
 		}
@@ -269,17 +273,33 @@ class{
 	 *
 	 * @testResults The aggregated test results
 	 */
-	private function printStreamSummary( required testResults ){
-		println( "" )
-		println( "TestBox Results" )
-		println( "Bundles : #testResults.getTotalBundles()#" )
-		println( "Suites  : #testResults.getTotalSuites()#" )
-		println( "Specs   : #testResults.getTotalSpecs()#" )
-		println( "Pass    : #testResults.getTotalPass()#" )
-		println( "Fail    : #testResults.getTotalFail()#" )
-		println( "Error   : #testResults.getTotalError()#" )
-		println( "Skipped : #testResults.getTotalSkipped()#" )
-		println( "Time    : #testResults.getTotalDuration()# ms" )
+	private function printStreamSummary( required testbox, required testResults ){
+		var consoleUtil = getConsoleUtil()
+		var separator = consoleUtil.getDivider( 80, "=", "dim+white" )
+
+		println( separator )
+		println( consoleUtil.color( "bold+white", "Final Stats" ) )
+		println( separator )
+		println( consoleUtil.printByStatus( "passed", "[ #consoleUtil.getStatusIndicator( 'passed', 'console' )# Passed: #testResults.getTotalPass()# ]" ) )
+		println( consoleUtil.printByStatus( "failed", "[ #consoleUtil.getStatusIndicator( 'failed', 'console' )# Failed: #testResults.getTotalFail()# ]" ) )
+		println( consoleUtil.printByStatus( "error", "[ #consoleUtil.getStatusIndicator( 'error', 'console' )# Errors: #testResults.getTotalError()# ]" ) )
+		println( consoleUtil.printByStatus( "skipped", "[ #consoleUtil.getStatusIndicator( 'skipped', 'console' )# Skipped: #testResults.getTotalSkipped()# ]" ) )
+		println( consoleUtil.color( "bold+cyan", "[ ⏱️  Duration: #testResults.getTotalDuration()# ms ]" ) )
+		println( consoleUtil.color( "bold+yellow", "[ 📦 Bundles/Suites/Specs: #testResults.getTotalBundles()#/#testResults.getTotalSuites()#/#testResults.getTotalSpecs()# ]" ) )
+		println( separator )
+		println( consoleUtil.color( "bold", "TestBox:" ) & " v#testbox.getVersion()#" )
+		println( consoleUtil.color( "bold", "Engine:" ) & " #testResults.getCFMLEngine()# #testResults.getCFMLEngineVersion()#" )
+	}
+
+	/**
+	 * Retrieve the shared console formatting helper.
+	 */
+	private function getConsoleUtil(){
+		if( !structKeyExists( variables, "consoleUtil" ) ){
+			variables.consoleUtil = new testbox.system.util.ConsoleUtil()
+		}
+
+		return variables.consoleUtil
 	}
 
 	/**
@@ -391,6 +411,35 @@ class{
 		return structKeyExists( arguments.spec, "name" ) && len( arguments.spec.name )
 			? arguments.spec.name
 			: "Unknown Spec"
+	}
+
+	/**
+	 * Build a secondary detail line for failed or errored streamed specs.
+	 *
+	 * @suite The current suite structure
+	 * @spec The current spec structure
+	 * @status The resolved spec status
+	 */
+	private string function getStreamOutcomeDetail( required struct suite, required struct spec, required string status ){
+		if( !listFindNoCase( "failed,error", arguments.status ) ){
+			return ""
+		}
+
+		var matchedSpecStats = getStreamSpecStats( arguments.suite, arguments.spec )
+		if( structKeyExists( arguments.spec, "failMessage" ) && len( trim( arguments.spec.failMessage ) ) ){
+			return "-> #trim( arguments.spec.failMessage )#"
+		}
+		if( !structIsEmpty( matchedSpecStats ) && structKeyExists( matchedSpecStats, "failMessage" ) && len( trim( matchedSpecStats.failMessage ) ) ){
+			return "-> #trim( matchedSpecStats.failMessage )#"
+		}
+		if( structKeyExists( arguments.spec, "error" ) && isStruct( arguments.spec.error ) && structKeyExists( arguments.spec.error, "message" ) ){
+			return "-> #trim( arguments.spec.error.message )#"
+		}
+		if( !structIsEmpty( matchedSpecStats ) && structKeyExists( matchedSpecStats, "error" ) && isStruct( matchedSpecStats.error ) && structKeyExists( matchedSpecStats.error, "message" ) ){
+			return "-> #trim( matchedSpecStats.error.message )#"
+		}
+
+		return ""
 	}
 
 	/**
