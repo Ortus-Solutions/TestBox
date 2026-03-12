@@ -42,6 +42,8 @@
  * To create runner options just prefix it with the prefix `runner-{optionName}`
  * For example, to pass a `verbose` option to the runner, you would do `--runner-verbose=true`
  */
+import java.nio.file.Paths
+
 class{
 
 	// Setup Defaults
@@ -56,7 +58,7 @@ class{
 	bx:application
 		action="update"
 		mappings=getApplicationMetadata().mappings.append( {
-			"/testbox" : this.$bx.meta.path.replacenocase( "system/runners/BoxLangRunner.bx", "" ).replacenocase( "system\runners\BoxLangRunner.bx", "" )
+			"/testbox" : getTestBoxRootPath()
 		} );
 
 	/**
@@ -334,6 +336,20 @@ class{
 			// silently continue — the tests may still work without the mappings,
 			// or they'll fail with a more specific error.
 		}
+	}
+
+	/**
+	 * Resolve the TestBox project root from this runner's file path.
+	 *
+	 * The runner lives at /system/runners/BoxLangRunner.bx, so the root is
+	 * three parent directories up from the current file location.
+	 */
+	private string function getTestBoxRootPath(){
+		return Paths.get( this.$bx.meta.path )
+			.getParent()
+			.getParent()
+			.getParent()
+			.toString()
 	}
 
 	/**
