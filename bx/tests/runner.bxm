@@ -13,6 +13,7 @@
 
 <!--- Streaming mode: streams results via Server-Sent Events (SSE) for real-time progress --->
 <bx:param name="url.streaming"						default="false" type="boolean">
+<bx:param name="url.dryRun"							default="false" type="boolean">
 
 <!--- Code Coverage requires FusionReactor --->
 <bx:param name="url.coverageEnabled"				default="false" type="boolean">
@@ -26,7 +27,7 @@
 
 
 <!--- Include the appropriate runner based on streaming mode --->
-<cfif url.streaming>
+<cfif url.streaming && !url.dryRun>
 	<!--- Stream results in real-time via SSE --->
 	<bx:include template="/testbox/system/runners/StreamingRunner.cfm" >
 <cfelse>

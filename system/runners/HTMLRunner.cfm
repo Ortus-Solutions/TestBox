@@ -11,6 +11,7 @@
 <cfparam name="url.propertiesFilename"			 	default="TEST.properties">
 <cfparam name="url.propertiesSummary"			 	default="false" type="boolean">
 <cfparam name="url.bundlesPattern" 					default="*.bx|*.cfc">
+<cfparam name="url.dryRun"							default="false" type="boolean">
 
 <cfparam name="url.coverageEnabled"					default="false" type="boolean">
 <cfparam name="url.coverageSonarQubeXMLOutputPath"	default="">
@@ -53,7 +54,13 @@ if( len( url.directory ) ){
 }
 
 // Run Tests using correct reporter
-results = testbox.run( reporter=url.reporter );
+if( url.dryRun ){
+	discovery = testbox.dryRun();
+	getPageContext().getResponse().setContentType( "application/json" );
+	results = serializeJSON( discovery );
+} else {
+	results = testbox.run( reporter=url.reporter );
+}
 
 function escapePropertyValue( required string value ) {
 	if ( len( arguments.value ) == 0 ) {
@@ -70,7 +77,7 @@ function escapePropertyValue( required string value ) {
 }
 
 // Write TEST.properties in report destination path.
-if( url.propertiesSummary ){
+if( !url.dryRun && url.propertiesSummary ){
 	testResult = testbox.getResult();
 	errors = testResult.getTotalFail() + testResult.getTotalError();
 	savecontent variable="propertiesReport"{
@@ -97,7 +104,7 @@ total.skipped=#escapePropertyValue( testResult.getTotalSkipped() )#" );
 }
 
 // do stupid JUnitReport task processing, if the report is ANTJunit
-if( url.reporter eq "ANTJunit" ){
+if( !url.dryRun && url.reporter eq "ANTJunit" ){
 	// Produce individual test files due to how ANT JUnit report parses these.
 	xmlReport = xmlParse( results );
 	for( thisSuite in xmlReport.testsuites.XMLChildren ){
