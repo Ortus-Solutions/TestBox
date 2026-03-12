@@ -5,7 +5,7 @@
     "author":"Ortus Solutions <info@ortussolutions.com>",
     "slug":"testbox",
     "type":"testing",
-    "keywords":"testing,xunit,bdd,testbox,mxunit,tdd",
+    "keywords":"testing,xunit,bdd,testbox,tdd",
     "homepage":"https://www.ortussolutions.com/products/testbox",
     "documentation":"https://testbox.ortusbooks.com",
     "repository":{
