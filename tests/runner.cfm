@@ -15,8 +15,8 @@
 <!--- Streaming mode: streams results via Server-Sent Events (SSE) for real-time progress --->
 <cfparam name="url.streaming"						default="false" type="boolean">
 
-<cfparam name="url.coverageEnabled"					default="true" type="boolean">
-<cfparam name="url.coverageSonarQubeXMLOutputPath"	default="">
+<!--- Code Coverage requires FusionReactor --->
+<cfparam name="url.coverageEnabled"					default="false" type="boolean">
 <cfparam name="url.coveragePathToCapture"			default="#expandPath( '/testbox/system/' )#">
 <cfparam name="url.coverageWhitelist"				default="">
 <cfparam name="url.coverageBlacklist"				default="/stubs/**,/modules/**,/coverage/**,Application.cfc,Application.bx">
