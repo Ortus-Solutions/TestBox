@@ -71,10 +71,10 @@ class{
 		var positional         = server.cli.parsed.positionals
 		var defaultReportPath = rootPath & "/tests/results"
 
-		// Discover and load Application.cfc/Application.bx mappings.
-		// This mimics how CFML engines resolve Application.cfc by walking up the directory
+		// Discover and load Application mappings.
+		// This mimics how engines resolve Application.bx|cfc by walking up the directory
 		// tree from the test location. This ensures that mappings defined in the project's
-		// Application.cfc (e.g., /qb, /tests, /modules) are available to test bundles.
+		// Application (e.g., /qb, /tests, /modules) are available to test bundles.
 		discoverAndLoadApplicationMappings( rootPath, options )
 
 		// Gather the test arguments from the options
@@ -218,7 +218,7 @@ class{
 	 * Discovers and loads mappings from an Application.cfc or Application.bx file.
 	 * Walks up the directory tree from the test location toward the project root,
 	 * looking for the first Application.cfc or Application.bx file, mimicking
-	 * how CFML engines resolve Application.cfc at runtime.
+	 * how engines resolve the application descriptor at runtime.
 	 *
 	 * @rootPath The project root (CLI execution path)
 	 * @options The parsed CLI options
