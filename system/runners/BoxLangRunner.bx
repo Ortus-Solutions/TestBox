@@ -39,6 +39,11 @@
  * --hide-skipped : Hide skipped specs and suites from the reporter output, defaults to `false`.
  * 	Useful when running a single spec via `--filter-specs` to only show the targeted test.
  * --show-failed-only : Show failed and errored specs only in stream mode, defaults to `false`.
+ * --show-passed : Show passed specs in stream mode, defaults to `true`.
+ * --show-skipped : Show skipped specs in stream mode, defaults to `true` (or `false` when `--hide-skipped=true`).
+ * --max-failures : In stream mode, show only the first N failures+errors, defaults to `0` (disabled).
+ * --slow-threshold-ms : Show specs at or above this duration in summary, defaults to `0` (disabled).
+ * --top-slowest : Show top N slowest specs in summary, defaults to `0` (disabled).
  * --stacktrace : Stacktrace detail level for stream failures/errors: `short` or `full`, defaults to `short`.
  *
  * Runner Options:
@@ -102,6 +107,10 @@ class{
 			initArgs.reporter = "text"
 		}
 
+		var hideSkipped = options[ "hide-skipped" ] ?: false
+		var showSkipped = structKeyExists( options, "show-skipped" ) ? options[ "show-skipped" ] : !hideSkipped
+		var showPassed = structKeyExists( options, "show-passed" ) ? options[ "show-passed" ] : true
+
 		// Prepare the run arguments
 		var runArgs = {
 			testBundles   : options[ "filter-bundles" ] ?: [],
@@ -111,8 +120,13 @@ class{
 			verbose       : options[ "verbose" ] ?: false,
 			stream        : shouldStream,
 			options 	   : {
-				hideSkipped    : options[ "hide-skipped" ] ?: false,
+				hideSkipped    : hideSkipped,
 				showFailedOnly : options[ "show-failed-only" ] ?: false,
+				showPassed     : showPassed,
+				showSkipped    : showSkipped,
+				maxFailures    : options[ "max-failures" ] ?: 0,
+				slowThresholdMS : options[ "slow-threshold-ms" ] ?: 0,
+				topSlowest     : options[ "top-slowest" ] ?: 0,
 				stacktrace     : options[ "stacktrace" ] ?: "short"
 			}
 		};
@@ -189,7 +203,7 @@ class{
 
 		// Print the stream summary if needed, otherwise the report will have been printed by the reporter already
 		if( runArgs.stream ){
-			printStreamSummary( testbox, testResults )
+			printStreamSummary( testbox, testResults, runArgs.options )
 		} else {
 			println( report )
 		}
@@ -231,6 +245,11 @@ class{
 	private struct function buildRunnerCallbacks( required struct runArgs ){
 		var runnerArgs = arguments.runArgs
 		var showFailedOnly = runnerArgs.options.showFailedOnly ?: false
+		var showPassed = structKeyExists( runnerArgs.options, "showPassed" ) ? runnerArgs.options.showPassed : true
+		var showSkipped = structKeyExists( runnerArgs.options, "showSkipped" ) ? runnerArgs.options.showSkipped : true
+		var maxFailures = isNumeric( runnerArgs.options.maxFailures ?: 0 ) ? int( runnerArgs.options.maxFailures ) : 0
+		var observedFailures = 0
+		var maxFailuresReached = false
 		var stacktraceMode = runnerArgs.options.stacktrace ?: "short"
 		if( !listFindNoCase( "short,full", stacktraceMode ) ){
 			stacktraceMode = "short"
@@ -280,12 +299,28 @@ class{
 				}
 			},
 			onSpecEnd = ( target, testResults, suite, spec ) => {
+				var specStatus = resolveStreamStatus( testResults, suite, spec )
+				if( maxFailures > 0 && maxFailuresReached && listFindNoCase( "failed,error", specStatus ) ){
+					return
+				}
+				var shouldCountFailure = listFindNoCase( "failed,error", specStatus )
+				if( shouldCountFailure && !( maxFailures > 0 && maxFailuresReached ) ){
+					observedFailures++
+				}
+
 				if( runnerArgs.stream ){
-					var specStatus = resolveStreamStatus( testResults, suite, spec )
 					var bundleKey = getBundleKey( target )
 					var suiteKey = getSuiteKey( bundleKey, suite )
 
 					if( showFailedOnly && !listFindNoCase( "failed,error", specStatus ) ){
+						return
+					}
+
+					if( !showPassed && specStatus == "passed" ){
+						return
+					}
+
+					if( !showSkipped && specStatus == "skipped" ){
 						return
 					}
 
@@ -316,6 +351,10 @@ class{
 						println( "      " & variables.consoleUtil.printByStatus( specStatus, detailText ) )
 					}
 				}
+
+				if( maxFailures > 0 && shouldCountFailure && observedFailures >= maxFailures ){
+					maxFailuresReached = true
+				}
 			},
 		}
 	}
@@ -325,8 +364,10 @@ class{
 	 *
 	 * @testResults The aggregated test results
 	 */
-	private function printStreamSummary( required testbox, required testResults ){
+	private function printStreamSummary( required testbox, required testResults, struct runOptions = {} ){
 		var separator = variables.consoleUtil.getDivider( 80, "=", "dim+white" )
+		var slowThresholdMS = isNumeric( arguments.runOptions.slowThresholdMS ?: 0 ) ? int( arguments.runOptions.slowThresholdMS ) : 0
+		var topSlowest = isNumeric( arguments.runOptions.topSlowest ?: 0 ) ? int( arguments.runOptions.topSlowest ) : 0
 		println( separator )
 		println( variables.consoleUtil.color( "bold+white", "Test Summary" ) )
 		println( separator )
@@ -336,6 +377,79 @@ class{
 		println( variables.consoleUtil.printByStatus( "skipped", "[ #variables.consoleUtil.getStatusIndicator( 'skipped' )# Skipped: #testResults.getTotalSkipped()# ]" ) )
 		println( variables.consoleUtil.color( "bold+cyan", "[ ⏱️  Duration: #testResults.getTotalDuration()# ms ]" ) )
 		println( variables.consoleUtil.color( "bold+yellow", "[ 📦 Bundles/Suites/Specs: #testResults.getTotalBundles()#/#testResults.getTotalSuites()#/#testResults.getTotalSpecs()# ]" ) )
+
+		if( slowThresholdMS > 0 || topSlowest > 0 ){
+			printSlowSpecsSummary( testResults, slowThresholdMS, topSlowest )
+		}
+	}
+
+	/**
+	 * Print slow spec insights when a threshold and/or top N is requested.
+	 */
+	private function printSlowSpecsSummary( required testResults, required numeric slowThresholdMS, required numeric topSlowest ){
+		var allSpecEntries = []
+
+		for( var bundleStats in arguments.testResults.getBundleStats() ){
+			var suiteEntries = collectSuiteSpecEntries( bundleStats.suiteStats ?: [], bundleStats.name ?: "Unknown Bundle", "" )
+			if( arrayLen( suiteEntries ) ){
+				arrayAppend( allSpecEntries, suiteEntries, true )
+			}
+		}
+
+		var filtered = []
+		for( var specEntry in allSpecEntries ){
+			if( specEntry.duration <= 0 ){
+				continue
+			}
+			if( arguments.slowThresholdMS > 0 && specEntry.duration < arguments.slowThresholdMS ){
+				continue
+			}
+			arrayAppend( filtered, specEntry )
+		}
+
+		if( !arrayLen( filtered ) ){
+			return
+		}
+
+		arraySort( filtered, ( a, b ) => b.duration - a.duration )
+
+		var limit = arguments.topSlowest > 0 ? min( arguments.topSlowest, arrayLen( filtered ) ) : arrayLen( filtered )
+		println( variables.consoleUtil.getDivider( 80, "-", "dim+white" ) )
+		println( variables.consoleUtil.color( "bold+yellow", "🐢 Slow Specs" ) )
+		println( variables.consoleUtil.getDivider( 80, "-", "dim+white" ) )
+
+		for( var i = 1; i <= limit; i++ ){
+			var entry = filtered[ i ]
+			println( "[ #entry.duration# ms ] #entry.bundleName# :: #entry.suitePath# :: #entry.specName#" )
+		}
+	}
+
+	/**
+	 * Recursively collect spec entries from nested suite stats for slow-spec analysis.
+	 */
+	private array function collectSuiteSpecEntries( required array suiteStats, required string bundleName, string parentPath = "" ){
+		var entries = []
+
+		for( var suite in arguments.suiteStats ){
+			var suitePath = arguments.parentPath.len() ? "#arguments.parentPath# / #suite.name#" : suite.name
+
+			if( isArray( suite.specStats ) ){
+				for( var spec in suite.specStats ){
+					arrayAppend( entries, {
+						bundleName : arguments.bundleName,
+						suitePath  : suitePath,
+						specName   : spec.displayName ?: spec.name,
+						duration   : isNumeric( spec.totalDuration ) ? spec.totalDuration : 0
+					} )
+				}
+			}
+
+			if( isArray( suite.suiteStats ) && arrayLen( suite.suiteStats ) ){
+				arrayAppend( entries, collectSuiteSpecEntries( suite.suiteStats, arguments.bundleName, suitePath ), true )
+			}
+		}
+
+		return entries
 	}
 
 	/**
