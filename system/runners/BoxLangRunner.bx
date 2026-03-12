@@ -39,6 +39,7 @@
  * --hide-skipped : Hide skipped specs and suites from the reporter output, defaults to `false`.
  * 	Useful when running a single spec via `--filter-specs` to only show the targeted test.
  * --show-failed-only : Show failed and errored specs only in stream mode, defaults to `false`.
+ * --stacktrace : Stacktrace detail level for stream failures/errors: `short` or `full`, defaults to `short`.
  *
  * Runner Options:
  * To create runner options just prefix it with the prefix `runner-{optionName}`
@@ -111,7 +112,8 @@ class{
 			stream        : shouldStream,
 			options 	   : {
 				hideSkipped    : options[ "hide-skipped" ] ?: false,
-				showFailedOnly : options[ "show-failed-only" ] ?: false
+				showFailedOnly : options[ "show-failed-only" ] ?: false,
+				stacktrace     : options[ "stacktrace" ] ?: "short"
 			}
 		};
 
@@ -229,6 +231,10 @@ class{
 	private struct function buildRunnerCallbacks( required struct runArgs ){
 		var runnerArgs = arguments.runArgs
 		var showFailedOnly = runnerArgs.options.showFailedOnly ?: false
+		var stacktraceMode = runnerArgs.options.stacktrace ?: "short"
+		if( !listFindNoCase( "short,full", stacktraceMode ) ){
+			stacktraceMode = "short"
+		}
 		var printedBundles = {}
 		var printedSuites = {}
 
@@ -305,7 +311,7 @@ class{
 					var lineText   = "#variables.consoleUtil.getStatusIndicator( specStatus )# #getStreamSpecName( spec )##duration#"
 					println( "    #variables.consoleUtil.printByStatus( specStatus, lineText )#" )
 
-					var detailText = getSpecDetailText( specStats, specStatus )
+					var detailText = getSpecDetailText( specStats, specStatus, stacktraceMode )
 					if( detailText.len() ){
 						println( "      " & variables.consoleUtil.printByStatus( specStatus, detailText ) )
 					}
@@ -390,19 +396,34 @@ class{
 	 *
 	 * @specStats The full spec stats struct from TestResult
 	 * @status    The resolved spec status
+	 * @stacktrace The stacktrace mode to use: short|full
 	 */
-	private string function getSpecDetailText( required struct specStats, required string status ){
+	private string function getSpecDetailText( required struct specStats, required string status, required string stacktrace ){
 		if( !listFindNoCase( "failed,error", arguments.status ) ){
 			return ""
 		}
 
 		var detailText = ""
+		var stacktraceMode = arguments.stacktrace
 
 		if( len( arguments.specStats.failMessage ) ){
 			detailText &= "-> #arguments.specStats.failMessage# #arguments.specStats.failDetail##char( 10 )#"
-			detailText &= arguments.specStats.failOrigin
-				.map( item => char( 9 ) & item.raw_trace )
-				.toList( char( 10 ) )
+		}
+
+		if( stacktraceMode == "full" ){
+			if( structKeyExists( arguments.specStats, "failStacktrace" ) && len( trim( arguments.specStats.failStacktrace ) ) ){
+				detailText &= trim( arguments.specStats.failStacktrace )
+			} else if( structKeyExists( arguments.specStats, "error" ) && isStruct( arguments.specStats.error ) && structKeyExists( arguments.specStats.error, "stackTrace" ) && len( trim( arguments.specStats.error.stackTrace ) ) ){
+				detailText &= trim( arguments.specStats.error.stackTrace )
+			}
+		} else {
+			if( structKeyExists( arguments.specStats, "failOrigin" ) && isArray( arguments.specStats.failOrigin ) && arrayLen( arguments.specStats.failOrigin ) ){
+				detailText &= char( 9 ) & arguments.specStats.failOrigin.first().raw_trace
+			} else if( structKeyExists( arguments.specStats, "error" ) && isStruct( arguments.specStats.error ) && structKeyExists( arguments.specStats.error, "tagContext" ) && isArray( arguments.specStats.error.tagContext ) ){
+				if( arrayLen( arguments.specStats.error.tagContext ) ){
+					detailText &= char( 9 ) & arguments.specStats.error.tagContext.first().raw_trace
+				}
+			}
 		}
 
 		return detailText
