@@ -291,12 +291,7 @@ component accessors="true" {
 				);
 			},
 			"onSpecEnd" : function( target, testResults, suite, spec ){
-				var suiteStats = arguments.testResults.getSuiteStats( arguments.suite.id );
-				// Find the spec stats by id
-				var specStats  = suiteStats.specStats.filter( function( s ){
-					return s.id == spec.id;
-				} );
-				var currentSpec = specStats.len() ? specStats[ specStats.len() ] : {};
+				var currentSpec = arguments.testResults.getSpecStats( arguments.spec.id );
 
 				service.streamEvent(
 					"specEnd",

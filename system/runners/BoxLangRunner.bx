@@ -27,7 +27,7 @@
  * --filter-suites : A list of suites to filter by, defaults to `*`
  * --filter-specs : A list of test names or spec names to filter by, defaults to `*`
  * --eager-failure : Fail fast, defaults to `false`
- * --verbose : Verbose output, defaults to `false`. This will stream the output of the status of the tests as they run.
+ * --verbose : Verbose output, defaults to `false`. Get detailed insights into the test execution.
  * --stream : Stream bundle, suite, and spec results as they complete, defaults to `false`. Prints final totals only.
  * --properties-summary : Generate a properties file with the summary of the test results, defaults to `true`.
  * --properties-filename : The name of the properties file to generate, defaults to `TEST.properties`
@@ -41,13 +41,13 @@
  *
  * Runner Options:
  * To create runner options just prefix it with the prefix `runner-{optionName}`
- * For example, to pass a `verbose` option to the runner, you would do `--runner-verbose=true`
+ * For example, to pass a `skip` option to the runner, you would do `--runner-skip=true`
  */
 import java.nio.file.Paths
 
 class{
 
-	// Setup Defaults
+	// Constants for default values
 	static {
 		final DEFAULT_TEST_DIRECTORY = "tests.specs"
 		final DEFAULT_REPORTER = "console"
@@ -61,6 +61,9 @@ class{
 		mappings=getApplicationMetadata().mappings.append( {
 			"/testbox" : getTestBoxRootPath()
 		} );
+
+	// Now create our dependency on the ConsoleUtil for colored output in the runner
+	variables.consoleUtil = new testbox.system.util.ConsoleUtil()
 
 	/**
 	 * The main method to run the TestBox tests
@@ -171,8 +174,7 @@ class{
 
 		// Print Streaming Header
 		if( runArgs.stream ){
-			var consoleUtil = getConsoleUtil()
-			println( consoleUtil.getBanner( testbox.getVersion() ) )
+			println( variables.consoleUtil.getBanner( testbox.getVersion() ) )
 			println( "" )
 		}
 
@@ -181,10 +183,10 @@ class{
 		var testResults = testbox.getResult()
 		var testResultsAsJson = jsonSerialize( testResults.getMemento( includeDebugBuffer = true ) )
 
+		// Print the stream summary if needed, otherwise the report will have been printed by the reporter already
 		if( runArgs.stream ){
 			printStreamSummary( testbox, testResults )
 		} else {
-			// Print the report
 			println( report )
 		}
 
@@ -200,14 +202,17 @@ class{
 		if( afterRunArgs.writeReport ){
 			generateReports( report, testResultsAsJson, initArgs, afterRunArgs );
 		}
+
 		// WRITE THE VISUALIZER
 		if( afterRunArgs.writeVisualizer ){
 			generateVisualizer( testResultsAsJson, afterRunArgs );
 		}
+
 		// WRITE THE SUMMARIES
 		if( afterRunArgs.propertiesSummary ) {
 			generatePropertiesSummary( testResults, initArgs, afterRunArgs );
 		}
+
 		// WRITE THE ANT JUNIT REPORTS
 		if( initArgs.reporter eq "ANTJunit" ){
 			generateAntReports( report, afterRunArgs );
@@ -221,20 +226,13 @@ class{
 	 */
 	private struct function buildRunnerCallbacks( required struct runArgs ){
 		var runnerArgs = arguments.runArgs
-		var streamCounters = {
-			pass    : 0,
-			fail    : 0,
-			error   : 0,
-			skipped : 0
-		}
-
 		return {
-				onBundleStart = ( target, testResults ) => {
+			onBundleStart = ( target, testResults ) => {
 				if( runnerArgs.verbose ){
 					println( "[BUNDLE] Testing Bundle: #target.$bx.meta.name#" )
 				}
 				if( runnerArgs.stream ){
-					println( getConsoleUtil().color( "bold+cyan", "📦 #target.$bx.meta.name#" ) )
+					println( variables.consoleUtil.color( "bold+cyan", "📦 #target.$bx.meta.name#" ) )
 				}
 			},
 			onBundleEnd = ( target, testResults ) => {
@@ -247,7 +245,7 @@ class{
 					println( "[SUITE] Testing Suite: #suite.name#" )
 				}
 				if( runnerArgs.stream ){
-					println( "  " & getConsoleUtil().color( "bold+white", "📁 #suite.name#" ) )
+					println( "  " & variables.consoleUtil.color( "bold+white", "📁 #suite.name#" ) )
 				}
 			},
 			onSuiteEnd = ( target, testResults, suite ) => {
@@ -262,19 +260,21 @@ class{
 			},
 			onSpecEnd = ( target, testResults, suite, spec ) => {
 				if( runnerArgs.stream ){
-					var specStatus = resolveStreamStatus( testResults, streamCounters, suite, spec )
+					var specStatus = resolveStreamStatus( testResults, suite, spec )
 
 					// Skip printing skipped specs if hideSkipped is enabled
 					if( runnerArgs.options.hideSkipped && specStatus == "skipped" ){
 						return
 					}
 
-					var lineText = "#getConsoleUtil().getStatusIndicator( specStatus )# #getStreamSpecName( spec )##formatStreamDuration( suite, spec )#"
-					println( "    #getConsoleUtil().printByStatus( specStatus, lineText )#" )
+					var specStats  = testResults.findSpecStats( spec )
+					var duration   = !structIsEmpty( specStats ) && isNumeric( specStats.totalDuration ) ? " (#specStats.totalDuration# ms)" : ""
+					var lineText   = "#variables.consoleUtil.getStatusIndicator( specStatus )# #getStreamSpecName( spec )##duration#"
+					println( "    #variables.consoleUtil.printByStatus( specStatus, lineText )#" )
 
-					var detailText = getStreamOutcomeDetail( suite, spec, specStatus )
+					var detailText = getStreamOutcomeDetail( specStats, specStatus )
 					if( detailText.len() ){
-						println( "      " & getConsoleUtil().printByStatus( specStatus, detailText ) )
+						println( "      " & variables.consoleUtil.printByStatus( specStatus, detailText ) )
 					}
 				}
 			},
@@ -287,72 +287,22 @@ class{
 	 * @testResults The aggregated test results
 	 */
 	private function printStreamSummary( required testbox, required testResults ){
-		var consoleUtil = getConsoleUtil()
-		var separator = consoleUtil.getDivider( 80, "=", "dim+white" )
-
+		var separator = variables.consoleUtil.getDivider( 80, "=", "dim+white" )
 		println( separator )
-		println( consoleUtil.color( "bold+white", "Test Summary" ) )
+		println( variables.consoleUtil.color( "bold+white", "Test Summary" ) )
 		println( separator )
-		println( consoleUtil.printByStatus( "passed", "[ #consoleUtil.getStatusIndicator( 'passed' )# Passed: #testResults.getTotalPass()# ]" ) )
-		println( consoleUtil.printByStatus( "failed", "[ #consoleUtil.getStatusIndicator( 'failed' )# Failed: #testResults.getTotalFail()# ]" ) )
-		println( consoleUtil.printByStatus( "error", "[ #consoleUtil.getStatusIndicator( 'error' )# Errors: #testResults.getTotalError()# ]" ) )
-		println( consoleUtil.printByStatus( "skipped", "[ #consoleUtil.getStatusIndicator( 'skipped' )# Skipped: #testResults.getTotalSkipped()# ]" ) )
-		println( consoleUtil.color( "bold+cyan", "[ ⏱️  Duration: #testResults.getTotalDuration()# ms ]" ) )
-		println( consoleUtil.color( "bold+yellow", "[ 📦 Bundles/Suites/Specs: #testResults.getTotalBundles()#/#testResults.getTotalSuites()#/#testResults.getTotalSpecs()# ]" ) )
-	}
-
-	/**
-	 * Retrieve the shared console formatting helper.
-	 */
-	private function getConsoleUtil(){
-		if( !structKeyExists( variables, "consoleUtil" ) ){
-			variables.consoleUtil = new testbox.system.util.ConsoleUtil()
-		}
-
-		return variables.consoleUtil
-	}
-
-	/**
-	 * Format a stream status label for output.
-	 *
-	 * @status The spec execution status
-	 */
-	private string function formatStreamStatus( required string status ){
-		switch( lCase( arguments.status ) ){
-			case "passed":
-				return "PASS"
-			case "failed":
-				return "FAIL"
-			case "error":
-				return "ERROR"
-			case "skipped":
-				return "SKIP"
-			default:
-				return uCase( arguments.status )
-		}
-	}
-
-	/**
-	 * Resolve a stream status from either spec stats or the suite stats collection.
-	 *
-	 * @suite The current suite structure
-	 * @spec The current spec structure
-	 */
-	private string function getStreamSpecStatus( required struct suite, required struct spec ){
-		if( structKeyExists( arguments.spec, "status" ) && len( arguments.spec.status ) ){
-			return arguments.spec.status
-		}
-
-		var matchedSpecStats = getStreamSpecStats( arguments.suite, arguments.spec )
-		if( !structIsEmpty( matchedSpecStats ) && structKeyExists( matchedSpecStats, "status" ) && len( matchedSpecStats.status ) ){
-			return matchedSpecStats.status
-		}
-
-		return "unknown"
+		println( variables.consoleUtil.printByStatus( "passed", "[ #variables.consoleUtil.getStatusIndicator( 'passed' )# Passed: #testResults.getTotalPass()# ]" ) )
+		println( variables.consoleUtil.printByStatus( "failed", "[ #variables.consoleUtil.getStatusIndicator( 'failed' )# Failed: #testResults.getTotalFail()# ]" ) )
+		println( variables.consoleUtil.printByStatus( "error", "[ #variables.consoleUtil.getStatusIndicator( 'error' )# Errors: #testResults.getTotalError()# ]" ) )
+		println( variables.consoleUtil.printByStatus( "skipped", "[ #variables.consoleUtil.getStatusIndicator( 'skipped' )# Skipped: #testResults.getTotalSkipped()# ]" ) )
+		println( variables.consoleUtil.color( "bold+cyan", "[ ⏱️  Duration: #testResults.getTotalDuration()# ms ]" ) )
+		println( variables.consoleUtil.color( "bold+yellow", "[ 📦 Bundles/Suites/Specs: #testResults.getTotalBundles()#/#testResults.getTotalSuites()#/#testResults.getTotalSpecs()# ]" ) )
 	}
 
 	/**
 	 * Resolve a stream status from callback payload or total counter deltas.
+	 * Checks the spec struct and its TestResult stats first, then falls back to
+	 * counter delta detection when status is not available yet.
 	 *
 	 * @testResults The aggregated test results in-flight
 	 * @counters The mutable stream counter state
@@ -361,37 +311,18 @@ class{
 	 */
 	private string function resolveStreamStatus(
 		required testResults,
-		required struct counters,
 		required struct suite,
 		required struct spec
 	){
-		var payloadStatus = getStreamSpecStatus( arguments.suite, arguments.spec )
-		if( payloadStatus != "unknown" ){
-			return payloadStatus
+		// Prefer status directly on the spec payload
+		if( structKeyExists( arguments.spec, "status" ) && len( arguments.spec.status ) ){
+			return arguments.spec.status
 		}
 
-		var totalPass = arguments.testResults.getTotalPass()
-		if( totalPass > arguments.counters.pass ){
-			arguments.counters.pass = totalPass
-			return "passed"
-		}
-
-		var totalFail = arguments.testResults.getTotalFail()
-		if( totalFail > arguments.counters.fail ){
-			arguments.counters.fail = totalFail
-			return "failed"
-		}
-
-		var totalError = arguments.testResults.getTotalError()
-		if( totalError > arguments.counters.error ){
-			arguments.counters.error = totalError
-			return "error"
-		}
-
-		var totalSkipped = arguments.testResults.getTotalSkipped()
-		if( totalSkipped > arguments.counters.skipped ){
-			arguments.counters.skipped = totalSkipped
-			return "skipped"
+		// Use TestResult reverse lookup - the authoritative source
+		var specStats = arguments.testResults.findSpecStats( arguments.spec )
+		if( !structIsEmpty( specStats ) && structKeyExists( specStats, "status" ) && len( specStats.status ) && specStats.status != "na" ){
+			return specStats.status
 		}
 
 		return "unknown"
@@ -424,74 +355,39 @@ class{
 	}
 
 	/**
-	 * Build a secondary detail line for failed or errored streamed specs.
+	 * Build a secondary detail line for a failed or errored spec using its stats struct.
+	 * Caller should retrieve specStats via testResults.findSpecStats() beforehand.
 	 *
-	 * @suite The current suite structure
-	 * @spec The current spec structure
-	 * @status The resolved spec status
+	 * @specStats The full spec stats struct from TestResult
+	 * @status    The resolved spec status
 	 */
-	private string function getStreamOutcomeDetail( required struct suite, required struct spec, required string status ){
+	private string function getStreamOutcomeDetail( required struct specStats, required string status ){
 		if( !listFindNoCase( "failed,error", arguments.status ) ){
 			return ""
 		}
 
-		var matchedSpecStats = getStreamSpecStats( arguments.suite, arguments.spec )
-		if( structKeyExists( arguments.spec, "failMessage" ) && len( trim( arguments.spec.failMessage ) ) ){
-			return "-> #trim( arguments.spec.failMessage )#"
+		if( structKeyExists( arguments.specStats, "failMessage" ) && len( trim( arguments.specStats.failMessage ) ) ){
+			return "-> #trim( arguments.specStats.failMessage )#"
 		}
-		if( !structIsEmpty( matchedSpecStats ) && structKeyExists( matchedSpecStats, "failMessage" ) && len( trim( matchedSpecStats.failMessage ) ) ){
-			return "-> #trim( matchedSpecStats.failMessage )#"
-		}
-		if( structKeyExists( arguments.spec, "error" ) && isStruct( arguments.spec.error ) && structKeyExists( arguments.spec.error, "message" ) ){
-			return "-> #trim( arguments.spec.error.message )#"
-		}
-		if( !structIsEmpty( matchedSpecStats ) && structKeyExists( matchedSpecStats, "error" ) && isStruct( matchedSpecStats.error ) && structKeyExists( matchedSpecStats.error, "message" ) ){
-			return "-> #trim( matchedSpecStats.error.message )#"
+		if( structKeyExists( arguments.specStats, "error" ) && isStruct( arguments.specStats.error ) && structKeyExists( arguments.specStats.error, "message" ) ){
+			return "-> #trim( arguments.specStats.error.message )#"
 		}
 
 		return ""
 	}
 
 	/**
-	 * Format the duration suffix for stream output when present.
+	 * Format the duration suffix for stream output from a spec stats struct.
+	 * Caller should retrieve specStats via testResults.findSpecStats() beforehand.
 	 *
-	 * @spec The current spec structure
+	 * @specStats The full spec stats struct from TestResult
 	 */
-	private string function formatStreamDuration( required struct suite, required struct spec ){
-		if( structKeyExists( arguments.spec, "totalDuration" ) && isNumeric( arguments.spec.totalDuration ) ){
-			return " (#arguments.spec.totalDuration# ms)"
-		}
-
-		var matchedSpecStats = getStreamSpecStats( arguments.suite, arguments.spec )
-		if( !structIsEmpty( matchedSpecStats ) && structKeyExists( matchedSpecStats, "totalDuration" ) && isNumeric( matchedSpecStats.totalDuration ) ){
-			return " (#matchedSpecStats.totalDuration# ms)"
+	private string function formatStreamDuration( required struct specStats ){
+		if( structKeyExists( arguments.specStats, "totalDuration" ) && isNumeric( arguments.specStats.totalDuration ) ){
+			return " (#arguments.specStats.totalDuration# ms)"
 		}
 
 		return ""
-	}
-
-	/**
-	 * Resolve the matching spec stats from a suite stats structure when available.
-	 *
-	 * @suite The current suite structure
-	 * @spec The current spec structure
-	 */
-	private struct function getStreamSpecStats( required struct suite, required struct spec ){
-		if( !structKeyExists( arguments.suite, "specStats" ) || !isArray( arguments.suite.specStats ) ){
-			return {}
-		}
-
-		for( var i = arrayLen( arguments.suite.specStats ); i >= 1; i-- ){
-			var thisSpecStats = arguments.suite.specStats[ i ]
-			if( structKeyExists( arguments.spec, "id" ) && structKeyExists( thisSpecStats, "id" ) && thisSpecStats.id == arguments.spec.id ){
-				return thisSpecStats
-			}
-			if( structKeyExists( arguments.spec, "name" ) && structKeyExists( thisSpecStats, "name" ) && thisSpecStats.name == arguments.spec.name ){
-				return thisSpecStats
-			}
-		}
-
-		return {}
 	}
 
 	/**
