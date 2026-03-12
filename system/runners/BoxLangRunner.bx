@@ -272,7 +272,7 @@ class{
 					var lineText   = "#variables.consoleUtil.getStatusIndicator( specStatus )# #getStreamSpecName( spec )##duration#"
 					println( "    #variables.consoleUtil.printByStatus( specStatus, lineText )#" )
 
-					var detailText = getStreamOutcomeDetail( specStats, specStatus )
+					var detailText = getSpecDetailText( specStats, specStatus )
 					if( detailText.len() ){
 						println( "      " & variables.consoleUtil.printByStatus( specStatus, detailText ) )
 					}
@@ -361,19 +361,21 @@ class{
 	 * @specStats The full spec stats struct from TestResult
 	 * @status    The resolved spec status
 	 */
-	private string function getStreamOutcomeDetail( required struct specStats, required string status ){
+	private string function getSpecDetailText( required struct specStats, required string status ){
 		if( !listFindNoCase( "failed,error", arguments.status ) ){
 			return ""
 		}
 
-		if( structKeyExists( arguments.specStats, "failMessage" ) && len( trim( arguments.specStats.failMessage ) ) ){
-			return "-> #trim( arguments.specStats.failMessage )#"
-		}
-		if( structKeyExists( arguments.specStats, "error" ) && isStruct( arguments.specStats.error ) && structKeyExists( arguments.specStats.error, "message" ) ){
-			return "-> #trim( arguments.specStats.error.message )#"
+		var detailText = ""
+
+		if( len( arguments.specStats.failMessage ) ){
+			detailText &= "-> #arguments.specStats.failMessage# #arguments.specStats.failDetail##char( 10 )#"
+			detailText &= arguments.specStats.failOrigin
+				.map( item => char( 9 ) & item.raw_trace )
+				.toList( char( 10 ) )
 		}
 
-		return ""
+		return detailText
 	}
 
 	/**
