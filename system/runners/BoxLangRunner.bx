@@ -44,11 +44,13 @@
  */
 class{
 
-	// Defaults
-	static final DEFAULT_TEST_DIRECTORY = "tests.specs"
-	static final DEFAULT_REPORTER = "console"
-	static final DEFAULT_PROPERTIES_FILENAME = "TEST.properties"
-	static final DEFAULT_PROPERTIES_SUMMARY = true
+	// Setup Defaults
+	static {
+		final DEFAULT_TEST_DIRECTORY = "tests.specs"
+		final DEFAULT_REPORTER = "console"
+		final DEFAULT_PROPERTIES_FILENAME = "TEST.properties"
+		final DEFAULT_PROPERTIES_SUMMARY = true
+	}
 
 	// Seed the location of testbox just in case
 	bx:application
