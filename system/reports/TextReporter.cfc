@@ -49,5 +49,4 @@ component extends="BaseReporter" {
 		);
 	}
 
-
 }

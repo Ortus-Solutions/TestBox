@@ -370,7 +370,12 @@ component accessors="true" {
 	struct function findSpecStats( required struct spec ){
 		lock name="tb-results-#variables.resultsID#" type="readonly" timeout="10" {
 			// Fast path: direct id lookup
-			if ( structKeyExists( arguments.spec, "id" ) && structKeyExists( variables.specReverseLookup, arguments.spec.id ) ) {
+			if (
+				structKeyExists( arguments.spec, "id" ) && structKeyExists(
+					variables.specReverseLookup,
+					arguments.spec.id
+				)
+			) {
 				return variables.specReverseLookup[ arguments.spec.id ];
 			}
 
@@ -397,7 +402,12 @@ component accessors="true" {
 	struct function findSuiteStats( required struct suite ){
 		lock name="tb-results-#variables.resultsID#" type="readonly" timeout="10" {
 			// Fast path: direct id lookup
-			if ( structKeyExists( arguments.suite, "id" ) && structKeyExists( variables.suiteReverseLookup, arguments.suite.id ) ) {
+			if (
+				structKeyExists( arguments.suite, "id" ) && structKeyExists(
+					variables.suiteReverseLookup,
+					arguments.suite.id
+				)
+			) {
 				return variables.suiteReverseLookup[ arguments.suite.id ];
 			}
 

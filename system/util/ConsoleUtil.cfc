@@ -59,7 +59,7 @@ component {
 	 * Apply one or more ANSI styles to text.
 	 *
 	 * @style A + delimited list of styles (for example: bold+cyan)
-	 * @text The text to colorize
+	 * @text  The text to colorize
 	 *
 	 * @return The styled text with ANSI escape sequences
 	 */
@@ -124,7 +124,7 @@ component {
 	 * Print text using the status-derived style.
 	 *
 	 * @status A test status such as passed, failed, error, or skipped
-	 * @text The text to style
+	 * @text   The text to style
 	 *
 	 * @return Styled text for the provided status
 	 */
@@ -183,12 +183,16 @@ component {
 	 * Build the standard TestBox banner.
 	 *
 	 * @version The TestBox version to display
-	 * @label The banner label prefix
-	 * @format The output format: console or text
+	 * @label   The banner label prefix
+	 * @format  The output format: console or text
 	 *
 	 * @return The banner line for terminal output
 	 */
-	function getBanner( required string version, string label = "TestBox v", string format = "console" ){
+	function getBanner(
+		required string version,
+		string label  = "TestBox v",
+		string format = "console"
+	){
 		var prefix = "█▓▒▒░░░ ";
 		var title  = arguments.label & arguments.version;
 		var suffix = " ░░░▒▒▓█";
@@ -203,13 +207,17 @@ component {
 	/**
 	 * Build a horizontal divider line, optionally styled.
 	 *
-	 * @width The number of characters in the divider
+	 * @width     The number of characters in the divider
 	 * @character The repeated character to use
-	 * @style Optional ANSI style token string
+	 * @style     Optional ANSI style token string
 	 *
 	 * @return The divider line
 	 */
-	function getDivider( numeric width = 80, string character = "=", string style = "" ){
+	function getDivider(
+		numeric width    = 80,
+		string character = "=",
+		string style     = ""
+	){
 		var divider = repeatString( arguments.character, arguments.width );
 		return len( arguments.style ) ? color( arguments.style, divider ) : divider;
 	}

@@ -62,14 +62,26 @@ component {
 	 * Build the standard TestBox banner.
 	 */
 	function getHeaderBanner( required testbox ){
-		return getConsoleUtil().getBanner( arguments.testbox.getVersion(), "TestBox v", getConsoleFormat() );
+		return getConsoleUtil().getBanner(
+			arguments.testbox.getVersion(),
+			"TestBox v",
+			getConsoleFormat()
+		);
 	}
 
 	/**
 	 * Build a horizontal divider.
 	 */
-	function getDividerLine( numeric width = 81, string character = "=", string style = "" ){
-		return getConsoleUtil().getDivider( arguments.width, arguments.character, arguments.style );
+	function getDividerLine(
+		numeric width    = 81,
+		string character = "=",
+		string style     = ""
+	){
+		return getConsoleUtil().getDivider(
+			arguments.width,
+			arguments.character,
+			arguments.style
+		);
 	}
 
 	/**
