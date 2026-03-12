@@ -38,6 +38,7 @@
  * --write-visualizer : Write the visualizer to a file in the report path folder, defaults to `false`
  * --hide-skipped : Hide skipped specs and suites from the reporter output, defaults to `false`.
  * 	Useful when running a single spec via `--filter-specs` to only show the targeted test.
+ * --show-failed-only : Show failed and errored specs only in stream mode, defaults to `false`.
  *
  * Runner Options:
  * To create runner options just prefix it with the prefix `runner-{optionName}`
@@ -109,7 +110,8 @@ class{
 			verbose       : options[ "verbose" ] ?: false,
 			stream        : shouldStream,
 			options 	   : {
-				hideSkipped : options[ "hide-skipped" ] ?: false
+				hideSkipped    : options[ "hide-skipped" ] ?: false,
+				showFailedOnly : options[ "show-failed-only" ] ?: false
 			}
 		};
 
@@ -226,17 +228,30 @@ class{
 	 */
 	private struct function buildRunnerCallbacks( required struct runArgs ){
 		var runnerArgs = arguments.runArgs
+		var showFailedOnly = runnerArgs.options.showFailedOnly ?: false
+		var printedBundles = {}
+		var printedSuites = {}
+
+		var getBundleKey = ( target ) => {
+			return target.$bx.meta.path ?: target.$bx.meta.name
+		}
+
+		var getSuiteKey = ( bundleKey, suite ) => {
+			return "#bundleKey#:#suite.id ?: suite.name#"
+		}
+
 		return {
 			onBundleStart = ( target, testResults ) => {
 				if( runnerArgs.verbose ){
 					println( "[BUNDLE] Testing Bundle: #target.$bx.meta.name#" )
 				}
-				if( runnerArgs.stream ){
+				if( runnerArgs.stream && !showFailedOnly ){
 					println( variables.consoleUtil.color( "bold+cyan", "📦 #target.$bx.meta.name#" ) )
 				}
 			},
 			onBundleEnd = ( target, testResults ) => {
-				if( runnerArgs.verbose || runnerArgs.stream ){
+				var bundleKey = getBundleKey( target )
+				if( runnerArgs.verbose || ( runnerArgs.stream && ( !showFailedOnly || structKeyExists( printedBundles, bundleKey ) ) ) ){
 					println( "" )
 				}
 			},
@@ -244,7 +259,7 @@ class{
 				if( runnerArgs.verbose ){
 					println( "[SUITE] Testing Suite: #suite.name#" )
 				}
-				if( runnerArgs.stream ){
+				if( runnerArgs.stream && !showFailedOnly ){
 					println( "  " & variables.consoleUtil.color( "bold+white", "📁 #suite.name#" ) )
 				}
 			},
@@ -261,10 +276,28 @@ class{
 			onSpecEnd = ( target, testResults, suite, spec ) => {
 				if( runnerArgs.stream ){
 					var specStatus = resolveStreamStatus( testResults, suite, spec )
+					var bundleKey = getBundleKey( target )
+					var suiteKey = getSuiteKey( bundleKey, suite )
+
+					if( showFailedOnly && !listFindNoCase( "failed,error", specStatus ) ){
+						return
+					}
 
 					// Skip printing skipped specs if hideSkipped is enabled
 					if( runnerArgs.options.hideSkipped && specStatus == "skipped" ){
 						return
+					}
+
+					if( showFailedOnly ){
+						if( !structKeyExists( printedBundles, bundleKey ) ){
+							printedBundles[ bundleKey ] = true
+							println( variables.consoleUtil.color( "bold+cyan", "📦 #target.$bx.meta.name#" ) )
+						}
+
+						if( !structKeyExists( printedSuites, suiteKey ) ){
+							printedSuites[ suiteKey ] = true
+							println( "  " & variables.consoleUtil.color( "bold+white", "📁 #suite.name#" ) )
+						}
 					}
 
 					var specStats  = testResults.findSpecStats( spec )
@@ -300,12 +333,9 @@ class{
 	}
 
 	/**
-	 * Resolve a stream status from callback payload or total counter deltas.
-	 * Checks the spec struct and its TestResult stats first, then falls back to
-	 * counter delta detection when status is not available yet.
+	 * Resolve a stream status from callback payload and TestResult reverse lookup.
 	 *
 	 * @testResults The aggregated test results in-flight
-	 * @counters The mutable stream counter state
 	 * @suite The current suite structure
 	 * @spec The current spec structure
 	 */
