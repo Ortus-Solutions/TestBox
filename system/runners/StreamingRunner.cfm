@@ -19,6 +19,8 @@
 <cfparam name="url.labels" 							default="">
 <cfparam name="url.excludes" 						default="">
 <cfparam name="url.bundlesPattern" 					default="*.bx|*.cfc">
+<cfparam name="url.testSuites"						default="">
+<cfparam name="url.testSpecs"						default="">
 
 <!--- Coverage parameters --->
 <cfparam name="url.coverageEnabled"					default="false" type="boolean">
@@ -80,7 +82,11 @@ callbacks = streamingService.createStreamingCallbacks();
 
 // Run tests with streaming callbacks
 try {
-	results = testbox.runRaw( callbacks = callbacks );
+	results = testbox.runRaw(
+		callbacks   = callbacks,
+		testSuites  = url.testSuites,
+		testSpecs   = url.testSpecs
+	);
 } catch ( any e ) {
 	// Stream a fatal error event so SSE consumers can detect failure
 	streamingService.streamEvent(
