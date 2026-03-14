@@ -10,6 +10,7 @@ bx:param name="url.bundlesPattern"  default="";
 bx:param name="url.labels"          default="";
 bx:param name="url.excludes"        default="";
 bx:param name="url.runnerUrl"       default="runner.bxm";
+bx:param name="url.editor"          default="vscode";
 </bx:script>
 <!--- HTML CODE --->
 <bx:output>
@@ -38,7 +39,8 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 			bundlesPattern: "#url.bundlesPattern#",
 			labels: "#url.labels#",
 			excludes: "#url.excludes#",
-			runnerUrl: "#url.runnerUrl#"
+			runnerUrl: "#url.runnerUrl#",
+			editor: "#url.editor#"
 		};
 	</script>
 </head>
@@ -372,6 +374,58 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 														<div x-show="spec.failMessage" class="text-danger mt-1 small font-monospace"><strong x-text="spec.failMessage"></strong></div>
 														<div x-show="spec.failDetail" class="text-danger mt-1 small font-monospace" style="white-space: pre-wrap;" x-text="spec.failDetail"></div>
 														<div x-show="spec.error?.message" class="text-warning mt-1 small font-monospace"><strong x-text="spec.error?.message"></strong></div>
+
+															<template x-if="getPrimaryContext( spec )">
+																<div class="spec-origin-row mt-1">
+																	<span class="text-muted">Context:</span>
+																	<a
+																		href="##"
+																		class="spec-origin-link text-info"
+																		@click.prevent="openInEditor( getPrimaryContext( spec ).template, getPrimaryContext( spec ).line )"
+																		x-text="formatContextLabel( getPrimaryContext( spec ) )"></a>
+																</div>
+															</template>
+
+															<div class="mt-1" x-show="hasFailureDetails( spec )">
+																<button class="btn btn-sm btn-link text-decoration-none spec-show-all-btn p-0" @click.stop="spec.showFailureOrigin = !spec.showFailureOrigin">
+																	<i class="bi me-1" :class="spec.showFailureOrigin ? 'bi-dash-square' : 'bi-plus-square'"></i>
+																	<span x-text="spec.showFailureOrigin ? 'Hide details' : 'Show failure origin'"></span>
+																</button>
+															</div>
+
+															<div class="spec-fail-panel" x-show="spec.showFailureOrigin && hasFailureDetails( spec )" x-collapse>
+																<template x-if="getPrimaryContext( spec )">
+																	<div class="mb-2">
+																		<div class="spec-fail-section-label">First Context</div>
+																		<div class="spec-origin-item">
+																			<a
+																				href="##"
+																				class="spec-origin-link text-info"
+																				@click.prevent="openInEditor( getPrimaryContext( spec ).template, getPrimaryContext( spec ).line )"
+																				x-text="formatContextLabel( getPrimaryContext( spec ) )"></a>
+																		</div>
+																		<div class="bg-body-tertiary rounded p-2 mt-1 small font-monospace" x-show="getContextCodeHTML( getPrimaryContext( spec ) )" x-html="getContextCodeHTML( getPrimaryContext( spec ) )"></div>
+																	</div>
+																</template>
+
+																<div x-show="spec.failOrigin && spec.failOrigin.length">
+																	<div class="spec-fail-section-label">Failure Origin</div>
+																	<template x-for="(ctx, ctxIdx) in spec.failOrigin" :key="ctxIdx">
+																		<div class="border border-primary-subtle rounded p-2 mb-2 cursor-pointer" @click.stop="openInEditor( ctx.template, ctx.line )">
+																			<div class="spec-origin-item">
+																				<span class="spec-origin-idx text-muted" x-text="(ctxIdx + 1) + '.'"></span>
+																				<span class="spec-origin-link text-info" x-text="formatContextLabel( ctx )"></span>
+																			</div>
+																			<div class="bg-body-tertiary rounded p-2 mt-1 small font-monospace" x-show="getContextCodeHTML( ctx )" x-html="getContextCodeHTML( ctx )"></div>
+																		</div>
+																	</template>
+																</div>
+
+																<div x-show="spec.failStacktrace || spec.error?.stackTrace" class="mt-2">
+																	<div class="spec-fail-section-label">Stacktrace</div>
+																	<pre class="spec-fail-stacktrace" x-text="spec.failStacktrace || spec.error?.stackTrace"></pre>
+																</div>
+															</div>
 													</div>
 													<span class="badge rounded-pill bg-secondary ms-2" x-text="spec.totalDuration + 'ms'" x-show="spec.status !== 'pending' && spec.status !== 'running' && spec.totalDuration !== undefined && spec.totalDuration > 0"></span>
 												</div>
@@ -389,7 +443,59 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 											<span x-text="spec.name"></span>
 											<div x-show="spec.failMessage" class="text-danger mt-1 small font-monospace"><strong x-text="spec.failMessage"></strong></div>
 											<div x-show="spec.failDetail" class="text-danger mt-1 small font-monospace" style="white-space: pre-wrap;" x-text="spec.failDetail"></div>
-												<div x-show="spec.error?.message" class="text-warning mt-1 small font-monospace"><strong x-text="spec.error?.message"></strong></div>
+											<div x-show="spec.error?.message" class="text-warning mt-1 small font-monospace"><strong x-text="spec.error?.message"></strong></div>
+
+											<template x-if="getPrimaryContext( spec )">
+												<div class="spec-origin-row mt-1">
+													<span class="text-muted">Context:</span>
+													<a
+														href="##"
+														class="spec-origin-link text-info"
+														@click.prevent="openInEditor( getPrimaryContext( spec ).template, getPrimaryContext( spec ).line )"
+														x-text="formatContextLabel( getPrimaryContext( spec ) )"></a>
+												</div>
+											</template>
+
+											<div class="mt-1" x-show="hasFailureDetails( spec )">
+												<button class="btn btn-sm btn-link text-decoration-none spec-show-all-btn p-0" @click.stop="spec.showFailureOrigin = !spec.showFailureOrigin">
+													<i class="bi me-1" :class="spec.showFailureOrigin ? 'bi-dash-square' : 'bi-plus-square'"></i>
+													<span x-text="spec.showFailureOrigin ? 'Hide details' : 'Show failure origin'"></span>
+												</button>
+											</div>
+
+											<div class="spec-fail-panel" x-show="spec.showFailureOrigin && hasFailureDetails( spec )" x-collapse>
+												<template x-if="getPrimaryContext( spec )">
+													<div class="mb-2">
+														<div class="spec-fail-section-label">First Context</div>
+														<div class="spec-origin-item">
+															<a
+																href="##"
+																class="spec-origin-link text-info"
+																@click.prevent="openInEditor( getPrimaryContext( spec ).template, getPrimaryContext( spec ).line )"
+																x-text="formatContextLabel( getPrimaryContext( spec ) )"></a>
+														</div>
+														<div class="bg-body-tertiary rounded p-2 mt-1 small font-monospace" x-show="getContextCodeHTML( getPrimaryContext( spec ) )" x-html="getContextCodeHTML( getPrimaryContext( spec ) )"></div>
+													</div>
+												</template>
+
+												<div x-show="spec.failOrigin && spec.failOrigin.length">
+													<div class="spec-fail-section-label">Failure Origin</div>
+													<template x-for="(ctx, ctxIdx) in spec.failOrigin" :key="ctxIdx">
+														<div class="border border-primary-subtle rounded p-2 mb-2 cursor-pointer" @click.stop="openInEditor( ctx.template, ctx.line )">
+															<div class="spec-origin-item">
+																<span class="spec-origin-idx text-muted" x-text="(ctxIdx + 1) + '.'"></span>
+																<span class="spec-origin-link text-info" x-text="formatContextLabel( ctx )"></span>
+															</div>
+															<div class="bg-body-tertiary rounded p-2 mt-1 small font-monospace" x-show="getContextCodeHTML( ctx )" x-html="getContextCodeHTML( ctx )"></div>
+														</div>
+													</template>
+												</div>
+
+												<div x-show="spec.failStacktrace || spec.error?.stackTrace" class="mt-2">
+													<div class="spec-fail-section-label">Stacktrace</div>
+													<pre class="spec-fail-stacktrace" x-text="spec.failStacktrace || spec.error?.stackTrace"></pre>
+												</div>
+											</div>
 										</div>
 										<span class="badge rounded-pill bg-secondary ms-2" x-text="spec.totalDuration + 'ms'" x-show="spec.status !== 'pending' && spec.status !== 'running' && spec.totalDuration !== undefined && spec.totalDuration > 0"></span>
 									</div>
@@ -471,7 +577,7 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 	<!-- JAVASCRIPT -->
 	<!--- ============================================================================================================ --->
 	<script defer src="assets/js/vendor/bootstrap.bundle.min.js"></script>
-	<script defer src="assets/js/run.js?v=20260314"></script>
+	<script defer src="assets/js/run.js?v=20260314-2"></script>
 	<script defer src="assets/js/vendor/alpine-collapse.min.js"></script>
 	<script defer src="assets/js/vendor/alpine.min.js"></script>
 </body>

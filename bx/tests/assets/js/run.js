@@ -9,6 +9,7 @@ document.addEventListener( "alpine:init", () => {
 		// Preferences (Merged with URL options)
 		preferences: {
 			theme: "dark",
+			editor: "vscode",
 			runnerUrl: "",
 			directory: "",
 			recurse: true,
@@ -274,8 +275,88 @@ document.addEventListener( "alpine:init", () => {
 				totalDuration: 0,
 				failMessage: "",
 				failDetail: "",
-				error: null
+				failOrigin: [],
+				failStacktrace: "",
+				error: null,
+				showFailureOrigin: false
 			};
+		},
+
+		/**
+		 * Returns the primary failure context to preview (first fail origin or first error tagContext).
+		 */
+		getPrimaryContext( spec ) {
+			if ( spec?.status === "failed" && Array.isArray( spec.failOrigin ) && spec.failOrigin.length ) {
+				return spec.failOrigin[ 0 ];
+			}
+
+			if ( spec?.error && Array.isArray( spec.error.tagContext ) && spec.error.tagContext.length ) {
+				return spec.error.tagContext[ 0 ];
+			}
+
+			if ( Array.isArray( spec?.failOrigin ) && spec.failOrigin.length ) {
+				return spec.failOrigin[ 0 ];
+			}
+
+			return null;
+		},
+
+		/**
+		 * Whether this spec has any extended failure/error data to render in the expandable panel.
+		 */
+		hasFailureDetails( spec ) {
+			if ( !spec || ( spec.status !== "failed" && spec.status !== "error" ) ) return false;
+
+			return !!(
+				this.getPrimaryContext( spec ) ||
+				( Array.isArray( spec.failOrigin ) && spec.failOrigin.length ) ||
+				spec.failDetail ||
+				spec.failStacktrace ||
+				spec.error?.stackTrace
+			);
+		},
+
+		/**
+		 * Formats context location as template:line for UI labels.
+		 */
+		formatContextLabel( context ) {
+			if ( !context?.template ) return "";
+			return context.template + ( context.line ? ":" + context.line : "" );
+		},
+
+		/**
+		 * Normalizes code print HTML for rendering and falls back to escaped plain code print.
+		 */
+		getContextCodeHTML( context ) {
+			if ( !context ) return "";
+			if ( context.codePrintHTML ) return String( context.codePrintHTML );
+			if ( context.codePrintPlain ) return "<pre>" + this.escapeHtml( context.codePrintPlain ) + "</pre>";
+			return "";
+		},
+
+		/**
+		 * Escapes unsafe HTML chars for safe x-html fallback rendering.
+		 */
+		escapeHtml( value ) {
+			return String( value )
+				.replaceAll( "&", "&amp;" )
+				.replaceAll( "<", "&lt;" )
+				.replaceAll( ">", "&gt;" )
+				.replaceAll( '"', "&quot;" )
+				.replaceAll( "'", "&#39;" );
+		},
+
+		/**
+		 * Opens file+line in VS Code (or configured editor scheme) from failure origin/tag context.
+		 */
+		openInEditor( template, line = 1 ) {
+			if ( !template ) return;
+
+			let editorScheme = this.preferences.editor || "vscode";
+			let safePath = encodeURI( template ).replaceAll( "#", "%23" );
+			let safeLine = Number.isFinite( Number( line ) ) ? Number( line ) : 1;
+
+			window.location.href = `${ editorScheme }://file${ safePath }:${ safeLine }`;
 		},
 
 		/**
@@ -455,7 +536,10 @@ document.addEventListener( "alpine:init", () => {
 				sp.totalDuration = 0;
 				sp.failMessage = "";
 				sp.failDetail = "";
+				sp.failOrigin = [];
+				sp.failStacktrace = "";
 				sp.error = null;
+				sp.showFailureOrigin = false;
 			};
 
 			const resetBundle = ( b ) => {
@@ -579,7 +663,10 @@ document.addEventListener( "alpine:init", () => {
 					specInfo.spec.totalDuration = data.totalDuration || 0;
 					specInfo.spec.failMessage = data.failMessage || "";
 					specInfo.spec.failDetail = data.failDetail || "";
+					specInfo.spec.failOrigin = Array.isArray( data.failOrigin ) ? data.failOrigin : [];
+					specInfo.spec.failStacktrace = data.failStacktrace || "";
 					specInfo.spec.error = data.error || null;
+					specInfo.spec.showFailureOrigin = false;
 				}
 				this.specsCompleted++;
 			} );
