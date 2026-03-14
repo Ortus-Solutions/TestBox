@@ -39,7 +39,13 @@ document.addEventListener( "alpine:init", () => {
 			skipped: true
 		},
 
+		// The active EventSource connection for streaming test results
 		eventSource: null,
+		// Indicates testRunEnd was received for the current stream
+		runCompleted: false,
+		// Indicates we are intentionally stopping/closing the current stream
+		isStopping: false,
+		// Internal flag to ensure init runs only once
 		_initialized: false,
 
 		/**
@@ -388,6 +394,9 @@ document.addEventListener( "alpine:init", () => {
 		 * across the currently loaded test tree safely back to a "pending" condition.
 		 */
 		resetExecutionState() {
+			this.runCompleted = false;
+			this.isStopping = false;
+
 			this.bundles.forEach( b => {
 				b.status = "pending";
 				b.totalDuration = 0;
@@ -462,10 +471,6 @@ document.addEventListener( "alpine:init", () => {
 		startEventSource( url ) {
 			this.eventSource = new EventSource( url );
 
-			this.eventSource.addEventListener( "testRunStart", ( e ) => {
-				// Optional: Set global running state
-			} );
-
 			this.eventSource.addEventListener( "bundleStart", ( e ) => {
 				let data = JSON.parse( e.data );
 				let bundle = this.bundles.find( b => b.path === data.path || b.id === data.id );
@@ -488,25 +493,19 @@ document.addEventListener( "alpine:init", () => {
 			this.eventSource.addEventListener( "suiteStart", ( e ) => {
 				let data = JSON.parse( e.data );
 				let suiteAndBundle = this.findSuite( data.id );
-				if ( suiteAndBundle ) {
-					suiteAndBundle.suite.status = "running";
-				}
+				if ( suiteAndBundle ) suiteAndBundle.suite.status = "running";
 			} );
 
 			this.eventSource.addEventListener( "suiteEnd", ( e ) => {
 				let data = JSON.parse( e.data );
 				let suiteAndBundle = this.findSuite( data.id );
-				if ( suiteAndBundle ) {
-					suiteAndBundle.suite.status = this.determineBundleStatus( data );
-				}
+				if ( suiteAndBundle ) suiteAndBundle.suite.status = this.determineBundleStatus( data );
 			} );
 
 			this.eventSource.addEventListener( "specStart", ( e ) => {
 				let data = JSON.parse( e.data );
 				let specInfo = this.findSpec( data.id );
-				if ( specInfo ) {
-					specInfo.spec.status = "running";
-				}
+				if ( specInfo ) specInfo.spec.status = "running";
 			} );
 
 			this.eventSource.addEventListener( "specEnd", ( e ) => {
@@ -521,12 +520,13 @@ document.addEventListener( "alpine:init", () => {
 				}
 			} );
 
+			// Server-sent fatal error (event: error with JSON payload)
 			this.eventSource.addEventListener( "error", ( e ) => {
-				// Native connection close/error fires with no data — let onerror handle it
-				if ( !e.data ) return;
+				if ( !e.data ) return; // native connection close fires with no data — let onerror handle it
 				let data = JSON.parse( e.data );
 				this.globalError = data.message || "A fatal error occurred during testing.";
 				this.globalErrorDetail = data.detail || "";
+				this.isStopping = true;
 				this.stopTests();
 			} );
 
@@ -537,16 +537,20 @@ document.addEventListener( "alpine:init", () => {
 				this.globalStats.totalFail = data.totalFail;
 				this.globalStats.totalError = data.totalError;
 				this.globalStats.totalSkipped = data.totalSkipped;
-
-				this.stopTests(); // clean disconnect
+				this.runCompleted = true;
+				this.isStopping = true;
+				this.stopTests();
 			} );
 
-			this.eventSource.onerror = ( e ) => {
-				console.error( "EventSource failed.", e );
-				if ( this.isRunning ) {
+			this.eventSource.onerror = () => {
+				// onerror races with testRunEnd on normal server close — defer one tick
+				// so testRunEnd has a chance to set runCompleted/isStopping first.
+				setTimeout( () => {
+					if ( this.isStopping || this.runCompleted || !this.isRunning ) return;
 					this.globalError = "Connection to test runner lost.";
+					this.isStopping = true;
 					this.stopTests();
-				}
+				}, 0 );
 			};
 		},
 
@@ -556,6 +560,10 @@ document.addEventListener( "alpine:init", () => {
 		 */
 		stopTests() {
 			if ( this.eventSource ) {
+				// Detach handlers before closing to avoid close-related onerror noise.
+				this.eventSource.onerror = null;
+				this.eventSource.onmessage = null;
+				this.eventSource.onopen = null;
 				this.eventSource.close();
 				this.eventSource = null;
 			}
@@ -605,8 +613,9 @@ document.addEventListener( "alpine:init", () => {
 						if ( sp.id === id ) return { bundle: b, suite: s, spec: sp };
 					}
 				}
+				// Top-level specs (xUnit style — no parent suite)
 				for ( let sp of b.specs ) {
-					if ( sp.id === id ) return { bundle: b, suite: s, spec: sp };
+					if ( sp.id === id ) return { bundle: b, suite: null, spec: sp };
 				}
 			}
 			return null;
