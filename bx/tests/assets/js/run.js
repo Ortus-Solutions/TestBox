@@ -487,6 +487,10 @@ document.addEventListener( "alpine:init", () => {
 			this.resetExecutionState( bundlePath );
 			this.isRunning = true;
 
+			// Expand the target bundle so results are immediately visible
+			const b = this.bundles.find( b => b.path === bundlePath );
+			if ( b ) b.expanded = true;
+
 			// Single-bundle run: only pass streaming + bundles — no directory/recurse/pattern
 			let url = new URL( this.preferences.runnerUrl, window.location.href );
 			url.searchParams.append( "streaming", "true" );
