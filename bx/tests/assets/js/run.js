@@ -312,6 +312,19 @@ document.addEventListener( "alpine:init", () => {
 		},
 
 		/**
+		 * Overall run status for styling the results summary card border.
+		 */
+		get globalRunStatus() {
+			if ( this.isRunning ) return 'running';
+			const s = this.metaGlobalStats;
+			if ( s.totalFail > 0 )    return 'failed';
+			if ( s.totalError > 0 )   return 'error';
+			if ( s.totalPass > 0 )    return 'passed';
+			if ( s.totalSkipped > 0 ) return 'skipped';
+			return 'pending';
+		},
+
+		/**
 		 * Returns the tree of bundles recursively filtered by search query and status selections (Getter).
 		 */
 		get filteredBundles() {
