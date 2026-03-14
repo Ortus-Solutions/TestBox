@@ -257,7 +257,7 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 						activeBundlePath && activeBundlePath !== bundle.path ? 'opacity-50' : ''
 					]">
 					<div class="card-header d-flex justify-content-between align-items-center cursor-pointer"
-						@click="bundle.expanded = !bundle.expanded"
+						@click="bundle.expanded = !bundle.expanded; bundle.suites.forEach( s => s.expanded = bundle.expanded )"
 						:data-bs-title="bundle.expanded ? 'Collapse bundle' : 'Expand bundle'"
 						x-tooltip.bottom>
 						<div>
