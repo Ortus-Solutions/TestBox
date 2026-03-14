@@ -205,9 +205,11 @@ document.addEventListener( "alpine:init", () => {
 
 			if ( !data.bundles ) return;
 
-			data.bundles.forEach( b => {
+			data.bundles.forEach( ( b, bundleIdx ) => {
+				let bundleKey = b.path || b.name || ( "bundle-" + bundleIdx );
 				let bundle = {
-					id: b.id || b.path || b.name,
+					id: b.id || bundleKey,
+					uid: bundleKey,
 					name: b.name,
 					path: b.path,
 					status: "pending",
@@ -223,9 +225,12 @@ document.addEventListener( "alpine:init", () => {
 				};
 
 				if ( b.suites && b.suites.length ) {
-					b.suites.forEach( s => {
+					b.suites.forEach( ( s, suiteIdx ) => {
+						let suiteSourceId = s.id || s.name || ( "suite-" + suiteIdx );
+						let suiteUid = bundle.uid + "::suite::" + suiteSourceId + "::" + suiteIdx;
 						let suite = {
-							id: s.id,
+							id: suiteUid,
+							sourceId: suiteSourceId,
 							name: s.name,
 							status: "pending",
 							expanded: false,
@@ -233,16 +238,16 @@ document.addEventListener( "alpine:init", () => {
 						};
 
 						if ( s.specs && s.specs.length ) {
-							s.specs.forEach( sp => {
-								suite.specs.push( this.createSpecNode( sp ) );
+							s.specs.forEach( ( sp, specIdx ) => {
+								suite.specs.push( this.createSpecNode( sp, bundle.uid, suiteUid, specIdx ) );
 							} );
 						}
 						bundle.suites.push( suite );
 					} );
 				} else if ( b.specs && b.specs.length ) {
 					// xUnit or no suites
-					b.specs.forEach( sp => {
-						bundle.specs.push( this.createSpecNode( sp ) );
+					b.specs.forEach( ( sp, specIdx ) => {
+						bundle.specs.push( this.createSpecNode( sp, bundle.uid, null, specIdx ) );
 					} );
 				}
 
@@ -256,9 +261,14 @@ document.addEventListener( "alpine:init", () => {
 		 * @param {object} sp - The target spec metadata payload.
 		 * @returns {object} The initialized reactive node specification.
 		 */
-		createSpecNode( sp ) {
+		createSpecNode( sp, bundleUid, suiteUid = null, specIdx = 0 ) {
+			let sourceId = sp.id || sp.name || ( "spec-" + specIdx );
+			let uidBase = suiteUid || bundleUid || "bundle";
 			return {
-				id: sp.id,
+				id: uidBase + "::spec::" + sourceId + "::" + specIdx,
+				sourceId,
+				bundleUid,
+				suiteUid,
 				name: sp.name,
 				status: sp.skip ? "skipped" : "pending",
 				totalDuration: 0,
@@ -545,25 +555,25 @@ document.addEventListener( "alpine:init", () => {
 
 			this.eventSource.addEventListener( "suiteStart", ( e ) => {
 				let data = JSON.parse( e.data );
-				let suiteAndBundle = this.findSuite( data.id );
+				let suiteAndBundle = this.findSuite( data.id, data.bundlePath );
 				if ( suiteAndBundle ) suiteAndBundle.suite.status = "running";
 			} );
 
 			this.eventSource.addEventListener( "suiteEnd", ( e ) => {
 				let data = JSON.parse( e.data );
-				let suiteAndBundle = this.findSuite( data.id );
+				let suiteAndBundle = this.findSuite( data.id, data.bundlePath );
 				if ( suiteAndBundle ) suiteAndBundle.suite.status = this.determineBundleStatus( data );
 			} );
 
 			this.eventSource.addEventListener( "specStart", ( e ) => {
 				let data = JSON.parse( e.data );
-				let specInfo = this.findSpec( data.id );
+				let specInfo = this.findSpec( data.id, data.bundlePath, data.suiteId );
 				if ( specInfo ) specInfo.spec.status = "running";
 			} );
 
 			this.eventSource.addEventListener( "specEnd", ( e ) => {
 				let data = JSON.parse( e.data );
-				let specInfo = this.findSpec( data.id );
+				let specInfo = this.findSpec( data.id, data.bundlePath, data.suiteId );
 				if ( specInfo ) {
 					specInfo.spec.status = data.status.toLowerCase();
 					specInfo.spec.totalDuration = data.totalDuration || 0;
@@ -650,10 +660,11 @@ document.addEventListener( "alpine:init", () => {
 		 * @param {string} id - Active reference ID representing requested target.
 		 * @returns {object|null} Resolving pair returning parent and matched item explicitly.
 		 */
-		findSuite( id ) {
+		findSuite( id, bundlePath = null ) {
 			for ( let b of this.bundles ) {
+				if ( bundlePath && b.path !== bundlePath ) continue;
 				for ( let s of b.suites ) {
-					if ( s.id === id ) return { bundle: b, suite: s };
+					if ( s.sourceId === id ) return { bundle: b, suite: s };
 				}
 			}
 			return null;
@@ -666,16 +677,18 @@ document.addEventListener( "alpine:init", () => {
 		 * @param {string} id - Extrapolated reference ID of lookup element.
 		 * @returns {object|null} Extended trace collection grouping targeting tree elements implicitly.
 		 */
-		findSpec( id ) {
+		findSpec( id, bundlePath = null, suiteId = null ) {
 			for ( let b of this.bundles ) {
+				if ( bundlePath && b.path !== bundlePath ) continue;
 				for ( let s of b.suites ) {
+					if ( suiteId && s.sourceId !== suiteId ) continue;
 					for ( let sp of s.specs ) {
-						if ( sp.id === id ) return { bundle: b, suite: s, spec: sp };
+						if ( sp.sourceId === id ) return { bundle: b, suite: s, spec: sp };
 					}
 				}
 				// Top-level specs (xUnit style — no parent suite)
 				for ( let sp of b.specs ) {
-					if ( sp.id === id ) return { bundle: b, suite: null, spec: sp };
+					if ( sp.sourceId === id ) return { bundle: b, suite: null, spec: sp };
 				}
 			}
 			return null;

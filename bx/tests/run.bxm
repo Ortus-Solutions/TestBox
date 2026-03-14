@@ -259,7 +259,7 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 
 		<!-- Test Tree -->
 		<div class="test-tree" x-show="!isLoading && !globalError">
-			<template x-for="bundle in filteredBundles" :key="bundle.id">
+			<template x-for="bundle in filteredBundles" :key="bundle.uid">
 				<div
 					class="card mb-3 bundle-card border-secondary"
 					:class="[
@@ -471,7 +471,7 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 	<!-- JAVASCRIPT -->
 	<!--- ============================================================================================================ --->
 	<script defer src="assets/js/vendor/bootstrap.bundle.min.js"></script>
-	<script defer src="assets/js/run.js"></script>
+	<script defer src="assets/js/run.js?v=20260314"></script>
 	<script defer src="assets/js/vendor/alpine-collapse.min.js"></script>
 	<script defer src="assets/js/vendor/alpine.min.js"></script>
 </body>
