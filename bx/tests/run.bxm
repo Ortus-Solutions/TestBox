@@ -129,6 +129,25 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 			</div>
 			<!--- Status Filters --->
 			<div class="col-md-8 text-end mt-2 mt-md-0">
+				<!--- Collapse / Expand All --->
+				<div class="btn-group me-2" role="group">
+					<button
+						class="btn btn-outline-secondary btn-sm"
+						@click="expandAll()"
+						:disabled="isLoading"
+						data-bs-title="Expand all bundles"
+						x-tooltip>
+						<i class="bi bi-arrows-expand"></i>
+					</button>
+					<button
+						class="btn btn-outline-secondary btn-sm"
+						@click="collapseAll()"
+						:disabled="isLoading"
+						data-bs-title="Collapse all bundles"
+						x-tooltip>
+						<i class="bi bi-arrows-collapse"></i>
+					</button>
+				</div>
 				<div class="btn-group me-3" role="group">
 					<button
 						class="btn btn-outline-success"

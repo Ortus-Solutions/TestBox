@@ -682,6 +682,26 @@ document.addEventListener( "alpine:init", () => {
 		},
 
 		/**
+		 * Expands all bundle cards in the test tree.
+		 */
+		expandAll() {
+			this.bundles.forEach( b => {
+				b.expanded = true;
+				b.suites.forEach( s => s.expanded = true );
+			} );
+		},
+
+		/**
+		 * Collapses all bundle cards in the test tree.
+		 */
+		collapseAll() {
+			this.bundles.forEach( b => {
+				b.expanded = false;
+				b.suites.forEach( s => s.expanded = false );
+			} );
+		},
+
+		/**
 		 * Computes the overarching roll-up derivation status of dynamic container
 		 * representations mapping test results progressively.
 		 *
