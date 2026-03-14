@@ -208,7 +208,7 @@ component accessors="true" {
 		var service = this;
 
 		return {
-			"onBundleStart" : function( target, testResults ){
+			"onBundleStart" : ( target, testResults ) => {
 				// Note: Bundle stats (including the id) are not yet created when onBundleStart fires.
 				// We generate a deterministic id from the path so consumers can correlate
 				// bundleStart with bundleEnd events.
@@ -222,12 +222,12 @@ component accessors="true" {
 					{
 						"id"        : bundleId,
 						"name"      : bundleName,
-						"path"      : targetMD.name,
+						"path"      : targetMD.path,
 						"timestamp" : getTickCount()
 					}
 				);
 			},
-			"onBundleEnd" : function( target, testResults ){
+			"onBundleEnd" : ( target, testResults ) => {
 				var targetMD = getMetadata( arguments.target );
 				var bundleId = hash( targetMD.name );
 
@@ -259,22 +259,26 @@ component accessors="true" {
 					}
 				);
 			},
-			"onSuiteStart" : function( target, testResults, suite ){
+			"onSuiteStart" : ( target, testResults, suite ) => {
+				var targetMD = getMetadata( arguments.target );
 				service.streamEvent(
 					"suiteStart",
 					{
 						"id"        : arguments.suite.id,
+						"bundlePath": targetMD.path,
 						"name"      : arguments.suite.name,
 						"timestamp" : getTickCount()
 					}
 				);
 			},
-			"onSuiteEnd" : function( target, testResults, suite ){
+			"onSuiteEnd" : ( target, testResults, suite ) => {
+				var targetMD = getMetadata( arguments.target );
 				var suiteStats = arguments.testResults.getSuiteStats( arguments.suite.id );
 				service.streamEvent(
 					"suiteEnd",
 					{
 						"id"            : arguments.suite.id,
+						"bundlePath"    : targetMD.path,
 						"name"          : arguments.suite.name,
 						"totalDuration" : suiteStats.totalDuration,
 						"totalSpecs"    : suiteStats.totalSpecs,
@@ -285,19 +289,22 @@ component accessors="true" {
 					}
 				);
 			},
-			"onSpecStart" : function( target, testResults, suite, spec ){
+			"onSpecStart" : ( target, testResults, suite, spec ) => {
+				var targetMD = getMetadata( arguments.target );
 				service.streamEvent(
 					"specStart",
 					{
 						"id"          : arguments.spec.id,
 						"suiteId"     : arguments.suite.id,
+						"bundlePath"  : targetMD.path,
 						"name"        : arguments.spec.name,
 						"displayName" : arguments.spec.displayName ?: arguments.spec.name,
 						"timestamp"   : getTickCount()
 					}
 				);
 			},
-			"onSpecEnd" : function( target, testResults, suite, spec ){
+			"onSpecEnd" : ( target, testResults, suite, spec ) => {
+				var targetMD = getMetadata( arguments.target );
 				var currentSpec = arguments.testResults.getSpecStats( arguments.spec.id );
 
 				service.streamEvent(
@@ -305,6 +312,7 @@ component accessors="true" {
 					{
 						"id"             : arguments.spec.id,
 						"suiteId"        : arguments.suite.id,
+						"bundlePath"     : targetMD.path,
 						"name"           : arguments.spec.name,
 						"displayName"    : arguments.spec.displayName ?: arguments.spec.name,
 						"status"         : currentSpec.status ?: "unknown",
@@ -322,7 +330,7 @@ component accessors="true" {
 			 * This callback should be called by the runner after thread joins to flush
 			 * any events that were queued from thread contexts.
 			 */
-			"onAsyncDrain" : function(){
+			"onAsyncDrain" : () => {
 				service.drainQueue();
 			}
 		};
