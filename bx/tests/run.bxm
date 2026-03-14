@@ -222,7 +222,8 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 								class="btn btn-sm btn-outline-primary border-0 p-0 ms-1 lh-1"
 								style="font-size: 1.35rem; line-height: 1; width: 1.6rem; height: 1.6rem;"
 								title="Run this bundle"
-								@click.stop="runBundle(bundle.path)"
+								:data-path="bundle.path"
+								@click.stop="runBundle( $el.dataset.path )"
 								:disabled="isRunning && activeBundlePath !== bundle.path">
 								<i class="bi" :class="isRunning && activeBundlePath === bundle.path ? 'bi-hourglass-split text-primary spinner-icon' : 'bi-play-circle-fill'"></i>
 							</button>

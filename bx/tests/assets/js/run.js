@@ -270,13 +270,28 @@ document.addEventListener( "alpine:init", () => {
 
 		/**
 		 * Dynamically calculates global counting statistics across all bundles, suites, and specs (Getter).
+		 * - After a completed run: returns the accurate stats received from the testRunEnd SSE event.
+		 * - During a run or before any run: computes structure from the bundle tree. For single-bundle
+		 *   runs the structure is scoped to the active bundle, giving an accurate progress bar denominator.
 		 */
 		get metaGlobalStats() {
-			let totalB = this.bundles.length;
+			// Post-run: return the accurate server-reported counts verbatim.
+			if ( this.runCompleted ) {
+				return { ...this.globalStats };
+			}
+
+			// During a run / initial load: derive structure from the bundle tree.
+			// For single-bundle runs scope to only the active bundle so the progress
+			// bar denominator matches what the server is actually executing.
+			let targetBundles = ( this.isRunning && this.activeBundlePath )
+				? this.bundles.filter( b => b.path === this.activeBundlePath )
+				: this.bundles;
+
+			let totalB  = ( this.isRunning && this.activeBundlePath ) ? 1 : this.bundles.length;
 			let totalSu = 0;
 			let totalSp = 0;
 
-			this.bundles.forEach( b => {
+			targetBundles.forEach( b => {
 				totalSu += b.suites.length;
 				totalSp += b.specs.length;
 				b.suites.forEach( s => {
@@ -286,13 +301,13 @@ document.addEventListener( "alpine:init", () => {
 
 			return {
 				totalBundles: totalB,
-				totalSuites: totalSu,
-				totalSpecs: totalSp,
+				totalSuites:  totalSu,
+				totalSpecs:   totalSp,
 				totalDuration: this.globalStats.totalDuration,
-				totalPass: this.globalStats.totalPass,
-				totalFail: this.globalStats.totalFail,
-				totalError: this.globalStats.totalError,
-				totalSkipped: this.globalStats.totalSkipped
+				totalPass:     this.globalStats.totalPass,
+				totalFail:     this.globalStats.totalFail,
+				totalError:    this.globalStats.totalError,
+				totalSkipped:  this.globalStats.totalSkipped
 			};
 		},
 
@@ -439,12 +454,13 @@ document.addEventListener( "alpine:init", () => {
 				if ( b ) resetBundle( b );
 			} else {
 				this.bundles.forEach( resetBundle );
-				this.globalStats = {
-					totalBundles: 0, totalSuites: 0, totalSpecs: 0, totalDuration: 0,
-					totalPass: 0, totalFail: 0, totalError: 0, totalSkipped: 0
-				};
 			}
 
+			// Always wipe run stats so metaGlobalStats reflects the new run, not the previous one.
+			this.globalStats = {
+				totalBundles: 0, totalSuites: 0, totalSpecs: 0, totalDuration: 0,
+				totalPass: 0, totalFail: 0, totalError: 0, totalSkipped: 0
+			};
 			this.specsCompleted = 0;
 			this.globalError = null;
 			this.globalErrorDetail = null;
@@ -549,11 +565,16 @@ document.addEventListener( "alpine:init", () => {
 
 			this.eventSource.addEventListener( "testRunEnd", ( e ) => {
 				let data = JSON.parse( e.data );
+				// Capture all run-level counters so metaGlobalStats can reflect exactly
+				// what was executed (full harness *or* a single-bundle run).
+				this.globalStats.totalBundles  = data.totalBundles;
+				this.globalStats.totalSuites   = data.totalSuites;
+				this.globalStats.totalSpecs    = data.totalSpecs;
 				this.globalStats.totalDuration = data.totalDuration;
-				this.globalStats.totalPass = data.totalPass;
-				this.globalStats.totalFail = data.totalFail;
-				this.globalStats.totalError = data.totalError;
-				this.globalStats.totalSkipped = data.totalSkipped;
+				this.globalStats.totalPass     = data.totalPass;
+				this.globalStats.totalFail     = data.totalFail;
+				this.globalStats.totalError    = data.totalError;
+				this.globalStats.totalSkipped  = data.totalSkipped;
 				this.runCompleted = true;
 				this.isStopping = true;
 				this.stopTests();
