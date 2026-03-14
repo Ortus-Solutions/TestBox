@@ -85,7 +85,9 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 		<!-- Error Banner -->
 		<template x-if="globalError">
 			<div class="alert alert-danger" role="alert">
-				<h4 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> Oops, something went wrong!</h4>
+				<h4 class="alert-heading">
+					<i class="bi bi-exclamation-triangle-fill"></i> Oops, something went wrong!
+				</h4>
 				<p x-text="globalError"></p>
 				<hr>
 				<p class="mb-0 font-monospace small" style="white-space: pre-wrap;" x-text="globalErrorDetail"></p>
@@ -127,11 +129,13 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 		</div>
 
 		<!--- Loader --->
-		<div class="d-flex justify-content-center my-5" x-show="isLoading">
-			<div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-				<span class="visually-hidden">Loading...</span>
+		<template x-if="isLoading">
+			<div class="d-flex justify-content-center my-5">
+				<div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
 			</div>
-		</div>
+		</template>
 
 		<!-- Test Tree -->
 		<div class="test-tree" x-show="!isLoading && !globalError">
