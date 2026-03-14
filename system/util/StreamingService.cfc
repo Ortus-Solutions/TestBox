@@ -312,7 +312,7 @@ component accessors="true" {
 						"failMessage"    : currentSpec.failMessage ?: "",
 						"failDetail"     : currentSpec.failDetail ?: "",
 						"failStacktrace" : currentSpec.failStacktrace ?: "",
-						"failOrigin"     : currentSpec.failOrigin ?: {},
+						"failOrigin"     : isArray( currentSpec.failOrigin ?: "" ) ? currentSpec.failOrigin : [],
 						"error"          : currentSpec.error ?: {}
 					}
 				);
