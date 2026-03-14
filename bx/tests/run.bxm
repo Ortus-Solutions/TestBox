@@ -309,6 +309,43 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 						<span class="strip-stat text-secondary ms-auto" x-show="bundle.totalDuration > 0">
 							<i class="bi bi-clock me-1"></i><span x-text="bundle.totalDuration + ' ms'"></span>
 						</span>
+						<!--- Debug buffer toggle — only appears when there is debug output --->
+						<button
+							class="btn btn-sm border-0 p-0 ms-1 lh-1 strip-debug-btn"
+							:class="bundle.showDebug ? 'text-warning' : 'text-secondary opacity-50'"
+							@click.stop="bundle.showDebug = !bundle.showDebug"
+							:data-bs-title="'Debug output (' + bundle.debugBuffer.length + ' entries)'"
+							x-show="bundle.debugBuffer && bundle.debugBuffer.length > 0"
+							x-tooltip>
+							<i class="bi bi-bug-fill"></i>
+						</button>
+					</div>
+
+					<!--- Debug output panel --->
+					<div
+						class="bundle-debug-panel"
+						x-show="bundle.showDebug && bundle.debugBuffer && bundle.debugBuffer.length > 0"
+						x-collapse>
+						<div class="px-3 py-2 border-top border-warning border-opacity-25">
+							<div class="d-flex align-items-center justify-content-between mb-2">
+								<span class="text-warning small fw-semibold">
+									<i class="bi bi-bug-fill me-1"></i>Debug Buffer
+									<span class="badge bg-warning text-dark ms-1" x-text="bundle.debugBuffer.length"></span>
+								</span>
+								<button class="btn btn-sm btn-outline-secondary border-0 py-0 px-1" @click.stop="bundle.showDebug = false" data-bs-title="Close debug panel" x-tooltip>
+									<i class="bi bi-x-lg"></i>
+								</button>
+							</div>
+							<template x-for="(entry, idx) in bundle.debugBuffer" :key="idx">
+								<div class="debug-entry mb-2 rounded">
+									<div class="debug-entry-header d-flex align-items-center justify-content-between px-2 py-1">
+										<span class="debug-entry-label fw-semibold small" x-text="entry.label || 'debug'"></span>
+										<span class="text-muted" style="font-size: 0.7rem;" x-text="entry.timestamp"></span>
+									</div>
+									<pre class="debug-entry-body mb-0 px-2 py-1" x-text="typeof entry.data === 'string' ? entry.data : JSON.stringify(entry.data, null, 2)"></pre>
+								</div>
+							</template>
+						</div>
 					</div>
 
 					<!--- Suite list --->

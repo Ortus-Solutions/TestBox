@@ -254,7 +254,8 @@ component accessors="true" {
 						"totalPass"     : current.totalPass,
 						"totalFail"     : current.totalFail,
 						"totalError"    : current.totalError,
-						"totalSkipped"  : current.totalSkipped
+						"totalSkipped"  : current.totalSkipped,
+						"debugBuffer"   : current.debugBuffer ?: []
 					}
 				);
 			},

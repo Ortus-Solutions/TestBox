@@ -72,6 +72,36 @@ body {
 
 .strip-stat { font-weight: 500; white-space: nowrap; }
 
+.strip-debug-btn { font-size: 0.9rem; transition: color 0.15s ease; }
+
+/* Debug output panel */
+.bundle-debug-panel {
+	background: rgba(var(--bs-warning-rgb), 0.04);
+}
+
+.debug-entry {
+	border: 1px solid rgba(var(--bs-warning-rgb), 0.2);
+	overflow: hidden;
+}
+
+.debug-entry-header {
+	background: rgba(var(--bs-warning-rgb), 0.1);
+	border-bottom: 1px solid rgba(var(--bs-warning-rgb), 0.15);
+}
+
+.debug-entry-label { color: var(--bs-warning); }
+
+.debug-entry-body {
+	font-size: 0.78rem;
+	font-family: var(--bs-font-monospace);
+	white-space: pre-wrap;
+	word-break: break-all;
+	max-height: 300px;
+	overflow-y: auto;
+	color: var(--bs-body-color);
+	background: transparent;
+}
+
 /* Results summary card */
 .results-summary-card .results-stat-count {
 	font-size: 2.25rem;

@@ -217,8 +217,8 @@ document.addEventListener( "alpine:init", () => {
 					totalPass: 0,
 					totalFail: 0,
 					totalError: 0,
-					totalSkipped: 0,
-					suites: [],
+					totalSkipped: 0,				debugBuffer: [],
+				showDebug: false,					suites: [],
 					specs: [] // top-level specs
 				};
 
@@ -539,6 +539,7 @@ document.addEventListener( "alpine:init", () => {
 					bundle.totalFail = data.totalFail || 0;
 					bundle.totalError = data.totalError || 0;
 					bundle.totalSkipped = data.totalSkipped || 0;
+					bundle.debugBuffer = data.debugBuffer || [];
 				}
 			} );
 
