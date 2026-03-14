@@ -55,7 +55,7 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 		<div class="container-fluid">
 			<a class="navbar-brand text-primary d-flex align-items-center" href="##">
 				<img
-					src="assets/images/testbox-logo-full-light-L.svg"
+					:src="preferences.theme === 'dark' ? 'assets/images/testbox-logo-full-light-L.svg' : 'assets/images/testbox-logo-full-dark-L.svg'"
 					alt="TestBox"
 					height="30"
 					class="me-2 d-inline-block align-text-top">
@@ -65,11 +65,28 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 			</button>
 			<div class="collapse navbar-collapse" id="navbarText">
 				<div class="me-auto"></div>
-				<span class="navbar-text">
-					<button class="btn btn-sm btn-outline-secondary me-2" @click="toggleTheme()" title="Toggle Theme">
+				<span class="navbar-text d-flex align-items-center gap-2">
+					<button
+						class="btn btn-sm btn-outline-secondary"
+						@click="refreshTests()"
+						:disabled="isRunning"
+						data-bs-title="Reload test discovery"
+						x-tooltip.bottom>
+						<i class="bi bi-arrow-clockwise" :class="isLoading ? 'spinner-icon' : ''"></i>
+					</button>
+					<button
+						class="btn btn-sm btn-outline-secondary"
+						@click="toggleTheme()"
+						:data-bs-title="preferences.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+						x-tooltip.bottom>
 						<i class="bi" :class="preferences.theme === 'dark' ? 'bi-moon-stars-fill' : 'bi-sun-fill'"></i>
 					</button>
-					<button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="##settingsModal" title="Settings">
+					<button
+						class="btn btn-sm btn-outline-secondary"
+						data-bs-toggle="modal"
+						data-bs-target="##settingsModal"
+						data-bs-title="Settings"
+						x-tooltip.bottom>
 						<i class="bi bi-gear-fill"></i>
 					</button>
 				</span>
@@ -106,7 +123,9 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 					type="text"
 					class="form-control border-primary"
 					x-model="searchQuery"
-					placeholder="Filter bundles, suites, specs...">
+					placeholder="Filter bundles, suites, specs..."
+					data-bs-title="Filter the test tree by name"
+					x-tooltip.bottom>
 			</div>
 			<!--- Status Filters --->
 			<div class="col-md-8 text-end mt-2 mt-md-0">
@@ -114,25 +133,33 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 					<button
 						class="btn btn-outline-success"
 						:class="{'active': statusFilters.passed}"
-						@click="statusFilters.passed = !statusFilters.passed">
+						@click="statusFilters.passed = !statusFilters.passed"
+						data-bs-title="Toggle visibility of passed specs"
+						x-tooltip>
 						Passed (<span x-text="metaGlobalStats.totalPass">0</span>)
 					</button>
 					<button
 						class="btn btn-outline-danger"
 						:class="{'active': statusFilters.failed}"
-						@click="statusFilters.failed = !statusFilters.failed">
+						@click="statusFilters.failed = !statusFilters.failed"
+						data-bs-title="Toggle visibility of failed specs"
+						x-tooltip>
 						Failed (<span x-text="metaGlobalStats.totalFail">0</span>)
 					</button>
 					<button
 						class="btn btn-outline-warning"
 						:class="{'active': statusFilters.error}"
-						@click="statusFilters.error = !statusFilters.error">
+						@click="statusFilters.error = !statusFilters.error"
+						data-bs-title="Toggle visibility of errored specs"
+						x-tooltip>
 						Error (<span x-text="metaGlobalStats.totalError">0</span>)
 					</button>
 					<button
 						class="btn btn-outline-info"
 						:class="{'active': statusFilters.skipped}"
-						@click="statusFilters.skipped = !statusFilters.skipped">
+						@click="statusFilters.skipped = !statusFilters.skipped"
+						data-bs-title="Toggle visibility of skipped specs"
+						x-tooltip>
 						Skipped (<span x-text="metaGlobalStats.totalSkipped">0</span>)
 					</button>
 				</div>
@@ -142,13 +169,17 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 					class="btn btn-primary"
 					@click="runAllTests()"
 					x-show="!isRunning"
-					:disabled="isLoading">
+					:disabled="isLoading"
+					data-bs-title="Run all test bundles"
+					x-tooltip>
 					<i class="bi bi-play-fill"></i> Run All
 				</button>
 				<button
 					class="btn btn-danger"
 					@click="stopTests()"
-					x-show="isRunning">
+					x-show="isRunning"
+					data-bs-title="Stop the current test run"
+					x-tooltip>
 					<i class="bi bi-stop-fill"></i> Stop
 				</button>
 			</div>
@@ -158,10 +189,10 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 		<div class="card border-primary mb-3" x-show="!globalError">
 			<div class="card-body py-2 bg-primary bg-opacity-10">
 				<div class="row text-center text-primary fw-bold">
-					<div class="col">Bundles: <span class="badge bg-primary rounded-pill ms-1" x-text="metaGlobalStats.totalBundles">0</span></div>
-					<div class="col">Suites: <span class="badge bg-primary rounded-pill ms-1" x-text="metaGlobalStats.totalSuites">0</span></div>
-					<div class="col">Specs: <span class="badge bg-primary rounded-pill ms-1" x-text="metaGlobalStats.totalSpecs">0</span></div>
-					<div class="col">Duration: <span class="badge bg-primary rounded-pill ms-1" x-text="metaGlobalStats.totalDuration + ' ms'">0 ms</span></div>
+					<div class="col" data-bs-title="Total bundles discovered" x-tooltip>Bundles: <span class="badge bg-primary rounded-pill ms-1" x-text="metaGlobalStats.totalBundles">0</span></div>
+					<div class="col" data-bs-title="Total suites across all bundles" x-tooltip>Suites: <span class="badge bg-primary rounded-pill ms-1" x-text="metaGlobalStats.totalSuites">0</span></div>
+					<div class="col" data-bs-title="Total specs across all suites" x-tooltip>Specs: <span class="badge bg-primary rounded-pill ms-1" x-text="metaGlobalStats.totalSpecs">0</span></div>
+					<div class="col" data-bs-title="Total execution time in milliseconds" x-tooltip>Duration: <span class="badge bg-primary rounded-pill ms-1" x-text="metaGlobalStats.totalDuration + ' ms'">0 ms</span></div>
 				</div>
 			</div>
 		</div>
@@ -206,10 +237,13 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 						'status-bd-' + bundle.status,
 						activeBundlePath && activeBundlePath !== bundle.path ? 'opacity-50' : ''
 					]">
-					<div class="card-header d-flex justify-content-between align-items-center cursor-pointer" @click="bundle.expanded = !bundle.expanded">
+					<div class="card-header d-flex justify-content-between align-items-center cursor-pointer"
+						@click="bundle.expanded = !bundle.expanded"
+						:data-bs-title="bundle.expanded ? 'Collapse bundle' : 'Expand bundle'"
+						x-tooltip.bottom>
 						<div>
 							<i class="bi me-2 fs-5" :class="getStatusIcon(bundle.status, bundle.type)"></i>
-							<strong class="fs-5" x-text="bundle.name"></strong>
+							<strong class="fs-5" x-text="bundle.path"></strong>
 							<span class="badge rounded-pill bg-secondary ms-2" x-text="bundle.totalDuration + 'ms'" x-show="bundle.totalDuration > 0"></span>
 						</div>
 						<div class="d-flex align-items-center gap-1">
@@ -221,10 +255,11 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 							<button
 								class="btn btn-sm btn-outline-primary border-0 p-0 ms-1 lh-1"
 								style="font-size: 1.35rem; line-height: 1; width: 1.6rem; height: 1.6rem;"
-								title="Run this bundle"
-								:data-path="bundle.path"
-								@click.stop="runBundle( $el.dataset.path )"
-								:disabled="isRunning && activeBundlePath !== bundle.path">
+									data-bs-title="Run this bundle"
+									:data-path="bundle.path"
+									@click.stop="runBundle( $el.dataset.path )"
+									:disabled="isRunning && activeBundlePath !== bundle.path"
+									x-tooltip>
 								<i class="bi" :class="isRunning && activeBundlePath === bundle.path ? 'bi-hourglass-split text-primary spinner-icon' : 'bi-play-circle-fill'"></i>
 							</button>
 							<i class="bi ms-1" :class="bundle.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>

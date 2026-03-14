@@ -211,7 +211,7 @@ document.addEventListener( "alpine:init", () => {
 					name: b.name,
 					path: b.path,
 					status: "pending",
-					expanded: true,
+					expanded: false,
 					type: "bundle",
 					totalDuration: 0,
 					totalPass: 0,
@@ -228,7 +228,7 @@ document.addEventListener( "alpine:init", () => {
 							id: s.id,
 							name: s.name,
 							status: "pending",
-							expanded: true,
+							expanded: false,
 							specs: []
 						};
 
@@ -317,7 +317,7 @@ document.addEventListener( "alpine:init", () => {
 		get filteredBundles() {
 			return this.bundles.filter( b => {
 				// if search matches bundle name, show it
-				let searchMatch = b.name.toLowerCase().includes( this.searchQuery.toLowerCase() );
+				let searchMatch = b.path.toLowerCase().includes( this.searchQuery.toLowerCase() );
 				let statusMatch = this.isStatusVisible( b.status );
 
 				if ( !statusMatch ) return false;
@@ -661,6 +661,27 @@ document.addEventListener( "alpine:init", () => {
 		},
 
 		/**
+		 * Resets the entire UI to initial discovery state, wiping all run results and
+		 * re-fetching the test bundle structure via a fresh dry run. Stops any active run first.
+		 */
+		refreshTests() {
+			if ( this.isRunning ) {
+				this.stopTests();
+			}
+			this.bundles           = [];
+			this.runCompleted      = false;
+			this.activeBundlePath  = null;
+			this.specsCompleted    = 0;
+			this.globalError       = null;
+			this.globalErrorDetail = null;
+			this.globalStats = {
+				totalBundles: 0, totalSuites: 0, totalSpecs: 0, totalDuration: 0,
+				totalPass: 0, totalFail: 0, totalError: 0, totalSkipped: 0
+			};
+			this.fetchDryRun();
+		},
+
+		/**
 		 * Computes the overarching roll-up derivation status of dynamic container
 		 * representations mapping test results progressively.
 		 *
@@ -675,4 +696,15 @@ document.addEventListener( "alpine:init", () => {
 			return "pending"; // default
 		}
 	} ) );
+
+	// x-tooltip: wraps Bootstrap 5 Tooltip per element.
+	// Usage: x-tooltip (reads data-bs-title or title attr) | x-tooltip.bottom (placement modifier)
+	Alpine.directive( "tooltip", ( el, { modifiers }, { cleanup } ) => {
+		let instance = new bootstrap.Tooltip( el, {
+			title:     () => el.getAttribute( "data-bs-title" ) || el.getAttribute( "title" ) || "",
+			trigger:   "hover focus",
+			placement: modifiers[ 0 ] || "top"
+		} );
+		cleanup( () => instance.dispose() );
+	} );
 } );
