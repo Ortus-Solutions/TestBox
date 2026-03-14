@@ -185,9 +185,9 @@ document.addEventListener( "alpine:init", () => {
 
 			this.bundles = [];
 
-			if ( !data.bundleStats ) return;
+			if ( !data.bundles ) return;
 
-			data.bundleStats.forEach( b => {
+			data.bundles.forEach( b => {
 				let bundle = {
 					id: b.id || b.path || b.name,
 					name: b.name,
@@ -204,8 +204,8 @@ document.addEventListener( "alpine:init", () => {
 					specs: [] // top-level specs
 				};
 
-				if ( b.suiteStats && b.suiteStats.length ) {
-					b.suiteStats.forEach( s => {
+				if ( b.suites && b.suites.length ) {
+					b.suites.forEach( s => {
 						let suite = {
 							id: s.id,
 							name: s.name,
@@ -214,16 +214,16 @@ document.addEventListener( "alpine:init", () => {
 							specs: []
 						};
 
-						if ( s.specStats && s.specStats.length ) {
-							s.specStats.forEach( sp => {
+						if ( s.specs && s.specs.length ) {
+							s.specs.forEach( sp => {
 								suite.specs.push( this.createSpecNode( sp ) );
 							} );
 						}
 						bundle.suites.push( suite );
 					} );
-				} else if ( b.specStats && b.specStats.length ) {
+				} else if ( b.specs && b.specs.length ) {
 					// xUnit or no suites
-					b.specStats.forEach( sp => {
+					b.specs.forEach( sp => {
 						bundle.specs.push( this.createSpecNode( sp ) );
 					} );
 				}

@@ -48,6 +48,9 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 	x-init="init()"
 	:data-bs-theme="preferences.theme">
 
+	<!--- ============================================================================================================ --->
+	<!-- NAVBAR -->
+	<!--- ============================================================================================================ --->
 	<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom mb-3">
 		<div class="container-fluid">
 			<a class="navbar-brand text-primary d-flex align-items-center" href="##">
@@ -74,6 +77,9 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 		</div>
 	</nav>
 
+	<!--- ============================================================================================================ --->
+	<!-- CONTAINER -->
+	<!--- ============================================================================================================ --->
 	<div class="container-fluid">
 
 		<!-- Error Banner -->
@@ -120,6 +126,7 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 			</div>
 		</div>
 
+		<!--- Loader --->
 		<div class="d-flex justify-content-center my-5" x-show="isLoading">
 			<div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
 				<span class="visually-hidden">Loading...</span>
@@ -200,15 +207,32 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 
 	</div>
 
+
+	<!--- ============================================================================================================ --->
 	<!-- Settings Modal -->
-	<div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true" x-ignore>
+	<!--- ============================================================================================================ --->
+	<div
+		class="modal fade"
+		id="settingsModal"
+		tabindex="-1"
+		aria-labelledby="settingsModalLabel"
+		aria-hidden="true"
+		x-ignore>
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
+				<!--- Header --->
 				<div class="modal-header">
 					<h1 class="modal-title fs-5" id="settingsModalLabel"><i class="bi bi-gear-fill"></i> Settings</h1>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
+				<!--- Body --->
 				<div class="modal-body">
+					<p>
+						From here you can configure your test runner preferences.
+						These settings will be saved locally in your browser and applied on each visit.
+						You can also override any of these options via URL query parameters for quick testing or CI integration.
+						<strong>Please note that all these options are runner-specific and require your runner to support them.</strong>
+					</p>
 					<div class="mb-3">
 						<label class="form-label">Runner URL</label>
 						<input type="text" class="form-control" x-model="preferences.runnerUrl">
@@ -245,11 +269,13 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 		</div>
 	</div>
 
-<!-- Alpine is handled in run.js setup -->
-<script defer src="assets/js/vendor/bootstrap.bundle.min.js"></script>
-<script defer src="assets/js/run.js"></script>
-<script defer src="assets/js/vendor/alpine-collapse.min.js"></script>
-<script defer src="assets/js/vendor/alpine.min.js"></script>
+	<!--- ============================================================================================================ --->
+	<!-- JAVASCRIPT -->
+	<!--- ============================================================================================================ --->
+	<script defer src="assets/js/vendor/bootstrap.bundle.min.js"></script>
+	<script defer src="assets/js/run.js"></script>
+	<script defer src="assets/js/vendor/alpine-collapse.min.js"></script>
+	<script defer src="assets/js/vendor/alpine.min.js"></script>
 </body>
 </html>
 </bx:output>
