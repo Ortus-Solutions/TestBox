@@ -21,7 +21,7 @@
 
 body {
     transition: background-color 0.3s ease, color 0.3s ease;
-    padding-top: 62px; /* offset for fixed navbar */
+    padding-top: 75px; /* offset for fixed navbar */
 }
 
 .cursor-pointer {
@@ -112,6 +112,77 @@ body {
 	overflow-y: auto;
 	color: var(--bs-body-color);
 	background: transparent;
+}
+
+/* ── Spec failure / error detail ───────────────────────── */
+
+.spec-origin-row {
+	display: flex;
+	align-items: baseline;
+	gap: 0.35rem;
+	flex-wrap: wrap;
+	font-size: 0.78rem;
+}
+
+.spec-origin-link {
+	font-family: var(--bs-font-monospace);
+	font-size: 0.78rem;
+	text-decoration: none;
+	word-break: break-all;
+}
+
+.spec-origin-link:hover {
+	text-decoration: underline;
+}
+
+.spec-show-all-btn {
+	font-size: 0.72rem;
+	text-decoration: none;
+	opacity: 0.8;
+	white-space: nowrap;
+}
+
+.spec-show-all-btn:hover { opacity: 1; }
+
+.spec-fail-panel {
+	background: rgba(128, 128, 128, 0.05);
+	border-radius: 4px;
+	padding: 0.5rem 0.65rem;
+	margin-top: 0.4rem;
+}
+
+.spec-fail-section-label {
+	font-size: 0.65rem;
+	text-transform: uppercase;
+	letter-spacing: 0.07em;
+	opacity: 0.55;
+	margin-bottom: 0.25rem;
+}
+
+.spec-origin-item {
+	display: flex;
+	align-items: baseline;
+	gap: 0.3rem;
+	margin-bottom: 0.15rem;
+}
+
+.spec-origin-idx {
+	font-family: var(--bs-font-monospace);
+	font-size: 0.72rem;
+}
+
+.spec-fail-stacktrace {
+	font-size: 0.72rem;
+	font-family: var(--bs-font-monospace);
+	white-space: pre-wrap;
+	word-break: break-word;
+	max-height: 260px;
+	overflow-y: auto;
+	background: transparent;
+	margin: 0;
+	padding: 0;
+	color: var(--bs-body-color);
+	opacity: 0.85;
 }
 
 /* Results summary card */

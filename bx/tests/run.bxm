@@ -58,7 +58,7 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 					:src="preferences.theme === 'dark' ? 'assets/images/testbox-logo-full-light-L.svg' : 'assets/images/testbox-logo-full-dark-L.svg'"
 					alt="TestBox"
 					height="30"
-					class="me-2 d-inline-block align-text-top">
+					class="me-2 d-inline-block align-text-top"> RUN
 			</a>
 			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="##navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
 				<span class="navbar-toggler-icon"></span>
