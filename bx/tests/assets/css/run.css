@@ -50,7 +50,18 @@ body {
 .status-bd-running { border-left: 5px solid var(--bs-primary) !important; }
 .status-bd-pending { border-left: 5px solid var(--tb-tree-border) !important; }
 
-/* Sub-items border (Suites and Specs) */
+/* Bundle results strip — inline toolbar shown after a run */
+.bundle-results-strip {
+	font-size: 0.8rem;
+	border-top: 1px solid rgba(128,128,128,0.15);
+}
+
+.strip-passed  { background: rgba(var(--bs-success-rgb), 0.06); }
+.strip-failed  { background: rgba(var(--bs-danger-rgb),  0.06); }
+.strip-error   { background: rgba(var(--bs-warning-rgb), 0.06); }
+.strip-skipped { background: rgba(var(--bs-info-rgb),    0.06); }
+
+.strip-stat { font-weight: 500; white-space: nowrap; }
 .box-border-left {
 	border-left: 2px solid var(--tb-tree-border);
 	transition: border-color 0.3s ease;

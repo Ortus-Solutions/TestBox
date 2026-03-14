@@ -258,33 +258,50 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 					]">
 					<div class="card-header d-flex justify-content-between align-items-center cursor-pointer"
 						@click="bundle.expanded = !bundle.expanded; bundle.suites.forEach( s => s.expanded = bundle.expanded )"
-						:data-bs-title="bundle.expanded ? 'Collapse bundle' : 'Expand bundle'"
 						x-tooltip.bottom>
-						<div>
-							<i class="bi me-2 fs-5" :class="getStatusIcon(bundle.status, bundle.type)"></i>
-							<strong class="fs-5" x-text="bundle.path"></strong>
-							<span class="badge rounded-pill bg-secondary ms-2" x-text="bundle.totalDuration + 'ms'" x-show="bundle.totalDuration > 0"></span>
+						<div class="d-flex align-items-center gap-2">
+							<i class="bi fs-5" :class="getStatusIcon(bundle.status, bundle.type)"></i>
+							<strong class="fs-6" x-text="bundle.path"></strong>
 						</div>
-						<div class="d-flex align-items-center gap-1">
-							<span class="badge bg-success" x-text="bundle.totalPass" x-show="bundle.totalPass > 0"></span>
-							<span class="badge bg-danger" x-text="bundle.totalFail" x-show="bundle.totalFail > 0"></span>
-							<span class="badge bg-warning text-dark" x-text="bundle.totalError" x-show="bundle.totalError > 0"></span>
-							<span class="badge bg-info text-dark" x-text="bundle.totalSkipped" x-show="bundle.totalSkipped > 0"></span>
+						<div class="d-flex align-items-center gap-2">
 							<!--- Bundle run button: disabled when another bundle/run-all is already active --->
 							<button
-								class="btn btn-sm btn-outline-primary border-0 p-0 ms-1 lh-1"
+								class="btn btn-sm btn-outline-primary border-0 p-0 lh-1"
 								style="font-size: 1.35rem; line-height: 1; width: 1.6rem; height: 1.6rem;"
-									data-bs-title="Run this bundle"
-									:data-path="bundle.path"
-									@click.stop="runBundle( $el.dataset.path )"
-									:disabled="isRunning && activeBundlePath !== bundle.path"
-									x-tooltip>
+								data-bs-title="Run this bundle"
+								:data-path="bundle.path"
+								@click.stop="runBundle( $el.dataset.path )"
+								:disabled="isRunning && activeBundlePath !== bundle.path"
+								x-tooltip>
 								<i class="bi" :class="isRunning && activeBundlePath === bundle.path ? 'bi-hourglass-split text-primary spinner-icon' : 'bi-play-circle-fill'"></i>
 							</button>
-							<i class="bi ms-1" :class="bundle.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+							<i class="bi text-muted" :class="bundle.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
 						</div>
 					</div>
 
+					<!--- Inline results strip — only visible after a run --->
+					<div
+						class="bundle-results-strip d-flex align-items-center gap-3 px-3 py-1"
+						:class="'strip-' + bundle.status"
+						x-show="bundle.status !== 'pending' && bundle.status !== 'running'">
+						<span class="strip-stat text-success" x-show="bundle.totalPass > 0">
+							<i class="bi bi-check-circle-fill me-1"></i><span x-text="bundle.totalPass"></span> passed
+						</span>
+						<span class="strip-stat text-danger" x-show="bundle.totalFail > 0">
+							<i class="bi bi-x-circle-fill me-1"></i><span x-text="bundle.totalFail"></span> failed
+						</span>
+						<span class="strip-stat text-warning" x-show="bundle.totalError > 0">
+							<i class="bi bi-exclamation-octagon-fill me-1"></i><span x-text="bundle.totalError"></span> errored
+						</span>
+						<span class="strip-stat text-info" x-show="bundle.totalSkipped > 0">
+							<i class="bi bi-dash-circle-fill me-1"></i><span x-text="bundle.totalSkipped"></span> skipped
+						</span>
+						<span class="strip-stat text-secondary ms-auto" x-show="bundle.totalDuration > 0">
+							<i class="bi bi-clock me-1"></i><span x-text="bundle.totalDuration + ' ms'"></span>
+						</span>
+					</div>
+
+					<!--- Suite list --->
 					<div class="card-body p-0" x-show="bundle.expanded" x-collapse>
 						<ul class="list-group list-group-flush">
 							<!-- Loop suites within bundle -->
