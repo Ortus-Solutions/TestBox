@@ -1,0 +1,255 @@
+<!---
+	TestBox Run IDE
+	BoxLang-native test runner UI — BDD/xUnit discovery + SSE streaming
+--->
+<bx:script>
+// Configurable parameters (can be overridden via URL query params)
+bx:param name="url.directory"       default="tests.specs";
+bx:param name="url.recurse"         default="true"  type="boolean";
+bx:param name="url.bundlesPattern"  default="*Spec*.cfc|*Test*.cfc|*Spec*.bx|*Test*.bx";
+bx:param name="url.labels"          default="";
+bx:param name="url.excludes"        default="";
+bx:param name="url.runnerUrl"       default="runner.bxm";
+</bx:script>
+<!--- HTML CODE --->
+<bx:output>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>TestBox Run IDE</title>
+	<link rel="icon" type="image/svg+xml" href="assets/images/testbox-icon-full-L.svg">
+
+	<!--- Vendor CSS --->
+	<link rel="stylesheet" href="assets/css/vendor/bootstrap.min.css">
+
+	<!--- Bootstrap Icons --->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+	<!--- App CSS --->
+	<link rel="stylesheet" href="assets/css/run.css">
+
+	<script>
+		// Pass server context URL parameters to Javascript
+		window.initialOptions = {
+			directory: "#url.directory#",
+			recurse: #url.recurse#,
+			bundlesPattern: "#url.bundlesPattern#",
+			labels: "#url.labels#",
+			excludes: "#url.excludes#",
+			runnerUrl: "#url.runnerUrl#"
+		};
+	</script>
+</head>
+<body
+	data-bs-theme="dark"
+	x-data="testboxRun()"
+	x-init="init()"
+	:data-bs-theme="preferences.theme">
+
+	<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom mb-3">
+		<div class="container-fluid">
+			<a class="navbar-brand text-primary d-flex align-items-center" href="##">
+				<img
+					src="assets/images/testbox-logo-full-light-L.svg"
+					alt="TestBox"
+					height="30"
+					class="me-2 d-inline-block align-text-top">
+			</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="##navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarText">
+				<div class="me-auto"></div>
+				<span class="navbar-text">
+					<button class="btn btn-sm btn-outline-secondary me-2" @click="toggleTheme()" title="Toggle Theme">
+						<i class="bi" :class="preferences.theme === 'dark' ? 'bi-moon-stars-fill' : 'bi-sun-fill'"></i>
+					</button>
+					<button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="##settingsModal" title="Settings">
+						<i class="bi bi-gear-fill"></i>
+					</button>
+				</span>
+			</div>
+		</div>
+	</nav>
+
+	<div class="container-fluid">
+
+		<!-- Error Banner -->
+		<template x-if="globalError">
+			<div class="alert alert-danger" role="alert">
+				<h4 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> Oops, something went wrong!</h4>
+				<p x-text="globalError"></p>
+				<hr>
+				<p class="mb-0 font-monospace small" style="white-space: pre-wrap;" x-text="globalErrorDetail"></p>
+			</div>
+		</template>
+
+		<!-- Toolbar -->
+		<div class="row mb-3 align-items-end" x-show="!globalError">
+			<div class="col-md-4">
+				<input type="text" class="form-control border-primary" x-model="searchQuery" placeholder="Filter bundles, suites, specs...">
+			</div>
+			<div class="col-md-8 text-end mt-2 mt-md-0">
+				<div class="btn-group me-3" role="group">
+					<button class="btn btn-outline-success" :class="{'active': statusFilters.passed}" @click="statusFilters.passed = !statusFilters.passed">Passed (<span x-text="metaGlobalStats.totalPass">0</span>)</button>
+					<button class="btn btn-outline-danger" :class="{'active': statusFilters.failed}" @click="statusFilters.failed = !statusFilters.failed">Failed (<span x-text="metaGlobalStats.totalFail">0</span>)</button>
+					<button class="btn btn-outline-warning" :class="{'active': statusFilters.error}" @click="statusFilters.error = !statusFilters.error">Error (<span x-text="metaGlobalStats.totalError">0</span>)</button>
+					<button class="btn btn-outline-info" :class="{'active': statusFilters.skipped}" @click="statusFilters.skipped = !statusFilters.skipped">Skipped (<span x-text="metaGlobalStats.totalSkipped">0</span>)</button>
+				</div>
+
+				<button class="btn btn-primary" @click="runAllTests()" x-show="!isRunning" :disabled="isLoading">
+					<i class="bi bi-play-fill"></i> Run All
+				</button>
+				<button class="btn btn-danger" @click="stopTests()" x-show="isRunning">
+					<i class="bi bi-stop-fill"></i> Stop
+				</button>
+			</div>
+		</div>
+
+		<!-- Status Stats -->
+		<div class="card border-primary mb-3" x-show="!globalError">
+			<div class="card-body py-2 bg-primary bg-opacity-10">
+				<div class="row text-center text-primary fw-bold">
+					<div class="col">Bundles: <span class="badge bg-primary rounded-pill ms-1" x-text="metaGlobalStats.totalBundles">0</span></div>
+					<div class="col">Suites: <span class="badge bg-primary rounded-pill ms-1" x-text="metaGlobalStats.totalSuites">0</span></div>
+					<div class="col">Specs: <span class="badge bg-primary rounded-pill ms-1" x-text="metaGlobalStats.totalSpecs">0</span></div>
+					<div class="col">Duration: <span class="badge bg-primary rounded-pill ms-1" x-text="metaGlobalStats.totalDuration + ' ms'">0 ms</span></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="d-flex justify-content-center my-5" x-show="isLoading">
+			<div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		</div>
+
+		<!-- Test Tree -->
+		<div class="test-tree" x-show="!isLoading && !globalError">
+			<template x-for="bundle in filteredBundles" :key="bundle.id">
+				<div class="card mb-3 bundle-card border-secondary" :class="'status-bd-' + bundle.status">
+					<div class="card-header d-flex justify-content-between align-items-center cursor-pointer" @click="bundle.expanded = !bundle.expanded">
+						<div>
+							<i class="bi me-2 fs-5" :class="getStatusIcon(bundle.status, bundle.type)"></i>
+							<strong class="fs-5" x-text="bundle.name"></strong>
+							<span class="badge rounded-pill bg-secondary ms-2" x-text="bundle.totalDuration + 'ms'" x-show="bundle.totalDuration > 0"></span>
+						</div>
+						<div>
+							<span class="badge bg-success" x-text="bundle.totalPass" x-show="bundle.totalPass > 0"></span>
+							<span class="badge bg-danger" x-text="bundle.totalFail" x-show="bundle.totalFail > 0"></span>
+							<span class="badge bg-warning text-dark" x-text="bundle.totalError" x-show="bundle.totalError > 0"></span>
+							<span class="badge bg-info text-dark" x-text="bundle.totalSkipped" x-show="bundle.totalSkipped > 0"></span>
+							<button class="btn btn-sm btn-link text-body border-0 align-baseline p-0 ms-2" title="Run Bundle" @click.stop="runBundle(bundle.path)" :disabled="isRunning"><i class="bi bi-play-circle-fill"></i></button>
+							<i class="bi ms-2" :class="bundle.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+						</div>
+					</div>
+
+					<div class="card-body p-0" x-show="bundle.expanded" x-collapse>
+						<ul class="list-group list-group-flush">
+							<!-- Loop suites within bundle -->
+							<template x-for="suite in bundle.suites" :key="suite.id">
+								<li class="list-group-item suite-item bg-transparent" :class="'status-bg-' + suite.status" x-show="isSuiteVisible(suite)">
+									<div class="d-flex justify-content-between align-items-center cursor-pointer py-1" @click="suite.expanded = !suite.expanded">
+										<div class="ps-2 ms-2 box-border-left" :class="'border-' + getStatusColorClass(suite.status)">
+											<i class="bi me-1" :class="getStatusIcon(suite.status, 'suite')"></i>
+											<strong x-text="suite.name"></strong>
+										</div>
+										<i class="bi text-muted" :class="suite.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+									</div>
+
+									<ul class="list-group list-group-flush mt-1 border-top border-secondary border-opacity-25" x-show="suite.expanded" x-collapse>
+										<template x-for="spec in suite.specs" :key="spec.id">
+											<li class="list-group-item spec-item border-0 py-1 bg-transparent" :class="'status-bg-' + spec.status" x-show="isSpecVisible(spec)">
+												<div class="d-flex justify-content-between align-items-center ps-4 ms-3 box-border-left" :class="'border-' + getStatusColorClass(spec.status)">
+													<div>
+														<i class="bi me-2" :class="getStatusIcon(spec.status, 'spec')"></i>
+														<span x-text="spec.name"></span>
+														<div x-show="spec.failMessage" class="text-danger mt-1 small font-monospace"><strong x-text="spec.failMessage"></strong></div>
+														<div x-show="spec.failDetail" class="text-danger mt-1 small font-monospace" style="white-space: pre-wrap;" x-text="spec.failDetail"></div>
+														<div x-show="spec.error && spec.error.message" class="text-warning mt-1 small font-monospace"><strong x-text="spec.error.message"></strong></div>
+													</div>
+													<span class="badge rounded-pill bg-secondary ms-2" x-text="spec.totalDuration + 'ms'" x-show="spec.status !== 'pending' && spec.status !== 'running' && spec.totalDuration !== undefined && spec.totalDuration > 0"></span>
+												</div>
+											</li>
+										</template>
+									</ul>
+								</li>
+							</template>
+							<!-- Loop top-level specs in bundle (for xunit or unnested) -->
+							<template x-for="spec in bundle.specs" :key="spec.id">
+								<li class="list-group-item spec-item bg-transparent" :class="'status-bg-' + spec.status" x-show="isSpecVisible(spec)">
+									<div class="d-flex justify-content-between align-items-center ps-2 ms-2 box-border-left" :class="'border-' + getStatusColorClass(spec.status)">
+										<div>
+											<i class="bi me-2" :class="getStatusIcon(spec.status, 'spec')"></i>
+											<span x-text="spec.name"></span>
+											<div x-show="spec.failMessage" class="text-danger mt-1 small font-monospace"><strong x-text="spec.failMessage"></strong></div>
+											<div x-show="spec.failDetail" class="text-danger mt-1 small font-monospace" style="white-space: pre-wrap;" x-text="spec.failDetail"></div>
+											<div x-show="spec.error && spec.error.message" class="text-warning mt-1 small font-monospace"><strong x-text="spec.error.message"></strong></div>
+										</div>
+										<span class="badge rounded-pill bg-secondary ms-2" x-text="spec.totalDuration + 'ms'" x-show="spec.status !== 'pending' && spec.status !== 'running' && spec.totalDuration !== undefined && spec.totalDuration > 0"></span>
+									</div>
+								</li>
+							</template>
+						</ul>
+					</div>
+				</div>
+			</template>
+		</div>
+
+	</div>
+
+	<!-- Settings Modal -->
+	<div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true" x-ignore>
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="settingsModalLabel"><i class="bi bi-gear-fill"></i> Settings</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mb-3">
+						<label class="form-label">Runner URL</label>
+						<input type="text" class="form-control" x-model="preferences.runnerUrl">
+						<div class="form-text">Relative path (e.g. runner.bxm) or absolute HTTP/S.</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label class="form-label">Directory</label>
+							<input type="text" class="form-control" x-model="preferences.directory">
+						</div>
+						<div class="col-md-6">
+							<label class="form-label">Bundles Pattern</label>
+							<input type="text" class="form-control" x-model="preferences.bundlesPattern">
+						</div>
+					</div>
+					<div class="mb-3 form-check">
+						<input type="checkbox" class="form-check-input" id="recurseCheck" x-model="preferences.recurse">
+						<label class="form-check-label" for="recurseCheck">Recurse</label>
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Labels</label>
+						<input type="text" class="form-control" x-model="preferences.labels">
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Excludes</label>
+						<input type="text" class="form-control" x-model="preferences.excludes">
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" @click="savePreferences()" data-bs-dismiss="modal">Save & Reload</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<!-- Alpine is handled in run.js setup -->
+<script defer src="assets/js/vendor/bootstrap.bundle.min.js"></script>
+<script defer src="assets/js/run.js"></script>
+<script defer src="assets/js/vendor/alpine-collapse.min.js"></script>
+<script defer src="assets/js/vendor/alpine.min.js"></script>
+</body>
+</html>
+</bx:output>

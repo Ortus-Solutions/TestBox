@@ -1,0 +1,79 @@
+/* TestBox IDE - BoxLang Inspired Theme */
+
+/* Light Theme Variables */
+[data-bs-theme=light] {
+    --bs-primary: #00acc1;
+    --bs-success: #28a745;
+    --bs-info: #17a2b8;
+    --bs-body-bg: #f8f9fa;
+	--tb-tree-border: #dee2e6;
+}
+
+/* Dark Theme Variables / BoxLang Inspired */
+[data-bs-theme=dark] {
+    --bs-primary: #00ffff; /* Cyan */
+    --bs-success: #00ff00; /* Neon Green */
+    --bs-info: #0dcaf0;
+    --bs-body-bg: #121212;
+    --bs-body-color: #e0e0e0;
+	--tb-tree-border: #333;
+}
+
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.navbar-brand .bi {
+    color: var(--bs-primary);
+}
+
+.spinner-icon {
+    animation: spinner-border 1.5s linear infinite;
+    display: inline-block;
+}
+
+/* Tree Structure formatting */
+
+.bundle-card {
+	border-radius: 0.5rem;
+	overflow: hidden;
+}
+
+.status-bd-passed { border-left: 5px solid var(--bs-success) !important; }
+.status-bd-failed { border-left: 5px solid var(--bs-danger) !important; }
+.status-bd-error { border-left: 5px solid var(--bs-warning) !important; }
+.status-bd-skipped { border-left: 5px solid var(--bs-info) !important; }
+.status-bd-running { border-left: 5px solid var(--bs-primary) !important; }
+.status-bd-pending { border-left: 5px solid var(--tb-tree-border) !important; }
+
+/* Sub-items border (Suites and Specs) */
+.box-border-left {
+	border-left: 2px solid var(--tb-tree-border);
+	transition: border-color 0.3s ease;
+}
+
+.box-border-left.border-success { border-color: var(--bs-success) !important; }
+.box-border-left.border-danger { border-color: var(--bs-danger) !important; }
+.box-border-left.border-warning { border-color: var(--bs-warning) !important; }
+.box-border-left.border-info { border-color: var(--bs-info) !important; }
+.box-border-left.border-primary { border-color: var(--bs-primary) !important; }
+
+/* Dim text when not executed */
+.status-bg-pending { opacity: 0.7; }
+
+/* Hover effects */
+.list-group-item {
+	transition: background-color 0.2s ease;
+}
+
+.list-group-item:hover {
+	background-color: rgba(255,255,255,0.02) !important;
+}
+
+[data-bs-theme=light] .list-group-item:hover {
+	background-color: rgba(0,0,0,0.02) !important;
+}

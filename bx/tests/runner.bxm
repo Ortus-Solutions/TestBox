@@ -1,4 +1,5 @@
-﻿<!--- Executes all tests in the 'specs' folder with simple reporter by default --->
+﻿<bx:setting enableOutputOnly=true>
+<!--- Executes all tests in the 'specs' folder with simple reporter by default --->
 <bx:param name="url.reporter" 			default="simple">
 <bx:param name="url.directory" 			default="tests.specs">
 <bx:param name="url.recurse" 			default="true" type="boolean">
@@ -25,12 +26,11 @@
 <!--- Enable batched code coverage reporter, useful for large test bundles which require spreading over multiple testbox run commands. --->
 <!--- <bx:param name="url.isBatched"						default="false"> --->
 
-
 <!--- Include the appropriate runner based on streaming mode --->
-<cfif url.streaming && !url.dryRun>
+<bx:if url.streaming && !url.dryRun>
 	<!--- Stream results in real-time via SSE --->
 	<bx:include template="/testbox/system/runners/StreamingRunner.cfm" >
-<cfelse>
+<bx:else>
 	<!--- Traditional batch results --->
 	<bx:include template="/testbox/system/runners/HTMLRunner.cfm" >
-</cfif>
+</bx:if>

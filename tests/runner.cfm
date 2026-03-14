@@ -1,3 +1,4 @@
+<cfsetting enableOutputOnly=true>
 <cfsetting showDebugOutput="false">
 <!--- Executes all tests in the 'specs' folder with simple reporter by default --->
 <cfparam name="url.reporter" 			default="simple">
