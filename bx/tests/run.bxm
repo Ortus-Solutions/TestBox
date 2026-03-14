@@ -4,7 +4,7 @@
 --->
 <bx:script>
 // Configurable parameters (can be overridden via URL query params)
-bx:param name="url.directory"       default="tests.specs";
+bx:param name="url.directory"       default="testbox.tests.specs";
 bx:param name="url.recurse"         default="true"  type="boolean";
 bx:param name="url.bundlesPattern"  default="";
 bx:param name="url.labels"          default="";
@@ -166,6 +166,28 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 			</div>
 		</div>
 
+		<!--- Progress Bar (visible only while a run is active) --->
+		<template x-if="isRunning">
+			<div class="mb-3">
+				<div class="d-flex justify-content-between align-items-center mb-1 small text-muted">
+					<span>
+						<i class="bi bi-hourglass-split spinner-icon me-1 text-primary"></i>
+						<span x-text="activeBundlePath ? 'Running bundle…' : 'Running all tests…'"></span>
+					</span>
+					<span x-text="specsCompleted + ' / ' + metaGlobalStats.totalSpecs + ' specs'"></span>
+				</div>
+				<div class="progress" style="height: 6px;">
+					<div
+						class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+						role="progressbar"
+						:style="'width: ' + (metaGlobalStats.totalSpecs > 0 ? Math.round( (specsCompleted / metaGlobalStats.totalSpecs) * 100 ) : 100) + '%'"
+						:aria-valuenow="specsCompleted"
+						:aria-valuemax="metaGlobalStats.totalSpecs">
+					</div>
+				</div>
+			</div>
+		</template>
+
 		<!--- Loader --->
 		<template x-if="isLoading">
 			<div class="d-flex justify-content-center my-5">
@@ -178,20 +200,33 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 		<!-- Test Tree -->
 		<div class="test-tree" x-show="!isLoading && !globalError">
 			<template x-for="bundle in filteredBundles" :key="bundle.id">
-				<div class="card mb-3 bundle-card border-secondary" :class="'status-bd-' + bundle.status">
+				<div
+					class="card mb-3 bundle-card border-secondary"
+					:class="[
+						'status-bd-' + bundle.status,
+						activeBundlePath && activeBundlePath !== bundle.path ? 'opacity-50' : ''
+					]">
 					<div class="card-header d-flex justify-content-between align-items-center cursor-pointer" @click="bundle.expanded = !bundle.expanded">
 						<div>
 							<i class="bi me-2 fs-5" :class="getStatusIcon(bundle.status, bundle.type)"></i>
 							<strong class="fs-5" x-text="bundle.name"></strong>
 							<span class="badge rounded-pill bg-secondary ms-2" x-text="bundle.totalDuration + 'ms'" x-show="bundle.totalDuration > 0"></span>
 						</div>
-						<div>
+						<div class="d-flex align-items-center gap-1">
 							<span class="badge bg-success" x-text="bundle.totalPass" x-show="bundle.totalPass > 0"></span>
 							<span class="badge bg-danger" x-text="bundle.totalFail" x-show="bundle.totalFail > 0"></span>
 							<span class="badge bg-warning text-dark" x-text="bundle.totalError" x-show="bundle.totalError > 0"></span>
 							<span class="badge bg-info text-dark" x-text="bundle.totalSkipped" x-show="bundle.totalSkipped > 0"></span>
-							<button class="btn btn-sm btn-link text-body border-0 align-baseline p-0 ms-2" title="Run Bundle" @click.stop="runBundle(bundle.path)" :disabled="isRunning"><i class="bi bi-play-circle-fill"></i></button>
-							<i class="bi ms-2" :class="bundle.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+							<!--- Bundle run button: disabled when another bundle/run-all is already active --->
+							<button
+								class="btn btn-sm btn-outline-primary border-0 p-0 ms-1 lh-1"
+								style="font-size: 1.35rem; line-height: 1; width: 1.6rem; height: 1.6rem;"
+								title="Run this bundle"
+								@click.stop="runBundle(bundle.path)"
+								:disabled="isRunning && activeBundlePath !== bundle.path">
+								<i class="bi" :class="isRunning && activeBundlePath === bundle.path ? 'bi-hourglass-split text-primary spinner-icon' : 'bi-play-circle-fill'"></i>
+							</button>
+							<i class="bi ms-1" :class="bundle.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
 						</div>
 					</div>
 

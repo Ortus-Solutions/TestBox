@@ -45,6 +45,10 @@ document.addEventListener( "alpine:init", () => {
 		runCompleted: false,
 		// Indicates we are intentionally stopping/closing the current stream
 		isStopping: false,
+		// Set to the bundle path when running a single bundle; null when running all
+		activeBundlePath: null,
+		// Counts specEnd events received during the current run for progress tracking
+		specsCompleted: 0,
 		// Internal flag to ensure init runs only once
 		_initialized: false,
 
@@ -398,14 +402,25 @@ document.addEventListener( "alpine:init", () => {
 		},
 
 		/**
-		 * Resets all duration constraints, payload statistics, and state indicators
-		 * across the currently loaded test tree safely back to a "pending" condition.
+		 * Resets duration, statistics, and state indicators back to "pending".
+		 * When bundlePath is provided, only that bundle (and its children) is reset;
+		 * all other bundles are left untouched so their previous results remain visible.
+		 *
+		 * @param {string|null} bundlePath - If set, only reset this bundle; otherwise reset all.
 		 */
-		resetExecutionState() {
+		resetExecutionState( bundlePath = null ) {
 			this.runCompleted = false;
 			this.isStopping = false;
 
-			this.bundles.forEach( b => {
+			const resetSpec = ( sp ) => {
+				sp.status = "pending";
+				sp.totalDuration = 0;
+				sp.failMessage = "";
+				sp.failDetail = "";
+				sp.error = null;
+			};
+
+			const resetBundle = ( b ) => {
 				b.status = "pending";
 				b.totalDuration = 0;
 				b.totalPass = 0;
@@ -414,33 +429,23 @@ document.addEventListener( "alpine:init", () => {
 				b.totalSkipped = 0;
 				b.suites.forEach( s => {
 					s.status = "pending";
-					s.specs.forEach( sp => {
-						sp.status = "pending";
-						sp.totalDuration = 0;
-						sp.failMessage = "";
-						sp.failDetail = "";
-						sp.error = null;
-					} );
+					s.specs.forEach( resetSpec );
 				} );
-				b.specs.forEach( sp => {
-					sp.status = "pending";
-					sp.totalDuration = 0;
-					sp.failMessage = "";
-					sp.failDetail = "";
-					sp.error = null;
-				} );
-			} );
-
-			this.globalStats = {
-				totalBundles: 0,
-				totalSuites: 0,
-				totalSpecs: 0,
-				totalDuration: 0,
-				totalPass: 0,
-				totalFail: 0,
-				totalError: 0,
-				totalSkipped: 0
+				b.specs.forEach( resetSpec );
 			};
+
+			if ( bundlePath ) {
+				const b = this.bundles.find( b => b.path === bundlePath );
+				if ( b ) resetBundle( b );
+			} else {
+				this.bundles.forEach( resetBundle );
+				this.globalStats = {
+					totalBundles: 0, totalSuites: 0, totalSpecs: 0, totalDuration: 0,
+					totalPass: 0, totalFail: 0, totalError: 0, totalSkipped: 0
+				};
+			}
+
+			this.specsCompleted = 0;
 			this.globalError = null;
 			this.globalErrorDetail = null;
 		},
@@ -449,25 +454,28 @@ document.addEventListener( "alpine:init", () => {
 		 * Initiates a full systematic test run handling all loaded framework bundles.
 		 */
 		runAllTests() {
+			this.activeBundlePath = null;
 			this.resetExecutionState();
 			this.isRunning = true;
-
-			let url = this.buildRunnerUrl( { streaming : true } );
-
-			this.startEventSource( url );
+			this.startEventSource( this.buildRunnerUrl( { streaming : true } ) );
 		},
 
 		/**
-		 * Initiates a targeted isolated test run scoped explicitly for the designated bundle.
+		 * Initiates a targeted isolated test run for a single bundle.
+		 * Only that bundle resets to pending; all other bundles keep their last result (dimmed).
 		 *
-		 * @param {string} bundlePath - Targeted bundle's absolute or programmatic map reference.
+		 * @param {string} bundlePath - Bundle path to run.
 		 */
 		runBundle( bundlePath ) {
-			this.resetExecutionState();
+			this.activeBundlePath = bundlePath;
+			this.resetExecutionState( bundlePath );
 			this.isRunning = true;
 
-			let url = this.buildRunnerUrl( { streaming : true, bundles : bundlePath } );
-			this.startEventSource( url );
+			// Single-bundle run: only pass streaming + bundles — no directory/recurse/pattern
+			let url = new URL( this.preferences.runnerUrl, window.location.href );
+			url.searchParams.append( "streaming", "true" );
+			url.searchParams.append( "bundles", bundlePath );
+			this.startEventSource( url.toString() );
 		},
 
 		/**
@@ -526,6 +534,7 @@ document.addEventListener( "alpine:init", () => {
 					specInfo.spec.failDetail = data.failDetail || "";
 					specInfo.spec.error = data.error || null;
 				}
+				this.specsCompleted++;
 			} );
 
 			// Server-sent fatal error (event: error with JSON payload)
@@ -576,6 +585,7 @@ document.addEventListener( "alpine:init", () => {
 				this.eventSource = null;
 			}
 			this.isRunning = false;
+			this.activeBundlePath = null;
 
 			// Mark any stuck 'running' states as 'error' or 'skipped' (optional)
 			this.bundles.forEach( b => {
