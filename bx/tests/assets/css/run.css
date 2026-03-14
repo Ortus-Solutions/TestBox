@@ -21,6 +21,7 @@
 
 body {
     transition: background-color 0.3s ease, color 0.3s ease;
+    padding-top: 62px; /* offset for fixed navbar */
 }
 
 .cursor-pointer {
@@ -72,7 +73,18 @@ body {
 
 .strip-stat { font-weight: 500; white-space: nowrap; }
 
-.strip-debug-btn { font-size: 0.9rem; transition: color 0.15s ease; }
+.strip-debug-btn {
+	font-size: 1rem;
+	color: #f0ad4e !important;
+	opacity: 0.75;
+	transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.strip-debug-btn:hover,
+.strip-debug-btn.text-warning {
+	opacity: 1;
+	transform: scale(1.15);
+}
 
 /* Debug output panel */
 .bundle-debug-panel {

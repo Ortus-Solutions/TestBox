@@ -51,7 +51,7 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 	<!--- ============================================================================================================ --->
 	<!-- NAVBAR -->
 	<!--- ============================================================================================================ --->
-	<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom mb-3">
+	<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom fixed-top">
 		<div class="container-fluid">
 			<a class="navbar-brand text-primary d-flex align-items-center" href="##">
 				<img
@@ -312,7 +312,7 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 						<!--- Debug buffer toggle — only appears when there is debug output --->
 						<button
 							class="btn btn-sm border-0 p-0 ms-1 lh-1 strip-debug-btn"
-							:class="bundle.showDebug ? 'text-warning' : 'text-secondary opacity-50'"
+							:class="bundle.showDebug ? 'active' : ''"
 							@click.stop="bundle.showDebug = !bundle.showDebug"
 							:data-bs-title="'Debug output (' + bundle.debugBuffer.length + ' entries)'"
 							x-show="bundle.debugBuffer && bundle.debugBuffer.length > 0"
