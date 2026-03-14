@@ -6,7 +6,7 @@
 // Configurable parameters (can be overridden via URL query params)
 bx:param name="url.directory"       default="tests.specs";
 bx:param name="url.recurse"         default="true"  type="boolean";
-bx:param name="url.bundlesPattern"  default="*Spec*.cfc|*Test*.cfc|*Spec*.bx|*Test*.bx";
+bx:param name="url.bundlesPattern"  default="";
 bx:param name="url.labels"          default="";
 bx:param name="url.excludes"        default="";
 bx:param name="url.runnerUrl"       default="runner.bxm";
@@ -258,8 +258,7 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 		id="settingsModal"
 		tabindex="-1"
 		aria-labelledby="settingsModalLabel"
-		aria-hidden="true"
-		x-ignore>
+		aria-hidden="true">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
 				<!--- Header --->
@@ -304,8 +303,11 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 					</div>
 				</div>
 				<div class="modal-footer">
+					<button type="button" class="btn btn-outline-danger me-auto" @click="resetPreferences()" data-bs-dismiss="modal">
+						<i class="bi bi-trash3"></i> Reset to Defaults
+					</button>
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary" @click="savePreferences()" data-bs-dismiss="modal">Save & Reload</button>
+					<button type="button" class="btn btn-primary" @click="savePreferences()" data-bs-dismiss="modal">Save &amp; Reload</button>
 				</div>
 			</div>
 		</div>

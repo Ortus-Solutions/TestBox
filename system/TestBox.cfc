@@ -1169,16 +1169,20 @@ component accessors="true" {
 			arguments.bundleLabels
 		);
 
+		// Explicitly-skipped specs (xit/xdescribe) are kept in the dry run tree so the UI
+		// can show them as skipped upfront. Only specs excluded by focus/label/canRunSpec
+		// filters are omitted entirely.
 		if (
-			arguments.spec.skip ||
-			!isDryRunBDDSpecFocused(
-				arguments.spec,
-				arguments.suite,
-				arguments.target,
-				arguments.baseRunner
-			) ||
-			!arguments.baseRunner.canRunLabel( effectiveLabels, arguments.testResults ) ||
-			!arguments.baseRunner.canRunSpec( arguments.spec, arguments.testResults )
+			!arguments.spec.skip && (
+				!isDryRunBDDSpecFocused(
+					arguments.spec,
+					arguments.suite,
+					arguments.target,
+					arguments.baseRunner
+				) ||
+				!arguments.baseRunner.canRunLabel( effectiveLabels, arguments.testResults ) ||
+				!arguments.baseRunner.canRunSpec( arguments.spec, arguments.testResults )
+			)
 		) {
 			return {};
 		}

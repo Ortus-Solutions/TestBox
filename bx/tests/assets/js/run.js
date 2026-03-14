@@ -100,6 +100,14 @@ document.addEventListener( "alpine:init", () => {
 		},
 
 		/**
+		 * Clears all saved preferences from LocalStorage and reloads the window to restore defaults.
+		 */
+		resetPreferences() {
+			localStorage.removeItem( "testboxPreferences" );
+			window.location.reload();
+		},
+
+		/**
 		 * Toggles the UI theme between dark and light modes, persisting the choice.
 		 */
 		toggleTheme() {
@@ -248,7 +256,7 @@ document.addEventListener( "alpine:init", () => {
 			return {
 				id: sp.id,
 				name: sp.name,
-				status: "pending",
+				status: sp.skip ? "skipped" : "pending",
 				totalDuration: 0,
 				failMessage: "",
 				failDetail: "",
