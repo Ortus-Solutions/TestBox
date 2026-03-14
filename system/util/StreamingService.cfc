@@ -212,7 +212,7 @@ component accessors="true" {
 				// Note: Bundle stats (including the id) are not yet created when onBundleStart fires.
 				// We generate a deterministic id from the path so consumers can correlate
 				// bundleStart with bundleEnd events.
-				var targetMD    = getMetadata( arguments.target );
+				var targetMD    = getMetadata( target );
 				var annotations = targetMD.keyExists( "annotations" ) ? targetMD.annotations : targetMD;
 				var bundleName  = structKeyExists( annotations, "displayName" ) ? annotations.displayName : targetMD.name;
 				var bundleId    = hash( targetMD.name );
@@ -222,17 +222,17 @@ component accessors="true" {
 					{
 						"id"        : bundleId,
 						"name"      : bundleName,
-						"path"      : targetMD.path,
+						"path"      : targetMD.name,
 						"timestamp" : getTickCount()
 					}
 				);
 			},
 			"onBundleEnd" : ( target, testResults ) => {
-				var targetMD = getMetadata( arguments.target );
+				var targetMD = getMetadata( target );
 				var bundleId = hash( targetMD.name );
 
 				// Look up bundle stats by path (internal stats use a different id scheme)
-				var bundleStats   = arguments.testResults.getBundleStats();
+				var bundleStats   = testResults.getBundleStats();
 				var matchingStats = bundleStats.filter( function( s ){
 					return s.path == targetMD.name;
 				} );
@@ -260,26 +260,26 @@ component accessors="true" {
 				);
 			},
 			"onSuiteStart" : ( target, testResults, suite ) => {
-				var targetMD = getMetadata( arguments.target );
+				var targetMD = getMetadata( target );
 				service.streamEvent(
 					"suiteStart",
 					{
-						"id"        : arguments.suite.id,
-						"bundlePath": targetMD.path,
-						"name"      : arguments.suite.name,
+						"id"        : suite.id,
+						"bundlePath": targetMD.name,
+						"name"      : suite.name,
 						"timestamp" : getTickCount()
 					}
 				);
 			},
 			"onSuiteEnd" : ( target, testResults, suite ) => {
-				var targetMD = getMetadata( arguments.target );
-				var suiteStats = arguments.testResults.getSuiteStats( arguments.suite.id );
+				var targetMD = getMetadata( target );
+				var suiteStats = testResults.getSuiteStats( suite.id );
 				service.streamEvent(
 					"suiteEnd",
 					{
-						"id"            : arguments.suite.id,
-						"bundlePath"    : targetMD.path,
-						"name"          : arguments.suite.name,
+						"id"            : suite.id,
+						"bundlePath"    : targetMD.name,
+						"name"          : suite.name,
 						"totalDuration" : suiteStats.totalDuration,
 						"totalSpecs"    : suiteStats.totalSpecs,
 						"totalPass"     : suiteStats.totalPass,
@@ -290,31 +290,31 @@ component accessors="true" {
 				);
 			},
 			"onSpecStart" : ( target, testResults, suite, spec ) => {
-				var targetMD = getMetadata( arguments.target );
+				var targetMD = getMetadata( target );
 				service.streamEvent(
 					"specStart",
 					{
-						"id"          : arguments.spec.id,
-						"suiteId"     : arguments.suite.id,
-						"bundlePath"  : targetMD.path,
-						"name"        : arguments.spec.name,
-						"displayName" : arguments.spec.displayName ?: arguments.spec.name,
+						"id"          : spec.id,
+						"suiteId"     : suite.id,
+						"bundlePath"  : targetMD.name,
+						"name"        : spec.name,
+						"displayName" : spec.displayName ?: spec.name,
 						"timestamp"   : getTickCount()
 					}
 				);
 			},
 			"onSpecEnd" : ( target, testResults, suite, spec ) => {
-				var targetMD = getMetadata( arguments.target );
-				var currentSpec = arguments.testResults.getSpecStats( arguments.spec.id );
+				var targetMD = getMetadata( target );
+				var currentSpec = testResults.getSpecStats( spec.id );
 
 				service.streamEvent(
 					"specEnd",
 					{
-						"id"             : arguments.spec.id,
-						"suiteId"        : arguments.suite.id,
-						"bundlePath"     : targetMD.path,
-						"name"           : arguments.spec.name,
-						"displayName"    : arguments.spec.displayName ?: arguments.spec.name,
+						"id"             : spec.id,
+						"suiteId"        : suite.id,
+						"bundlePath"     : targetMD.name,
+						"name"           : spec.name,
+						"displayName"    : spec.displayName ?: spec.name,
 						"status"         : currentSpec.status ?: "unknown",
 						"totalDuration"  : currentSpec.totalDuration ?: 0,
 						"failMessage"    : currentSpec.failMessage ?: "",
