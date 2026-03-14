@@ -43,6 +43,15 @@ body {
 	overflow: hidden;
 }
 
+.bundle-play-btn {
+	opacity: 0;
+	transition: opacity 0.15s ease;
+}
+
+.card-header:hover .bundle-play-btn {
+	opacity: 1;
+}
+
 .status-bd-passed { border-left: 5px solid var(--bs-success) !important; }
 .status-bd-failed { border-left: 5px solid var(--bs-danger) !important; }
 .status-bd-error { border-left: 5px solid var(--bs-warning) !important; }

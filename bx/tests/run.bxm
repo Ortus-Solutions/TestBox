@@ -266,7 +266,7 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 						<div class="d-flex align-items-center gap-2">
 							<!--- Bundle run button: disabled when another bundle/run-all is already active --->
 							<button
-								class="btn btn-sm btn-outline-primary border-0 p-0 lh-1"
+								class="btn btn-sm btn-outline-primary border-0 p-0 lh-1 bundle-play-btn"
 								style="font-size: 1.35rem; line-height: 1; width: 1.6rem; height: 1.6rem;"
 								data-bs-title="Run this bundle"
 								:data-path="bundle.path"
