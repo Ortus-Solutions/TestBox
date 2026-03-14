@@ -34,7 +34,6 @@
 <cfscript>
 // Initialize streaming service and set SSE headers
 streamingService = new testbox.system.util.StreamingService();
-streamingService.initializeStream();
 
 // Create TestBox instance with same options as HTMLRunner
 testbox = new testbox.system.TestBox(
@@ -67,6 +66,7 @@ if ( len( url.directory ) ) {
 }
 
 // Stream test run start event
+streamingService.initializeStream();
 streamingService.streamEvent(
 	"testRunStart",
 	{

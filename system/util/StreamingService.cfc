@@ -59,11 +59,15 @@ component accessors="true" {
 	 * @return StreamingService
 	 */
 	function initializeStream(){
-		cfheader( name = "Content-Type", value = "text/event-stream" );
-		cfheader( name = "Cache-Control", value = "no-cache, no-store, must-revalidate" );
+		// Set SSE-specific headers to establish the correct content type and disable buffering
+		cfcontent( type="text/event-stream; charset=UTF-8", reset="true" );
+		cfheader( name = "Cache-Control", value = "no-cache, no-transform" );
 		cfheader( name = "Pragma", value = "no-cache" );
 		cfheader( name = "Connection", value = "keep-alive" );
+		// Disable nginx buffering
 		cfheader( name = "X-Accel-Buffering", value = "no" );
+		// avoid gzip buffering in some stacks
+		cfheader( name= "Content-Encoding" value = "identity" );
 		return this;
 	}
 
@@ -100,7 +104,9 @@ component accessors="true" {
 			writeOutput( formatSSEEvent( arguments.eventType, arguments.data ) );
 			// Only flush if enabled (disabled during unit testing to prevent response commit)
 			if ( isNull( variables.flushEnabled ) || variables.flushEnabled ) {
-				cfflush(  );
+				// cfflush moves data from the CFML output buffer to the Java response writer.
+				// It may not be available in all BoxLang contexts, so we catch and fall through.
+				cfflush();
 			}
 		} catch ( any e ) {
 			// Client may have disconnected during SSE streaming.
@@ -171,7 +177,7 @@ component accessors="true" {
 				writeOutput( formatSSEEvent( event.eventType, event.data ) );
 				// Only flush if enabled (disabled during unit testing to prevent response commit)
 				if ( isNull( variables.flushEnabled ) || variables.flushEnabled ) {
-					cfflush(  );
+					cfflush();
 				}
 			} catch ( any e ) {
 				// Client may have disconnected - log and continue draining
