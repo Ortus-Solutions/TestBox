@@ -175,7 +175,7 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 														<span x-text="spec.name"></span>
 														<div x-show="spec.failMessage" class="text-danger mt-1 small font-monospace"><strong x-text="spec.failMessage"></strong></div>
 														<div x-show="spec.failDetail" class="text-danger mt-1 small font-monospace" style="white-space: pre-wrap;" x-text="spec.failDetail"></div>
-														<div x-show="spec.error && spec.error.message" class="text-warning mt-1 small font-monospace"><strong x-text="spec.error.message"></strong></div>
+														<div x-show="spec.error?.message" class="text-warning mt-1 small font-monospace"><strong x-text="spec.error?.message"></strong></div>
 													</div>
 													<span class="badge rounded-pill bg-secondary ms-2" x-text="spec.totalDuration + 'ms'" x-show="spec.status !== 'pending' && spec.status !== 'running' && spec.totalDuration !== undefined && spec.totalDuration > 0"></span>
 												</div>
@@ -193,7 +193,7 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 											<span x-text="spec.name"></span>
 											<div x-show="spec.failMessage" class="text-danger mt-1 small font-monospace"><strong x-text="spec.failMessage"></strong></div>
 											<div x-show="spec.failDetail" class="text-danger mt-1 small font-monospace" style="white-space: pre-wrap;" x-text="spec.failDetail"></div>
-											<div x-show="spec.error && spec.error.message" class="text-warning mt-1 small font-monospace"><strong x-text="spec.error.message"></strong></div>
+												<div x-show="spec.error?.message" class="text-warning mt-1 small font-monospace"><strong x-text="spec.error?.message"></strong></div>
 										</div>
 										<span class="badge rounded-pill bg-secondary ms-2" x-text="spec.totalDuration + 'ms'" x-show="spec.status !== 'pending' && spec.status !== 'running' && spec.totalDuration !== undefined && spec.totalDuration > 0"></span>
 									</div>
