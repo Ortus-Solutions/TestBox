@@ -522,6 +522,8 @@ document.addEventListener( "alpine:init", () => {
 			} );
 
 			this.eventSource.addEventListener( "error", ( e ) => {
+				// Native connection close/error fires with no data — let onerror handle it
+				if ( !e.data ) return;
 				let data = JSON.parse( e.data );
 				this.globalError = data.message || "A fatal error occurred during testing.";
 				this.globalErrorDetail = data.detail || "";

@@ -100,21 +100,55 @@ bx:param name="url.runnerUrl"       default="runner.bxm";
 
 		<!-- Toolbar -->
 		<div class="row mb-3 align-items-end" x-show="!globalError">
+			<!--- Search --->
 			<div class="col-md-4">
-				<input type="text" class="form-control border-primary" x-model="searchQuery" placeholder="Filter bundles, suites, specs...">
+				<input
+					type="text"
+					class="form-control border-primary"
+					x-model="searchQuery"
+					placeholder="Filter bundles, suites, specs...">
 			</div>
+			<!--- Status Filters --->
 			<div class="col-md-8 text-end mt-2 mt-md-0">
 				<div class="btn-group me-3" role="group">
-					<button class="btn btn-outline-success" :class="{'active': statusFilters.passed}" @click="statusFilters.passed = !statusFilters.passed">Passed (<span x-text="metaGlobalStats.totalPass">0</span>)</button>
-					<button class="btn btn-outline-danger" :class="{'active': statusFilters.failed}" @click="statusFilters.failed = !statusFilters.failed">Failed (<span x-text="metaGlobalStats.totalFail">0</span>)</button>
-					<button class="btn btn-outline-warning" :class="{'active': statusFilters.error}" @click="statusFilters.error = !statusFilters.error">Error (<span x-text="metaGlobalStats.totalError">0</span>)</button>
-					<button class="btn btn-outline-info" :class="{'active': statusFilters.skipped}" @click="statusFilters.skipped = !statusFilters.skipped">Skipped (<span x-text="metaGlobalStats.totalSkipped">0</span>)</button>
+					<button
+						class="btn btn-outline-success"
+						:class="{'active': statusFilters.passed}"
+						@click="statusFilters.passed = !statusFilters.passed">
+						Passed (<span x-text="metaGlobalStats.totalPass">0</span>)
+					</button>
+					<button
+						class="btn btn-outline-danger"
+						:class="{'active': statusFilters.failed}"
+						@click="statusFilters.failed = !statusFilters.failed">
+						Failed (<span x-text="metaGlobalStats.totalFail">0</span>)
+					</button>
+					<button
+						class="btn btn-outline-warning"
+						:class="{'active': statusFilters.error}"
+						@click="statusFilters.error = !statusFilters.error">
+						Error (<span x-text="metaGlobalStats.totalError">0</span>)
+					</button>
+					<button
+						class="btn btn-outline-info"
+						:class="{'active': statusFilters.skipped}"
+						@click="statusFilters.skipped = !statusFilters.skipped">
+						Skipped (<span x-text="metaGlobalStats.totalSkipped">0</span>)
+					</button>
 				</div>
 
-				<button class="btn btn-primary" @click="runAllTests()" x-show="!isRunning" :disabled="isLoading">
+				<!--- MAIN CONTROLS --->
+				<button
+					class="btn btn-primary"
+					@click="runAllTests()"
+					x-show="!isRunning"
+					:disabled="isLoading">
 					<i class="bi bi-play-fill"></i> Run All
 				</button>
-				<button class="btn btn-danger" @click="stopTests()" x-show="isRunning">
+				<button
+					class="btn btn-danger"
+					@click="stopTests()"
+					x-show="isRunning">
 					<i class="bi bi-stop-fill"></i> Stop
 				</button>
 			</div>
