@@ -119,8 +119,8 @@ bx:param name="url.editor"          default="vscode";
 						class="btn btn-sm btn-outline-secondary"
 						@click="refreshTests()"
 						:disabled="isRunning"
-						data-bs-title="Reload test discovery"
-						x-tooltip.bottom>
+						data-bs-title="Reload Tests"
+						x-tooltip.left>
 						<i class="bi bi-arrow-clockwise" :class="isLoading ? 'spinner-icon' : ''"></i>
 					</button>
 					<button
@@ -270,10 +270,12 @@ bx:param name="url.editor"          default="vscode";
 					]">
 					<div class="card-header d-flex justify-content-between align-items-center cursor-pointer"
 						@click="bundle.expanded = !bundle.expanded; bundle.suites.forEach( s => s.expanded = bundle.expanded )"
-						x-tooltip.bottom>
+						x-tooltip.bottom
+					>
 						<div class="d-flex align-items-center gap-2">
 							<i class="bi fs-5" :class="getStatusIcon(bundle.status, bundle.type)"></i>
 							<strong class="fs-6" x-text="bundle.path"></strong>
+							<span x-text="bundle.status"></span>
 						</div>
 						<div class="d-flex align-items-center gap-2">
 							<!--- Bundle run button: disabled when another bundle/run-all is already active --->
@@ -291,37 +293,38 @@ bx:param name="url.editor"          default="vscode";
 						</div>
 					</div>
 
-					<!--- Inline results strip — only visible after a run --->
-					<div
-						class="bundle-results-strip d-flex align-items-center gap-3 px-3 py-1"
-						:class="'strip-' + bundle.status"
-						x-show="bundle.status !== 'pending' && bundle.status !== 'running'">
-						<span class="strip-stat text-success" x-show="bundle.totalPass > 0">
-							<i class="bi bi-check-circle-fill me-1"></i><span x-text="bundle.totalPass"></span> passed
-						</span>
-						<span class="strip-stat text-danger" x-show="bundle.totalFail > 0">
-							<i class="bi bi-x-circle-fill me-1"></i><span x-text="bundle.totalFail"></span> failed
-						</span>
-						<span class="strip-stat text-warning" x-show="bundle.totalError > 0">
-							<i class="bi bi-exclamation-octagon-fill me-1"></i><span x-text="bundle.totalError"></span> errored
-						</span>
-						<span class="strip-stat text-info" x-show="bundle.totalSkipped > 0">
-							<i class="bi bi-dash-circle-fill me-1"></i><span x-text="bundle.totalSkipped"></span> skipped
-						</span>
-						<span class="strip-stat text-secondary ms-auto" x-show="bundle.totalDuration > 0">
-							<i class="bi bi-clock me-1"></i><span x-text="bundle.totalDuration + ' ms'"></span>
-						</span>
-						<!--- Debug buffer toggle — only appears when there is debug output --->
-						<button
-							class="btn btn-sm border-0 p-0 ms-1 lh-1 strip-debug-btn"
-							:class="bundle.showDebug ? 'active' : ''"
-							@click.stop="bundle.showDebug = !bundle.showDebug"
-							:data-bs-title="'Debug output (' + bundle.debugBuffer.length + ' entries)'"
-							x-show="bundle.debugBuffer && bundle.debugBuffer.length > 0"
-							x-tooltip>
-							<i class="bi bi-bug-fill"></i>
-						</button>
-					</div>
+					<!--- Inline results strip — only rendered once bundle has real results --->
+					<template x-if="( bundle.totalPass + bundle.totalFail + bundle.totalError + bundle.totalSkipped ) > 0">
+						<div
+							class="bundle-results-strip d-flex align-items-center gap-3 px-3 py-1"
+							:class="'strip-' + bundle.status">
+							<span class="strip-stat text-success" x-show="bundle.totalPass > 0">
+								<i class="bi bi-check-circle-fill me-1"></i><span x-text="bundle.totalPass"></span> passed
+							</span>
+							<span class="strip-stat text-danger" x-show="bundle.totalFail > 0">
+								<i class="bi bi-x-circle-fill me-1"></i><span x-text="bundle.totalFail"></span> failed
+							</span>
+							<span class="strip-stat text-warning" x-show="bundle.totalError > 0">
+								<i class="bi bi-exclamation-octagon-fill me-1"></i><span x-text="bundle.totalError"></span> errored
+							</span>
+							<span class="strip-stat text-info" x-show="bundle.totalSkipped > 0">
+								<i class="bi bi-dash-circle-fill me-1"></i><span x-text="bundle.totalSkipped"></span> skipped
+							</span>
+							<span class="strip-stat text-secondary ms-auto" x-show="bundle.totalDuration > 0">
+								<i class="bi bi-clock me-1"></i><span x-text="bundle.totalDuration + ' ms'"></span>
+							</span>
+							<!--- Debug buffer toggle — only appears when there is debug output --->
+							<button
+								class="btn btn-sm border-0 p-0 ms-1 lh-1 strip-debug-btn"
+								:class="bundle.showDebug ? 'active' : ''"
+								@click.stop="bundle.showDebug = !bundle.showDebug"
+								:data-bs-title="'Debug output (' + bundle.debugBuffer.length + ' entries)'"
+								x-show="bundle.debugBuffer && bundle.debugBuffer.length > 0"
+								x-tooltip>
+								<i class="bi bi-bug-fill"></i>
+							</button>
+						</div>
+					</template>
 
 					<!--- Debug output panel --->
 					<div
