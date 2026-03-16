@@ -3,7 +3,7 @@
  * www.ortussolutions.com
  * ---
  * Service for streaming test results via Server-Sent Events (SSE)
- * Compatible with Adobe ColdFusion 2021+, Lucee 5+, and BoxLang
+ * Compatible with Adobe ColdFusion 2023+, Lucee 5+, and BoxLang
  *
  * When `asyncAll = true` is used in test suites, spec callbacks run inside cfthread blocks.
  * Since writeOutput/cfflush from child threads don't write to the parent HTTP response buffer,
