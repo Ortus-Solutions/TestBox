@@ -397,6 +397,7 @@ bx:param name="url.editor"          default="vscode";
 																<button
 																	class="btn btn-sm btn-link text-decoration-none spec-show-all-btn p-0"
 																	@click.stop="spec.showFailureOrigin = !spec.showFailureOrigin"
+																	x-show="hasFailureDetails( spec )"
 																>
 																	<i class="bi me-1" :class="spec.showFailureOrigin ? 'bi-dash-square' : 'bi-plus-square'"></i>
 																	<span x-text="spec.showFailureOrigin ? 'Hide details' : 'Show Failure Details'"></span>
@@ -485,7 +486,7 @@ bx:param name="url.editor"          default="vscode";
 											<!--- Failure Details ToolBar --->
 											<div
 												class="mt-1 d-flex align-items-center gap-2 flex-wrap"
-												x-show="isFailedOrErrored( spec ) && ( hasFailureDetails( spec ) || hasStacktrace( spec ) )"
+												x-show="shouldShowFailureControls( spec )"
 											>
 												<button
 													class="btn btn-sm btn-link text-decoration-none spec-show-all-btn p-0"
@@ -629,7 +630,7 @@ bx:param name="url.editor"          default="vscode";
 	<!-- JAVASCRIPT -->
 	<!--- ============================================================================================================ --->
 	<script defer src="assets/js/vendor/bootstrap.bundle.min.js"></script>
-	<script defer src="assets/js/run.js?v=20260316-8"></script>
+	<script defer src="assets/js/run.js?v=20260316-10"></script>
 	<script defer src="assets/js/vendor/alpine-collapse.min.js"></script>
 	<script defer src="assets/js/vendor/alpine.min.js"></script>
 </body>

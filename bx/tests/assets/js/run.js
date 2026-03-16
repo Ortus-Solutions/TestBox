@@ -309,7 +309,15 @@ document.addEventListener( "alpine:init", () => {
 		 * Whether a spec status should render failure tooling.
 		 */
 		isFailedOrErrored( spec ) {
-			return !!spec && ( spec.status === "failed" || spec.status === "error" );
+			return !!spec && spec.hasExecuted === true && ( spec.status === "failed" || spec.status === "error" );
+		},
+
+		/**
+		 * Single source of truth: should the failure controls toolbar be shown for this spec?
+		 * A spec that has executed and landed in a failed/error state always has something to show.
+		 */
+		shouldShowFailureControls( spec ) {
+			return this.isFailedOrErrored( spec );
 		},
 
 		/**
