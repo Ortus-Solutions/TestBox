@@ -29,11 +29,17 @@
 <cfparam name="url.coveragePathToCapture"			default="">
 <cfparam name="url.coverageWhitelist"				default="">
 <cfparam name="url.coverageBlacklist"				default="/testbox">
+<!--- Enable batched code coverage reporter, useful for large test bundles which require spreading over multiple testbox run commands. --->
 <cfparam name="url.isBatched"						default="false">
 
 <cfscript>
 // Initialize streaming service and set SSE headers
 streamingService = new testbox.system.util.StreamingService();
+
+// If we have incoming bundles, then clear out the directory
+if( len( url.bundles ) || len( url.testSuites ) || len( url.testSpecs ) ){
+	url.directory = ""
+}
 
 // Create TestBox instance with same options as HTMLRunner
 testbox = new testbox.system.TestBox(

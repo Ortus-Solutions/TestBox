@@ -12,7 +12,10 @@
 <cfparam name="url.propertiesSummary"			 	default="false" type="boolean">
 <cfparam name="url.bundlesPattern" 					default="*.bx|*.cfc">
 <cfparam name="url.dryRun"							default="false" type="boolean">
+<cfparam name="url.testSuites"						default="">
+<cfparam name="url.testSpecs"						default="">
 
+<!--- Coverage parameters --->
 <cfparam name="url.coverageEnabled"					default="false" type="boolean">
 <cfparam name="url.coverageSonarQubeXMLOutputPath"	default="">
 <cfparam name="url.coverageBrowserOutputDir"		default="">
@@ -23,6 +26,11 @@
 <cfparam name="url.isBatched"						default="false">
 
 <cfscript>
+// If we have incoming bundles, then clear out the directory
+if( len( url.bundles ) || len( url.testSuites ) || len( url.testSpecs ) ){
+	url.directory = ""
+}
+
 // prepare for tests for bundles or directories
 testbox = new testbox.system.TestBox(
 	labels   = url.labels,
@@ -43,23 +51,23 @@ testbox = new testbox.system.TestBox(
 		}
 	},
 	bundlesPattern = url.bundlesPattern
-);
+)
 if( len( url.bundles ) ){
-	testbox.addBundles( url.bundles );
+	testbox.addBundles( url.bundles )
 }
 if( len( url.directory ) ){
 	for( dir in listToArray( url.directory ) ){
-		testbox.addDirectories( dir, url.recurse );
+		testbox.addDirectories( dir, url.recurse )
 	}
 }
 
 // Run Tests using correct reporter
 if( url.dryRun ){
-	discovery = testbox.dryRun();
-	getPageContext().getResponse().setContentType( "application/json" );
-	results = serializeJSON( discovery );
+	discovery = testbox.dryRun()
+	cfcontent( type="application/json", reset="true" )
+	results = serializeJSON( discovery )
 } else {
-	results = testbox.run( reporter=url.reporter );
+	results = testbox.run( reporter=url.reporter )
 }
 
 function escapePropertyValue( required string value ) {
