@@ -283,9 +283,9 @@ component extends="testbox.system.BaseSpec" {
 
 					for ( var callbackName in requiredCallbacks ) {
 						expect( callbacks ).toHaveKey( callbackName );
-						expect( isClosure( callbacks[ callbackName ] ) || isCustomFunction( callbacks[ callbackName ] ) ).toBeTrue(
-							"#callbackName# should be a closure"
-						);
+						expect(
+							isClosure( callbacks[ callbackName ] ) || isCustomFunction( callbacks[ callbackName ] )
+						).toBeTrue( "#callbackName# should be a closure" );
 					}
 				} );
 			} );
