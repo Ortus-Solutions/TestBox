@@ -71,6 +71,7 @@ document.addEventListener( "alpine:init", () => {
 		loadPreferences() {
 			// Start with defaults, override with localStorage, then override with URL params on first load
 			let savedPref = localStorage.getItem( "testboxPreferences" );
+			let urlParams = new URLSearchParams( window.location.search );
 
 			if ( savedPref ) {
 				try {
@@ -84,7 +85,7 @@ document.addEventListener( "alpine:init", () => {
 			if ( window.initialOptions ) {
 				// Only apply if they were explicitly provided
 				for ( let key in window.initialOptions ) {
-					if ( window.initialOptions[ key ] !== null && window.initialOptions[ key ] !== undefined && window.initialOptions[ key ] !== "" ) {
+					if ( urlParams.has( key ) && window.initialOptions[ key ] !== null && window.initialOptions[ key ] !== undefined && window.initialOptions[ key ] !== "" ) {
 						// typecast recurse correctly
 						if ( key === "recurse" ) {
 							this.preferences[ key ] = ( window.initialOptions[ key ] === true || window.initialOptions[ key ] === "true" );

@@ -4,7 +4,7 @@
 --->
 <bx:script>
 // Configurable parameters (can be overridden via URL query params)
-bx:param name="url.directory"       default="testbox.tests.specs";
+bx:param name="url.directory"       default="tests.specs";
 bx:param name="url.recurse"         default="true"  type="boolean";
 bx:param name="url.bundlesPattern"  default="";
 bx:param name="url.labels"          default="";
