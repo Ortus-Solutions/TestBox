@@ -392,12 +392,11 @@ bx:param name="url.editor"          default="vscode";
 
 															<div
 																class="mt-1 d-flex align-items-center gap-2 flex-wrap"
-																x-show="isFailedOrErrored( spec ) && ( hasFailureDetails( spec ) || hasStacktrace( spec ) )"
+																x-show="shouldShowFailureControls( spec )"
 															>
 																<button
 																	class="btn btn-sm btn-link text-decoration-none spec-show-all-btn p-0"
 																	@click.stop="spec.showFailureOrigin = !spec.showFailureOrigin"
-																	x-show="hasFailureDetails( spec )"
 																>
 																	<i class="bi me-1" :class="spec.showFailureOrigin ? 'bi-dash-square' : 'bi-plus-square'"></i>
 																	<span x-text="spec.showFailureOrigin ? 'Hide details' : 'Show Failure Details'"></span>
