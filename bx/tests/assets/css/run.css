@@ -181,6 +181,7 @@ body {
 
 /* Spec-level run button: hidden until the row is hovered */
 .spec-play-btn {
+	opacity: 0;
 	transition: opacity 0.14s ease;
 	text-shadow: 0 0 0.35rem rgba(var(--bs-primary-rgb), 0.5);
 	flex-shrink: 0;
