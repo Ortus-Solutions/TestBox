@@ -319,7 +319,7 @@ bx:param name="url.editor"          default="vscode";
 								class="btn btn-sm border-0 p-0 ms-1 lh-1 strip-debug-btn"
 								:class="bundle.showDebug ? 'active' : ''"
 								@click.stop="bundle.showDebug = !bundle.showDebug"
-								:data-bs-title="'Debug output (' + bundle.debugBuffer.length + ' entries)'"
+								:data-bs-title="'Debug Buffer (' + bundle.debugBuffer.length + ' entries)'"
 								x-show="bundle.debugBuffer && bundle.debugBuffer.length > 0"
 								x-tooltip>
 								<i class="bi bi-bug-fill"></i>
@@ -357,10 +357,17 @@ bx:param name="url.editor"          default="vscode";
 					<!--- Suite list --->
 					<div class="card-body p-0" x-show="bundle.expanded" x-collapse>
 						<ul class="list-group list-group-flush">
+
 							<!-- Loop suites within bundle -->
 							<template x-for="suite in bundle.suites" :key="suite.id">
-								<li class="list-group-item suite-item bg-transparent" :class="'status-bg-' + suite.status" x-show="isSuiteVisible(suite)">
-									<div class="d-flex justify-content-between align-items-center cursor-pointer py-1" @click="suite.expanded = !suite.expanded">
+								<li
+									class="list-group-item suite-item bg-transparent"
+									:class="'status-bg-' + suite.status"
+									x-show="isSuiteVisible(suite)"
+								>
+									<div
+										class="d-flex justify-content-between align-items-center cursor-pointer py-1"
+										@click="suite.expanded = !suite.expanded">
 										<div class="ps-2 ms-2 box-border-left" :class="'border-' + getStatusColorClass(suite.status)">
 											<i class="bi me-1" :class="getStatusIcon(suite.status, 'suite')"></i>
 											<strong x-text="suite.name"></strong>
@@ -368,10 +375,18 @@ bx:param name="url.editor"          default="vscode";
 										<i class="bi text-muted" :class="suite.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
 									</div>
 
-									<ul class="list-group list-group-flush mt-1 border-top border-secondary border-opacity-25" x-show="suite.expanded" x-collapse>
+									<ul
+										class="list-group list-group-flush mt-1 border-top border-secondary border-opacity-25"
+										x-show="suite.expanded"
+										x-collapse>
 										<template x-for="spec in suite.specs" :key="spec.id">
-											<li class="list-group-item spec-item border-0 py-1 bg-transparent" :class="'status-bg-' + spec.status" x-show="isSpecVisible(spec)">
-												<div class="d-flex justify-content-between align-items-center ps-4 ms-3 box-border-left" :class="'border-' + getStatusColorClass(spec.status)">
+											<li
+												class="list-group-item spec-item border-0 py-1 bg-transparent"
+												:class="'status-bg-' + spec.status"
+												x-show="isSpecVisible(spec)">
+												<div
+													class="d-flex justify-content-between align-items-center ps-4 ms-3 box-border-left"
+													:class="'border-' + getStatusColorClass(spec.status)">
 													<div>
 														<i class="bi me-2" :class="getStatusIcon(spec.status, 'spec')"></i>
 														<span x-text="spec.name"></span>
@@ -397,6 +412,7 @@ bx:param name="url.editor"          default="vscode";
 																<button
 																	class="btn btn-sm btn-link text-decoration-none spec-show-all-btn p-0"
 																	@click.stop="spec.showFailureOrigin = !spec.showFailureOrigin"
+																	x-show="shouldShowFailureControls( spec )"
 																>
 																	<i class="bi me-1" :class="spec.showFailureOrigin ? 'bi-dash-square' : 'bi-plus-square'"></i>
 																	<span x-text="spec.showFailureOrigin ? 'Hide details' : 'Show Failure Details'"></span>
