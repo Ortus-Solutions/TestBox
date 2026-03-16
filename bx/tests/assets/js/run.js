@@ -280,6 +280,7 @@ document.addEventListener( "alpine:init", () => {
 				failOrigin: [],
 				failStacktrace: "",
 				error: null,
+				hasExecuted: false,
 				showFailureOrigin: false,
 				showStacktrace: false
 			};
@@ -614,6 +615,7 @@ document.addEventListener( "alpine:init", () => {
 		 */
 		shouldShowSpecDuration( spec ) {
 			if ( !spec ) return false;
+			if ( !spec.hasExecuted ) return false;
 			if ( spec.status === "pending" || spec.status === "running" ) return false;
 			return spec.totalDuration !== undefined && spec.totalDuration !== null;
 		},
@@ -714,6 +716,7 @@ document.addEventListener( "alpine:init", () => {
 				sp.failOrigin = [];
 				sp.failStacktrace = "";
 				sp.error = null;
+				sp.hasExecuted = false;
 				sp.showFailureOrigin = false;
 				sp.showStacktrace = false;
 			};
@@ -830,7 +833,10 @@ document.addEventListener( "alpine:init", () => {
 			this.eventSource.addEventListener( "specStart", ( e ) => {
 				let data = JSON.parse( e.data );
 				let specInfo = this.findSpec( data.id, data.bundlePath, data.suiteId );
-				if ( specInfo ) specInfo.spec.status = "running";
+				if ( specInfo ) {
+					specInfo.spec.status = "running";
+					specInfo.spec.hasExecuted = true;
+				}
 			} );
 
 			this.eventSource.addEventListener( "specEnd", ( e ) => {
@@ -844,6 +850,7 @@ document.addEventListener( "alpine:init", () => {
 					specInfo.spec.failOrigin = Array.isArray( data.failOrigin ) ? data.failOrigin : [];
 					specInfo.spec.failStacktrace = data.failStacktrace || "";
 					specInfo.spec.error = data.error || null;
+					specInfo.spec.hasExecuted = true;
 					specInfo.spec.showFailureOrigin = false;
 					specInfo.spec.showStacktrace = false;
 				}
