@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.6.0
+- https://testbox.ortusbooks.com/readme/release-history/whats-new-with-7.0.0
 
 ## [6.5.0] - 2026-01-25
 
