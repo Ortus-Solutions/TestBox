@@ -465,6 +465,29 @@ document.addEventListener( "alpine:init", () => {
 		},
 
 		/**
+		 * Returns whether a spec duration badge should be shown.
+		 * Completed specs can legitimately report 0ms and should still display a badge.
+		 *
+		 * @param {object} spec - Target spec node.
+		 * @returns {boolean} True when duration is renderable for this spec.
+		 */
+		shouldShowSpecDuration( spec ) {
+			if ( !spec ) return false;
+			if ( spec.status === "pending" || spec.status === "running" ) return false;
+			return spec.totalDuration !== undefined && spec.totalDuration !== null;
+		},
+
+		/**
+		 * Formats a spec duration value as a badge label.
+		 *
+		 * @param {object} spec - Target spec node.
+		 * @returns {string} Duration text.
+		 */
+		formatSpecDuration( spec ) {
+			return ( spec?.totalDuration ?? 0 ) + "ms";
+		},
+
+		/**
 		 * Checks if a specific status type is active in the global toggles.
 		 * Pending and Running states bypass strict filter.
 		 *

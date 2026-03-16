@@ -430,13 +430,17 @@ bx:param name="url.editor"          default="vscode";
 																</div>
 															</div>
 													</div>
-													<span class="badge rounded-pill bg-secondary ms-2" x-text="spec.totalDuration + 'ms'" x-show="spec.status !== 'pending' && spec.status !== 'running' && spec.totalDuration !== undefined && spec.totalDuration > 0"></span>
+													<span
+														class="badge rounded-pill bg-secondary ms-2"
+														x-text="formatSpecDuration( spec )"
+														x-show="shouldShowSpecDuration( spec )"></span>
 												</div>
 											</li>
 										</template>
 									</ul>
 								</li>
 							</template>
+
 							<!-- Loop top-level specs in bundle (for xunit or unnested) -->
 							<template x-for="spec in bundle.specs" :key="spec.id">
 								<li class="list-group-item spec-item bg-transparent" :class="'status-bg-' + spec.status" x-show="isSpecVisible(spec)">
@@ -500,7 +504,7 @@ bx:param name="url.editor"          default="vscode";
 												</div>
 											</div>
 										</div>
-										<span class="badge rounded-pill bg-secondary ms-2" x-text="spec.totalDuration + 'ms'" x-show="spec.status !== 'pending' && spec.status !== 'running' && spec.totalDuration !== undefined && spec.totalDuration > 0"></span>
+										<span class="badge rounded-pill bg-secondary ms-2" x-text="formatSpecDuration( spec )" x-show="shouldShowSpecDuration( spec )"></span>
 									</div>
 								</li>
 							</template>
@@ -580,7 +584,7 @@ bx:param name="url.editor"          default="vscode";
 	<!-- JAVASCRIPT -->
 	<!--- ============================================================================================================ --->
 	<script defer src="assets/js/vendor/bootstrap.bundle.min.js"></script>
-	<script defer src="assets/js/run.js?v=20260314-2"></script>
+	<script defer src="assets/js/run.js?v=20260316-3"></script>
 	<script defer src="assets/js/vendor/alpine-collapse.min.js"></script>
 	<script defer src="assets/js/vendor/alpine.min.js"></script>
 </body>
