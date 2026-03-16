@@ -29,7 +29,7 @@ bx:param name="url.editor"          default="vscode";
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 	<!--- App CSS --->
-	<link rel="stylesheet" href="assets/css/run.css?v=20260314-theme1">
+	<link rel="stylesheet" href="assets/css/run.css?v=20260316-theme2">
 
 	<script>
 		// Pass server context URL parameters to Javascript
@@ -228,17 +228,18 @@ bx:param name="url.editor"          default="vscode";
 			</div>
 		</div>
 
-		<!--- Progress Bar (visible only while a run is active) --->
+		<!--- Floating Progress Widget (visible only while a run is active) --->
 		<template x-if="isRunning">
-			<div class="mb-3">
-				<div class="d-flex justify-content-between align-items-center mb-1 small text-muted">
-					<span>
+			<div class="floating-progress-widget" role="status" aria-live="polite">
+				<div class="floating-progress-glow"></div>
+				<div class="floating-progress-header d-flex justify-content-between align-items-center mb-2">
+					<span class="floating-progress-title">
 						<i class="bi bi-hourglass-split spinner-icon me-1 text-primary"></i>
 						<span x-text="activeBundlePath ? 'Running bundle…' : 'Running all tests…'"></span>
 					</span>
-					<span x-text="specsCompleted + ' / ' + metaGlobalStats.totalSpecs + ' specs'"></span>
+					<span class="floating-progress-count" x-text="specsCompleted + ' / ' + metaGlobalStats.totalSpecs"></span>
 				</div>
-				<div class="progress" style="height: 6px;">
+				<div class="floating-progress-track progress">
 					<div
 						class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
 						role="progressbar"
@@ -247,6 +248,7 @@ bx:param name="url.editor"          default="vscode";
 						:aria-valuemax="metaGlobalStats.totalSpecs">
 					</div>
 				</div>
+				<div class="floating-progress-subtext mt-2" x-text="Math.min(100, (metaGlobalStats.totalSpecs > 0 ? Math.round( (specsCompleted / metaGlobalStats.totalSpecs) * 100 ) : 100)) + '% complete'"></div>
 			</div>
 		</template>
 

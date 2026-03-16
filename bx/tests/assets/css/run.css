@@ -336,6 +336,90 @@ body {
 	opacity: 0.88;
 }
 
+/* Floating progress widget */
+.floating-progress-widget {
+	position: fixed;
+	right: 1.15rem;
+	bottom: 1.15rem;
+	width: min(520px, calc(100vw - 2rem));
+	z-index: 1060;
+	padding: 0.85rem 1rem 0.9rem;
+	border-radius: 0.9rem;
+	background: linear-gradient(155deg, color-mix(in srgb, var(--tb-surface-1) 92%, transparent), color-mix(in srgb, var(--tb-surface-2) 88%, transparent));
+	border: 1px solid color-mix(in srgb, var(--bs-primary) 36%, var(--tb-tree-border));
+	box-shadow: var(--tb-glow-card), var(--tb-glow-strong);
+	backdrop-filter: blur(7px);
+	overflow: hidden;
+	animation: floatingProgressIn 180ms ease-out;
+}
+
+.floating-progress-glow {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background: radial-gradient(65% 140% at 100% 100%, rgba(var(--bs-primary-rgb), 0.2), transparent 58%);
+	animation: floatingPulse 1.7s ease-in-out infinite;
+}
+
+.floating-progress-header,
+.floating-progress-track,
+.floating-progress-subtext {
+	position: relative;
+	z-index: 1;
+}
+
+.floating-progress-title {
+	font-size: 0.95rem;
+	font-weight: 650;
+	letter-spacing: 0.02em;
+	text-shadow: 0 0 0.34rem rgba(var(--bs-primary-rgb), 0.36);
+}
+
+.floating-progress-count {
+	font-size: 0.88rem;
+	font-weight: 700;
+	color: color-mix(in srgb, var(--bs-primary) 80%, white);
+	text-shadow: 0 0 0.32rem rgba(var(--bs-primary-rgb), 0.4);
+}
+
+.floating-progress-track {
+	height: 12px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--tb-surface-3) 80%, transparent);
+	border: 1px solid color-mix(in srgb, var(--tb-tree-border) 78%, transparent);
+	overflow: hidden;
+}
+
+.floating-progress-track .progress-bar {
+	box-shadow: 0 0 0.65rem rgba(var(--bs-primary-rgb), 0.62);
+	background-image: linear-gradient(45deg, rgba(255,255,255,0.22) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.22) 75%, transparent 75%, transparent);
+	background-size: 1rem 1rem;
+}
+
+.floating-progress-subtext {
+	font-size: 0.74rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--tb-text-dim);
+}
+
+@keyframes floatingProgressIn {
+	from {
+		opacity: 0;
+		transform: translateY(10px) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+@keyframes floatingPulse {
+	0% { opacity: 0.35; }
+	50% { opacity: 0.75; }
+	100% { opacity: 0.35; }
+}
+
 @media (max-width: 768px) {
 	.results-summary-card .results-stat-count {
 		font-size: 1.65rem;
@@ -344,5 +428,16 @@ body {
 	.bundle-card .card-header {
 		padding-top: 0.65rem;
 		padding-bottom: 0.65rem;
+	}
+
+	.floating-progress-widget {
+		right: 0.65rem;
+		bottom: 0.65rem;
+		width: calc(100vw - 1.3rem);
+		padding: 0.72rem 0.78rem 0.78rem;
+	}
+
+	.floating-progress-track {
+		height: 10px;
 	}
 }
