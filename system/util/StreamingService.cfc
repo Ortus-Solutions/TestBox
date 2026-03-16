@@ -60,14 +60,14 @@ component accessors="true" {
 	 */
 	function initializeStream(){
 		// Set SSE-specific headers to establish the correct content type and disable buffering
-		cfcontent( type="text/event-stream; charset=UTF-8", reset="true" );
+		cfcontent( type = "text/event-stream; charset=UTF-8", reset = "true" );
 		cfheader( name = "Cache-Control", value = "no-cache, no-transform" );
 		cfheader( name = "Pragma", value = "no-cache" );
 		cfheader( name = "Connection", value = "keep-alive" );
 		// Disable nginx buffering
 		cfheader( name = "X-Accel-Buffering", value = "no" );
 		// avoid gzip buffering in some stacks
-		cfheader( name= "Content-Encoding" value = "identity" );
+		cfheader( name = "Content-Encoding", value = "identity" );
 		return this;
 	}
 
@@ -106,7 +106,7 @@ component accessors="true" {
 			if ( isNull( variables.flushEnabled ) || variables.flushEnabled ) {
 				// cfflush moves data from the CFML output buffer to the Java response writer.
 				// It may not be available in all BoxLang contexts, so we catch and fall through.
-				cfflush();
+				cfflush(  );
 			}
 		} catch ( any e ) {
 			// Client may have disconnected during SSE streaming.
@@ -177,7 +177,7 @@ component accessors="true" {
 				writeOutput( formatSSEEvent( event.eventType, event.data ) );
 				// Only flush if enabled (disabled during unit testing to prevent response commit)
 				if ( isNull( variables.flushEnabled ) || variables.flushEnabled ) {
-					cfflush();
+					cfflush(  );
 				}
 			} catch ( any e ) {
 				// Client may have disconnected - log and continue draining
@@ -264,15 +264,15 @@ component accessors="true" {
 				service.streamEvent(
 					"suiteStart",
 					{
-						"id"        : suite.id,
-						"bundlePath": targetMD.name,
-						"name"      : suite.name,
-						"timestamp" : getTickCount()
+						"id"         : suite.id,
+						"bundlePath" : targetMD.name,
+						"name"       : suite.name,
+						"timestamp"  : getTickCount()
 					}
 				);
 			},
 			"onSuiteEnd" : ( target, testResults, suite ) => {
-				var targetMD = getMetadata( target );
+				var targetMD   = getMetadata( target );
 				var suiteStats = testResults.getSuiteStats( suite.id );
 				service.streamEvent(
 					"suiteEnd",
@@ -304,7 +304,7 @@ component accessors="true" {
 				);
 			},
 			"onSpecEnd" : ( target, testResults, suite, spec ) => {
-				var targetMD = getMetadata( target );
+				var targetMD    = getMetadata( target );
 				var currentSpec = testResults.getSpecStats( spec.id );
 
 				service.streamEvent(
