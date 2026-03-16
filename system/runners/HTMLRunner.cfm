@@ -27,7 +27,7 @@
 
 <cfscript>
 // If we have incoming bundles, then clear out the directory
-if( len( url.bundles ) || len( url.testSuites ) || len( url.testSpecs ) ){
+if( len( url.bundles ) ){
 	url.directory = ""
 }
 
