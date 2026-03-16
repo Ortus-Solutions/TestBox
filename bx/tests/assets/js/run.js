@@ -220,7 +220,9 @@ document.addEventListener( "alpine:init", () => {
 					totalPass: 0,
 					totalFail: 0,
 					totalError: 0,
-					totalSkipped: 0,				debugBuffer: [],
+					totalSkipped: 0,
+					hasStats: false,
+					debugBuffer: [],
 				showDebug: false,					suites: [],
 					specs: [] // top-level specs
 				};
@@ -544,6 +546,17 @@ document.addEventListener( "alpine:init", () => {
 		},
 
 		/**
+		 * Whether a bundle has aggregate results worth showing in the strip.
+		 *
+		 * @param {object} bundle - Target bundle node.
+		 * @returns {boolean}
+		 */
+		computeBundleHasStats( bundle ) {
+			if ( !bundle ) return false;
+			return ( ( bundle.totalPass || 0 ) + ( bundle.totalFail || 0 ) + ( bundle.totalError || 0 ) + ( bundle.totalSkipped || 0 ) ) > 0;
+		},
+
+		/**
 		 * Resets duration, statistics, and state indicators back to "pending".
 		 * When bundlePath is provided, only that bundle (and its children) is reset;
 		 * all other bundles are left untouched so their previous results remain visible.
@@ -572,6 +585,7 @@ document.addEventListener( "alpine:init", () => {
 				b.totalFail = 0;
 				b.totalError = 0;
 				b.totalSkipped = 0;
+				b.hasStats = false;
 				b.suites.forEach( s => {
 					s.status = "pending";
 					s.specs.forEach( resetSpec );
@@ -656,6 +670,7 @@ document.addEventListener( "alpine:init", () => {
 					bundle.totalFail = data.totalFail || 0;
 					bundle.totalError = data.totalError || 0;
 					bundle.totalSkipped = data.totalSkipped || 0;
+					bundle.hasStats = this.computeBundleHasStats( bundle );
 					bundle.debugBuffer = data.debugBuffer || [];
 				}
 			} );

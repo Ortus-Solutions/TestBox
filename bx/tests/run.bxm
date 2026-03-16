@@ -293,7 +293,7 @@ bx:param name="url.editor"          default="vscode";
 					</div>
 
 					<!--- Inline results strip — only rendered once bundle has real results --->
-					<template x-if="( bundle.totalPass + bundle.totalFail + bundle.totalError + bundle.totalSkipped ) > 0">
+					<template x-if="bundle.hasStats">
 						<div
 							class="bundle-results-strip d-flex align-items-center gap-3 px-3 py-1"
 							:class="'strip-' + bundle.status">
@@ -583,7 +583,7 @@ bx:param name="url.editor"          default="vscode";
 	<!-- JAVASCRIPT -->
 	<!--- ============================================================================================================ --->
 	<script defer src="assets/js/vendor/bootstrap.bundle.min.js"></script>
-	<script defer src="assets/js/run.js?v=20260316-3"></script>
+	<script defer src="assets/js/run.js?v=20260316-4"></script>
 	<script defer src="assets/js/vendor/alpine-collapse.min.js"></script>
 	<script defer src="assets/js/vendor/alpine.min.js"></script>
 </body>
