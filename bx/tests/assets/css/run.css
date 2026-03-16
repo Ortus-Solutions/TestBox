@@ -304,6 +304,30 @@ body {
 	font-size: 0.95rem;
 }
 
+.spec-show-stack-btn {
+	font-size: 0.88rem;
+	font-weight: 700;
+	text-decoration: none;
+	opacity: 0.95;
+	white-space: nowrap;
+	color: color-mix(in srgb, var(--bs-info) 92%, white);
+	padding: 0.24rem 0.5rem !important;
+	border-radius: 0.5rem;
+	background: color-mix(in srgb, var(--tb-surface-3) 72%, transparent);
+	border: 1px solid color-mix(in srgb, var(--bs-info) 34%, var(--tb-tree-border));
+	box-shadow: 0 0 0.45rem rgba(var(--bs-info-rgb), 0.2);
+}
+
+.spec-show-stack-btn:hover {
+	opacity: 1;
+	text-shadow: 0 0 0.45rem rgba(var(--bs-info-rgb), 0.5);
+	box-shadow: 0 0 0.75rem rgba(var(--bs-info-rgb), 0.35);
+}
+
+.spec-show-stack-btn .bi {
+	font-size: 0.95rem;
+}
+
 .spec-fail-panel {
 	background: color-mix(in srgb, var(--tb-surface-3) 66%, transparent);
 	border: 1px solid color-mix(in srgb, var(--tb-tree-border) 58%, transparent);
@@ -360,6 +384,53 @@ body {
 	padding: 0;
 	color: var(--bs-body-color);
 	opacity: 0.88;
+}
+
+.spec-stacktrace-panel {
+	border-color: color-mix(in srgb, var(--bs-info) 30%, var(--tb-tree-border));
+	box-shadow: inset 0 0 0.85rem rgba(var(--bs-info-rgb), 0.08);
+}
+
+.spec-fail-stacktrace-full {
+	font-family: var(--bs-font-monospace);
+	font-size: 0.86rem;
+	line-height: 1.5;
+	white-space: pre-wrap;
+	word-break: break-word;
+	color: var(--bs-body-color);
+	padding: 0.1rem;
+}
+
+.stacktrace-line {
+	margin-bottom: 0.12rem;
+}
+
+.stacktrace-location {
+	background: color-mix(in srgb, var(--tb-surface-2) 70%, transparent);
+	border: 1px solid color-mix(in srgb, var(--bs-info) 40%, var(--tb-tree-border));
+	border-radius: 0.4rem;
+	padding: 0.05rem 0.32rem;
+	display: inline-block;
+}
+
+.stacktrace-link {
+	color: color-mix(in srgb, var(--bs-info) 88%, white);
+	text-decoration: none;
+	font-weight: 700;
+	text-shadow: 0 0 0.3rem rgba(var(--bs-info-rgb), 0.35);
+}
+
+.stacktrace-link:hover {
+	text-decoration: underline;
+	color: color-mix(in srgb, var(--bs-info) 70%, white);
+}
+
+.stacktrace-caused-by {
+	color: #ff7b7b;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	text-shadow: 0 0 0.35rem rgba(255, 123, 123, 0.5);
 }
 
 /* Floating progress widget */

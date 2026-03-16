@@ -280,7 +280,8 @@ document.addEventListener( "alpine:init", () => {
 				failOrigin: [],
 				failStacktrace: "",
 				error: null,
-				showFailureOrigin: false
+				showFailureOrigin: false,
+				showStacktrace: false
 			};
 		},
 
@@ -304,10 +305,17 @@ document.addEventListener( "alpine:init", () => {
 		},
 
 		/**
+		 * Whether a spec status should render failure tooling.
+		 */
+		isFailedOrErrored( spec ) {
+			return !!spec && ( spec.status === "failed" || spec.status === "error" );
+		},
+
+		/**
 		 * Whether this spec has any extended failure/error data to render in the expandable panel.
 		 */
 		hasFailureDetails( spec ) {
-			if ( !spec || ( spec.status !== "failed" && spec.status !== "error" ) ) return false;
+			if ( !this.isFailedOrErrored( spec ) ) return false;
 
 			return !!(
 				this.getPrimaryContext( spec ) ||
@@ -359,6 +367,137 @@ document.addEventListener( "alpine:init", () => {
 			let safeLine = Number.isFinite( Number( line ) ) ? Number( line ) : 1;
 
 			window.location.href = `${ editorScheme }://file${ safePath }:${ safeLine }`;
+		},
+
+		/**
+		 * Generates an editor deep-link href for a file+line.
+		 */
+		getEditorHref( template, line = 1 ) {
+			if ( !template ) return "#";
+			let editorScheme = this.preferences.editor || "vscode";
+			let safePath = encodeURI( template ).replaceAll( "#", "%23" );
+			let safeLine = Number.isFinite( Number( line ) ) ? Number( line ) : 1;
+			return `${ editorScheme }://file${ safePath }:${ safeLine }`;
+		},
+
+		/**
+		 * Extracts and normalizes a lowercase extension from a stacktrace location path.
+		 */
+		getFileExtension( filePath ) {
+			if ( !filePath ) return "";
+			let normalized = String( filePath ).trim();
+			let lastDot = normalized.lastIndexOf( "." );
+			if ( lastDot < 0 ) return "";
+			return normalized.slice( lastDot + 1 ).toLowerCase();
+		},
+
+		/**
+		 * Returns Java class FQN from a stacktrace line like:
+		 * at ortus.boxlang.runtime.interop.DynamicInteropService.dereferenceAndInvoke(DynamicInteropService.java:2266)
+		 */
+		extractJavaClassFqn( line ) {
+			if ( !line ) return "";
+			let match = String( line ).match( /^\s*at\s+([A-Za-z0-9_$.]+)\.[A-Za-z0-9_$<>]+\([^)]*\.java:\d+\)\s*$/ );
+			return match ? match[ 1 ] : "";
+		},
+
+		/**
+		 * Builds a GitHub URL to a BoxLang runtime Java source file.
+		 */
+		getBoxLangGithubHref( classFqn, line = 1 ) {
+			if ( !classFqn ) return "";
+			let safeLine = Number.isFinite( Number( line ) ) ? Number( line ) : 1;
+			let classPath = classFqn.replaceAll( ".", "/" ) + ".java";
+			return `https://github.com/ortus-boxlang/boxlang/blob/main/src/main/java/${ classPath }#L${ safeLine }`;
+		},
+
+		/**
+		 * Resolves whether a stacktrace location should be linked and where.
+		 */
+		resolveStacktraceLocationLink( filePath, lineNo, stackLine ) {
+			const ext = this.getFileExtension( filePath );
+			const editorExtensions = new Set( [ "cfc", "cfm", "bxm", "bx", "bxs" ] );
+
+			if ( editorExtensions.has( ext ) ) {
+				return {
+					href: this.getEditorHref( filePath, lineNo ),
+					newWindow: false
+				};
+			}
+
+			if ( ext === "java" ) {
+				let classFqn = this.extractJavaClassFqn( stackLine );
+				if ( classFqn.startsWith( "ortus.boxlang.runtime." ) ) {
+					return {
+						href: this.getBoxLangGithubHref( classFqn, lineNo ),
+						newWindow: true
+					};
+				}
+			}
+
+			return null;
+		},
+
+		/**
+		 * Returns the stacktrace text for the spec (failure first, then error fallback).
+		 */
+		getStacktrace( spec ) {
+			return spec?.failStacktrace || spec?.error?.stackTrace || "";
+		},
+
+		/**
+		 * Whether stacktrace exists for display.
+		 */
+		hasStacktrace( spec ) {
+			if ( !this.isFailedOrErrored( spec ) ) return false;
+			return !!this.getStacktrace( spec );
+		},
+
+		/**
+		 * Formats stacktrace text to HTML with highlighted locations and caused-by lines.
+		 */
+		formatStacktraceHTML( stacktrace ) {
+			if ( !stacktrace ) return "";
+
+			const locationPattern = /\(([^\)]+?):(\d+)\)/g;
+			return String( stacktrace )
+				.split( /\r?\n/ )
+				.map( ( line ) => {
+					let rendered = "";
+					let lastIndex = 0;
+
+					locationPattern.lastIndex = 0;
+					for ( const match of line.matchAll( locationPattern ) ) {
+						const full = match[ 0 ];
+						const filePath = match[ 1 ];
+						const lineNo = Number( match[ 2 ] );
+						const matchIndex = match.index ?? 0;
+
+						rendered += this.escapeHtml( line.slice( lastIndex, matchIndex ) );
+
+						const linkInfo = this.resolveStacktraceLocationLink( filePath, lineNo, line );
+						const label = this.escapeHtml( `${ filePath }:${ lineNo }` );
+
+						if ( linkInfo?.href ) {
+							const href = this.escapeHtml( linkInfo.href );
+							const targetAttrs = linkInfo.newWindow ? ' target="_blank" rel="noopener noreferrer"' : "";
+							rendered += `<span class="stacktrace-location">(<a class="stacktrace-link" href="${ href }"${ targetAttrs }>${ label }</a>)</span>`;
+						} else {
+							rendered += `<span class="stacktrace-location">${ this.escapeHtml( full ) }</span>`;
+						}
+
+						lastIndex = matchIndex + full.length;
+					}
+
+					rendered += this.escapeHtml( line.slice( lastIndex ) );
+
+					if ( /^\s*caused by\s*:/i.test( line ) ) {
+						rendered = `<span class="stacktrace-caused-by">${ rendered }</span>`;
+					}
+
+					return `<div class="stacktrace-line">${ rendered }</div>`;
+				} )
+				.join( "" );
 		},
 
 		/**
@@ -576,6 +715,7 @@ document.addEventListener( "alpine:init", () => {
 				sp.failStacktrace = "";
 				sp.error = null;
 				sp.showFailureOrigin = false;
+				sp.showStacktrace = false;
 			};
 
 			const resetBundle = ( b ) => {
@@ -705,6 +845,7 @@ document.addEventListener( "alpine:init", () => {
 					specInfo.spec.failStacktrace = data.failStacktrace || "";
 					specInfo.spec.error = data.error || null;
 					specInfo.spec.showFailureOrigin = false;
+					specInfo.spec.showStacktrace = false;
 				}
 				this.specsCompleted++;
 			} );
