@@ -69,11 +69,12 @@ bx:param name="url.editor"          default="vscode";
 				<!--- Centered search --->
 				<div class="mx-auto px-3 flex-grow-1" style="max-width: 500px;" x-show="!globalError">
 					<input
-						type="text"
-						class="form-control form-control-sm border-primary"
-						x-model="searchQuery"
-						placeholder="Filter bundles, suites, specs..."
-						data-bs-title="Filter the test tree by name"
+					id="searchInput"
+					type="text"
+					class="form-control form-control-sm border-primary"
+					x-model="searchQuery"
+					placeholder="Filter bundles, suites, specs..."
+					data-bs-title="Filter the test tree by name (/ or Ctrl+F)"
 						x-tooltip.bottom>
 				</div>
 				<div class="me-auto" x-show="globalError"></div>
@@ -673,7 +674,7 @@ bx:param name="url.editor"          default="vscode";
 	<!-- JAVASCRIPT -->
 	<!--- ============================================================================================================ --->
 	<script defer src="assets/js/vendor/bootstrap.bundle.min.js"></script>
-	<script defer src="assets/js/run.js?v=20260316-12"></script>
+	<script defer src="assets/js/run.js?v=20260316-13"></script>
 	<script defer src="assets/js/vendor/alpine-collapse.min.js"></script>
 	<script defer src="assets/js/vendor/alpine.min.js"></script>
 </body>

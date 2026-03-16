@@ -62,6 +62,7 @@ document.addEventListener( "alpine:init", () => {
 
 			this.loadPreferences();
 			this.fetchDryRun();
+			this.initKeyboardShortcuts();
 		},
 
 		/**
@@ -1049,12 +1050,95 @@ document.addEventListener( "alpine:init", () => {
 		},
 
 		/**
+		 * Toggles all bundles and their suites between fully expanded and fully collapsed.
+		 */
+		toggleAllBundles() {
+			const anyExpanded = this.bundles.some( b => b.expanded );
+			if ( anyExpanded ) {
+				this.collapseAll();
+			} else {
+				this.expandAll();
+			}
+		},
+
+		/**
 		 * Expands all bundle cards in the test tree.
 		 */
 		expandAll() {
 			this.bundles.forEach( b => {
 				b.expanded = true;
 				b.suites.forEach( s => s.expanded = true );
+			} );
+		},
+
+		/**
+		 * Registers global keyboard shortcuts for common actions.
+		 *
+		 * Shortcuts:
+		 *   /  or  Ctrl+F  — Focus the search / filter input
+		 *   Escape          — Clear the search query (when search input is focused)
+		 *   Ctrl+Enter      — Run all tests
+		 *   Ctrl+R          — Reload (re-fetch dry run without full page reload)
+		 *   Ctrl+,          — Open the Settings modal
+		 *   Ctrl+B          — Toggle expand / collapse all bundles
+		 *   Ctrl+D          — Toggle dark / light theme
+		 */
+		initKeyboardShortcuts() {
+			document.addEventListener( "keydown", ( e ) => {
+				const tag = document.activeElement?.tagName?.toLowerCase();
+				const inInput = tag === "input" || tag === "textarea" || tag === "select" || document.activeElement?.isContentEditable;
+
+				// / or Ctrl+F  →  focus search
+				if ( ( e.key === "/" && !inInput ) || ( e.ctrlKey && e.key === "f" ) ) {
+					e.preventDefault();
+					document.getElementById( "searchInput" )?.focus();
+					return;
+				}
+
+				// Escape  →  clear search (only while search input has focus)
+				if ( e.key === "Escape" && document.activeElement?.id === "searchInput" ) {
+					this.searchQuery = "";
+					document.activeElement.blur();
+					return;
+				}
+
+				// All remaining shortcuts require Ctrl/Meta and must not fire inside text inputs
+				if ( !( e.ctrlKey || e.metaKey ) || inInput ) return;
+
+				switch ( e.key ) {
+					case "Enter":
+						// Ctrl+Enter  →  run all tests
+						e.preventDefault();
+						if ( !this.isRunning ) this.runAllTests();
+						break;
+
+					case "r":
+					case "R":
+						// Ctrl+R  →  reload (re-fetch dry run)
+						e.preventDefault();
+						if ( !this.isRunning ) this.fetchDryRun();
+						break;
+
+					case ",":
+						// Ctrl+,  →  open settings modal
+						e.preventDefault();
+						bootstrap.Modal.getOrCreateInstance( document.getElementById( "settingsModal" ) ).show();
+						break;
+
+					case "b":
+					case "B":
+						// Ctrl+B  →  toggle expand/collapse all bundles
+						e.preventDefault();
+						this.toggleAllBundles();
+						break;
+
+					case "d":
+					case "D":
+						// Ctrl+D  →  toggle dark/light theme
+						e.preventDefault();
+						this.toggleTheme();
+						break;
+				}
 			} );
 		},
 
