@@ -31,7 +31,7 @@ component
 
 	function testNotThrows(){
 		$assert.notThrows( function(){
-			var hello = 1 / 0;
+			var hello = 1;
 		} );
 	}
 

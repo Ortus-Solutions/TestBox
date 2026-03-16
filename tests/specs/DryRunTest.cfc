@@ -19,6 +19,7 @@ component extends="testbox.system.BaseSpec" {
 				var bundle    = discovery.bundles[ 1 ];
 				var suite     = bundle.suites[ 1 ];
 				var spec      = suite.specs[ 1 ];
+				var skipped   = suite.specs[ 2 ];
 
 				expect( structKeyExists( request, "dryRunBDDBeforeAll" ) ).toBeFalse();
 				expect( structKeyExists( request, "dryRunBDDAfterAll" ) ).toBeFalse();
@@ -27,14 +28,18 @@ component extends="testbox.system.BaseSpec" {
 				expect( structKeyExists( request, "dryRunBDDSpecRuns" ) ).toBeFalse();
 				expect( discovery.summary.totalBundles ).toBe( 1 );
 				expect( discovery.summary.totalSuites ).toBe( 1 );
-				expect( discovery.summary.totalSpecs ).toBe( 1 );
+				expect( discovery.summary.totalSpecs ).toBe( 2 );
 				expect( bundle.type ).toBe( "bdd" );
 				expect( suite.name ).toBe( "Runnable Suite" );
 				expect( spec.displayName ).toBe( "Runnable Spec" );
+				expect( spec.skip ).toBeFalse();
+				expect( skipped.displayName ).toBe( "Skipped Spec" );
+				expect( skipped.skip ).toBeTrue();
 				expect( arrayToList( spec.labels ) ).toBe( "specLabel" );
 				expect( arrayFindNoCase( spec.effectiveLabels, "componentLabel" ) ).toBeGT( 0 );
 				expect( arrayFindNoCase( spec.effectiveLabels, "suiteLabel" ) ).toBeGT( 0 );
 				expect( arrayFindNoCase( spec.effectiveLabels, "specLabel" ) ).toBeGT( 0 );
+				expect( structKeyExists( request, "dryRunBDDSkippedSpecRuns" ) ).toBeFalse();
 			} );
 
 			it( "discovers xUnit specs and labels without executing lifecycle hooks", function(){
@@ -68,11 +73,16 @@ component extends="testbox.system.BaseSpec" {
 					options = { coverage : { enabled : false } }
 				);
 				var discovery = testbox.dryRun();
+				var bundle    = discovery.bundles[ 1 ];
+				var suite     = bundle.suites[ 1 ];
+				var spec      = suite.specs[ 1 ];
 
-				expect( discovery.summary.totalBundles ).toBe( 0 );
-				expect( discovery.summary.totalSuites ).toBe( 0 );
-				expect( discovery.summary.totalSpecs ).toBe( 0 );
-				expect( arrayLen( discovery.bundles ) ).toBe( 0 );
+				expect( discovery.summary.totalBundles ).toBe( 1 );
+				expect( discovery.summary.totalSuites ).toBe( 1 );
+				expect( discovery.summary.totalSpecs ).toBe( 1 );
+				expect( arrayLen( discovery.bundles ) ).toBe( 1 );
+				expect( spec.displayName ).toBe( "Skipped Spec" );
+				expect( spec.skip ).toBeTrue();
 			} );
 		} );
 	}
