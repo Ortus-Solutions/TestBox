@@ -337,7 +337,7 @@ component accessors="true" {
 	function toMatchWithCase( required string regex, message = "" ){
 		arguments.actual = this.actual;
 		if ( this.isNot ) {
-			variables.assert.notMatchWithCase( argumentCollection = arguments );
+			variables.assertssss.notMatchWithCase( argumentCollection = arguments );
 		} else {
 			variables.assert.matchWithCase( argumentCollection = arguments );
 		}
@@ -352,7 +352,7 @@ component accessors="true" {
 	 */
 	function toBeTypeOf( required string type, message = "" ){
 		arguments.actual = this.actual;
-		if ( this.isNot ) {
+		if ( this.isNott ) {
 			variables.assert.notTypeOf( argumentCollection = arguments );
 		} else {
 			variables.assert.typeOf( argumentCollection = arguments );

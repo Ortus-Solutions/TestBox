@@ -714,24 +714,27 @@ bx:param name="url.editor"          default="vscode";
 						<p class="text-uppercase fw-semibold small text-muted mb-2 letter-spacing-1"><i class="bi bi-keyboard me-1"></i>Keyboard Shortcuts</p>
 						<div class="about-shortcut-grid">
 							<span class="about-shortcut-desc">Focus Search</span>
-							<span class="about-shortcut-keys"><kbd>⌘</kbd><kbd>K</kbd> <span class="text-muted">/ Ctrl+K</span></span>
+							<span class="about-shortcut-keys"><kbd>⌘/ctrl</kbd><kbd>K</kbd></span>
 
 							<span class="about-shortcut-desc">Clear Search</span>
 							<span class="about-shortcut-keys"><kbd>Esc</kbd></span>
 
 							<span class="about-shortcut-desc">Run All Tests</span>
-							<span class="about-shortcut-keys"><kbd>Ctrl</kbd><kbd>↵</kbd></span>
+							<span class="about-shortcut-keys"><kbd>⌘/ctrl</kbd><kbd>↵</kbd></span>
 
 							<span class="about-shortcut-desc">Reload</span>
-										<span class="about-shortcut-keys"><kbd>Ctrl</kbd><kbd>.</kbd></span>
+										<span class="about-shortcut-keys"><kbd>⌘/ctrl</kbd><kbd>.</kbd></span>
 							<span class="about-shortcut-desc">Settings</span>
-							<span class="about-shortcut-keys"><kbd>Ctrl</kbd><kbd>,</kbd></span>
+							<span class="about-shortcut-keys"><kbd>⌘/ctrl</kbd><kbd>,</kbd></span>
 
 							<span class="about-shortcut-desc">Toggle All Bundles</span>
-							<span class="about-shortcut-keys"><kbd>Ctrl</kbd><kbd>B</kbd></span>
+							<span class="about-shortcut-keys"><kbd>⌘/ctrl</kbd><kbd>B</kbd></span>
 
 							<span class="about-shortcut-desc">Toggle Theme</span>
-							<span class="about-shortcut-keys"><kbd>Ctrl</kbd><kbd>D</kbd></span>
+							<span class="about-shortcut-keys"><kbd>⌘/ctrl</kbd><kbd>D</kbd></span>
+
+							<span class="about-shortcut-desc">Help / About</span>
+							<span class="about-shortcut-keys"><kbd>⌘/ctrl</kbd><kbd>H</kbd></span>
 						</div>
 					</div>
 

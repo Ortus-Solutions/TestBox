@@ -45,12 +45,12 @@ component extends="testbox.system.BaseSpec" {
 
 				describe( "A nice /suite/with/slashes", function(){
 					it( "can have slashes/inthe/it", function(){
-						expect( true ).toBeTrue();
+						expect( false ).toBeTrue();
 					} );
 				} );
 
 				it( "can have a spec with passthrough assertions", function(){
-					this.assertIsEqual( 1, 1 );
+					this.assertIsEqual( 1, 1 / 0 );
 					this.assertIsTrue( true );
 					this.assertIsFalse( false );
 				} );

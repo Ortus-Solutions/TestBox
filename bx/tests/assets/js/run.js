@@ -1080,6 +1080,7 @@ document.addEventListener( "alpine:init", () => {
 		 *   Ctrl+Enter       — Run all tests
 		 *   Ctrl+.           — Reload (re-fetch dry run without full page reload)
 		 *   Ctrl+,           — Open the Settings modal
+		 *   Ctrl+H / ⌘H     — Open the Help / About dialog
 		 *   Ctrl+B           — Toggle expand / collapse all bundles
 		 *   Ctrl+D           — Toggle dark / light theme
 		 */
@@ -1128,6 +1129,13 @@ document.addEventListener( "alpine:init", () => {
 						// Ctrl+,  →  open settings modal
 						e.preventDefault();
 						bootstrap.Modal.getOrCreateInstance( document.getElementById( "settingsModal" ) ).show();
+						break;
+
+					case "h":
+					case "H":
+						// Ctrl+H / ⌘H  →  open About / Help modal
+						e.preventDefault();
+						bootstrap.Modal.getOrCreateInstance( document.getElementById( "aboutModal" ) ).show();
 						break;
 
 					case "b":
