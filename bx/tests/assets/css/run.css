@@ -561,3 +561,101 @@ li:hover .spec-play-btn-hover:hover { opacity: 1 !important; }
 		height: 10px;
 	}
 }
+/* ─── About modal ───────────────────────────────────────────────── */
+.about-logo {
+	width: 220px;
+	max-width: 100%;
+}
+
+.about-shortcuts {
+	background: var(--bs-tertiary-bg);
+	border: 1px solid var(--bs-border-color);
+	border-radius: 0.5rem;
+	padding: 0.85rem 1rem;
+}
+
+.about-shortcut-grid {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	row-gap: 0.45rem;
+	column-gap: 1.5rem;
+	align-items: center;
+}
+
+.about-shortcut-desc {
+	font-size: 0.85rem;
+	color: var(--bs-body-color);
+}
+
+.about-shortcut-keys {
+	display: flex;
+	align-items: center;
+	gap: 3px;
+	justify-content: flex-end;
+}
+
+.about-shortcut-keys kbd {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1px 6px;
+	font-size: 0.7rem;
+	font-family: inherit;
+	background: var(--bs-body-bg);
+	border: 1px solid var(--bs-border-color);
+	border-radius: 4px;
+	color: var(--bs-secondary-color, #6c757d);
+	line-height: 1.5;
+	min-width: 1.6em;
+}
+
+.about-link {
+	font-size: 0.85rem;
+	text-decoration: none;
+	color: var(--bs-primary);
+	border: 1px solid var(--bs-primary);
+	border-radius: 20px;
+	padding: 0.25rem 0.75rem;
+	transition: background 0.15s, color 0.15s;
+}
+
+.about-link:hover {
+	background: var(--bs-primary);
+	color: #fff;
+}
+
+.about-link-support {
+	color: var(--bs-warning);
+	border-color: var(--bs-warning);
+}
+
+.about-link-support:hover {
+	background: var(--bs-warning);
+	color: #000;
+}
+
+/* ─── Search bar ─────────────────────────────────────────────────── */
+.search-icon-addon {
+	background: transparent;
+	color: var(--bs-secondary-color, #6c757d);
+}
+
+.search-kbd-addon {
+	background: transparent;
+	gap: 4px;
+}
+
+.search-kbd {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 1px 5px;
+	font-size: 0.68rem;
+	font-family: inherit;
+	background: var(--bs-body-bg);
+	border: 1px solid var(--bs-border-color);
+	border-radius: 4px;
+	color: var(--bs-secondary-color, #6c757d);
+	line-height: 1.4;
+	min-width: 1.4em;
+}

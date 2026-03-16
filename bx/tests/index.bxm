@@ -55,7 +55,13 @@ bx:param name="url.editor"          default="vscode";
 	<!--- ============================================================================================================ --->
 	<nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom fixed-top">
 		<div class="container-fluid">
-			<a class="navbar-brand text-primary d-flex align-items-center" href="##">
+			<a
+				class="navbar-brand text-primary d-flex align-items-center cursor-pointer"
+				href="##"
+				data-bs-toggle="modal"
+				data-bs-target="##aboutModal"
+				data-bs-title="About TestBox Run"
+				x-tooltip.bottom>
 				<img
 					:src="preferences.theme === 'dark' ? 'assets/images/testbox-logo-full-light-L.svg' : 'assets/images/testbox-logo-full-dark-L.svg'"
 					alt="TestBox"
@@ -67,15 +73,24 @@ bx:param name="url.editor"          default="vscode";
 			</button>
 			<div class="collapse navbar-collapse" id="navbarText">
 				<!--- Centered search --->
-				<div class="mx-auto px-3 flex-grow-1" style="max-width: 500px;" x-show="!globalError">
-					<input
-					id="searchInput"
-					type="text"
-					class="form-control form-control-sm border-primary"
-					x-model="searchQuery"
-					placeholder="Filter bundles, suites, specs..."
-					data-bs-title="Filter the test tree by name (/ or Ctrl+F)"
-						x-tooltip.bottom>
+				<div class="mx-auto px-3 flex-grow-1 search-wrapper" style="max-width: 500px;" x-show="!globalError">
+					<div class="input-group input-group-sm">
+						<span class="input-group-text search-icon-addon border-primary border-end-0">
+							<i class="bi bi-search"></i>
+						</span>
+						<input
+							id="searchInput"
+							type="text"
+							class="form-control form-control-sm border-primary border-start-0 border-end-0 search-input"
+							x-model="searchQuery"
+							placeholder="Ask or search..."
+							data-bs-title="Filter the test tree by name"
+							x-tooltip.bottom>
+						<span class="input-group-text search-kbd-addon border-primary border-start-0">
+							<kbd class="search-kbd" x-text="navigator.platform?.includes('Mac') ? '⌘' : 'Ctrl'"></kbd>
+							<kbd class="search-kbd">K</kbd>
+						</span>
+					</div>
 				</div>
 				<div class="me-auto" x-show="globalError"></div>
 				<span class="navbar-text d-flex align-items-center gap-2 ms-2">
@@ -84,7 +99,7 @@ bx:param name="url.editor"          default="vscode";
 						class="btn btn-sm btn-outline-secondary"
 						@click="expandAll()"
 						:disabled="isLoading"
-						data-bs-title="Expand all bundles"
+						data-bs-title="Expand all bundles (Ctrl/Cmd + B)"
 						x-tooltip.bottom>
 						<i class="bi bi-arrows-expand"></i>
 					</button>
@@ -92,7 +107,7 @@ bx:param name="url.editor"          default="vscode";
 						class="btn btn-sm btn-outline-secondary"
 						@click="collapseAll()"
 						:disabled="isLoading"
-						data-bs-title="Collapse all bundles"
+						data-bs-title="Collapse all bundles (Ctrl/Cmd + B)"
 						x-tooltip.bottom>
 						<i class="bi bi-arrows-collapse"></i>
 					</button>
@@ -102,7 +117,7 @@ bx:param name="url.editor"          default="vscode";
 						@click="runAllTests()"
 						x-show="!isRunning"
 						:disabled="isLoading"
-						data-bs-title="Run All"
+						data-bs-title="Run All (Ctrl/Cmd + Enter)"
 						x-tooltip.bottom>
 						<i class="bi bi-play-fill"></i>
 					</button>
@@ -120,7 +135,7 @@ bx:param name="url.editor"          default="vscode";
 						class="btn btn-sm btn-outline-secondary"
 						@click="refreshTests()"
 						:disabled="isRunning"
-						data-bs-title="Reload Tests"
+						data-bs-title="Reload Tests (Ctrl/Cmd + .)"
 						x-tooltip.left>
 						<i class="bi bi-arrow-clockwise" :class="isLoading ? 'spinner-icon' : ''"></i>
 					</button>
@@ -671,10 +686,84 @@ bx:param name="url.editor"          default="vscode";
 	</div>
 
 	<!--- ============================================================================================================ --->
+	<!-- About Modal -->
+	<!--- ============================================================================================================ --->
+	<div
+		class="modal fade"
+		id="aboutModal"
+		tabindex="-1"
+		aria-labelledby="aboutModalLabel"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<!--- Header --->
+				<div class="modal-header border-0 pb-0">
+					<button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<!--- Body --->
+				<div class="modal-body pt-0 pb-4 px-4 text-center">
+					<!--- Logo --->
+					<img
+						:src="preferences.theme === 'dark' ? 'assets/images/testbox-logo-full-light-L.svg' : 'assets/images/testbox-logo-full-dark-L.svg'"
+						alt="TestBox"
+						class="about-logo mb-1">
+					<p class="text-muted small mb-3">The leading BDD &amp; TDD testing framework for BoxLang &amp; CFML</p>
+
+					<!--- Keyboard shortcuts --->
+					<div class="about-shortcuts mb-4 text-start">
+						<p class="text-uppercase fw-semibold small text-muted mb-2 letter-spacing-1"><i class="bi bi-keyboard me-1"></i>Keyboard Shortcuts</p>
+						<div class="about-shortcut-grid">
+							<span class="about-shortcut-desc">Focus Search</span>
+							<span class="about-shortcut-keys"><kbd>⌘</kbd><kbd>K</kbd> <span class="text-muted">/ Ctrl+K</span></span>
+
+							<span class="about-shortcut-desc">Clear Search</span>
+							<span class="about-shortcut-keys"><kbd>Esc</kbd></span>
+
+							<span class="about-shortcut-desc">Run All Tests</span>
+							<span class="about-shortcut-keys"><kbd>Ctrl</kbd><kbd>↵</kbd></span>
+
+							<span class="about-shortcut-desc">Reload</span>
+										<span class="about-shortcut-keys"><kbd>Ctrl</kbd><kbd>.</kbd></span>
+							<span class="about-shortcut-desc">Settings</span>
+							<span class="about-shortcut-keys"><kbd>Ctrl</kbd><kbd>,</kbd></span>
+
+							<span class="about-shortcut-desc">Toggle All Bundles</span>
+							<span class="about-shortcut-keys"><kbd>Ctrl</kbd><kbd>B</kbd></span>
+
+							<span class="about-shortcut-desc">Toggle Theme</span>
+							<span class="about-shortcut-keys"><kbd>Ctrl</kbd><kbd>D</kbd></span>
+						</div>
+					</div>
+
+					<!--- Links --->
+					<div class="d-flex justify-content-center gap-3 flex-wrap mb-4">
+						<a href="https://www.testbox.run" target="_blank" rel="noopener" class="about-link">
+							<i class="bi bi-globe2 me-1"></i>testbox.run
+						</a>
+						<a href="https://testbox.ortusbooks.com" target="_blank" rel="noopener" class="about-link">
+							<i class="bi bi-book me-1"></i>Documentation
+						</a>
+						<a href="https://www.ortussolutions.com/services/support" target="_blank" rel="noopener" class="about-link about-link-support">
+							<i class="bi bi-headset me-1"></i>Professional Support
+						</a>
+					</div>
+
+					<!--- Copyright --->
+					<p class="text-muted small mb-0">
+						&copy; <span x-text="new Date().getFullYear()"></span>
+						<a href="https://www.ortussolutions.com" target="_blank" rel="noopener" class="text-muted">Ortus Solutions, Corp.</a>
+						&mdash; All rights reserved.
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--- ============================================================================================================ --->
 	<!-- JAVASCRIPT -->
 	<!--- ============================================================================================================ --->
 	<script defer src="assets/js/vendor/bootstrap.bundle.min.js"></script>
-	<script defer src="assets/js/run.js?v=20260316-13"></script>
+	<script defer src="assets/js/run.js?v=20260316-15"></script>
 	<script defer src="assets/js/vendor/alpine-collapse.min.js"></script>
 	<script defer src="assets/js/vendor/alpine.min.js"></script>
 </body>

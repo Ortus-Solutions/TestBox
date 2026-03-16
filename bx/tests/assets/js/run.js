@@ -1075,23 +1075,29 @@ document.addEventListener( "alpine:init", () => {
 		 * Registers global keyboard shortcuts for common actions.
 		 *
 		 * Shortcuts:
-		 *   /  or  Ctrl+F  — Focus the search / filter input
-		 *   Escape          — Clear the search query (when search input is focused)
-		 *   Ctrl+Enter      — Run all tests
-		 *   Ctrl+R          — Reload (re-fetch dry run without full page reload)
-		 *   Ctrl+,          — Open the Settings modal
-		 *   Ctrl+B          — Toggle expand / collapse all bundles
-		 *   Ctrl+D          — Toggle dark / light theme
+		 *   Ctrl+K / ⌘K     — Focus the search / filter input
+		 *   Escape           — Clear the search query (when search input is focused)
+		 *   Ctrl+Enter       — Run all tests
+		 *   Ctrl+.           — Reload (re-fetch dry run without full page reload)
+		 *   Ctrl+,           — Open the Settings modal
+		 *   Ctrl+B           — Toggle expand / collapse all bundles
+		 *   Ctrl+D           — Toggle dark / light theme
 		 */
 		initKeyboardShortcuts() {
 			document.addEventListener( "keydown", ( e ) => {
 				const tag = document.activeElement?.tagName?.toLowerCase();
 				const inInput = tag === "input" || tag === "textarea" || tag === "select" || document.activeElement?.isContentEditable;
 
-				// / or Ctrl+F  →  focus search
-				if ( ( e.key === "/" && !inInput ) || ( e.ctrlKey && e.key === "f" ) ) {
+				// Ctrl+K / ⌘K  →  focus search
+				if ( ( e.ctrlKey || e.metaKey ) && e.key === "k" ) {
 					e.preventDefault();
-					document.getElementById( "searchInput" )?.focus();
+					const searchEl = document.getElementById( "searchInput" );
+					if ( document.activeElement === searchEl ) {
+						searchEl?.blur();
+					} else {
+						searchEl?.focus();
+						searchEl?.select();
+					}
 					return;
 				}
 
@@ -1112,9 +1118,8 @@ document.addEventListener( "alpine:init", () => {
 						if ( !this.isRunning ) this.runAllTests();
 						break;
 
-					case "r":
-					case "R":
-						// Ctrl+R  →  reload (re-fetch dry run)
+					case ".":
+						// Ctrl+.  →  reload (re-fetch dry run without full page reload)
 						e.preventDefault();
 						if ( !this.isRunning ) this.fetchDryRun();
 						break;
