@@ -262,16 +262,17 @@ body {
 	align-items: baseline;
 	gap: 0.35rem;
 	flex-wrap: wrap;
-	font-size: 0.78rem;
+	font-size: 0.9rem;
+	font-weight: 600;
 }
 
 .spec-origin-link {
 	font-family: var(--bs-font-monospace);
-	font-size: 0.78rem;
+	font-size: 0.92rem;
 	text-decoration: none;
 	word-break: break-all;
 	color: color-mix(in srgb, var(--bs-info) 85%, white);
-	text-shadow: 0 0 0.35rem rgba(var(--bs-info-rgb), 0.35);
+	text-shadow: 0 0 0.45rem rgba(var(--bs-info-rgb), 0.45);
 }
 
 .spec-origin-link:hover {
@@ -280,16 +281,27 @@ body {
 }
 
 .spec-show-all-btn {
-	font-size: 0.72rem;
+	font-size: 0.88rem;
+	font-weight: 700;
 	text-decoration: none;
-	opacity: 0.85;
+	opacity: 0.95;
 	white-space: nowrap;
 	color: color-mix(in srgb, var(--bs-primary) 92%, white);
+	padding: 0.24rem 0.5rem !important;
+	border-radius: 0.5rem;
+	background: color-mix(in srgb, var(--tb-surface-3) 72%, transparent);
+	border: 1px solid color-mix(in srgb, var(--bs-primary) 34%, var(--tb-tree-border));
+	box-shadow: 0 0 0.45rem rgba(var(--bs-primary-rgb), 0.2);
 }
 
 .spec-show-all-btn:hover {
 	opacity: 1;
-	text-shadow: 0 0 0.35rem rgba(var(--bs-primary-rgb), 0.4);
+	text-shadow: 0 0 0.45rem rgba(var(--bs-primary-rgb), 0.5);
+	box-shadow: 0 0 0.75rem rgba(var(--bs-primary-rgb), 0.35);
+}
+
+.spec-show-all-btn .bi {
+	font-size: 0.95rem;
 }
 
 .spec-fail-panel {
@@ -302,10 +314,10 @@ body {
 }
 
 .spec-fail-section-label {
-	font-size: 0.65rem;
+	font-size: 0.78rem;
 	text-transform: uppercase;
-	letter-spacing: 0.08em;
-	opacity: 0.68;
+	letter-spacing: 0.09em;
+	opacity: 0.85;
 	margin-bottom: 0.25rem;
 	font-weight: 650;
 }
@@ -319,7 +331,21 @@ body {
 
 .spec-origin-idx {
 	font-family: var(--bs-font-monospace);
-	font-size: 0.72rem;
+	font-size: 0.82rem;
+	font-weight: 700;
+}
+
+.spec-fail-panel .border-primary-subtle {
+	border-color: color-mix(in srgb, var(--bs-primary) 58%, var(--tb-tree-border)) !important;
+	border-width: 2px !important;
+	background: color-mix(in srgb, var(--tb-surface-2) 88%, transparent);
+	box-shadow: 0 0 0.6rem rgba(var(--bs-primary-rgb), 0.18);
+}
+
+.spec-fail-panel .cursor-pointer:hover {
+	box-shadow: 0 0 0.9rem rgba(var(--bs-primary-rgb), 0.28);
+	transform: translateY(-1px);
+	transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 
 .spec-fail-stacktrace {
