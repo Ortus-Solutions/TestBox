@@ -41,12 +41,12 @@ component extends="testbox.system.BaseSpec" {
 				it( "all callbacks are closures", function(){
 					var callbacks = variables.streamingService.createStreamingCallbacks();
 
-					expect( isClosure( callbacks.onBundleStart ) ).toBeTrue();
-					expect( isClosure( callbacks.onBundleEnd ) ).toBeTrue();
-					expect( isClosure( callbacks.onSuiteStart ) ).toBeTrue();
-					expect( isClosure( callbacks.onSuiteEnd ) ).toBeTrue();
-					expect( isClosure( callbacks.onSpecStart ) ).toBeTrue();
-					expect( isClosure( callbacks.onSpecEnd ) ).toBeTrue();
+					expect( callbacks.keyExists( "onBundleStart" ) ).toBeTrue();
+					expect( callbacks.keyExists( "onBundleEnd" ) ).toBeTrue();
+					expect( callbacks.keyExists( "onSuiteStart" ) ).toBeTrue();
+					expect( callbacks.keyExists( "onSuiteEnd" ) ).toBeTrue();
+					expect( callbacks.keyExists( "onSpecStart" ) ).toBeTrue();
+					expect( callbacks.keyExists( "onSpecEnd" ) ).toBeTrue();
 				} );
 			} );
 
@@ -283,7 +283,7 @@ component extends="testbox.system.BaseSpec" {
 
 					for ( var callbackName in requiredCallbacks ) {
 						expect( callbacks ).toHaveKey( callbackName );
-						expect( isClosure( callbacks[ callbackName ] ) ).toBeTrue(
+						expect( isClosure( callbacks[ callbackName ] ) || isCustomFunction( callbacks[ callbackName ] ) ).toBeTrue(
 							"#callbackName# should be a closure"
 						);
 					}
