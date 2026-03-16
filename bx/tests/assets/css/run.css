@@ -170,6 +170,25 @@ body {
 
 .card-header:hover .bundle-play-btn { opacity: 1; }
 
+/* Suite-level run button: sits in the header row, always subtly visible */
+.suite-play-btn {
+	opacity: 0.35;
+	transition: opacity 0.14s ease;
+	text-shadow: 0 0 0.4rem rgba(var(--bs-primary-rgb), 0.5);
+}
+.suite-play-btn:hover { opacity: 1 !important; }
+.suite-play-btn:disabled { opacity: 0.15 !important; cursor: not-allowed; }
+
+/* Spec-level run button: hidden until the row is hovered */
+.spec-play-btn {
+	transition: opacity 0.14s ease;
+	text-shadow: 0 0 0.35rem rgba(var(--bs-primary-rgb), 0.5);
+	flex-shrink: 0;
+}
+li:hover .spec-play-btn-hover { opacity: 0.75; }
+li:hover .spec-play-btn-hover:hover { opacity: 1 !important; }
+.spec-play-btn:disabled { opacity: 0.15 !important; cursor: not-allowed; }
+
 .status-bd-passed  { border-left: 5px solid var(--bs-success) !important; }
 .status-bd-failed  { border-left: 5px solid var(--bs-danger) !important; }
 .status-bd-error   { border-left: 5px solid var(--bs-warning) !important; }

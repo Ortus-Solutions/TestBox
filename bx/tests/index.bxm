@@ -101,7 +101,7 @@ bx:param name="url.editor"          default="vscode";
 						@click="runAllTests()"
 						x-show="!isRunning"
 						:disabled="isLoading"
-						data-bs-title="Run all tests"
+						data-bs-title="Run All"
 						x-tooltip.bottom>
 						<i class="bi bi-play-fill"></i>
 					</button>
@@ -172,7 +172,7 @@ bx:param name="url.editor"          default="vscode";
 					<div class="results-stat-item flex-fill py-3 text-center cursor-pointer"
 						:class="{'filter-off': !statusFilters.passed}"
 						@click="statusFilters.passed = !statusFilters.passed"
-						data-bs-title="Click to toggle passed specs visibility"
+						:data-bs-title="statusFilters.passed ? 'Hide Passed Specs' : 'Show Passed Specs'"
 						x-tooltip>
 						<div class="results-stat-count text-success" x-text="metaGlobalStats.totalPass">0</div>
 						<div class="results-stat-label text-success"><i class="bi bi-check-circle-fill me-1"></i>Passed</div>
@@ -182,7 +182,7 @@ bx:param name="url.editor"          default="vscode";
 					<div class="results-stat-item flex-fill py-3 text-center cursor-pointer"
 						:class="{'filter-off': !statusFilters.failed}"
 						@click="statusFilters.failed = !statusFilters.failed"
-						data-bs-title="Click to toggle failed specs visibility"
+						:data-bs-title="statusFilters.failed ? 'Hide Failed Specs' : 'Show Failed Specs'"
 						x-tooltip>
 						<div class="results-stat-count text-danger" x-text="metaGlobalStats.totalFail">0</div>
 						<div class="results-stat-label text-danger"><i class="bi bi-x-circle-fill me-1"></i>Failed</div>
@@ -193,6 +193,7 @@ bx:param name="url.editor"          default="vscode";
 						:class="{'filter-off': !statusFilters.error}"
 						@click="statusFilters.error = !statusFilters.error"
 						data-bs-title="Click to toggle errored specs visibility"
+						:data-bs-title="statusFilters.error ? 'Hide Errored Specs' : 'Show Errored Specs'"
 						x-tooltip>
 						<div class="results-stat-count text-warning" x-text="metaGlobalStats.totalError">0</div>
 						<div class="results-stat-label text-warning"><i class="bi bi-exclamation-octagon-fill me-1"></i>Errored</div>
@@ -202,7 +203,7 @@ bx:param name="url.editor"          default="vscode";
 					<div class="results-stat-item flex-fill py-3 text-center cursor-pointer"
 						:class="{'filter-off': !statusFilters.skipped}"
 						@click="statusFilters.skipped = !statusFilters.skipped"
-						data-bs-title="Click to toggle skipped specs visibility"
+						:data-bs-title="statusFilters.skipped ? 'Hide Skipped Specs' : 'Show Skipped Specs'"
 						x-tooltip>
 						<div class="results-stat-count text-info" x-text="metaGlobalStats.totalSkipped">0</div>
 						<div class="results-stat-label text-info"><i class="bi bi-dash-circle-fill me-1"></i>Skipped</div>
@@ -372,13 +373,20 @@ bx:param name="url.editor"          default="vscode";
 											<i class="bi me-1" :class="getStatusIcon(suite.status, 'suite')"></i>
 											<strong x-text="suite.name"></strong>
 										</div>
+									<div class="d-flex align-items-center gap-2">
+										<button
+											class="btn btn-sm btn-outline-primary border-0 p-0 lh-1 suite-play-btn"
+											style="font-size: 1.1rem; line-height: 1; width: 1.4rem; height: 1.4rem;"
+											data-bs-title="Run this suite"
+											@click.stop="runSuite( bundle.path, suite.name )"
+											:disabled="isRunning && activeBundlePath !== bundle.path"
+											x-tooltip>
+											<i class="bi" :class="isRunning && activeBundlePath === bundle.path ? 'bi-hourglass-split text-primary spinner-icon' : 'bi-play-circle-fill'"></i>
+										</button>
 										<i class="bi text-muted" :class="suite.expanded ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
 									</div>
-
-									<ul
-										class="list-group list-group-flush mt-1 border-top border-secondary border-opacity-25"
-										x-show="suite.expanded"
-										x-collapse>
+									</div>
+									<ul class="list-group list-group-flush" x-show="suite.expanded" x-collapse>
 										<template x-for="spec in suite.specs" :key="spec.id">
 											<li
 												class="list-group-item spec-item border-0 py-1 bg-transparent"
@@ -461,10 +469,21 @@ bx:param name="url.editor"          default="vscode";
 
 															</div>
 													</div>
-													<span
-														class="badge rounded-pill bg-secondary ms-2"
-														x-text="formatSpecDuration( spec )"
-														x-show="shouldShowSpecDuration( spec )"></span>
+														<div class="d-flex align-items-center gap-2">
+															<button
+																class="btn btn-sm btn-outline-primary border-0 p-0 lh-1 spec-play-btn opacity-0 spec-play-btn-hover"
+																style="font-size: 0.9rem; line-height: 1; width: 1.1rem; height: 1.1rem;"
+																data-bs-title="Run this spec"
+																@click.stop="runSpec( bundle.path, spec.id )"
+																:disabled="isRunning && activeBundlePath !== bundle.path"
+																x-tooltip>
+																<i class="bi bi-play-circle-fill"></i>
+															</button>
+															<span
+																class="badge rounded-pill bg-secondary"
+																x-text="formatSpecDuration( spec )"
+																x-show="shouldShowSpecDuration( spec )"></span>
+														</div>
 												</div>
 											</li>
 										</template>
@@ -564,8 +583,19 @@ bx:param name="url.editor"          default="vscode";
 											</div>
 										</div>
 
-										<!--- Duration --->
-										<span class="badge rounded-pill bg-secondary ms-2" x-text="formatSpecDuration( spec )" x-show="shouldShowSpecDuration( spec )"></span>
+										<!--- Duration + Run Spec button --->
+										<div class="d-flex align-items-center gap-2">
+											<button
+												class="btn btn-sm btn-outline-primary border-0 p-0 lh-1 spec-play-btn opacity-0 spec-play-btn-hover"
+												style="font-size: 0.9rem; line-height: 1; width: 1.1rem; height: 1.1rem;"
+												data-bs-title="Run this spec"
+												@click.stop="runSpec( bundle.path, spec.id )"
+												:disabled="isRunning && activeBundlePath !== bundle.path"
+												x-tooltip>
+													<i class="bi bi-play-circle-fill"></i>
+											</button>
+											<span class="badge rounded-pill bg-secondary" x-text="formatSpecDuration( spec )" x-show="shouldShowSpecDuration( spec )"></span>
+										</div>
 									</div>
 								</li>
 							</template>
@@ -645,7 +675,7 @@ bx:param name="url.editor"          default="vscode";
 	<!-- JAVASCRIPT -->
 	<!--- ============================================================================================================ --->
 	<script defer src="assets/js/vendor/bootstrap.bundle.min.js"></script>
-	<script defer src="assets/js/run.js?v=20260316-10"></script>
+	<script defer src="assets/js/run.js?v=20260316-11"></script>
 	<script defer src="assets/js/vendor/alpine-collapse.min.js"></script>
 	<script defer src="assets/js/vendor/alpine.min.js"></script>
 </body>

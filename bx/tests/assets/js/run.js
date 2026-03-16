@@ -797,6 +797,57 @@ document.addEventListener( "alpine:init", () => {
 		},
 
 		/**
+		 * Initiates a targeted isolated test run for a single suite within a bundle.
+		 * Only that bundle resets to pending; other bundles keep their last result (dimmed).
+		 *
+		 * @param {string} bundlePath - Bundle that owns the suite.
+		 * @param {string} suiteName  - Suite name to run (passed as testSuites param).
+		 */
+		runSuite( bundlePath, suiteName ) {
+			this.activeBundlePath = bundlePath;
+			this.resetExecutionState( bundlePath );
+			this.isRunning = true;
+
+			const b = this.bundles.find( b => b.path === bundlePath );
+			if ( b ) {
+				b.expanded = true;
+				const suite = b.suites.find( s => s.name === suiteName );
+				if ( suite ) suite.expanded = true;
+			}
+
+			let url = new URL( this.preferences.runnerUrl, window.location.href );
+			url.searchParams.append( "streaming", "true" );
+			url.searchParams.append( "bundles", bundlePath );
+			url.searchParams.append( "testSuites", suiteName );
+			this.startEventSource( url.toString() );
+		},
+
+		/**
+		 * Initiates a targeted isolated test run for a single spec within a bundle.
+		 * Only that bundle resets to pending; other bundles keep their last result (dimmed).
+		 *
+		 * @param {string} bundlePath - Bundle that owns the spec.
+		 * @param {string} specId     - Spec ID to run (passed as testSpecs param).
+		 */
+		runSpec( bundlePath, specId ) {
+			this.activeBundlePath = bundlePath;
+			this.resetExecutionState( bundlePath );
+			this.isRunning = true;
+
+			const b = this.bundles.find( b => b.path === bundlePath );
+			if ( b ) {
+				b.expanded = true;
+				b.suites.forEach( s => s.expanded = true );
+			}
+
+			let url = new URL( this.preferences.runnerUrl, window.location.href );
+			url.searchParams.append( "streaming", "true" );
+			url.searchParams.append( "bundles", bundlePath );
+			url.searchParams.append( "testSpecs", specId );
+			this.startEventSource( url.toString() );
+		},
+
+		/**
 		 * Safely initiates connection with the underlying BoxLang runner's Server-Sent Events stream
 		 * and subsequently wires listeners mapping real-time broadcast payloads logically to the interface states.
 		 *
