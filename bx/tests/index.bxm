@@ -156,6 +156,49 @@ bx:param name="url.editor"          default="vscode";
 					</button>
 				</span>
 			</div>
+
+			<!--- Compact controls for collapsed/mobile mode --->
+			<div class="w-100 d-lg-none mt-2" x-show="!globalError">
+				<div class="tb-compact-controls">
+					<div class="input-group input-group-sm tb-compact-search">
+						<span class="input-group-text search-icon-addon border-primary border-end-0">
+							<i class="bi bi-search"></i>
+						</span>
+						<input
+							id="searchInputCompact"
+							type="text"
+							class="form-control form-control-sm border-primary border-start-0"
+							x-model="searchQuery"
+							placeholder="Search..."
+							data-bs-title="Filter the test tree by name"
+							x-tooltip.bottom>
+					</div>
+
+					<div class="tb-compact-actions">
+						<button
+							class="btn btn-sm btn-success d-inline-flex align-items-center gap-1"
+							type="button"
+							@click="runAllTests()"
+							x-show="!isRunning"
+							:disabled="isLoading"
+							data-bs-title="Run All"
+							x-tooltip.bottom>
+							<i class="bi bi-play-fill"></i>
+							<span>Run</span>
+						</button>
+						<button
+							class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1"
+							type="button"
+							@click="refreshTests()"
+							:disabled="isRunning"
+							data-bs-title="Reload Tests"
+							x-tooltip.bottom>
+							<i class="bi bi-arrow-clockwise" :class="isLoading ? 'spinner-icon' : ''"></i>
+							<span>Reload</span>
+						</button>
+					</div>
+				</div>
+			</div>
 		</div>
 	</nav>
 

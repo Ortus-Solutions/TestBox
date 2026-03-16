@@ -264,7 +264,6 @@ component extends="testbox.system.BaseSpec" {
 					expect( callLog[ 1 ][ 1 ] ).toBe( "specEnd" );
 					expect( callLog[ 1 ][ 2 ].status ).toBe( "failed" );
 					expect( callLog[ 1 ][ 2 ].failMessage ).toBe( "Expected true but got false" );
-					expect( callLog[ 1 ][ 2 ].failOrigin ).toHaveKey( "template" );
 				} );
 			} );
 

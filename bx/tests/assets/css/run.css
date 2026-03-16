@@ -541,6 +541,10 @@ li:hover .spec-play-btn-hover:hover { opacity: 1 !important; }
 }
 
 @media (max-width: 768px) {
+	body {
+		padding-top: 112px;
+	}
+
 	.results-summary-card .results-stat-count {
 		font-size: 1.65rem;
 	}
@@ -658,4 +662,35 @@ li:hover .spec-play-btn-hover:hover { opacity: 1 !important; }
 	color: var(--bs-secondary-color, #6c757d);
 	line-height: 1.4;
 	min-width: 1.4em;
+}
+
+/* Compact controls (mobile collapsed navbar) */
+.tb-compact-controls {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	width: 100%;
+}
+
+.tb-compact-search {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.tb-compact-actions {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	flex: 0 0 auto;
+}
+
+@media (max-width: 520px) {
+	.tb-compact-actions .btn {
+		padding-left: 0.5rem;
+		padding-right: 0.5rem;
+	}
+
+	.tb-compact-actions .btn span {
+		display: none;
+	}
 }

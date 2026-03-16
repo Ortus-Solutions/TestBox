@@ -224,29 +224,16 @@ document.addEventListener( "alpine:init", () => {
 					totalSkipped: 0,
 					hasStats: false,
 					debugBuffer: [],
-				showDebug: false,					suites: [],
+					showDebug: false,
+					suites: [],
 					specs: [] // top-level specs
 				};
 
 				if ( b.suites && b.suites.length ) {
-					b.suites.forEach( ( s, suiteIdx ) => {
-						let suiteSourceId = s.id || s.name || ( "suite-" + suiteIdx );
-						let suiteUid = bundle.uid + "::suite::" + suiteSourceId + "::" + suiteIdx;
-						let suite = {
-							id: suiteUid,
-							sourceId: suiteSourceId,
-							name: s.name,
-							status: "pending",
-							expanded: false,
-							specs: []
-						};
-
-						if ( s.specs && s.specs.length ) {
-							s.specs.forEach( ( sp, specIdx ) => {
-								suite.specs.push( this.createSpecNode( sp, bundle.uid, suiteUid, specIdx ) );
-							} );
-						}
-						bundle.suites.push( suite );
+					this.collectSuiteNodes( {
+						suites: b.suites,
+						bundle,
+						bundleUid: bundle.uid
 					} );
 				} else if ( b.specs && b.specs.length ) {
 					// xUnit or no suites
@@ -256,6 +243,46 @@ document.addEventListener( "alpine:init", () => {
 				}
 
 				this.bundles.push( bundle );
+			} );
+		},
+
+		/**
+		 * Recursively collects suite nodes so nested dry-run suites are visible in the UI.
+		 *
+		 * @param {array} suites - The incoming dry-run suite array.
+		 * @param {object} bundle - The mutable bundle state node.
+		 * @param {string} bundleUid - Stable bundle identifier for local UI node IDs.
+		 * @param {string} parentKey - Internal parent key to keep generated IDs unique.
+		 */
+		collectSuiteNodes( { suites, bundle, bundleUid, parentKey = "root" } ) {
+			suites.forEach( ( suitePayload, suiteIdx ) => {
+				let suiteSourceId = suitePayload.id || suitePayload.name || ( "suite-" + suiteIdx );
+				let suiteUid = bundleUid + "::suite::" + parentKey + "::" + suiteSourceId + "::" + suiteIdx;
+				let suite = {
+					id: suiteUid,
+					sourceId: suiteSourceId,
+					name: suitePayload.name,
+					status: suitePayload.skip ? "skipped" : "pending",
+					expanded: false,
+					specs: []
+				};
+
+				if ( suitePayload.specs && suitePayload.specs.length ) {
+					suitePayload.specs.forEach( ( sp, specIdx ) => {
+						suite.specs.push( this.createSpecNode( sp, bundleUid, suiteUid, specIdx ) );
+					} );
+				}
+
+				bundle.suites.push( suite );
+
+				if ( suitePayload.suites && suitePayload.suites.length ) {
+					this.collectSuiteNodes( {
+						suites: suitePayload.suites,
+						bundle,
+						bundleUid,
+						parentKey: suiteUid
+					} );
+				}
 			} );
 		},
 
