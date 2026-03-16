@@ -801,9 +801,9 @@ document.addEventListener( "alpine:init", () => {
 		 * Only that bundle resets to pending; other bundles keep their last result (dimmed).
 		 *
 		 * @param {string} bundlePath - Bundle that owns the suite.
-		 * @param {string} suiteName  - Suite name to run (passed as testSuites param).
+		 * @param {string} suiteId    - Suite unique identifier to run (passed as testSuites param).
 		 */
-		runSuite( bundlePath, suiteName ) {
+		runSuite( bundlePath, suiteId ) {
 			this.activeBundlePath = bundlePath;
 			this.resetExecutionState( bundlePath );
 			this.isRunning = true;
@@ -811,14 +811,14 @@ document.addEventListener( "alpine:init", () => {
 			const b = this.bundles.find( b => b.path === bundlePath );
 			if ( b ) {
 				b.expanded = true;
-				const suite = b.suites.find( s => s.name === suiteName );
+				const suite = b.suites.find( s => s.sourceId === suiteId );
 				if ( suite ) suite.expanded = true;
 			}
 
 			let url = new URL( this.preferences.runnerUrl, window.location.href );
 			url.searchParams.append( "streaming", "true" );
 			url.searchParams.append( "bundles", bundlePath );
-			url.searchParams.append( "testSuites", suiteName );
+			url.searchParams.append( "testSuites", suiteId );
 			this.startEventSource( url.toString() );
 		},
 
@@ -827,7 +827,7 @@ document.addEventListener( "alpine:init", () => {
 		 * Only that bundle resets to pending; other bundles keep their last result (dimmed).
 		 *
 		 * @param {string} bundlePath - Bundle that owns the spec.
-		 * @param {string} specId     - Spec ID to run (passed as testSpecs param).
+		 * @param {string} specId     - Spec unique identifier to run (passed as testSpecs param).
 		 */
 		runSpec( bundlePath, specId ) {
 			this.activeBundlePath = bundlePath;
@@ -844,6 +844,7 @@ document.addEventListener( "alpine:init", () => {
 			url.searchParams.append( "streaming", "true" );
 			url.searchParams.append( "bundles", bundlePath );
 			url.searchParams.append( "testSpecs", specId );
+
 			this.startEventSource( url.toString() );
 		},
 

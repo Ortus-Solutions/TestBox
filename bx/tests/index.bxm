@@ -473,7 +473,7 @@ bx:param name="url.editor"          default="vscode";
 															<button
 																class="btn btn-sm btn-outline-primary border-0 p-0 lh-1 spec-play-btn spec-play-btn-hover"
 																data-bs-title="Run this spec"
-																@click.stop="runSpec( bundle.path, spec.id )"
+																@click.stop="runSpec( bundle.path, spec.sourceId )"
 																:disabled="isRunning"
 																x-tooltip>
 																<i class="bi bi-play-circle-fill"></i>
@@ -587,7 +587,7 @@ bx:param name="url.editor"          default="vscode";
 											<button
 											class="btn btn-sm btn-outline-primary border-0 p-0 lh-1 spec-play-btn spec-play-btn-hover"
 												data-bs-title="Run this spec"
-												@click.stop="runSpec( bundle.path, spec.id )"
+												@click.stop="runSpec( bundle.path, spec.sourceId )"
 												:disabled="isRunning"
 												x-tooltip>
 													<i class="bi bi-play-circle-fill"></i>
@@ -673,7 +673,7 @@ bx:param name="url.editor"          default="vscode";
 	<!-- JAVASCRIPT -->
 	<!--- ============================================================================================================ --->
 	<script defer src="assets/js/vendor/bootstrap.bundle.min.js"></script>
-	<script defer src="assets/js/run.js?v=20260316-11"></script>
+	<script defer src="assets/js/run.js?v=20260316-12"></script>
 	<script defer src="assets/js/vendor/alpine-collapse.min.js"></script>
 	<script defer src="assets/js/vendor/alpine.min.js"></script>
 </body>
