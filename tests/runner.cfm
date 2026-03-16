@@ -15,6 +15,7 @@
 
 <!--- Streaming mode: streams results via Server-Sent Events (SSE) for real-time progress --->
 <cfparam name="url.streaming"						default="false" type="boolean">
+<cfparam name="url.dryRun"							default="false" type="boolean">
 
 <!--- Code Coverage requires FusionReactor --->
 <cfparam name="url.coverageEnabled"					default="false" type="boolean">
@@ -29,7 +30,7 @@
 <cfparam name="url.coverageBrowserOutputDir"		default="#expandPath( '/tests/results/coverageReport' )#">
 
 <!--- Include the appropriate runner based on streaming mode --->
-<cfif url.streaming>
+<cfif url.streaming && !url.dryRun>
 	<!--- Stream results in real-time via SSE --->
 	<cfinclude template="/testbox/system/runners/StreamingRunner.cfm">
 <cfelse>
