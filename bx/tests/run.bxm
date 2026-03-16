@@ -29,7 +29,7 @@ bx:param name="url.editor"          default="vscode";
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 	<!--- App CSS --->
-	<link rel="stylesheet" href="assets/css/run.css">
+	<link rel="stylesheet" href="assets/css/run.css?v=20260314-theme1">
 
 	<script>
 		// Pass server context URL parameters to Javascript
