@@ -5,6 +5,7 @@ document.addEventListener( "alpine:init", () => {
 		isRunning: false,
 		globalError: null,
 		globalErrorDetail: null,
+		globalErrorUrl: null,
 
 		// Preferences (Merged with URL options)
 		preferences: {
@@ -167,6 +168,7 @@ document.addEventListener( "alpine:init", () => {
 		async fetchDryRun() {
 			this.isLoading = true;
 			this.globalError = null;
+			this.globalErrorUrl = null;
 
 			let url = this.buildRunnerUrl( { dryRun : true } );
 
@@ -188,6 +190,7 @@ document.addEventListener( "alpine:init", () => {
 			} catch ( e ) {
 				this.globalError = "Failed to load test structure.";
 				this.globalErrorDetail = e.message;
+				this.globalErrorUrl = url;
 			} finally {
 				this.isLoading = false;
 			}
@@ -795,6 +798,7 @@ document.addEventListener( "alpine:init", () => {
 			this.specsCompleted = 0;
 			this.globalError = null;
 			this.globalErrorDetail = null;
+			this.globalErrorUrl = null;
 		},
 
 		/**

@@ -216,9 +216,24 @@ bx:param name="url.editor"          default="vscode";
 				<p x-text="globalError"></p>
 				<hr>
 				<p class="mb-0 font-monospace small" style="white-space: pre-wrap;" x-text="globalErrorDetail"></p>
+				<template x-if="globalErrorUrl">
+					<div>
+						<hr>
+						<p class="mb-1"><strong>Runner URL used:</strong></p>
+						<p class="mb-0 font-monospace small text-break">
+							<a :href="globalErrorUrl" target="_blank" rel="noopener" x-text="globalErrorUrl" class="alert-link"></a>
+						</p>
+					</div>
+				</template>
 				<hr>
-				<p>
-					If you need to change your runner URL or other settings, please click the gear icon in the top right corner to open the settings modal.
+				<p class="mb-1">
+					<i class="bi bi-gear-fill me-1"></i>
+					Click the <strong>gear icon</strong> in the top-right corner to open Settings and verify or change the runner URL.
+				</p>
+				<p class="mb-0">
+					<i class="bi bi-info-circle me-1"></i>
+					Common causes: the <code>runner.bxm</code> (or <code>runner.cfm</code>) file does not exist, the server is not running, or the runner URL path is incorrect.
+					Try opening the runner URL directly in your browser to see the raw error.
 				</p>
 			</div>
 		</template>

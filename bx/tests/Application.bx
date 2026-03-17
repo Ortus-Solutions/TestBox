@@ -7,7 +7,7 @@
  */
 class {
 	// Harness name
-	this.name              = "My Test Harness"
+	this.name = "My Test Harness"
 	// The mapping to easily access the tests
 	this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() )
 	// The mapping to easily access the root application usually the parent folder
