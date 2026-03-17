@@ -26,7 +26,8 @@
  * --filter-bundles : A list of bundles to filter by, defaults to `*`
  * --filter-suites : A list of suites to filter by, defaults to `*`
  * --filter-specs : A list of test names or spec names to filter by, defaults to `*`
- * --dry-run : Discover the tests that would execute and print them without running any hooks or test bodies, defaults to `false`
+ * --dry-run : Discover the tests that would execute and print them without running any hooks or test bodies, defaults to `false`.
+ *             Pass `json` to output the full discovery payload as raw JSON instead of the formatted text output.
  * --eager-failure : Fail fast, defaults to `false`
  * --verbose : Verbose output, defaults to `false`. Get detailed insights into the test execution.
  * --stream : Stream bundle, suite, and spec results as they complete, defaults to `false`. Prints final totals only.
@@ -82,7 +83,9 @@ class{
 		var options           = server.cli.parsed.options
 		var positional         = server.cli.parsed.positionals
 		var defaultReportPath = rootPath & "/tests/results"
-		var isDryRun          = options[ "dry-run" ] ?: false
+		var dryRunValue       = options[ "dry-run" ] ?: false
+		var isDryRun          = dryRunValue != false && dryRunValue != "false"
+		var isDryRunJson      = isSimpleValue( dryRunValue ) && lcase( dryRunValue ) == "json"
 		var shouldStream      = isDryRun ? false : ( options[ "stream" ] ?: false )
 
 		// Discover and load Application mappings.
@@ -198,7 +201,11 @@ class{
 				testSuites  = runArgs.testSuites,
 				testSpecs   = runArgs.testSpecs
 			)
-			printDryRunDiscovery( discovery )
+			if( isDryRunJson ){
+				println( jsonSerialize( discovery ) )
+			} else {
+				printDryRunDiscovery( discovery )
+			}
 			return
 		}
 
