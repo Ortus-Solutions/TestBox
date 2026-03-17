@@ -6,32 +6,6 @@
  */
 component extends="TextReporter" {
 
-	variables.COLORS = {
-		reset     : chr( 27 ) & "[0m",
-		bold      : chr( 27 ) & "[1m",
-		dim       : chr( 27 ) & "[2m",
-		underline : chr( 27 ) & "[4m",
-		blink     : chr( 27 ) & "[5m",
-		reverse   : chr( 27 ) & "[7m",
-		hidden    : chr( 27 ) & "[8m",
-		black     : chr( 27 ) & "[30m",
-		red       : chr( 27 ) & "[31m",
-		green     : chr( 27 ) & "[32m",
-		yellow    : chr( 27 ) & "[33m",
-		blue      : chr( 27 ) & "[34m",
-		magenta   : chr( 27 ) & "[35m",
-		cyan      : chr( 27 ) & "[36m",
-		white     : chr( 27 ) & "[37m",
-		bgBlack   : chr( 27 ) & "[40m",
-		bgRed     : chr( 27 ) & "[41m",
-		bgGreen   : chr( 27 ) & "[42m",
-		bgYellow  : chr( 27 ) & "[43m",
-		bgBlue    : chr( 27 ) & "[44m",
-		bgMagenta : chr( 27 ) & "[45m",
-		bgCyan    : chr( 27 ) & "[46m",
-		bgWhite   : chr( 27 ) & "[47m"
-	};
-
 	function init(){
 		variables.out = createObject( "Java", "java.lang.System" ).out;
 		return this;
@@ -67,6 +41,8 @@ component extends="TextReporter" {
 
 		// bundle stats
 		variables.bundleStats = arguments.results.getBundleStats();
+		// hide skipped option for filtered runs
+		variables.hideSkipped = arguments.options.hideSkipped ?: false;
 		// prepare incoming params
 		prepareIncomingParams();
 
@@ -76,78 +52,16 @@ component extends="TextReporter" {
 		}
 
 		// send to console
-		variables.out.printLn(
-			reReplace(
-				trim( local.report ),
-				"[\r\n]+",
-				chr( 10 ),
-				"all"
-			)
-		);
+		variables.out.printLn( reReplace( local.report, "[\r\n]+", chr( 10 ), "all" ) );
 
 		return "";
 	}
 
 	/**
-	 * Return a styled text
-	 *
-	 * @style The style to apply, more than one can be applied by using +, ie: bold+red
-	 * @text  The text to style
-	 *
-	 * @return The styled text
+	 * The indicator format to use when rendering console output.
 	 */
-	function color( required style, required text ){
-		var styleArray  = listToArray( arguments.style, "+" );
-		var styleString = "";
-
-		for ( var thisStyle in styleArray ) {
-			styleString &= variables.COLORS[ thisStyle ];
-		}
-
-		return "#variables.COLORS.reset##styleString##arguments.text##variables.COLORS.reset#";
-	}
-
-	function getStatusIndicator( required status ){
-		if ( arguments.status == "error" ) {
-			return "💥";
-		} else if ( arguments.status == "failed" ) {
-			return "❌";
-		} else if ( arguments.status == "skipped" ) {
-			return "⏭️ ";
-		} else {
-			return "✅";
-		}
-	}
-
-	/**
-	 * Returns a line by status, error = magenta+bold, failed = red+bold, skipped = dim+white, passed = green
-	 */
-	function printByStatus( required status, required text ){
-		var thisStyle = "green";
-		if ( arguments.status == "error" ) {
-			thisStyle = "magenta+bold";
-		} else if ( arguments.status == "failed" ) {
-			thisStyle = "red+bold";
-		} else if ( arguments.status == "skipped" ) {
-			thisStyle = "dim+white";
-		}
-		return color( thisStyle, arguments.text );
-	}
-
-	function getBundleIndicator( required bundle ){
-		var thisStatus      = "pass";
-		var thisStatusStyle = "green";
-
-		if ( arguments.bundle.totalFail > 0 || arguments.bundle.totalError > 0 ) {
-			thisStatus      = "error";
-			thisStatusStyle = "bold+red";
-		}
-		if ( arguments.bundle.totalSkipped == arguments.bundle.totalSpecs ) {
-			thisStatus      = "skipped";
-			thisStatusStyle = "dim+white";
-		}
-
-		return getStatusIndicator( thisStatus ) & " " & color( thisStatusStyle, arguments.bundle.name );
+	string function getConsoleFormat(){
+		return "console";
 	}
 
 }

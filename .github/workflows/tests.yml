@@ -22,11 +22,6 @@ jobs:
         jdkVersion: [ "21" ]
         experimental: [ false ]
         include:
-          # Old Supported One
-          - cfengine: "adobe@2021"
-            commandbox_version: "6.3.1"
-            jdkVersion: "11"
-            experimental: false
           - cfengine: "boxlang@be"
             commandbox_version: "6.3.1"
             jdkVersion: "21"
@@ -69,7 +64,7 @@ jobs:
 
       - name: Upload Test Results Artifacts
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: testbox-test-results-${{ matrix.cfengine }}-${{ matrix.jdkVersion }}
           path: |
@@ -82,7 +77,7 @@ jobs:
 
       - name: Upload Debugging Info To Artifacts
         if: ${{ failure() }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: Failure Debugging Info - ${{ matrix.cfengine }} - ${{ matrix.jdkVersion }}
           path: |

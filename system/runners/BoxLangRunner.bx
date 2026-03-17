@@ -26,8 +26,11 @@
  * --filter-bundles : A list of bundles to filter by, defaults to `*`
  * --filter-suites : A list of suites to filter by, defaults to `*`
  * --filter-specs : A list of test names or spec names to filter by, defaults to `*`
+ * --dry-run : Discover the tests that would execute and print them without running any hooks or test bodies, defaults to `false`.
+ *             Pass `json` to output the full discovery payload as raw JSON instead of the formatted text output.
  * --eager-failure : Fail fast, defaults to `false`
- * --verbose : Verbose output, defaults to `false`. This will stream the output of the status of the tests as they run.
+ * --verbose : Verbose output, defaults to `false`. Get detailed insights into the test execution.
+ * --stream : Stream bundle, suite, and spec results as they complete, defaults to `false`. Prints final totals only.
  * --properties-summary : Generate a properties file with the summary of the test results, defaults to `true`.
  * --properties-filename : The name of the properties file to generate, defaults to `TEST.properties`
  * 	If true, it will write them to the report path.
@@ -35,25 +38,41 @@
  * --write-report : Write the report to a file in the report path folder, defaults to `true`
  * --write-json-report : Write the report as JSON alongside the requested report, defaults to `false`
  * --write-visualizer : Write the visualizer to a file in the report path folder, defaults to `false`
+ * --hide-skipped : Hide skipped specs and suites from the reporter output, defaults to `false`.
+ * 	Useful when running a single spec via `--filter-specs` to only show the targeted test.
+ * --show-failed-only : Show failed and errored specs only in stream mode, defaults to `false`.
+ * --show-passed : Show passed specs in stream mode, defaults to `true`.
+ * --show-skipped : Show skipped specs in stream mode, defaults to `true` (or `false` when `--hide-skipped=true`).
+ * --max-failures : In stream mode, show only the first N failures+errors, defaults to `0` (disabled).
+ * --slow-threshold-ms : Show specs at or above this duration in summary, defaults to `0` (disabled).
+ * --top-slowest : Show top N slowest specs in summary, defaults to `0` (disabled).
+ * --stacktrace : Stacktrace detail level for stream failures/errors: `short` or `full`, defaults to `short`.
  *
  * Runner Options:
  * To create runner options just prefix it with the prefix `runner-{optionName}`
- * For example, to pass a `verbose` option to the runner, you would do `--runner-verbose=true`
+ * For example, to pass a `skip` option to the runner, you would do `--runner-skip=true`
  */
+import java.nio.file.Paths
+
 class{
 
-	// Defaults
-	static final DEFAULT_TEST_DIRECTORY = "tests.specs"
-	static final DEFAULT_REPORTER = "console"
-	static final DEFAULT_PROPERTIES_FILENAME = "TEST.properties"
-	static final DEFAULT_PROPERTIES_SUMMARY = true
+	// Constants for default values
+	static {
+		final DEFAULT_TEST_DIRECTORY = "tests.specs"
+		final DEFAULT_REPORTER = "console"
+		final DEFAULT_PROPERTIES_FILENAME = "TEST.properties"
+		final DEFAULT_PROPERTIES_SUMMARY = true
+	}
 
 	// Seed the location of testbox just in case
 	bx:application
 		action="update"
 		mappings=getApplicationMetadata().mappings.append( {
-			"/testbox" : this.$bx.meta.path.replacenocase( "system/runners/BoxLangRunner.bx", "" )
+			"/testbox" : getTestBoxRootPath()
 		} );
+
+	// Now create our dependency on the ConsoleUtil for colored output in the runner
+	variables.consoleUtil = new testbox.system.util.ConsoleUtil()
 
 	/**
 	 * The main method to run the TestBox tests
@@ -64,6 +83,16 @@ class{
 		var options           = server.cli.parsed.options
 		var positional         = server.cli.parsed.positionals
 		var defaultReportPath = rootPath & "/tests/results"
+		var dryRunValue       = options[ "dry-run" ] ?: false
+		var isDryRun          = dryRunValue != false && dryRunValue != "false"
+		var isDryRunJson      = isSimpleValue( dryRunValue ) && lcase( dryRunValue ) == "json"
+		var shouldStream      = isDryRun ? false : ( options[ "stream" ] ?: false )
+
+		// Discover and load Application mappings.
+		// This mimics how engines resolve Application.bx|cfc by walking up the directory
+		// tree from the test location. This ensures that mappings defined in the project's
+		// Application (e.g., /qb, /tests, /modules) are available to test bundles.
+		discoverAndLoadApplicationMappings( rootPath, options )
 
 		// Gather the test arguments from the options
 		var initArgs = {
@@ -78,6 +107,15 @@ class{
 			bundlesPattern : options[ "bundles-pattern" ] ?: ""
 		};
 
+		if( shouldStream ){
+			// Console reporter writes directly to stdout, which conflicts with stream-only output.
+			initArgs.reporter = "text"
+		}
+
+		var hideSkipped = options[ "hide-skipped" ] ?: false
+		var showSkipped = structKeyExists( options, "show-skipped" ) ? options[ "show-skipped" ] : !hideSkipped
+		var showPassed = structKeyExists( options, "show-passed" ) ? options[ "show-passed" ] : true
+
 		// Prepare the run arguments
 		var runArgs = {
 			testBundles   : options[ "filter-bundles" ] ?: [],
@@ -85,7 +123,17 @@ class{
 			testSpecs     : options[ "filter-specs" ] ?: [],
 			eagerFailure   : options[ "eager-failure" ] ?: false,
 			verbose       : options[ "verbose" ] ?: false,
-			options 	   : {}
+			stream        : shouldStream,
+			options 	   : {
+				hideSkipped    : hideSkipped,
+				showFailedOnly : options[ "show-failed-only" ] ?: false,
+				showPassed     : showPassed,
+				showSkipped    : showSkipped,
+				maxFailures    : options[ "max-failures" ] ?: 0,
+				slowThresholdMS : options[ "slow-threshold-ms" ] ?: 0,
+				topSlowest     : options[ "top-slowest" ] ?: 0,
+				stacktrace     : options[ "stacktrace" ] ?: "short"
+			}
 		};
 
 		// Discover and add any runner options to the struct if
@@ -106,29 +154,8 @@ class{
 			writeJsonReport    : options[ "write-json-report" ] ?: false
 		};
 
-		// Verbose Listeners
-		if( runArgs.verbose ){
-			runArgs.callbacks = {
-				onBundleStart = ( target, testResults ) => {
-					println( "> Testing Bundle: #target.$bx.meta.name#" )
-				},
-				onBundleEnd = ( target, testResults ) => {
-					println( "> Bundle Completed: [#target.$bx.meta.name#]" )
-					println( "" );
-				},
-				onSuiteStart = ( target, testResults, suite ) => {
-					println( "+ Starting Suite: #suite.name#" )
-				},
-				onSuiteEnd = ( target, testResults, suite ) => {
-					//println( "+ Suite [#suite.name#] completed #suite.toString()#" )
-				},
-				onSpecStart = ( target, testResults, suite, spec ) => {
-					println( "+ Starting Spec/Test: #spec.name#" )
-				},
-				onSpecEnd = ( target, testResults, suite, spec ) => {
-					// println( "+ Spec [#spec.name#] completed #spec.toString()#" )
-				},
-			}
+		if( runArgs.verbose || runArgs.stream ){
+			runArgs.callbacks = buildRunnerCallbacks( runArgs )
 		}
 
 		// If we have a positional argument, then we will assume it is a test bundle: Ex: `run my.bundle`
@@ -138,8 +165,15 @@ class{
 			initArgs.directory = {}
 		}
 
+		// If --bundles was specified but --directory was not, wipe the directory to prevent
+		// TestBox from scanning from the project root due to the default struct
+		// { mapping: "", recurse: true } having a blank mapping.
+		if( initArgs.bundles.len() && !initArgs.directory?.mapping?.len() ) {
+			initArgs.directory = {}
+		}
+
 		// If we don't have test-bundles or a test-directory, then default to the DEFAULT_TEST_DIRECTORY
-		if( !initArgs.bundles.len() && !initArgs.directory.mapping.len() ) {
+		if( !initArgs.bundles.len() && !initArgs.directory?.mapping?.len() ) {
 			initArgs.directory = static.DEFAULT_TEST_DIRECTORY
 		}
 
@@ -161,13 +195,37 @@ class{
 			println( runArgs )
 		}
 
+		if( isDryRun ){
+			var discovery = testbox.dryRun(
+				testBundles = runArgs.testBundles,
+				testSuites  = runArgs.testSuites,
+				testSpecs   = runArgs.testSpecs
+			)
+			if( isDryRunJson ){
+				println( jsonSerialize( discovery ) )
+			} else {
+				printDryRunDiscovery( discovery )
+			}
+			return
+		}
+
+		// Print Streaming Header
+		if( runArgs.stream ){
+			println( variables.consoleUtil.getBanner( testbox.getVersion() ) )
+			println( "" )
+		}
+
 		// RUN BABY RUN
 		var report = testbox.run( argumentCollection = runArgs )
 		var testResults = testbox.getResult()
 		var testResultsAsJson = jsonSerialize( testResults.getMemento( includeDebugBuffer = true ) )
 
-		// Print the report
-		println( report )
+		// Print the stream summary if needed, otherwise the report will have been printed by the reporter already
+		if( runArgs.stream ){
+			printStreamSummary( testbox, testResults, runArgs.options )
+		} else {
+			println( report )
+		}
 
 		// PREPARE RESULTS FOR REPORTING
 		if( !directoryExists( afterRunArgs.reportPath ) ){
@@ -181,18 +239,520 @@ class{
 		if( afterRunArgs.writeReport ){
 			generateReports( report, testResultsAsJson, initArgs, afterRunArgs );
 		}
+
 		// WRITE THE VISUALIZER
 		if( afterRunArgs.writeVisualizer ){
 			generateVisualizer( testResultsAsJson, afterRunArgs );
 		}
+
 		// WRITE THE SUMMARIES
 		if( afterRunArgs.propertiesSummary ) {
 			generatePropertiesSummary( testResults, initArgs, afterRunArgs );
 		}
+
 		// WRITE THE ANT JUNIT REPORTS
 		if( initArgs.reporter eq "ANTJunit" ){
 			generateAntReports( report, afterRunArgs );
 		}
+	}
+
+	/**
+	 * Print a human-readable dry-run summary.
+	 *
+	 * @discovery The dry-run discovery payload from TestBox
+	 */
+	private function printDryRunDiscovery( required struct discovery ){
+		println( variables.consoleUtil.getBanner( discovery.version ) )
+		println( "" )
+		println( variables.consoleUtil.color( "bold+yellow", "⚡︎ Dry Run" ) )
+
+		if( !arrayLen( discovery.bundles ) ){
+			println( "No runnable tests matched the current filters." )
+			return
+		}
+
+		for( var bundle in discovery.bundles ){
+			println( variables.consoleUtil.color( "bold+cyan", "📦 #bundle.name#" ) )
+			printDryRunSuites( bundle.suites, 1 )
+			println( "" )
+		}
+
+		println( "[ Bundles/Suites/Specs: #discovery.summary.totalBundles#/#discovery.summary.totalSuites#/#discovery.summary.totalSpecs# ]" )
+	}
+
+	private function printDryRunSuites( required array suites, numeric depth = 1 ){
+		var suiteIndent = repeatString( "  ", arguments.depth )
+		var specIndent = repeatString( "  ", arguments.depth + 1 )
+
+		for( var suite in arguments.suites ){
+			println( "#suiteIndent##variables.consoleUtil.color( 'bold+white', '📁 #suite.name#' )#" )
+
+			for( var spec in suite.specs ){
+				println( "#specIndent#• #spec.displayName ?: spec.name#" )
+			}
+
+			if( arrayLen( suite.suites ) ){
+				printDryRunSuites( suite.suites, arguments.depth + 1 )
+			}
+		}
+	}
+
+	/**
+	 * Build runner callbacks for verbose and stream output.
+	 *
+	 * @runArgs The run arguments for the current execution
+	 */
+	private struct function buildRunnerCallbacks( required struct runArgs ){
+		var runnerArgs = arguments.runArgs
+		var showFailedOnly = runnerArgs.options.showFailedOnly ?: false
+		var showPassed = structKeyExists( runnerArgs.options, "showPassed" ) ? runnerArgs.options.showPassed : true
+		var showSkipped = structKeyExists( runnerArgs.options, "showSkipped" ) ? runnerArgs.options.showSkipped : true
+		var maxFailures = isNumeric( runnerArgs.options.maxFailures ?: 0 ) ? int( runnerArgs.options.maxFailures ) : 0
+		var observedFailures = 0
+		var maxFailuresReached = false
+		var stacktraceMode = runnerArgs.options.stacktrace ?: "short"
+		if( !listFindNoCase( "short,full", stacktraceMode ) ){
+			stacktraceMode = "short"
+		}
+		var printedBundles = {}
+		var printedSuites = {}
+
+		var getBundleKey = ( target ) => {
+			return target.$bx.meta.path ?: target.$bx.meta.name
+		}
+
+		var getSuiteKey = ( bundleKey, suite ) => {
+			return "#bundleKey#:#suite.id ?: suite.name#"
+		}
+
+		return {
+			onBundleStart = ( target, testResults ) => {
+				if( runnerArgs.verbose ){
+					println( "[BUNDLE] Testing Bundle: #target.$bx.meta.name#" )
+				}
+				if( runnerArgs.stream && !showFailedOnly ){
+					println( variables.consoleUtil.color( "bold+cyan", "📦 #target.$bx.meta.name#" ) )
+				}
+			},
+			onBundleEnd = ( target, testResults ) => {
+				var bundleKey = getBundleKey( target )
+				if( runnerArgs.verbose || ( runnerArgs.stream && ( !showFailedOnly || structKeyExists( printedBundles, bundleKey ) ) ) ){
+					println( "" )
+				}
+			},
+			onSuiteStart = ( target, testResults, suite ) => {
+				if( runnerArgs.verbose ){
+					println( "[SUITE] Testing Suite: #suite.name#" )
+				}
+				if( runnerArgs.stream && !showFailedOnly ){
+					println( "  " & variables.consoleUtil.color( "bold+white", "📁 #suite.name#" ) )
+				}
+			},
+			onSuiteEnd = ( target, testResults, suite ) => {
+				if( runnerArgs.verbose ){
+					println( "" )
+				}
+			},
+			onSpecStart = ( target, testResults, suite, spec ) => {
+				if( runnerArgs.verbose ){
+					println( "[SPEC] Testing Spec/Test: #spec.name#" )
+				}
+			},
+			onSpecEnd = ( target, testResults, suite, spec ) => {
+				var specStatus = resolveStreamStatus( testResults, suite, spec )
+				if( maxFailures > 0 && maxFailuresReached && listFindNoCase( "failed,error", specStatus ) ){
+					return
+				}
+				var shouldCountFailure = listFindNoCase( "failed,error", specStatus )
+				if( shouldCountFailure && !( maxFailures > 0 && maxFailuresReached ) ){
+					observedFailures++
+				}
+
+				if( runnerArgs.stream ){
+					var bundleKey = getBundleKey( target )
+					var suiteKey = getSuiteKey( bundleKey, suite )
+
+					if( showFailedOnly && !listFindNoCase( "failed,error", specStatus ) ){
+						return
+					}
+
+					if( !showPassed && specStatus == "passed" ){
+						return
+					}
+
+					if( !showSkipped && specStatus == "skipped" ){
+						return
+					}
+
+					// Skip printing skipped specs if hideSkipped is enabled
+					if( runnerArgs.options.hideSkipped && specStatus == "skipped" ){
+						return
+					}
+
+					if( showFailedOnly ){
+						if( !structKeyExists( printedBundles, bundleKey ) ){
+							printedBundles[ bundleKey ] = true
+							println( variables.consoleUtil.color( "bold+cyan", "📦 #target.$bx.meta.name#" ) )
+						}
+
+						if( !structKeyExists( printedSuites, suiteKey ) ){
+							printedSuites[ suiteKey ] = true
+							println( "  " & variables.consoleUtil.color( "bold+white", "📁 #suite.name#" ) )
+						}
+					}
+
+					var specStats  = testResults.findSpecStats( spec )
+					var duration   = !structIsEmpty( specStats ) && isNumeric( specStats.totalDuration ) ? " (#specStats.totalDuration# ms)" : ""
+					var lineText   = "#variables.consoleUtil.getStatusIndicator( specStatus )# #getStreamSpecName( spec )##duration#"
+					println( "    #variables.consoleUtil.printByStatus( specStatus, lineText )#" )
+
+					var detailText = getSpecDetailText( specStats, specStatus, stacktraceMode )
+					if( detailText.len() ){
+						println( "      " & variables.consoleUtil.printByStatus( specStatus, detailText ) )
+					}
+				}
+
+				if( maxFailures > 0 && shouldCountFailure && observedFailures >= maxFailures ){
+					maxFailuresReached = true
+				}
+			},
+		}
+	}
+
+	/**
+	 * Print the final totals summary for stream mode.
+	 *
+	 * @testResults The aggregated test results
+	 */
+	private function printStreamSummary( required testbox, required testResults, struct runOptions = {} ){
+		var separator = variables.consoleUtil.getDivider( 80, "=", "dim+white" )
+		var slowThresholdMS = isNumeric( arguments.runOptions.slowThresholdMS ?: 0 ) ? int( arguments.runOptions.slowThresholdMS ) : 0
+		var topSlowest = isNumeric( arguments.runOptions.topSlowest ?: 0 ) ? int( arguments.runOptions.topSlowest ) : 0
+		println( separator )
+		println( variables.consoleUtil.color( "bold+white", "Test Summary" ) )
+		println( separator )
+		println( variables.consoleUtil.printByStatus( "passed", "[ #variables.consoleUtil.getStatusIndicator( 'passed' )# Passed: #testResults.getTotalPass()# ]" ) )
+		println( variables.consoleUtil.printByStatus( "failed", "[ #variables.consoleUtil.getStatusIndicator( 'failed' )# Failed: #testResults.getTotalFail()# ]" ) )
+		println( variables.consoleUtil.printByStatus( "error", "[ #variables.consoleUtil.getStatusIndicator( 'error' )# Errors: #testResults.getTotalError()# ]" ) )
+		println( variables.consoleUtil.printByStatus( "skipped", "[ #variables.consoleUtil.getStatusIndicator( 'skipped' )# Skipped: #testResults.getTotalSkipped()# ]" ) )
+		println( variables.consoleUtil.color( "bold+cyan", "[ ⏱️  Duration: #testResults.getTotalDuration()# ms ]" ) )
+		println( variables.consoleUtil.color( "bold+yellow", "[ 📦 Bundles/Suites/Specs: #testResults.getTotalBundles()#/#testResults.getTotalSuites()#/#testResults.getTotalSpecs()# ]" ) )
+
+		if( slowThresholdMS > 0 || topSlowest > 0 ){
+			printSlowSpecsSummary( testResults, slowThresholdMS, topSlowest )
+		}
+	}
+
+	/**
+	 * Print slow spec insights when a threshold and/or top N is requested.
+	 */
+	private function printSlowSpecsSummary( required testResults, required numeric slowThresholdMS, required numeric topSlowest ){
+		var allSpecEntries = []
+
+		for( var bundleStats in arguments.testResults.getBundleStats() ){
+			var suiteEntries = collectSuiteSpecEntries( bundleStats.suiteStats ?: [], bundleStats.name ?: "Unknown Bundle", "" )
+			if( arrayLen( suiteEntries ) ){
+				arrayAppend( allSpecEntries, suiteEntries, true )
+			}
+		}
+
+		var filtered = []
+		for( var specEntry in allSpecEntries ){
+			if( specEntry.duration <= 0 ){
+				continue
+			}
+			if( arguments.slowThresholdMS > 0 && specEntry.duration < arguments.slowThresholdMS ){
+				continue
+			}
+			arrayAppend( filtered, specEntry )
+		}
+
+		if( !arrayLen( filtered ) ){
+			return
+		}
+
+		arraySort( filtered, ( a, b ) => b.duration - a.duration )
+
+		var limit = arguments.topSlowest > 0 ? min( arguments.topSlowest, arrayLen( filtered ) ) : arrayLen( filtered )
+		println( variables.consoleUtil.getDivider( 80, "-", "dim+white" ) )
+		println( variables.consoleUtil.color( "bold+yellow", "🐢 Slow Specs" ) )
+		println( variables.consoleUtil.getDivider( 80, "-", "dim+white" ) )
+
+		for( var i = 1; i <= limit; i++ ){
+			var entry = filtered[ i ]
+			println( "[ #entry.duration# ms ] #entry.bundleName# :: #entry.suitePath# :: #entry.specName#" )
+		}
+	}
+
+	/**
+	 * Recursively collect spec entries from nested suite stats for slow-spec analysis.
+	 */
+	private array function collectSuiteSpecEntries( required array suiteStats, required string bundleName, string parentPath = "" ){
+		var entries = []
+
+		for( var suite in arguments.suiteStats ){
+			var suitePath = arguments.parentPath.len() ? "#arguments.parentPath# / #suite.name#" : suite.name
+
+			if( isArray( suite.specStats ) ){
+				for( var spec in suite.specStats ){
+					arrayAppend( entries, {
+						bundleName : arguments.bundleName,
+						suitePath  : suitePath,
+						specName   : spec.displayName ?: spec.name,
+						duration   : isNumeric( spec.totalDuration ) ? spec.totalDuration : 0
+					} )
+				}
+			}
+
+			if( isArray( suite.suiteStats ) && arrayLen( suite.suiteStats ) ){
+				arrayAppend( entries, collectSuiteSpecEntries( suite.suiteStats, arguments.bundleName, suitePath ), true )
+			}
+		}
+
+		return entries
+	}
+
+	/**
+	 * Resolve a stream status from callback payload and TestResult reverse lookup.
+	 *
+	 * @testResults The aggregated test results in-flight
+	 * @suite The current suite structure
+	 * @spec The current spec structure
+	 */
+	private string function resolveStreamStatus(
+		required testResults,
+		required struct suite,
+		required struct spec
+	){
+		// Prefer status directly on the spec payload
+		if( structKeyExists( arguments.spec, "status" ) && len( arguments.spec.status ) ){
+			return arguments.spec.status
+		}
+
+		// Use TestResult reverse lookup - the authoritative source
+		var specStats = arguments.testResults.findSpecStats( arguments.spec )
+		if( !structIsEmpty( specStats ) && structKeyExists( specStats, "status" ) && len( specStats.status ) && specStats.status != "na" ){
+			return specStats.status
+		}
+
+		return "unknown"
+	}
+
+	/**
+	 * Resolve a suite display name for stream output.
+	 *
+	 * @suite The current suite structure
+	 */
+	private string function getStreamSuiteName( required struct suite ){
+		return structKeyExists( arguments.suite, "name" ) && len( arguments.suite.name )
+			? arguments.suite.name
+			: "Unknown Suite"
+	}
+
+	/**
+	 * Resolve a spec display name for stream output.
+	 *
+	 * @spec The current spec structure
+	 */
+	private string function getStreamSpecName( required struct spec ){
+		if( structKeyExists( arguments.spec, "displayName" ) && len( arguments.spec.displayName ) ){
+			return arguments.spec.displayName
+		}
+
+		return structKeyExists( arguments.spec, "name" ) && len( arguments.spec.name )
+			? arguments.spec.name
+			: "Unknown Spec"
+	}
+
+	/**
+	 * Build a secondary detail line for a failed or errored spec using its stats struct.
+	 * Caller should retrieve specStats via testResults.findSpecStats() beforehand.
+	 *
+	 * @specStats The full spec stats struct from TestResult
+	 * @status    The resolved spec status
+	 * @stacktrace The stacktrace mode to use: short|full
+	 */
+	private string function getSpecDetailText( required struct specStats, required string status, required string stacktrace ){
+		if( !listFindNoCase( "failed,error", arguments.status ) ){
+			return ""
+		}
+
+		var detailText = ""
+		var stacktraceMode = arguments.stacktrace
+
+		if( len( arguments.specStats.failMessage ) ){
+			detailText &= "-> #arguments.specStats.failMessage# #arguments.specStats.failDetail##char( 10 )#"
+		}
+
+		if( stacktraceMode == "full" ){
+			if( structKeyExists( arguments.specStats, "failStacktrace" ) && len( trim( arguments.specStats.failStacktrace ) ) ){
+				detailText &= trim( arguments.specStats.failStacktrace )
+			} else if( structKeyExists( arguments.specStats, "error" ) && isStruct( arguments.specStats.error ) && structKeyExists( arguments.specStats.error, "stackTrace" ) && len( trim( arguments.specStats.error.stackTrace ) ) ){
+				detailText &= trim( arguments.specStats.error.stackTrace )
+			}
+		} else {
+			if( structKeyExists( arguments.specStats, "failOrigin" ) && isArray( arguments.specStats.failOrigin ) && arrayLen( arguments.specStats.failOrigin ) ){
+				detailText &= char( 9 ) & arguments.specStats.failOrigin.first().raw_trace
+			} else if( structKeyExists( arguments.specStats, "error" ) && isStruct( arguments.specStats.error ) && structKeyExists( arguments.specStats.error, "tagContext" ) && isArray( arguments.specStats.error.tagContext ) ){
+				if( arrayLen( arguments.specStats.error.tagContext ) ){
+					detailText &= char( 9 ) & arguments.specStats.error.tagContext.first().raw_trace
+				}
+			}
+		}
+
+		return detailText
+	}
+
+	/**
+	 * Format the duration suffix for stream output from a spec stats struct.
+	 * Caller should retrieve specStats via testResults.findSpecStats() beforehand.
+	 *
+	 * @specStats The full spec stats struct from TestResult
+	 */
+	private string function formatStreamDuration( required struct specStats ){
+		if( structKeyExists( arguments.specStats, "totalDuration" ) && isNumeric( arguments.specStats.totalDuration ) ){
+			return " (#arguments.specStats.totalDuration# ms)"
+		}
+
+		return ""
+	}
+
+	/**
+	 * Discovers and loads mappings from an Application.cfc or Application.bx file.
+	 * Walks up the directory tree from the test location toward the project root,
+	 * looking for the first Application.cfc or Application.bx file, mimicking
+	 * how engines resolve the application descriptor at runtime.
+	 *
+	 * @rootPath The project root (CLI execution path)
+	 * @options The parsed CLI options
+	 */
+	private function discoverAndLoadApplicationMappings( required string rootPath, required struct options ){
+		// Determine the starting directory for the upward search.
+		// For --bundles, convert dot-notation to a directory path.
+		// For --directory, use the directory mapping.
+		// Otherwise, start from the default test directory convention.
+		var startDir = ""
+		var bundles = arguments.options[ "bundles" ] ?: ""
+		var directory = arguments.options[ "directory" ] ?: ""
+
+		if( isSimpleValue( bundles ) && bundles.len() ) {
+			// Convert first bundle's dot-notation to a filesystem path and get its parent directory
+			var firstBundle = listFirst( bundles )
+			var bundlePath = arguments.rootPath & "/" & firstBundle.replace( ".", "/", "all" )
+			// The bundle path points to a class file (without extension), get its parent directory
+			startDir = getDirectoryFromPath( bundlePath & ".cfc" )
+		} else if( isSimpleValue( directory ) && directory.len() ) {
+			startDir = arguments.rootPath & "/" & directory.replace( ".", "/", "all" )
+		} else {
+			// Default: start from the conventional tests/specs directory
+			startDir = arguments.rootPath & "/tests/specs"
+		}
+
+		// Walk up from startDir to rootPath, looking for Application.cfc or Application.bx
+		var appFile = findApplicationFile( startDir, arguments.rootPath )
+		if( appFile.len() ) {
+			loadApplicationMappings( appFile )
+		}
+	}
+
+	/**
+	 * Walks up the directory tree from startDir to stopDir (inclusive),
+	 * looking for Application.cfc or Application.bx.
+	 *
+	 * @startDir The directory to start searching from
+	 * @stopDir The root directory to stop at (inclusive)
+	 *
+	 * @return The absolute path to the Application file, or empty string if not found
+	 */
+	private string function findApplicationFile( required string startDir, required string stopDir ){
+		var currentDir = arguments.startDir
+		// Normalize: remove trailing slashes for consistent comparison
+		if( currentDir.endsWith( "/" ) || currentDir.endsWith( "\" ) ) {
+			currentDir = currentDir.left( currentDir.len() - 1 )
+		}
+		var normalizedStop = arguments.stopDir
+		if( normalizedStop.endsWith( "/" ) || normalizedStop.endsWith( "\" ) ) {
+			normalizedStop = normalizedStop.left( normalizedStop.len() - 1 )
+		}
+
+		// Walk up the tree
+		while( currentDir.len() >= normalizedStop.len() ) {
+			// Check for Application.cfc first, then Application.bx
+			var cfcPath = currentDir & "/Application.cfc"
+			var bxPath = currentDir & "/Application.bx"
+			if( fileExists( cfcPath ) ) {
+				return cfcPath
+			}
+			if( fileExists( bxPath ) ) {
+				return bxPath
+			}
+
+			// Stop if we've reached the root
+			if( currentDir == normalizedStop ) {
+				break
+			}
+
+			// Move up one directory using Java's Path.getParent()
+			var parentPath = createObject( "java", "java.nio.file.Paths" ).get( currentDir ).getParent()
+			if( isNull( parentPath ) ) {
+				break
+			}
+			var parentDir = parentPath.toString()
+			// Safety: if we didn't actually go up, stop
+			if( parentDir == currentDir ) {
+				break
+			}
+			currentDir = parentDir
+		}
+
+		return ""
+	}
+
+	/**
+	 * Loads the mappings from an Application.cfc or Application.bx file
+	 * into the current application context.
+	 *
+	 * @appFilePath The absolute path to the Application file
+	 */
+	private function loadApplicationMappings( required string appFilePath ){
+		try {
+			// Register a temporary mapping for the Application file's directory
+			// so we can instantiate it via dot-notation.
+			var appDir = getDirectoryFromPath( arguments.appFilePath )
+			bx:application
+				action="update"
+				mappings=getApplicationMetadata().mappings.append( {
+					"/__testbox_app_loader" : appDir
+				} );
+
+			// Instantiate the Application component through the mapping
+			var appComponent = new __testbox_app_loader.Application()
+
+			// Pull in mappings if defined
+			if( structKeyExists( appComponent, "mappings" ) && isStruct( appComponent.mappings ) && !structIsEmpty( appComponent.mappings ) ) {
+				bx:application
+					action="update"
+					mappings=getApplicationMetadata().mappings.append( appComponent.mappings );
+			}
+		} catch( any e ) {
+			// If the Application file can't be loaded (e.g., missing dependencies),
+			// silently continue — the tests may still work without the mappings,
+			// or they'll fail with a more specific error.
+		}
+	}
+
+	/**
+	 * Resolve the TestBox project root from this runner's file path.
+	 *
+	 * The runner lives at /system/runners/BoxLangRunner.bx, so the root is
+	 * three parent directories up from the current file location.
+	 */
+	private string function getTestBoxRootPath(){
+		return Paths.get( this.$bx.meta.path )
+			.getParent()
+			.getParent()
+			.getParent()
+			.toString()
 	}
 
 	/**

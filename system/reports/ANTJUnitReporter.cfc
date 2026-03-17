@@ -62,6 +62,7 @@ component extends="BaseReporter" {
 
 			// build test suite header
 			// cfformat-ignore-start
+			var hostname = cgi.remote_host ?: "";
 			buffer.append(
 				"<testsuite
 				tests=""#thisBundle.totalSpecs#""
@@ -70,7 +71,7 @@ component extends="BaseReporter" {
 				skipped=""#thisBundle.totalSkipped#""
 				time=""#thisBundle.totalDuration / 1000#""
 				timestamp=""#dateFormat( now(), "yyyy-mm-dd" )#T#timeFormat( now(), "HH:mm:ss" )#""
-				hostname=""#encodeForXMLAttribute( cgi.remote_host )#""
+				hostname=""#encodeForXMLAttribute( hostname )#""
 				package=""#encodeForXMLAttribute( thisBundle.path )#""
 				name=""#encodeForXMLAttribute( thisBundle.name )#""
 				>"

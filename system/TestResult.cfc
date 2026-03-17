@@ -87,6 +87,7 @@ component accessors="true" {
 		// Reverse Lookups
 		variables.bundleReverseLookup = {};
 		variables.suiteReverseLookup  = {};
+		variables.specReverseLookup   = {};
 
 		// Coverage Data
 		variables.coverageEnabled = false;
@@ -247,7 +248,11 @@ component accessors="true" {
 		lock name="tb-results-#variables.resultsID#" type="readonly" timeout="10" {
 			// search in reverse lookup
 			if ( !isNull( arguments.id ) ) {
-				return variables.bundleReverseLookup[ arguments.id ];
+				if ( structKeyExists( variables.bundleReverseLookup, arguments.id ) ) {
+					return variables.bundleReverseLookup[ arguments.id ];
+				}
+
+				return {};
 			}
 			// else return the bundle stats array
 			return variables.bundleStats;
@@ -327,9 +332,88 @@ component accessors="true" {
 	 * @id Retrieve by id
 	 */
 	any function getSuiteStats( required string id ){
-		lock name="tb-results-#variables.resultsID#" type="readonly" timeout="10" {
+		if ( structKeyExists( variables.suiteReverseLookup, arguments.id ) ) {
 			return variables.suiteReverseLookup[ arguments.id ];
 		}
+
+		return {};
+	}
+
+	/**
+	 * Get a spec stats by id from the reverse lookup.
+	 *
+	 * @id Retrieve by id
+	 *
+	 * @return The spec stats struct or an empty struct if not found
+	 */
+	any function getSpecStats( required string id ){
+		if ( structKeyExists( variables.specReverseLookup, arguments.id ) ) {
+			return variables.specReverseLookup[ arguments.id ];
+		}
+
+		return {};
+	}
+
+	/**
+	 * Find spec stats using a spec struct, trying id lookup first then name-based fallback.
+	 * This is the preferred way to retrieve full spec stats (including error, failMessage,
+	 * totalDuration, status, etc.) from a spec reference during callbacks or post-run analysis.
+	 *
+	 * @spec The spec struct (must have at least an `id` or `name` key)
+	 *
+	 * @return The full spec stats struct, or an empty struct if not found
+	 */
+	struct function findSpecStats( required struct spec ){
+		// Fast path: direct id lookup
+		if (
+			structKeyExists( arguments.spec, "id" ) && structKeyExists(
+				variables.specReverseLookup,
+				arguments.spec.id
+			)
+		) {
+			return variables.specReverseLookup[ arguments.spec.id ];
+		}
+
+		// Fallback: walk all spec stats by name
+		if ( structKeyExists( arguments.spec, "name" ) ) {
+			for ( var specStats in variables.specReverseLookup ) {
+				if ( variables.specReverseLookup[ specStats ].name == arguments.spec.name ) {
+					return variables.specReverseLookup[ specStats ];
+				}
+			}
+		}
+
+		return {};
+	}
+
+	/**
+	 * Find suite stats using a suite struct, trying id lookup first then name-based fallback.
+	 *
+	 * @suite The suite struct (must have at least an `id` or `name` key)
+	 *
+	 * @return The full suite stats struct, or an empty struct if not found
+	 */
+	struct function findSuiteStats( required struct suite ){
+		// Fast path: direct id lookup
+		if (
+			structKeyExists( arguments.suite, "id" ) && structKeyExists(
+				variables.suiteReverseLookup,
+				arguments.suite.id
+			)
+		) {
+			return variables.suiteReverseLookup[ arguments.suite.id ];
+		}
+
+		// Fallback: walk all suite stats by name
+		if ( structKeyExists( arguments.suite, "name" ) ) {
+			for ( var suiteStats in variables.suiteReverseLookup ) {
+				if ( variables.suiteReverseLookup[ suiteStats ].name == arguments.suite.name ) {
+					return variables.suiteReverseLookup[ suiteStats ];
+				}
+			}
+		}
+
+		return {};
 	}
 
 	/**
@@ -380,6 +464,8 @@ component accessors="true" {
 
 			// append to the parent stats
 			arrayAppend( arguments.suiteStats.specStats, stats );
+			// store in reverse lookup for faster direct access
+			variables.specReverseLookup[ stats.id ] = stats;
 		}
 		// end lock
 

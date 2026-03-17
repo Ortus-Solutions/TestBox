@@ -6,12 +6,12 @@
  * to a root application.  Usually you mimic your application's Application.bx settings here.
  */
 class {
-	this.name              = "My Test Harness";
-
+	// Harness name
+	this.name = "My Test Harness"
 	// The mapping to easily access the tests
-	this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() );
+	this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() )
 	// The mapping to easily access the root application usually the parent folder
-	this.mappings[ "/root" ] = expandPath( "/../" );
+	this.mappings[ "/root" ] = expandPath( "/../" )
 
 	// Any application settings go here
 
@@ -19,7 +19,7 @@ class {
 	 * Executes BEFORE any runner or test requested.
 	 */
 	boolean function onRequestStart( String targetPage ){
-		return true;
+		return true
 	}
 
 	/**

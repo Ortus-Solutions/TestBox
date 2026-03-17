@@ -398,7 +398,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toHaveKeyWithCase( required string key, message = "" ){
-		arguments.target = this.actual;
+		arguments.caseSensitive = true;
+		arguments.target        = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notKey( argumentCollection = arguments );
 		} else {

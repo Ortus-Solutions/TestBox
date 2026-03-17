@@ -11,7 +11,11 @@
 <cfparam name="url.propertiesFilename"			 	default="TEST.properties">
 <cfparam name="url.propertiesSummary"			 	default="false" type="boolean">
 <cfparam name="url.bundlesPattern" 					default="*.bx|*.cfc">
+<cfparam name="url.dryRun"							default="false" type="boolean">
+<cfparam name="url.testSuites"						default="">
+<cfparam name="url.testSpecs"						default="">
 
+<!--- Coverage parameters --->
 <cfparam name="url.coverageEnabled"					default="false" type="boolean">
 <cfparam name="url.coverageSonarQubeXMLOutputPath"	default="">
 <cfparam name="url.coverageBrowserOutputDir"		default="">
@@ -22,6 +26,11 @@
 <cfparam name="url.isBatched"						default="false">
 
 <cfscript>
+// If we have incoming bundles, then clear out the directory
+if( len( url.bundles ) ){
+	url.directory = ""
+}
+
 // prepare for tests for bundles or directories
 testbox = new testbox.system.TestBox(
 	labels   = url.labels,
@@ -42,18 +51,24 @@ testbox = new testbox.system.TestBox(
 		}
 	},
 	bundlesPattern = url.bundlesPattern
-);
+)
 if( len( url.bundles ) ){
-	testbox.addBundles( url.bundles );
+	testbox.addBundles( url.bundles )
 }
 if( len( url.directory ) ){
 	for( dir in listToArray( url.directory ) ){
-		testbox.addDirectories( dir, url.recurse );
+		testbox.addDirectories( dir, url.recurse )
 	}
 }
 
 // Run Tests using correct reporter
-results = testbox.run( reporter=url.reporter );
+if( url.dryRun ){
+	discovery = testbox.dryRun()
+	cfcontent( type="application/json", reset="true" )
+	results = serializeJSON( discovery )
+} else {
+	results = testbox.run( reporter=url.reporter )
+}
 
 function escapePropertyValue( required string value ) {
 	if ( len( arguments.value ) == 0 ) {
@@ -70,7 +85,7 @@ function escapePropertyValue( required string value ) {
 }
 
 // Write TEST.properties in report destination path.
-if( url.propertiesSummary ){
+if( !url.dryRun && url.propertiesSummary ){
 	testResult = testbox.getResult();
 	errors = testResult.getTotalFail() + testResult.getTotalError();
 	savecontent variable="propertiesReport"{
@@ -97,7 +112,7 @@ total.skipped=#escapePropertyValue( testResult.getTotalSkipped() )#" );
 }
 
 // do stupid JUnitReport task processing, if the report is ANTJunit
-if( url.reporter eq "ANTJunit" ){
+if( !url.dryRun && url.reporter eq "ANTJunit" ){
 	// Produce individual test files due to how ANT JUnit report parses these.
 	xmlReport = xmlParse( results );
 	for( thisSuite in xmlReport.testsuites.XMLChildren ){

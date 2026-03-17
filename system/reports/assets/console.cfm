@@ -1,5 +1,4 @@
-<cfoutput>
-#color( "bold+cyan", "█▓▒▒░░░ " )##color( "bold+green", "TestBox v" & testbox.getVersion() )##color( "bold+cyan", " ░░░▒▒▓█" )#
+<cfoutput>#getHeaderBanner( testbox )#
 <!--- Iterate over each bundle tested --->
 <cfloop array="#variables.bundleStats#" index="thisBundle">
 <!--- Skip if not in the includes list --->
@@ -13,9 +12,9 @@
 [Passed: #thisBundle.totalPass#] [Failed: #thisBundle.totalFail#] [Errors: #thisBundle.totalError#] [Skipped: #thisBundle.totalSkipped#] [Suites/Specs: #thisBundle.totalSuites#/#thisBundle.totalSpecs#]
 #space()#<!--- Bundle Exception Output --->
 <cfif !isSimpleValue( thisBundle.globalException )>
-#color( "red+bold", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" )#
+#getAlertDivider()#
 #color( "red+magenta", "<GLOBAL BUNDLE EXCEPTION>" )#
-#color( "red+bold", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" )#
+#getAlertDivider()#
 #space()#
 #color( "bold+white", "#thisBundle.globalException.type#:#thisBundle.globalException.message#:#thisBundle.globalException.detail#")#
 <cfloop array="#thisBundle.globalException.tagContext#" item="thisContext">
@@ -24,14 +23,14 @@
 #color( "bold+white", "#thisContext.codePrintPlain ?: ""#")#
 </cfif>
 </cfloop>
-#color( "red+bold", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" )#
+#getAlertDivider()#
 </cfif><!--- Generate Suite Reports --->
 <cfloop array="#thisBundle.suiteStats#" index="suiteStats">#genSuiteReport( suiteStats, thisBundle )#</cfloop>
 </cfloop>
 <!--- Final Stats --->
-#color( "bold+white", repeatString( "=", 80 ) )#
+#getDividerLine( width = 80, style = "bold+white" )#
 #color( "bold+cyan", "Final Stats" )#
-#color( "bold+white", repeatString( "=", 80 ) )#
+#getDividerLine( width = 80, style = "bold+white" )#
 [ ✅ #color( "green", "Passed:" )# #color( "white", results.getTotalPass() )# ]
 [ ❌ #color( "red", "Failed:" )# #color( "white", results.getTotalFail() )# ]
 [ 💥 #color( "magenta", "Errors:" )# #color( "white", results.getTotalError() )# ]
@@ -39,7 +38,7 @@
 [ ⏱️  #color( "white+dim", "Duration:" )# #color( "white", "#numberFormat( results.getTotalDuration() )# ms" )# ]
 [ 📦 #color( "white+dim", "Bundles/Suites/Specs:" )# #color( "white", results.getTotalBundles() & "/" & results.getTotalSuites() & "/" & results.getTotalSpecs() )# ]
 [ 🏷️  #color( "white+dim", "Labels:")# #arrayToList( results.getLabels() )#<cfif !arrayLen( results.getLabels() )>None</cfif>]
-#color( "bold+white", repeatString( "=", 80 ) )#
+#getDividerLine( width = 80, style = "bold+white" )#
 <cfif results.getCoverageEnabled()>
 #space()#
 =================================================================================
@@ -57,6 +56,15 @@ Code Coverage
 	<cfsetting enablecfoutputonly="true">
 	<cfset var tabs = repeatString( tab(), arguments.level )>
 	<cfset var tabsNext = repeatString( tab(), arguments.level + 1 )>
+	<!--- Skip suites with no non-skipped content when hideSkipped is enabled.
+		 We can't rely on suiteStats.status alone because TestBox may mark a suite as
+		 "Skipped" even when it contains a passed spec (filter-specs bug), or mark a
+		 suite as "Passed" when all its specs are skipped. Instead, check the rolled-up
+		 counters: if totalPass + totalFail + totalError == 0, the suite has no
+		 non-skipped specs at any nesting level. --->
+	<cfif variables.hideSkipped AND (arguments.suiteStats.totalPass + arguments.suiteStats.totalFail + arguments.suiteStats.totalError) eq 0>
+		<cfreturn "">
+	</cfif>
 	<cfsavecontent variable="local.report"><cfoutput><!---
 
 			Suite Name
@@ -66,6 +74,7 @@ Code Coverage
 			Specs
 
 		---><cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec"><!---
+		---><cfif variables.hideSkipped AND local.thisSpec.status eq "skipped"><cfcontinue></cfif><!---
 		--->#tabsNext##getStatusIndicator( local.thisSpec.status )# #printByStatus( local.thisSpec.status, local.thisSpec.displayName)# #color( "dim", "(#local.thisSpec.totalDuration# ms)")# #chr(13)#<!---
 
 			If Spec Failed

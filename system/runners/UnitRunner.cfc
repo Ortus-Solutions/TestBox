@@ -341,6 +341,11 @@ component
 			if ( arguments.suite.asyncAll ) {
 				thread action="join" name="#arrayToList( threadNames )#" {
 				};
+
+				// Drain any queued streaming events from async spec execution
+				if ( structKeyExists( arguments.callbacks, "onAsyncDrain" ) ) {
+					arguments.callbacks.onAsyncDrain();
+				}
 			}
 
 			// All specs finalized, set suite status according to spec data

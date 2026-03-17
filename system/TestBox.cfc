@@ -503,6 +503,96 @@ component accessors="true" {
 	}
 
 	/**
+	 * Discover the bundles, suites, and specs that would execute without actually running them.
+	 *
+	 * @testBundles A list or array of bundle names that are the ones that will be executed ONLY!
+	 * @testSuites  A list or array of suite names that are the ones that will be executed ONLY!
+	 * @testSpecs   A list or array of test names that are the ones that will be executed ONLY!
+	 */
+	struct function dryRun(
+		any testBundles = [],
+		any testSuites  = [],
+		any testSpecs   = []
+	){
+		arguments.testBundles = (
+			isSimpleValue( arguments.testBundles ) ? listToArray( arguments.testBundles ) : arguments.testBundles
+		);
+		arguments.testSuites = (
+			isSimpleValue( arguments.testSuites ) ? listToArray( arguments.testSuites ) : arguments.testSuites
+		);
+		arguments.testSpecs = (
+			isSimpleValue( arguments.testSpecs ) ? listToArray( arguments.testSpecs ) : arguments.testSpecs
+		);
+
+		if ( !isNull( url.testBundles ) ) {
+			arguments.testBundles.append( listToArray( urlDecode( url.testBundles ) ), true );
+		}
+		if ( !isNull( url.testSuites ) ) {
+			arguments.testSuites.append( listToArray( urlDecode( url.testSuites ) ), true );
+		}
+		if ( !isNull( url.testSpecs ) ) {
+			arguments.testSpecs.append( listToArray( urlDecode( url.testSpecs ) ), true );
+		}
+		if ( !isNull( url.testMethod ) ) {
+			arguments.testSpecs.append( listToArray( urlDecode( url.testMethod ) ), true );
+		}
+
+		var filterState = new testbox.system.TestResult(
+			bundleCount = arrayLen( variables.bundles ),
+			labels      = variables.labels,
+			excludes    = variables.excludes,
+			testBundles = arguments.testBundles,
+			testSuites  = arguments.testSuites,
+			testSpecs   = arguments.testSpecs
+		);
+		var baseRunner = new testbox.system.runners.BaseRunner();
+		var discovery  = {
+			"type"     : "dry-run",
+			"version"  : variables.version,
+			"labels"   : variables.labels,
+			"excludes" : variables.excludes,
+			"filters"  : {
+				"testBundles" : arguments.testBundles,
+				"testSuites"  : arguments.testSuites,
+				"testSpecs"   : arguments.testSpecs
+			},
+			"summary"           : { "totalBundles" : 0, "totalSuites" : 0, "totalSpecs" : 0 },
+			"bundles"           : [],
+			"bundlesPattern"    : variables.bundlesPattern,
+			"CFMLEngine"        : server.keyExists( "boxlang" ) ? "BoxLang" : server.coldfusion.productName,
+			"CFMLEngineVersion" : (
+				server.keyExists( "boxlang" ) ? server.boxlang.version : server.keyExists( "lucee" ) ? server.lucee.version : server.coldfusion.productVersion
+			)
+		};
+
+		for ( var thisBundlePath in variables.bundles ) {
+			var thisMD = server.keyExists( "boxlang" ) ? getClassMetadata( thisBundlePath ) : getComponentMetadata(
+				thisBundlePath
+			);
+
+			if ( thisMD.type eq "interface" ) {
+				continue;
+			}
+
+			var bundleDiscovery = discoverDryRunBundle(
+				bundlePath  = thisBundlePath,
+				testResults = filterState,
+				baseRunner  = baseRunner
+			);
+
+			if ( !structIsEmpty( bundleDiscovery ) ) {
+				arrayAppend( discovery.bundles, bundleDiscovery );
+				discovery.summary.totalSuites += bundleDiscovery.summary.totalSuites;
+				discovery.summary.totalSpecs += bundleDiscovery.summary.totalSpecs;
+			}
+		}
+
+		discovery.summary.totalBundles = arrayLen( discovery.bundles );
+
+		return discovery;
+	}
+
+	/**
 	 * Run me some testing goodness, remotely via SOAP, Flex, REST, URL
 	 *
 	 * @bundles         The path or list of paths of the spec bundle classes to run and test
@@ -898,6 +988,499 @@ component accessors="true" {
 		}
 
 		return results;
+	}
+
+	private struct function discoverDryRunBundle(
+		required string bundlePath,
+		required testbox.system.TestResult testResults,
+		required any baseRunner
+	){
+		try {
+			var target = getBundle( arguments.bundlePath );
+		} catch ( "AbstractComponentException" e ) {
+			return {};
+		} catch ( "AbstractClassException" e ) {
+			return {};
+		}
+
+		var targetMD          = getMetadata( target );
+		var targetAnnotations = targetMD.keyExists( "annotations" ) ? targetMD.annotations : targetMD;
+		var bundleName        = (
+			structKeyExists( targetAnnotations, "displayName" ) ? targetAnnotations.displayname : targetMD.name
+		);
+		var bundleLabels = getMetadataLabels( targetMD );
+
+		if (
+			!arguments.baseRunner.canRunBundle(
+				bundlePath  = targetMD.name,
+				testResults = arguments.testResults,
+				targetMD    = targetMD
+			)
+		) {
+			return {};
+		}
+
+		var suites     = [];
+		var bundleType = structKeyExists( target, "run" ) ? "bdd" : "xunit";
+
+		if ( bundleType eq "bdd" ) {
+			target.run( testResults = arguments.testResults, testbox = this );
+			suites = discoverDryRunBDDSuites(
+				suites       = target.$suites,
+				target       = target,
+				testResults  = arguments.testResults,
+				baseRunner   = arguments.baseRunner,
+				bundleLabels = bundleLabels
+			);
+		} else {
+			suites = discoverDryRunXUnitSuites(
+				target       = target,
+				targetMD     = targetMD,
+				testResults  = arguments.testResults,
+				baseRunner   = arguments.baseRunner,
+				bundleLabels = bundleLabels
+			);
+		}
+
+		if ( !arrayLen( suites ) ) {
+			return {};
+		}
+
+		return {
+			"id"      : hash( targetMD.name ),
+			"path"    : targetMD.name,
+			"name"    : bundleName,
+			"type"    : bundleType,
+			"labels"  : bundleLabels,
+			"suites"  : suites,
+			"summary" : {
+				"totalSuites" : countDryRunSuites( suites ),
+				"totalSpecs"  : countDryRunSpecs( suites )
+			}
+		};
+	}
+
+	private array function discoverDryRunBDDSuites(
+		required array suites,
+		required any target,
+		required testbox.system.TestResult testResults,
+		required any baseRunner,
+		required array bundleLabels
+	){
+		var results = [];
+
+		for ( var thisSuite in arguments.suites ) {
+			var suiteDiscovery = discoverDryRunBDDSuite(
+				suite        = thisSuite,
+				target       = arguments.target,
+				testResults  = arguments.testResults,
+				baseRunner   = arguments.baseRunner,
+				bundleLabels = arguments.bundleLabels
+			);
+
+			if ( !structIsEmpty( suiteDiscovery ) ) {
+				arrayAppend( results, suiteDiscovery );
+			}
+		}
+
+		return results;
+	}
+
+	private struct function discoverDryRunBDDSuite(
+		required struct suite,
+		required any target,
+		required testbox.system.TestResult testResults,
+		required any baseRunner,
+		required array bundleLabels
+	){
+		if (
+			arguments.suite.skip ||
+			!arguments.baseRunner.canRunSuite(
+				arguments.suite,
+				arguments.testResults,
+				arguments.target
+			)
+		) {
+			return {};
+		}
+
+		var suiteDiscovery = {
+			"id"              : arguments.suite.id,
+			"name"            : arguments.suite.name,
+			"path"            : formatDryRunSuitePath( arguments.suite ),
+			"slug"            : arguments.suite.slug,
+			"labels"          : duplicate( arguments.suite.labels ?: [] ),
+			"effectiveLabels" : getEffectiveSuiteLabels( arguments.suite, arguments.bundleLabels ),
+			"focused"         : arguments.suite.focused,
+			"skip"            : arguments.suite.skip,
+			"specs"           : [],
+			"suites"          : []
+		};
+		var isDirectMatch = isDirectSuiteMatch( arguments.suite, arguments.testResults );
+
+		if ( isDirectMatch ) {
+			for ( var thisSpec in arguments.suite.specs ) {
+				var specDiscovery = discoverDryRunBDDSpec(
+					spec         = thisSpec,
+					suite        = arguments.suite,
+					target       = arguments.target,
+					testResults  = arguments.testResults,
+					baseRunner   = arguments.baseRunner,
+					bundleLabels = arguments.bundleLabels
+				);
+
+				if ( !structIsEmpty( specDiscovery ) ) {
+					arrayAppend( suiteDiscovery.specs, specDiscovery );
+				}
+			}
+		}
+
+		for ( var thisInternalSuite in arguments.suite.suites ) {
+			var internalDiscovery = discoverDryRunBDDSuite(
+				suite        = thisInternalSuite,
+				target       = arguments.target,
+				testResults  = arguments.testResults,
+				baseRunner   = arguments.baseRunner,
+				bundleLabels = arguments.bundleLabels
+			);
+			if ( !structIsEmpty( internalDiscovery ) ) {
+				arrayAppend( suiteDiscovery.suites, internalDiscovery );
+			}
+		}
+
+		if ( !arrayLen( suiteDiscovery.specs ) && !arrayLen( suiteDiscovery.suites ) ) {
+			return {};
+		}
+
+		return suiteDiscovery;
+	}
+
+	private struct function discoverDryRunBDDSpec(
+		required struct spec,
+		required struct suite,
+		required any target,
+		required testbox.system.TestResult testResults,
+		required any baseRunner,
+		required array bundleLabels
+	){
+		var effectiveLabels = getEffectiveBDDSpecLabels(
+			arguments.spec,
+			arguments.suite,
+			arguments.bundleLabels
+		);
+
+		// Explicitly-skipped specs (xit/xdescribe) are kept in the dry run tree so the UI
+		// can show them as skipped upfront. Only specs excluded by focus/label/canRunSpec
+		// filters are omitted entirely.
+		if (
+			!arguments.spec.skip && (
+				!isDryRunBDDSpecFocused(
+					arguments.spec,
+					arguments.suite,
+					arguments.target,
+					arguments.baseRunner
+				) ||
+				!arguments.baseRunner.canRunLabel( effectiveLabels, arguments.testResults ) ||
+				!arguments.baseRunner.canRunSpec( arguments.spec, arguments.testResults )
+			)
+		) {
+			return {};
+		}
+
+		return {
+			"id"              : arguments.spec.id,
+			"name"            : arguments.spec.name,
+			"displayName"     : arguments.spec.displayName,
+			"labels"          : duplicate( arguments.spec.labels ?: [] ),
+			"effectiveLabels" : effectiveLabels,
+			"focused"         : arguments.spec.focused,
+			"skip"            : arguments.spec.skip
+		};
+	}
+
+	private array function discoverDryRunXUnitSuites(
+		required any target,
+		required any targetMD,
+		required testbox.system.TestResult testResults,
+		required any baseRunner,
+		required array bundleLabels
+	){
+		var suite = buildDryRunXUnitSuite(
+			target       = arguments.target,
+			targetMD     = arguments.targetMD,
+			testResults  = arguments.testResults,
+			baseRunner   = arguments.baseRunner,
+			bundleLabels = arguments.bundleLabels
+		);
+
+		return structIsEmpty( suite ) ? [] : [ suite ];
+	}
+
+	private struct function buildDryRunXUnitSuite(
+		required any target,
+		required any targetMD,
+		required testbox.system.TestResult testResults,
+		required any baseRunner,
+		required array bundleLabels
+	){
+		var annotations = arguments.targetMD.keyExists( "annotations" ) ? arguments.targetMD.annotations : arguments.targetMD;
+		var suiteName   = (
+			structKeyExists( annotations, "displayName" ) ? annotations.displayname : arguments.targetMD.name
+		);
+		var suite = {
+			"id"     : hash( arguments.targetMD.name ),
+			"name"   : suiteName,
+			"path"   : "/" & suiteName,
+			"labels" : duplicate( arguments.bundleLabels ),
+			"skip"   : (
+				structKeyExists( annotations, "skip" ) ? ( len( annotations.skip ) ? annotations.skip : true ) : false
+			),
+			"focused" : false,
+			"specs"   : [],
+			"suites"  : []
+		};
+
+		if ( !isBoolean( suite.skip ) && isCustomFunction( arguments.target[ suite.skip ] ) ) {
+			suite.skip = invoke( arguments.target, "#suite.skip#" );
+		}
+
+		if ( arrayLen( arguments.testResults.getLabels() ) ) {
+			suite.skip = !arguments.baseRunner.canRunLabel( suite.labels, arguments.testResults );
+		}
+
+		if (
+			suite.skip ||
+			!arguments.baseRunner.canRunSuite( suite, arguments.testResults, arguments.target )
+		) {
+			return {};
+		}
+
+		suite.specs = discoverDryRunXUnitSpecs(
+			target      = arguments.target,
+			testResults = arguments.testResults,
+			baseRunner  = arguments.baseRunner,
+			suiteLabels = suite.labels
+		);
+
+		return arrayLen( suite.specs ) ? suite : {};
+	}
+
+	private array function discoverDryRunXUnitSpecs(
+		required any target,
+		required testbox.system.TestResult testResults,
+		required any baseRunner,
+		required array suiteLabels
+	){
+		var results     = [];
+		var methodArray = structKeyArray( arguments.target );
+		var index       = 1;
+
+		for ( var thisMethod in methodArray ) {
+			if (
+				(
+					isCustomFunction( arguments.target[ thisMethod ] ) || isClosure(
+						arguments.target[ thisMethod ]
+					)
+				)
+				&&
+				arguments.baseRunner.isValidTestMethod( thisMethod, arguments.target )
+			) {
+				var specMD            = getMetadata( arguments.target[ thisMethod ] );
+				var specAnnotations   = specMD.keyExists( "annotations" ) ? specMD.annotations : specMD;
+				var specDocumentation = specMD.keyExists( "documentation" ) ? specMD.documentation : specMD;
+				var spec              = {
+					"id"          : hash( specMD.name ),
+					"name"        : specMD.name,
+					"displayName" : (
+						structKeyExists( specAnnotations, "displayName" ) ? specAnnotations.displayName : specMD.name
+					),
+					"hint" : ( structKeyExists( specDocumentation, "hint" ) ? specDocumentation : "" ),
+					"skip" : (
+						structKeyExists( specAnnotations, "skip" ) ? (
+							len( specAnnotations.skip ) ? specAnnotations.skip : true
+						) : false
+					),
+					"focused" : (
+						structKeyExists( specAnnotations, "focused" ) ? (
+							len( specAnnotations.focused ) ? specAnnotations.focused : true
+						) : false
+					),
+					"labels" : (
+						structKeyExists( specAnnotations, "labels" ) ? listToArray( specAnnotations.labels ) : []
+					),
+					"order" : (
+						structKeyExists( specAnnotations, "order" ) ? listToArray( specAnnotations.order ) : index++
+					),
+					"expectedException" : (
+						structKeyExists( specAnnotations, "expectedException" ) ? (
+							len( specAnnotations.expectedException ) ? specAnnotations.expectedException : true
+						) : false
+					)
+				};
+
+				if ( !isBoolean( spec.skip ) && isCustomFunction( arguments.target[ spec.skip ] ) ) {
+					spec.skip = invoke( arguments.target, spec.skip );
+				}
+
+				if ( arrayLen( arguments.testResults.getLabels() ) ) {
+					spec.skip = !arguments.baseRunner.canRunLabel( spec.labels, arguments.testResults );
+				}
+
+				if ( spec.skip || !arguments.baseRunner.canRunSpec( spec, arguments.testResults ) ) {
+					continue;
+				}
+
+				var effectiveLabels = duplicate( spec.labels );
+				arrayAppend( effectiveLabels, arguments.suiteLabels, true );
+
+				arrayAppend(
+					results,
+					{
+						"id"              : spec.id,
+						"name"            : spec.name,
+						"displayName"     : spec.displayName,
+						"labels"          : duplicate( spec.labels ),
+						"effectiveLabels" : effectiveLabels,
+						"focused"         : spec.focused,
+						"skip"            : spec.skip
+					}
+				);
+			}
+		}
+
+		return results;
+	}
+
+	private boolean function isDirectSuiteMatch( required suite, required testResults ){
+		var testSuites    = arguments.testResults.getTestSuites();
+		var isDirectMatch = true;
+
+		if ( arrayLen( testSuites ) ) {
+			isDirectMatch = arrayFindNoCase( testSuites, arguments.suite.name ) > 0;
+
+			if ( !isDirectMatch && len( arguments.suite.slug ) ) {
+				var slugArray = listToArray( arguments.suite.slug, "/" );
+				for ( var thisSlug in slugArray ) {
+					if ( arrayFindNoCase( testSuites, thisSlug ) ) {
+						isDirectMatch = true;
+						break;
+					}
+				}
+			}
+		}
+
+		return isDirectMatch;
+	}
+
+	private boolean function isDryRunBDDSpecFocused(
+		required struct spec,
+		required struct suite,
+		required any target,
+		required any baseRunner
+	){
+		if (
+			arrayLen( arguments.target.$focusedTargets.specs ) == 0 && arrayLen(
+				arguments.target.$focusedTargets.suites
+			) == 0
+		) {
+			return true;
+		}
+
+		var specPath = formatDryRunSuitePath( arguments.suite ) & "/" & arguments.spec.name;
+
+		if (
+			arrayLen( arguments.target.$focusedTargets.specs ) && arrayFindNoCase(
+				arguments.target.$focusedTargets.specs,
+				specPath
+			)
+		) {
+			return true;
+		}
+
+		if ( arrayLen( arguments.target.$focusedTargets.suites ) ) {
+			return arguments.baseRunner.isSuiteFocused(
+				suite         = arguments.suite,
+				target        = arguments.target,
+				checkChildren = false
+			);
+		}
+
+		return false;
+	}
+
+	private array function getEffectiveSuiteLabels( required struct suite, required array bundleLabels ){
+		var effectiveLabels = duplicate( arguments.bundleLabels );
+		var currentSuite    = arguments.suite;
+
+		while ( !isSimpleValue( currentSuite ) ) {
+			arrayAppend( effectiveLabels, currentSuite.labels, true );
+			currentSuite = currentSuite.parentRef;
+		}
+
+		return effectiveLabels;
+	}
+
+	private array function getEffectiveBDDSpecLabels(
+		required struct spec,
+		required struct suite,
+		required array bundleLabels
+	){
+		var consolidatedLabels = duplicate( arguments.spec.labels ?: [] );
+		arrayAppend(
+			consolidatedLabels,
+			arguments.bundleLabels,
+			true
+		);
+		var parentSuite = arguments.suite;
+
+		while ( !isSimpleValue( parentSuite ) ) {
+			arrayAppend( consolidatedLabels, parentSuite.labels, true );
+			parentSuite = parentSuite.parentRef;
+		}
+
+		return consolidatedLabels;
+	}
+
+	private array function getMetadataLabels( required struct metadata ){
+		var annotations = arguments.metadata.keyExists( "annotations" ) ? arguments.metadata.annotations : arguments.metadata;
+
+		if ( !structKeyExists( annotations, "labels" ) || !len( annotations.labels ) ) {
+			return [];
+		}
+
+		return isSimpleValue( annotations.labels ) ? listToArray( annotations.labels ) : duplicate(
+			annotations.labels
+		);
+	}
+
+	private string function formatDryRunSuitePath( required struct suite ){
+		return len( arguments.suite.slug ) ? arguments.suite.slug & "/" & arguments.suite.name : "/" & arguments.suite.name;
+	}
+
+	private numeric function countDryRunSuites( required array suites ){
+		var count = 0;
+
+		for ( var thisSuite in arguments.suites ) {
+			count++;
+			if ( arrayLen( thisSuite.suites ?: [] ) ) {
+				count += countDryRunSuites( thisSuite.suites );
+			}
+		}
+
+		return count;
+	}
+
+	private numeric function countDryRunSpecs( required array suites ){
+		var count = 0;
+
+		for ( var thisSuite in arguments.suites ) {
+			count += arrayLen( thisSuite.specs ?: [] );
+			if ( arrayLen( thisSuite.suites ?: [] ) ) {
+				count += countDryRunSpecs( thisSuite.suites );
+			}
+		}
+
+		return count;
 	}
 
 	/**

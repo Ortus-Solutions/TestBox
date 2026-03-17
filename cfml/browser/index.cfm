@@ -3,7 +3,7 @@
 	cfsetting( showdebugoutput="false" );
 	// GLOBAL VARIABLES
 	ASSETS_DIR = expandPath( "/testbox/system/reports/assets" );
-	TESTBOX_VERSION = new testBox.system.TestBox().getVersion();
+	TESTBOX_VERSION = new testbox.system.TestBox().getVersion();
 	// TEST LOCATIONS -> UPDATE AS YOU SEE FIT
 	rootMapping = "/tests";
 
