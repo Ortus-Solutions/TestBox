@@ -9,15 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- https://testbox.ortusbooks.com/readme/release-history/whats-new-with-7.0.0
+## [7.0.0] - 2026-03-17
+
+- <https://testbox.ortusbooks.com/readme/release-history/whats-new-with-7.0.0>
 
 ## [6.5.0] - 2026-01-25
 
-- https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.5.0
+- <https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.5.0>
 
 ## [6.4.0] - 2025-09-18
 
-- https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.4.0
+- <https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.4.0>
 
 ## [6.3.2] - 2025-04-29
 
@@ -33,25 +35,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [6.3.0] - 2025-02-25
 
-- https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.3.0
+- <https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.3.0>
 
 ## [6.2.1] - 2025-02-06
 
-- https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.2.1
+- <https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.2.1>
 
 ## [6.2.0] - 2025-01-31
 
-- https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.2.0
+- <https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.2.0>
 
 ## [6.1.0] - 2025-01-28
 
-- https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.1.0
+- <https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.1.0>
 
 ## [6.0.1] - 2024-12-05
 
 ## [6.0.0] - 2024-09-27
 
-- https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.0.0
+- <https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.0.0>
 
 ### New Features
 
@@ -82,7 +84,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - TESTBOX-400 Drop Adobe 2018 support
 
-[unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v6.5.0...HEAD
+[unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v7.0.0...HEAD
+[7.0.0]: https://github.com/Ortus-Solutions/TestBox/compare/v6.5.0...v7.0.0
 [6.5.0]: https://github.com/Ortus-Solutions/TestBox/compare/v6.4.0...v6.5.0
 [6.4.0]: https://github.com/Ortus-Solutions/TestBox/compare/v6.3.2...v6.4.0
 [6.3.2]: https://github.com/Ortus-Solutions/TestBox/compare/v6.3.1...v6.3.2
