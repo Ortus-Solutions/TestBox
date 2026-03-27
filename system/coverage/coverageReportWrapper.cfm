@@ -10,6 +10,7 @@
 		<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
 	</head>
 	<body>
+		<p class="text-muted small">Coverage report generated: #dateTimeFormat( now(), "yyyy-MM-dd HH:mm:ss" )#</p>
 		<cfif len( sonarQubeResults ) >
 			#sonarQubeResults#<br><br>
 		</cfif>

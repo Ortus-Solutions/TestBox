@@ -1,4 +1,4 @@
-﻿[![Total Downloads](https://forgebox.io/api/v1/entry/testbox/badges/downloads)](https://forgebox.io/view/testbox)
+[![Total Downloads](https://forgebox.io/api/v1/entry/testbox/badges/downloads)](https://forgebox.io/view/testbox)
 [![Latest Stable Version](https://forgebox.io/api/v1/entry/testbox/badges/version)](https://forgebox.io/view/testbox)
 [![Apache2 License](https://img.shields.io/badge/License-Apache2-blue.svg)](https://forgebox.io/view/testbox)
 
@@ -296,6 +296,14 @@ class {
     }
 }
 ```
+
+### Gap analysis (CFML, heuristic)
+
+The **HTML runner** (`system/runners/HTMLRunner.cfm`) supports `gapAnalysis=true` on the **same URL** as a normal test run. TestBox wires the run the usual way (`directory`, `bundles`, `recurse`, `coveragePathToCapture`, etc.); gap mode skips `testbox.run()` and renders an HTML report (same TestBox CSS/JS as the Simple reporter) comparing **public/remote** function names from component metadata against a **concatenated test corpus** (`.cfc`/`.cfm` text under the resolved `directory` paths). Test corpus discovery uses the same **`recurse`** flag and **`directoryList`** shape as `getSpecPaths` (nested folders match a normal directory run). A function is “covered” when its **lowercased name** appears as a substring in that corpus. The **component prefix** is inferred from `coveragePathToCapture` and application **mappings** (longest mapping match).
+
+Example: `runner.cfm?directory=tests/specs&coveragePathToCapture=/com/myapp&gapAnalysis=true` (adjust paths for your app).
+
+This is a **development signal only**: not line coverage, not execution coverage; false positives/negatives are possible.
 
 ### Web Runner Configuration
 

@@ -82,6 +82,7 @@ component accessors=true {
 			fileStream.parallel();
 		}
 
+		var coverageRunStats = stats;
 		fileStream.forEach( function( fileData ){
 			// Coverage files are named after "real" files
 			var theFile = "#browserOutputDir & fileData.relativeFilePath#.html";

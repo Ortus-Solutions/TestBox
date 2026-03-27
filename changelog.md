@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Tests
+
+- Regression coverage for gap analysis: `tests/specs/GapAnalysisServiceSpec.cfc` and fixtures under `tests/resources/gapAnalysisFixtures/`.
+
 ## [7.0.0] - 2026-03-17
 
 - <https://testbox.ortusbooks.com/readme/release-history/whats-new-with-7.0.0>

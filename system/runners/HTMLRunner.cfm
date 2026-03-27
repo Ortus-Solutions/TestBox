@@ -24,12 +24,29 @@
 <cfparam name="url.coverageBlacklist"				default="/testbox">
 <!--- Enable batched code coverage reporter, useful for large test bundles which require spreading over multiple testbox run commands. --->
 <cfparam name="url.isBatched"						default="false">
+<cfparam name="url.gapAnalysis"						default="false">
 
 <cfscript>
 // If we have incoming bundles, then clear out the directory
 if( len( url.bundles ) ){
 	url.directory = ""
 }
+
+function escapePropertyValue( required string value ) {
+	if ( len( arguments.value ) == 0 ) {
+		return arguments.value;
+	}
+	var v = replaceNoCase( arguments.value, '\', '\\', 'all' );
+	v = replaceNoCase( v, chr(13), '\r', 'all' );
+	v = replaceNoCase( v, chr(10), '\n', 'all' );
+	v = replaceNoCase( v, chr(9), '\t', 'all' );
+	v = replaceNoCase( v, chr(60), '\u003c', 'all' );
+	v = replaceNoCase( v, chr(62), '\u003e', 'all' );
+	v = replaceNoCase( v, chr(47), '\u002f', 'all' );
+	return replaceNoCase( v, chr(32), '\u0020', 'all' );
+}
+
+gapFlag = structKeyExists( url, "gapAnalysis" ) && listFindNoCase( "true,yes,1", trim( toString( url.gapAnalysis ) ) ) > 0;
 
 // prepare for tests for bundles or directories
 testbox = new testbox.system.TestBox(
@@ -61,6 +78,77 @@ if( len( url.directory ) ){
 	}
 }
 
+if ( gapFlag ) {
+	runnerErrors = [];
+	gapReport = {};
+	ran = false;
+	gapRunnerSummary = {};
+	sourceRoot = "";
+	componentPrefix = "";
+	testRoots = [];
+	try {
+		if ( !len( trim( toString( url.directory ) ) ) ) {
+			arrayAppend( runnerErrors, "gapAnalysis requires url.directory (same as a normal TestBox directory run)." );
+		} else {
+			sourceRoot = testbox.getCoverageService().getCoverageOptions().pathToCapture;
+			gapSvc = new testbox.system.gap.GapAnalysisService();
+			componentPrefix = gapSvc.inferComponentPrefix( sourceRoot );
+			if ( !len( componentPrefix ) ) {
+				arrayAppend( runnerErrors, "Could not infer component prefix from coverage pathToCapture; check url.coveragePathToCapture and application mappings." );
+			} else {
+				testRoots = [];
+				for ( dir in listToArray( url.directory ) ) {
+					dir = trim( dir );
+					if ( !len( dir ) ) {
+						continue;
+					}
+					arrayAppend( testRoots, expandPath( "/" & replace( dir, ".", "/", "all" ) ) );
+				}
+				if ( !arrayLen( testRoots ) ) {
+					arrayAppend( runnerErrors, "No valid test directories resolved from url.directory." );
+				} else {
+					gapReport = gapSvc.analyze(
+						sourceRoot = sourceRoot,
+						componentPrefix = componentPrefix,
+						testRootList = arrayToList( testRoots, "," ),
+						recurseTestRoots = url.recurse
+					);
+					ran = true;
+				}
+			}
+		}
+	} catch ( any e ) {
+		arrayAppend( runnerErrors, e.message );
+		if ( structKeyExists( e, "detail" ) && len( toString( e.detail ) ) ) {
+			arrayAppend( runnerErrors, toString( e.detail ) );
+		}
+	}
+	qs = structKeyExists( cgi, "query_string" ) ? cgi.query_string : "";
+	stripQs = reReplace( qs, "&gapAnalysis=[^&]*", "", "all" );
+	stripQs = reReplace( stripQs, "^gapAnalysis=[^&]*&?", "", "all" );
+	stripQs = reReplace( stripQs, "^[&]+|[&]+$", "", "all" );
+	testsUrl = len( stripQs ) ? ( cgi.script_name & "?" & stripQs ) : cgi.script_name;
+	gapRunnerSummary = {
+		"directory" : url.directory,
+		"recurse" : url.recurse,
+		"bundles" : url.bundles,
+		"coveragePathToCapture" : url.coveragePathToCapture,
+		"sourceRootAbs" : sourceRoot,
+		"componentPrefix" : componentPrefix,
+		"testRootAbs" : testRoots,
+		"testsUrl" : testsUrl
+	};
+	gapHtml = new testbox.system.gap.GapAnalysisService().renderReport(
+		testbox = testbox,
+		gapReport = gapReport,
+		gapRunnerSummary = gapRunnerSummary,
+		runnerErrors = runnerErrors,
+		ran = ran
+	);
+	writeOutput( gapHtml );
+	abort;
+}
+
 // Run Tests using correct reporter
 if( url.dryRun ){
 	discovery = testbox.dryRun()
@@ -68,20 +156,6 @@ if( url.dryRun ){
 	results = serializeJSON( discovery )
 } else {
 	results = testbox.run( reporter=url.reporter )
-}
-
-function escapePropertyValue( required string value ) {
-	if ( len( arguments.value ) == 0 ) {
-		return arguments.value;
-	}
-	local.value = replaceNoCase( arguments.value, '\', '\\', 'all' );
-	value = replaceNoCase( value, chr(13), '\r', 'all' );
-	value = replaceNoCase( value, chr(10), '\n', 'all' );
-	value = replaceNoCase( value, chr(9), '\t', 'all' );
-	value = replaceNoCase( value, chr(60), '\u003c', 'all' );
-	value = replaceNoCase( value, chr(62), '\u003e', 'all' );
-	value = replaceNoCase( value, chr(47), '\u002f', 'all' );
-	return replaceNoCase( value, chr(32), '\u0020', 'all' );
 }
 
 // Write TEST.properties in report destination path.

@@ -520,6 +520,10 @@ code {
 								<cfif local.thisSpec.status eq "failed">
 									<cfset local.thisSpec.message = local.thisSpec.failMessage>
 								</cfif>
+								<!--- Enable the err9or that caused the skip to be displayed --->
+								<cfif local.thisSpec.status eq "skipped">
+									<cfset local.thisSpec.message = structKeyExists( local.thisSpec, "failMessage" ) ? local.thisSpec.failMessage : "">
+								</cfif>
 								<cfif local.thisSpec.status eq "error">
 									<cfset local.thisSpec.message = local.thisSpec.error.message & local.thisSpec.error.detail>
 								</cfif>

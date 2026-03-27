@@ -60,9 +60,21 @@ component accessors=true {
 
 		// Convert to string
 		var coverageXMLString = toString( coverageXML );
+		var generatedComment  = "<!-- Coverage report generated: " & dateTimeFormat( now(), "yyyy-MM-dd HH:mm:ss" ) & " -->";
+		var nl                = chr( 10 );
 
 		// If there is an output path, write it to a file
 		if ( len( XMLOutputPath ) ) {
+			if ( reFind( "^\s*<\?xml", coverageXMLString ) ) {
+				coverageXMLString = reReplace(
+					coverageXMLString,
+					"^(<\?xml[^\?]*\?\>\s*)",
+					"\1" & nl & generatedComment & nl,
+					"one"
+				);
+			} else {
+				coverageXMLString = generatedComment & nl & coverageXMLString;
+			}
 			fileWrite( arguments.XMLOutputPath, coverageXMLString );
 		}
 

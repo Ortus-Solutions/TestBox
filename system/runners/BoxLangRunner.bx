@@ -47,6 +47,8 @@
  * --slow-threshold-ms : Show specs at or above this duration in summary, defaults to `0` (disabled).
  * --top-slowest : Show top N slowest specs in summary, defaults to `0` (disabled).
  * --stacktrace : Stacktrace detail level for stream failures/errors: `short` or `full`, defaults to `short`.
+ * --gap-analysis : When `true`, skip test execution and write heuristic gap analysis HTML to the report path (`gapAnalysis.html`). Requires `--directory` (dot paths; comma-separated allowed). Uses `--coverage-path-to-capture` when set (same role as HTML runner `coveragePathToCapture`).
+ * --coverage-path-to-capture : Optional absolute or mapping-expandable root of source CFCs for gap analysis (passed through TestBox coverage options).
  *
  * Runner Options:
  * To create runner options just prefix it with the prefix `runner-{optionName}`
@@ -188,11 +190,27 @@ class{
 			println( initArgs )
 		}
 
+		initArgs.options = {}
+		if( options.keyExists( "coverage-path-to-capture" ) && len( toString( options[ "coverage-path-to-capture" ] ?: "" ) ) ){
+			initArgs.options[ "coverage" ] = { "pathToCapture" : options[ "coverage-path-to-capture" ] }
+		}
+
+		var gapFlag = false
+		if( options.keyExists( "gap-analysis" ) ){
+			var ga = trim( toString( options[ "gap-analysis" ] ?: "" ) )
+			gapFlag = ga.listFindNoCase( "true,yes,1" ) > 0
+		}
+
 		var testbox = new testbox.system.TestBox( argumentCollection = initArgs )
 		if( runArgs.verbose ){
 			println( "TestBox Runner started in #getTickCount() - startTime# ms" )
 			println( "Running your tests with the following arguments" )
 			println( runArgs )
+		}
+
+		if( gapFlag ){
+			runGapAnalysisCli( testbox, initArgs, options, afterRunArgs )
+			return
 		}
 
 		if( isDryRun ){
@@ -753,6 +771,96 @@ class{
 			.getParent()
 			.getParent()
 			.toString()
+	}
+
+	/**
+	 * Gap analysis mode: HTML report to report path (mirrors HTMLRunner gapAnalysis branch).
+	 */
+	private function runGapAnalysisCli(
+		required testbox,
+		required initArgs,
+		required options,
+		required afterRunArgs
+	){
+		var runnerErrors = []
+		var gapReport = {}
+		var ran = false
+		var gapRunnerSummary = {}
+		var sourceRoot = ""
+		var componentPrefix = ""
+		var testRoots = []
+		var dirRaw = ""
+		if( isStruct( initArgs.directory ) ){
+			dirRaw = initArgs.directory.keyExists( "mapping" ) ? toString( initArgs.directory.mapping ?: "" ) : ""
+		} else {
+			dirRaw = toString( initArgs.directory ?: "" )
+		}
+		var recurseForGap = true
+		if( isStruct( initArgs.directory ) && initArgs.directory.keyExists( "recurse" ) ){
+			recurseForGap = initArgs.directory.recurse
+		}
+		try {
+			if( !len( trim( dirRaw ) ) ){
+				arrayAppend( runnerErrors, "gap-analysis requires --directory (same as a normal TestBox directory run)." )
+			} else if( initArgs.bundles.len() ){
+				arrayAppend( runnerErrors, "gap-analysis cannot be used with bundle-only runs; use --directory." )
+			} else {
+				sourceRoot = testbox.getCoverageService().getCoverageOptions().pathToCapture
+				var gapSvc = new testbox.system.gap.GapAnalysisService()
+				componentPrefix = gapSvc.inferComponentPrefix( sourceRoot )
+				if( !len( componentPrefix ) ){
+					arrayAppend( runnerErrors, "Could not infer component prefix from coverage pathToCapture; check --coverage-path-to-capture and application mappings." )
+				} else {
+					for( var dirEntry in listToArray( dirRaw, "," ) ){
+						dirEntry = trim( dirEntry )
+						if( !len( dirEntry ) ){
+							continue
+						}
+						arrayAppend( testRoots, expandPath( "/" & replace( dirEntry, ".", "/", "all" ) ) )
+					}
+					if( !arrayLen( testRoots ) ){
+						arrayAppend( runnerErrors, "No valid test directories resolved from --directory." )
+					} else {
+						gapReport = gapSvc.analyze(
+							sourceRoot = sourceRoot,
+							componentPrefix = componentPrefix,
+							testRootList = arrayToList( testRoots, "," ),
+							recurseTestRoots = recurseForGap
+						)
+						ran = true
+					}
+				}
+			}
+		} catch( any e ){
+			arrayAppend( runnerErrors, e.message )
+			if( structKeyExists( e, "detail" ) && len( toString( e.detail ) ) ){
+				arrayAppend( runnerErrors, toString( e.detail ) )
+			}
+		}
+		gapRunnerSummary = {
+			"directory" : dirRaw,
+			"recurse" : recurseForGap,
+			"bundles" : isArray( initArgs.bundles ) ? initArgs.bundles.toList() : toString( initArgs.bundles ?: "" ),
+			"coveragePathToCapture" : options.keyExists( "coverage-path-to-capture" ) ? toString( options[ "coverage-path-to-capture" ] ?: "" ) : "",
+			"sourceRootAbs" : sourceRoot,
+			"componentPrefix" : componentPrefix,
+			"testRootAbs" : testRoots,
+			"testsUrl" : ""
+		}
+		if( !directoryExists( afterRunArgs.reportPath ) ){
+			directoryCreate( afterRunArgs.reportPath, true )
+		}
+		var gapHtml = new testbox.system.gap.GapAnalysisService().renderReport(
+			testbox = testbox,
+			gapReport = gapReport,
+			gapRunnerSummary = gapRunnerSummary,
+			runnerErrors = runnerErrors,
+			ran = ran,
+			fullPage = true,
+			justReturn = true
+		)
+		fileWrite( afterRunArgs.reportPath & "/gapAnalysis.html", gapHtml )
+		println( "Gap analysis report written to #afterRunArgs.reportPath#/gapAnalysis.html" )
 	}
 
 	/**
