@@ -6,12 +6,19 @@
  */
 component extends="BaseReporter" {
 
+	/**
+	 * Get the name of the reporter
+	 */
 	function getName(){
 		return "GapAnalysis";
 	}
 
 	/**
-	 * @options gapReport, gapRunnerSummary, runnerErrors, ran, fullPage
+	 * Render gap analysis HTML from the template; invoked by GapAnalysisService.renderReport().
+	 *
+	 * @testbox    The TestBox core object
+	 * @options    gapReport, gapRunnerSummary, runnerErrors, ran, fullPage, gapEmbedCompact, gapRunAnalysisUrl
+	 * @justReturn Boolean flag that if set just returns the content with no content type and buffer reset
 	 */
 	any function renderHtml(
 		required testbox.system.TestBox testbox,
@@ -28,6 +35,8 @@ component extends="BaseReporter" {
 		variables.ran = structKeyExists( arguments.options, "ran" ) ? arguments.options.ran : false;
 		variables.testbox = arguments.testbox;
 		variables.fullPage = structKeyExists( arguments.options, "fullPage" ) ? arguments.options.fullPage : true;
+		variables.gapEmbedCompact = structKeyExists( arguments.options, "gapEmbedCompact" ) ? arguments.options.gapEmbedCompact : false;
+		variables.gapRunAnalysisUrl = structKeyExists( arguments.options, "gapRunAnalysisUrl" ) ? toString( arguments.options.gapRunAnalysisUrl ) : "";
 
 		savecontent variable="local.report" {
 			include "assets/gapAnalysis.cfm";

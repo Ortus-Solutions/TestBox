@@ -301,7 +301,11 @@ class {
 
 The **HTML runner** (`system/runners/HTMLRunner.cfm`) supports `gapAnalysis=true` on the **same URL** as a normal test run. TestBox wires the run the usual way (`directory`, `bundles`, `recurse`, `coveragePathToCapture`, etc.); gap mode skips `testbox.run()` and renders an HTML report (same TestBox CSS/JS as the Simple reporter) comparing **public/remote** function names from component metadata against a **concatenated test corpus** (`.cfc`/`.cfm` text under the resolved `directory` paths). Test corpus discovery uses the same **`recurse`** flag and **`directoryList`** shape as `getSpecPaths` (nested folders match a normal directory run). A function is “covered” when its **lowercased name** appears as a substring in that corpus. The **component prefix** is inferred from `coveragePathToCapture` and application **mappings** (longest mapping match).
 
+The **Simple** HTML reporter embeds a short gap analysis strip on normal test runs (description and a **Run gap analysis** link; the full runner parameter list appears only on the dedicated gap report), via `TestBox.getGapAnalysisService().renderRunnerEmbed()`—the same service pattern as code coverage’s `getCoverageService().renderStats()`.
+
 Example: `runner.cfm?directory=tests/specs&coveragePathToCapture=/com/myapp&gapAnalysis=true` (adjust paths for your app).
+
+On **BoxLang**, the CLI runner (`system/runners/BoxLangRunner.bx`) can write `gapAnalysis.html` when `--gap-analysis=true` is set (requires `--directory`; uses `--coverage-path-to-capture` like the HTML runner).
 
 This is a **development signal only**: not line coverage, not execution coverage; false positives/negatives are possible.
 

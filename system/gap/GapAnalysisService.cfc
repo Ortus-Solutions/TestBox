@@ -2,9 +2,9 @@
  * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * Heuristic "test mention" gap analysis: compares public/remote function names from
- * component metadata against a concatenated test corpus (text of .cfc/.cfm under test roots).
- * This is not line coverage and not proof that a test exercises a function.
+ * Heuristic gap analysis: compares public/remote function names from component metadata
+ * to concatenated test/spec file text. This is not line coverage and not proof a test exercises a function.
+ * Use TestBox.getGapAnalysisService(); renderRunnerEmbed() feeds the Simple reporter; renderReport() renders full HTML.
  */
 component accessors="true" {
 
@@ -228,9 +228,14 @@ component accessors="true" {
 	}
 
 	private string function _relativePath( required string fullPath, required string root ){
-		var r = replaceNoCase( arguments.fullPath, arguments.root, "", "one" );
-		r     = reReplace( r, "^[\\/]+", "" );
-		return replace( r, "\", "/", "all" );
+		var fp   = replace( arguments.fullPath, "\", "/", "all" );
+		var rSrc = replace( arguments.root, "\", "/", "all" );
+		if ( !rSrc.endsWith( "/" ) ) {
+			rSrc &= "/";
+		}
+		var r = replaceNoCase( fp, rSrc, "", "one" );
+		r     = reReplace( r, "^/+", "" );
+		return r;
 	}
 
 	private string function _toComponentId( required string relForward, required string prefix ){
@@ -242,16 +247,22 @@ component accessors="true" {
 	}
 
 	private array function _listCfcFiles( required string root ){
-		var files = directoryList( arguments.root, true, "path", "*.cfc" );
+		var raw = directoryList( arguments.root, true, "path", "", "asc", "file" );
+		var files = [];
+		for ( var fp in raw ) {
+			if ( !fileExists( fp ) ) {
+				continue;
+			}
+			if ( compareNoCase( listLast( fp, "." ), "cfc" ) == 0 ) {
+				arrayAppend( files, fp );
+			}
+		}
 		arraySort( files, "textnocase", "asc" );
 		return files;
 	}
 
 	private boolean function _ignoreFunction( required struct fnMeta ){
-		if ( !structKeyExists( arguments.fnMeta, "access" ) ) {
-			return true;
-		}
-		if ( arrayFindNoCase( [ "public", "remote" ], arguments.fnMeta.access ) == 0 ) {
+		if ( structKeyExists( arguments.fnMeta, "access" ) && arrayFindNoCase( [ "public", "remote" ], arguments.fnMeta.access ) == 0 ) {
 			return true;
 		}
 		var ignored = [ "init", "onmissingmethod" ];
@@ -290,7 +301,106 @@ component accessors="true" {
 	}
 
 	/**
-	 * Render gap analysis HTML via GapAnalysisReporter (mirrors CoverageService delegating to CFM templates).
+	 * Build runner summary and URLs from the current request (url + cgi) for the HTML runner and Simple embed.
+	 *
+	 * @testbox               The TestBox core object
+	 * @sourceRootAbs         Resolved source root (optional when resolveOptionalPaths is true)
+	 * @componentPrefix       Dotted component prefix (optional when resolveOptionalPaths is true)
+	 * @testRootAbs           Resolved test root directories (optional when resolveOptionalPaths is true)
+	 * @resolveOptionalPaths  When true (default), fill missing source/prefix/test roots from coverage options and url.directory
+	 */
+	public struct function buildRunnerSummaryFromRequest(
+		required testbox.system.TestBox testbox,
+		string sourceRootAbs = "",
+		string componentPrefix = "",
+		array testRootAbs = [],
+		boolean resolveOptionalPaths = true
+	){
+		var qs      = structKeyExists( cgi, "query_string" ) ? cgi.query_string : "";
+		var stripQs = reReplace( qs, "&gapAnalysis=[^&]*", "", "all" );
+		stripQs = reReplace( stripQs, "^gapAnalysis=[^&]*&?", "", "all" );
+		stripQs = reReplace( stripQs, "^[&]+|[&]+$", "", "all" );
+		var testsUrl = len( stripQs ) ? ( cgi.script_name & "?" & stripQs ) : cgi.script_name;
+		var gapRunAnalysisUrl = len( stripQs ) ? ( cgi.script_name & "?" & stripQs & "&gapAnalysis=true" ) : ( cgi.script_name & "?gapAnalysis=true" );
+
+		var sr  = trim( toString( arguments.sourceRootAbs ) );
+		var cp  = trim( toString( arguments.componentPrefix ) );
+		var trs = isArray( arguments.testRootAbs ) ? arguments.testRootAbs : [];
+
+		if ( arguments.resolveOptionalPaths ) {
+			if ( !len( sr ) ) {
+				try {
+					sr = trim( toString( arguments.testbox.getCoverageService().getCoverageOptions().pathToCapture ) );
+				} catch ( any e0 ) {
+					sr = "";
+				}
+			}
+			if ( !len( cp ) && len( sr ) ) {
+				cp = inferComponentPrefix( sr );
+			}
+			if ( !arrayLen( trs ) && len( trim( toString( structKeyExists( url, "directory" ) ? url.directory : "" ) ) ) ) {
+				trs = [];
+				for ( var dir in listToArray( structKeyExists( url, "directory" ) ? url.directory : "" ) ) {
+					dir = trim( dir );
+					if ( !len( dir ) ) {
+						continue;
+					}
+					arrayAppend( trs, expandPath( "/" & replace( dir, ".", "/", "all" ) ) );
+				}
+			}
+		}
+
+		var gapRunnerSummary = {
+			"directory" : structKeyExists( url, "directory" ) ? url.directory : "",
+			"recurse" : structKeyExists( url, "recurse" ) ? url.recurse : true,
+			"bundles" : structKeyExists( url, "bundles" ) ? url.bundles : "",
+			"coveragePathToCapture" : structKeyExists( url, "coveragePathToCapture" ) ? url.coveragePathToCapture : "",
+			"sourceRootAbs" : sr,
+			"componentPrefix" : cp,
+			"testRootAbs" : trs,
+			"testsUrl" : testsUrl
+		};
+
+		return {
+			"gapRunnerSummary" : gapRunnerSummary,
+			"gapRunAnalysisUrl" : gapRunAnalysisUrl,
+			"testsUrl" : testsUrl
+		};
+	}
+
+	/**
+	 * Render HTML for embedding in the Simple reporter (same role as CoverageService.renderStats).
+	 *
+	 * @testbox    The TestBox core object
+	 * @fullPage   When false, omit outer document wrapper for inclusion in the Simple report
+	 */
+	public any function renderRunnerEmbed( required testbox.system.TestBox testbox, boolean fullPage = false ){
+		var built = buildRunnerSummaryFromRequest( arguments.testbox, "", "", [], true );
+		return renderReport(
+			testbox = arguments.testbox,
+			gapReport = { "stats" : {}, "uncovered" : [], "covered" : [], "skipped" : [] },
+			gapRunnerSummary = built.gapRunnerSummary,
+			runnerErrors = [],
+			ran = false,
+			fullPage = arguments.fullPage,
+			justReturn = true,
+			gapEmbedCompact = true,
+			gapRunAnalysisUrl = built.gapRunAnalysisUrl
+		);
+	}
+
+	/**
+	 * Render gap analysis HTML via GapAnalysisReporter and assets/gapAnalysis.cfm.
+	 *
+	 * @testbox             The TestBox core object
+	 * @gapReport           Result struct from analyze() or empty stub for parameter-only views
+	 * @gapRunnerSummary    Runner parameters and resolved paths for the template
+	 * @runnerErrors        Messages when analysis could not run
+	 * @ran                 Whether analyze() completed
+	 * @fullPage            When true, emit DOCTYPE and asset includes for a standalone page
+	 * @justReturn          When true, skip setting the response content type
+	 * @gapEmbedCompact     When true, use the compact header for Simple reporter embed
+	 * @gapRunAnalysisUrl   URL to open full gap analysis with the same query string
 	 */
 	any function renderReport(
 		required testbox.system.TestBox testbox,
@@ -299,7 +409,9 @@ component accessors="true" {
 		required array runnerErrors,
 		boolean ran = false,
 		boolean fullPage = true,
-		boolean justReturn = false
+		boolean justReturn = false,
+		boolean gapEmbedCompact = false,
+		string gapRunAnalysisUrl = ""
 	){
 		var rep = new testbox.system.reports.GapAnalysisReporter();
 		return rep.renderHtml(
@@ -309,7 +421,9 @@ component accessors="true" {
 				"gapRunnerSummary" : arguments.gapRunnerSummary,
 				"runnerErrors" : arguments.runnerErrors,
 				"ran" : arguments.ran,
-				"fullPage" : arguments.fullPage
+				"fullPage" : arguments.fullPage,
+				"gapEmbedCompact" : arguments.gapEmbedCompact,
+				"gapRunAnalysisUrl" : arguments.gapRunAnalysisUrl
 			},
 			justReturn = arguments.justReturn
 		);

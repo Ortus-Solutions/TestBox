@@ -5,6 +5,8 @@
 <cfparam name="variables.ran" default="false">
 <cfparam name="variables.runnerErrors" default="#[]#">
 <cfparam name="variables.gapRunnerSummary" default="#structNew()#">
+<cfparam name="variables.gapEmbedCompact" default="false">
+<cfparam name="variables.gapRunAnalysisUrl" default="">
 
 <cfscript>
 	if ( !structKeyExists( gapReport, "uncovered" ) || !isArray( gapReport.uncovered ) ) {
@@ -56,57 +58,82 @@
 			<body>
 	</cfif>
 
-	<div class="container-fluid my-3">
+	<div class="<cfif variables.gapEmbedCompact && !variables.fullPage>mb-3<cfelse>container-fluid my-3</cfif>">
 
-		<div class="d-flex justify-content-between align-items-end mb-3">
-			<div>
-				<div>
-					<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75">
-					<span class="badge badge-info">v#testbox.getVersion()#</span>
-					<span class="badge badge-secondary">Gap analysis</span>
+		<cfif variables.gapEmbedCompact && !variables.fullPage>
+			<div class="d-flex justify-content-between align-items-end mb-3 flex-wrap">
+				<div class="mb-2 mb-md-0">
+					<h5 class="mb-1"><span class="badge badge-secondary">Gap analysis</span></h5>
+					<p class="text-muted small mb-0 mt-1">
+						Heuristic: public/remote function names are searched as substrings in test/spec <code>.cfc</code>/<code>.cfm</code> text.
+						This is not line coverage and not proof a test exercises a function.
+					</p>
 				</div>
-				<p class="text-muted small mb-0 mt-2">
-					Heuristic: public/remote function names are searched as substrings in test/spec <code>.cfc</code>/<code>.cfm</code> text.
-					This is not line coverage and not proof a test exercises a function.
-				</p>
+				<div class="text-nowrap">
+					<cfif len( variables.gapRunAnalysisUrl )>
+						<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( variables.gapRunAnalysisUrl )#"><i class="fas fa-search"></i> Run gap analysis</a>
+					</cfif>
+					<cfif structKeyExists( gapRunnerSummary, "testsUrl" ) && len( gapRunnerSummary.testsUrl )>
+						<a class="btn btn-sm btn-outline-primary mr-1" href="#htmlEditFormat( gapRunnerSummary.testsUrl )#"><i class="fas fa-vial"></i> Run tests (same URL)</a>
+					</cfif>
+				</div>
 			</div>
-			<div>
-				<cfif structKeyExists( gapRunnerSummary, "testsUrl" ) && len( gapRunnerSummary.testsUrl )>
-					<a class="btn btn-sm btn-outline-primary mr-1" href="#htmlEditFormat( gapRunnerSummary.testsUrl )#"><i class="fas fa-vial"></i> Run tests (same URL)</a>
-				</cfif>
+		<cfelse>
+			<div class="d-flex justify-content-between align-items-end mb-3">
+				<div>
+					<div>
+						<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75">
+						<span class="badge badge-info">v#testbox.getVersion()#</span>
+						<span class="badge badge-secondary">Gap analysis</span>
+					</div>
+					<p class="text-muted small mb-0 mt-2">
+						Heuristic: public/remote function names are searched as substrings in test/spec <code>.cfc</code>/<code>.cfm</code> text.
+						This is not line coverage and not proof a test exercises a function.
+					</p>
+				</div>
+				<div>
+					<cfif len( variables.gapRunAnalysisUrl )>
+						<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( variables.gapRunAnalysisUrl )#"><i class="fas fa-search"></i> Run gap analysis</a>
+					</cfif>
+					<cfif structKeyExists( gapRunnerSummary, "testsUrl" ) && len( gapRunnerSummary.testsUrl )>
+						<a class="btn btn-sm btn-outline-primary mr-1" href="#htmlEditFormat( gapRunnerSummary.testsUrl )#"><i class="fas fa-vial"></i> Run tests (same URL)</a>
+					</cfif>
+				</div>
 			</div>
-		</div>
+		</cfif>
 
-		<div class="card mb-3">
-			<div class="card-header list-group-item-info">
-				<strong><i class="fas fa-link"></i> TestBox runner parameters (same as a normal HTML run)</strong>
+		<cfif !( variables.gapEmbedCompact && !variables.fullPage )>
+			<div class="card mb-3">
+				<div class="card-header list-group-item-info">
+					<strong><i class="fas fa-link"></i> TestBox runner parameters (same as a normal HTML run)</strong>
+				</div>
+				<div class="card-body small">
+					<p class="mb-2">Add <code>gapAnalysis=true</code> to the same query string you use for the TestBox HTML runner. Source roots use <code>coveragePathToCapture</code>; test corpus uses <code>directory</code> (resolved like <code>addDirectories</code>).</p>
+					<dl class="row mb-0">
+						<dt class="col-sm-3">directory</dt>
+						<dd class="col-sm-9"><code>#structKeyExists( gapRunnerSummary, "directory" ) ? encodeForHtml( toString( gapRunnerSummary.directory ) ) : ""#</code></dd>
+						<dt class="col-sm-3">recurse</dt>
+						<dd class="col-sm-9"><code>#structKeyExists( gapRunnerSummary, "recurse" ) ? encodeForHtml( toString( gapRunnerSummary.recurse ) ) : ""#</code></dd>
+						<dt class="col-sm-3">bundles</dt>
+						<dd class="col-sm-9"><code>#structKeyExists( gapRunnerSummary, "bundles" ) ? encodeForHtml( toString( gapRunnerSummary.bundles ) ) : ""#</code></dd>
+						<dt class="col-sm-3">coveragePathToCapture</dt>
+						<dd class="col-sm-9 text-monospace">#structKeyExists( gapRunnerSummary, "coveragePathToCapture" ) ? encodeForHtml( toString( gapRunnerSummary.coveragePathToCapture ) ) : ""#</dd>
+						<dt class="col-sm-3">source (resolved)</dt>
+						<dd class="col-sm-9 text-monospace">#structKeyExists( gapRunnerSummary, "sourceRootAbs" ) ? encodeForHtml( toString( gapRunnerSummary.sourceRootAbs ) ) : ""#</dd>
+						<dt class="col-sm-3">component prefix</dt>
+						<dd class="col-sm-9"><code>#structKeyExists( gapRunnerSummary, "componentPrefix" ) ? encodeForHtml( toString( gapRunnerSummary.componentPrefix ) ) : ""#</code></dd>
+						<dt class="col-sm-3">test roots (resolved)</dt>
+						<dd class="col-sm-9">
+							<cfif structKeyExists( gapRunnerSummary, "testRootAbs" ) && isArray( gapRunnerSummary.testRootAbs )>
+								<cfloop array="#gapRunnerSummary.testRootAbs#" index="trp">
+									<div class="text-monospace">#encodeForHtml( trp )#</div>
+								</cfloop>
+							</cfif>
+						</dd>
+					</dl>
+				</div>
 			</div>
-			<div class="card-body small">
-				<p class="mb-2">Add <code>gapAnalysis=true</code> to the same query string you use for the TestBox HTML runner. Source roots use <code>coveragePathToCapture</code>; test corpus uses <code>directory</code> (resolved like <code>addDirectories</code>).</p>
-				<dl class="row mb-0">
-					<dt class="col-sm-3">directory</dt>
-					<dd class="col-sm-9"><code>#structKeyExists( gapRunnerSummary, "directory" ) ? encodeForHtml( toString( gapRunnerSummary.directory ) ) : ""#</code></dd>
-					<dt class="col-sm-3">recurse</dt>
-					<dd class="col-sm-9"><code>#structKeyExists( gapRunnerSummary, "recurse" ) ? encodeForHtml( toString( gapRunnerSummary.recurse ) ) : ""#</code></dd>
-					<dt class="col-sm-3">bundles</dt>
-					<dd class="col-sm-9"><code>#structKeyExists( gapRunnerSummary, "bundles" ) ? encodeForHtml( toString( gapRunnerSummary.bundles ) ) : ""#</code></dd>
-					<dt class="col-sm-3">coveragePathToCapture</dt>
-					<dd class="col-sm-9 text-monospace">#structKeyExists( gapRunnerSummary, "coveragePathToCapture" ) ? encodeForHtml( toString( gapRunnerSummary.coveragePathToCapture ) ) : ""#</dd>
-					<dt class="col-sm-3">source (resolved)</dt>
-					<dd class="col-sm-9 text-monospace">#structKeyExists( gapRunnerSummary, "sourceRootAbs" ) ? encodeForHtml( toString( gapRunnerSummary.sourceRootAbs ) ) : ""#</dd>
-					<dt class="col-sm-3">component prefix</dt>
-					<dd class="col-sm-9"><code>#structKeyExists( gapRunnerSummary, "componentPrefix" ) ? encodeForHtml( toString( gapRunnerSummary.componentPrefix ) ) : ""#</code></dd>
-					<dt class="col-sm-3">test roots (resolved)</dt>
-					<dd class="col-sm-9">
-						<cfif structKeyExists( gapRunnerSummary, "testRootAbs" ) && isArray( gapRunnerSummary.testRootAbs )>
-							<cfloop array="#gapRunnerSummary.testRootAbs#" index="trp">
-								<div class="text-monospace">#encodeForHtml( trp )#</div>
-							</cfloop>
-						</cfif>
-					</dd>
-				</dl>
-			</div>
-		</div>
+		</cfif>
 
 		<cfif arrayLen( runnerErrors )>
 			<div class="alert alert-danger">

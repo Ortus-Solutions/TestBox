@@ -62,6 +62,10 @@
 			#testbox.getCoverageService().renderStats( results.getCoverageData(), false )#
 		</cfif>
 
+		<cfif !structKeyExists( url, "gapAnalysis" ) OR !listFindNoCase( "true,yes,1", trim( toString( url.gapAnalysis ) ) )>
+			#testbox.getGapAnalysisService().renderRunnerEmbed( testbox, false )#
+		</cfif>
+
 		<!--- Global Stats --->
 		<div class="list-group">
 

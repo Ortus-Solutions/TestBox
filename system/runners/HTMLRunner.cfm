@@ -82,7 +82,6 @@ if ( gapFlag ) {
 	runnerErrors = [];
 	gapReport = {};
 	ran = false;
-	gapRunnerSummary = {};
 	sourceRoot = "";
 	componentPrefix = "";
 	testRoots = [];
@@ -91,7 +90,7 @@ if ( gapFlag ) {
 			arrayAppend( runnerErrors, "gapAnalysis requires url.directory (same as a normal TestBox directory run)." );
 		} else {
 			sourceRoot = testbox.getCoverageService().getCoverageOptions().pathToCapture;
-			gapSvc = new testbox.system.gap.GapAnalysisService();
+			gapSvc = testbox.getGapAnalysisService();
 			componentPrefix = gapSvc.inferComponentPrefix( sourceRoot );
 			if ( !len( componentPrefix ) ) {
 				arrayAppend( runnerErrors, "Could not infer component prefix from coverage pathToCapture; check url.coveragePathToCapture and application mappings." );
@@ -123,22 +122,8 @@ if ( gapFlag ) {
 			arrayAppend( runnerErrors, toString( e.detail ) );
 		}
 	}
-	qs = structKeyExists( cgi, "query_string" ) ? cgi.query_string : "";
-	stripQs = reReplace( qs, "&gapAnalysis=[^&]*", "", "all" );
-	stripQs = reReplace( stripQs, "^gapAnalysis=[^&]*&?", "", "all" );
-	stripQs = reReplace( stripQs, "^[&]+|[&]+$", "", "all" );
-	testsUrl = len( stripQs ) ? ( cgi.script_name & "?" & stripQs ) : cgi.script_name;
-	gapRunnerSummary = {
-		"directory" : url.directory,
-		"recurse" : url.recurse,
-		"bundles" : url.bundles,
-		"coveragePathToCapture" : url.coveragePathToCapture,
-		"sourceRootAbs" : sourceRoot,
-		"componentPrefix" : componentPrefix,
-		"testRootAbs" : testRoots,
-		"testsUrl" : testsUrl
-	};
-	gapHtml = new testbox.system.gap.GapAnalysisService().renderReport(
+	gapRunnerSummary = testbox.getGapAnalysisService().buildRunnerSummaryFromRequest( testbox, sourceRoot, componentPrefix, testRoots, false ).gapRunnerSummary;
+	gapHtml = testbox.getGapAnalysisService().renderReport(
 		testbox = testbox,
 		gapReport = gapReport,
 		gapRunnerSummary = gapRunnerSummary,

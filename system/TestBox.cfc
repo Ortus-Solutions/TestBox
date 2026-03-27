@@ -27,6 +27,8 @@ component accessors="true" {
 	property name="result";
 	// Code Coverage Service
 	property name="coverageService";
+	// Gap Analysis Service (heuristic runner HTML and Simple reporter embed)
+	property name="gapAnalysisService";
 	// TestBox Modules Registry
 	property name="modules";
 	// A list of globbing patterns to match bundles to test ONLY! Ex: *Spec|*Test
@@ -76,6 +78,7 @@ component accessors="true" {
 			arguments.options.coverage = {};
 		}
 		variables.coverageService = new testbox.system.coverage.CoverageService( arguments.options.coverage );
+		variables.gapAnalysisService = new testbox.system.gap.GapAnalysisService();
 		// reporter
 		variables.reporter        = arguments.reporter;
 		// options

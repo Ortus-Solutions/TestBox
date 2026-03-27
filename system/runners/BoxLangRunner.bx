@@ -806,7 +806,7 @@ class{
 				arrayAppend( runnerErrors, "gap-analysis cannot be used with bundle-only runs; use --directory." )
 			} else {
 				sourceRoot = testbox.getCoverageService().getCoverageOptions().pathToCapture
-				var gapSvc = new testbox.system.gap.GapAnalysisService()
+				var gapSvc = testbox.getGapAnalysisService()
 				componentPrefix = gapSvc.inferComponentPrefix( sourceRoot )
 				if( !len( componentPrefix ) ){
 					arrayAppend( runnerErrors, "Could not infer component prefix from coverage pathToCapture; check --coverage-path-to-capture and application mappings." )
@@ -850,7 +850,7 @@ class{
 		if( !directoryExists( afterRunArgs.reportPath ) ){
 			directoryCreate( afterRunArgs.reportPath, true )
 		}
-		var gapHtml = new testbox.system.gap.GapAnalysisService().renderReport(
+		var gapHtml = testbox.getGapAnalysisService().renderReport(
 			testbox = testbox,
 			gapReport = gapReport,
 			gapRunnerSummary = gapRunnerSummary,

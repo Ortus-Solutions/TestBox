@@ -5,10 +5,16 @@ component extends="testbox.system.BaseSpec" {
 
 	function beforeAll(){
 		variables.gapSvc = new testbox.system.gap.GapAnalysisService();
-		variables.fixtureSrc = expandPath( "/tests/resources/gapAnalysisFixtures/src" );
-		variables.fixtureCorpus = expandPath( "/tests/resources/gapAnalysisFixtures/corpus" );
-		variables.fixtureCorpusNested = expandPath( "/tests/resources/gapAnalysisFixtures/corpusNested" );
-		variables.fixtureSrcNested = expandPath( "/tests/resources/gapAnalysisFixtures/srcNested" );
+		variables.fixtureSrc = _gapFixtureAbs( "resources/gapAnalysisFixtures/src" );
+		variables.fixtureCorpus = _gapFixtureAbs( "resources/gapAnalysisFixtures/corpus" );
+		variables.fixtureCorpusNested = _gapFixtureAbs( "resources/gapAnalysisFixtures/corpusNested" );
+		variables.fixtureSrcNested = _gapFixtureAbs( "resources/gapAnalysisFixtures/srcNested" );
+	}
+
+	private string function _gapFixtureAbs( required string relativeFromTests ){
+		var specDir = getDirectoryFromPath( getCurrentTemplatePath() );
+		var f       = createObject( "java", "java.io.File" ).init( specDir & "../" & arguments.relativeFromTests );
+		return replace( f.getCanonicalPath(), "\", "/", "all" );
 	}
 
 	function run(){
@@ -56,6 +62,69 @@ component extends="testbox.system.BaseSpec" {
 					recurseTestRoots = false
 				);
 				expect( rFlat.stats.coveredHeuristic ).toBe( 0 );
+			} );
+
+			it( "inferComponentPrefix returns empty for blank source root", function(){
+				expect( gapSvc.inferComponentPrefix( "" ) ).toBe( "" );
+			} );
+
+			it( "analyze with excludeFileNames omits matching CFCs", function(){
+				var r = gapSvc.analyze(
+					sourceRoot = fixtureSrc,
+					componentPrefix = "tests.resources.gapAnalysisFixtures.src",
+					testRootList = fixtureCorpus,
+					excludeFileNames = "GapFixture.cfc"
+				);
+				expect( r.stats.totalFunctions ).toBe( 0 );
+				expect( r.stats.coveredHeuristic ).toBe( 0 );
+				expect( r.stats.missingHeuristic ).toBe( 0 );
+			} );
+
+			it( "analyze with excludePathPrefixes omits CFCs under that path", function(){
+				var r = gapSvc.analyze(
+					sourceRoot = fixtureSrc,
+					componentPrefix = "tests.resources.gapAnalysisFixtures.src",
+					testRootList = fixtureCorpus,
+					excludePathPrefixes = "small"
+				);
+				expect( r.stats.totalFunctions ).toBe( 0 );
+			} );
+
+			it( "renderReport returns HTML with gap branding", function(){
+				var tb = new testbox.system.TestBox();
+				var html = gapSvc.renderReport(
+					testbox = tb,
+					gapReport = {
+						stats     : {
+							totalFunctions : 0,
+							coveredHeuristic : 0,
+							missingHeuristic : 0,
+							skippedComponents : 0
+						},
+						uncovered : [],
+						covered   : [],
+						skipped   : []
+					},
+					gapRunnerSummary = {},
+					runnerErrors = [],
+					ran = false,
+					justReturn = true
+				);
+				expect( len( html ) ).toBeGT( 200 );
+				expect( html ).toInclude( "Gap analysis" );
+				expect( html ).toInclude( tb.getVersion() );
+			} );
+
+			it( "renderRunnerEmbed returns inline fragment without doctype", function(){
+				var tb = new testbox.system.TestBox();
+				var html = gapSvc.renderRunnerEmbed( tb, false );
+				expect( html ).notToInclude( "<!DOCTYPE html>" );
+				expect( html ).toInclude( "Gap analysis" );
+			} );
+
+			it( "TestBox exposes gapAnalysisService like coverageService", function(){
+				var tb = new testbox.system.TestBox();
+				expect( tb.getGapAnalysisService() ).toBeInstanceOf( "testbox.system.gap.GapAnalysisService" );
 			} );
 		} );
 	}

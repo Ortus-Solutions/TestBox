@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Heuristic gap analysis: `TestBox.getGapAnalysisService()` with `buildRunnerSummaryFromRequest()`, `renderRunnerEmbed()` (Simple reporter embed), and `renderReport()`; HTML runner (`gapAnalysis=true`) and BoxLang CLI (`--gap-analysis`).
+
 ### Tests
 
-- Regression coverage for gap analysis: `tests/specs/GapAnalysisServiceSpec.cfc` and fixtures under `tests/resources/gapAnalysisFixtures/`.
+- Regression coverage for gap analysis: `tests/specs/GapAnalysisServiceSpec.cfc`, `tests/specs/GapAnalysisReporterSpec.cfc`, and fixtures under `tests/resources/gapAnalysisFixtures/`.
 
 ## [7.0.0] - 2026-03-17
 
