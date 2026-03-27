@@ -316,11 +316,11 @@ component accessors="true" {
 		array testRootAbs = [],
 		boolean resolveOptionalPaths = true
 	){
-		var qs      = structKeyExists( cgi, "query_string" ) ? cgi.query_string : "";
-		var stripQs = reReplace( qs, "&gapAnalysis=[^&]*", "", "all" );
+		var qs                = structKeyExists( cgi, "query_string" ) ? cgi.query_string : "";
+		var stripQs           = reReplace( qs, "&gapAnalysis=[^&]*", "", "all" );
 		stripQs = reReplace( stripQs, "^gapAnalysis=[^&]*&?", "", "all" );
 		stripQs = reReplace( stripQs, "^[&]+|[&]+$", "", "all" );
-		var testsUrl = len( stripQs ) ? ( cgi.script_name & "?" & stripQs ) : cgi.script_name;
+		var testsUrl          = len( stripQs ) ? ( cgi.script_name & "?" & stripQs ) : cgi.script_name;
 		var gapRunAnalysisUrl = len( stripQs ) ? ( cgi.script_name & "?" & stripQs & "&gapAnalysis=true" ) : ( cgi.script_name & "?gapAnalysis=true" );
 
 		var sr  = trim( toString( arguments.sourceRootAbs ) );
@@ -351,20 +351,20 @@ component accessors="true" {
 		}
 
 		var gapRunnerSummary = {
-			"directory" : structKeyExists( url, "directory" ) ? url.directory : "",
-			"recurse" : structKeyExists( url, "recurse" ) ? url.recurse : true,
-			"bundles" : structKeyExists( url, "bundles" ) ? url.bundles : "",
+			"directory"             : structKeyExists( url, "directory" ) ? url.directory : "",
+			"recurse"               : structKeyExists( url, "recurse" ) ? url.recurse : true,
+			"bundles"               : structKeyExists( url, "bundles" ) ? url.bundles : "",
 			"coveragePathToCapture" : structKeyExists( url, "coveragePathToCapture" ) ? url.coveragePathToCapture : "",
-			"sourceRootAbs" : sr,
-			"componentPrefix" : cp,
-			"testRootAbs" : trs,
-			"testsUrl" : testsUrl
+			"sourceRootAbs"         : sr,
+			"componentPrefix"       : cp,
+			"testRootAbs"           : trs,
+			"testsUrl"              : testsUrl
 		};
 
 		return {
-			"gapRunnerSummary" : gapRunnerSummary,
-			"gapRunAnalysisUrl" : gapRunAnalysisUrl,
-			"testsUrl" : testsUrl
+			"gapRunnerSummary"    : gapRunnerSummary,
+			"gapRunAnalysisUrl"   : gapRunAnalysisUrl,
+			"testsUrl"            : testsUrl
 		};
 	}
 
@@ -417,13 +417,13 @@ component accessors="true" {
 		return rep.renderHtml(
 			testbox = arguments.testbox,
 			options = {
-				"gapReport" : arguments.gapReport,
-				"gapRunnerSummary" : arguments.gapRunnerSummary,
-				"runnerErrors" : arguments.runnerErrors,
-				"ran" : arguments.ran,
-				"fullPage" : arguments.fullPage,
-				"gapEmbedCompact" : arguments.gapEmbedCompact,
-				"gapRunAnalysisUrl" : arguments.gapRunAnalysisUrl
+				"gapReport"           : arguments.gapReport,
+				"gapRunnerSummary"    : arguments.gapRunnerSummary,
+				"runnerErrors"        : arguments.runnerErrors,
+				"ran"                 : arguments.ran,
+				"fullPage"            : arguments.fullPage,
+				"gapEmbedCompact"     : arguments.gapEmbedCompact,
+				"gapRunAnalysisUrl"   : arguments.gapRunAnalysisUrl
 			},
 			justReturn = arguments.justReturn
 		);

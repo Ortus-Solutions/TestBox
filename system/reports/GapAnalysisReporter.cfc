@@ -29,14 +29,14 @@ component extends="BaseReporter" {
 			getPageContextResponse().setContentType( "text/html" );
 		}
 
-		variables.gapReport = structKeyExists( arguments.options, "gapReport" ) && isStruct( arguments.options.gapReport ) ? arguments.options.gapReport : {};
-		variables.gapRunnerSummary = structKeyExists( arguments.options, "gapRunnerSummary" ) && isStruct( arguments.options.gapRunnerSummary ) ? arguments.options.gapRunnerSummary : {};
-		variables.runnerErrors = structKeyExists( arguments.options, "runnerErrors" ) && isArray( arguments.options.runnerErrors ) ? arguments.options.runnerErrors : [];
-		variables.ran = structKeyExists( arguments.options, "ran" ) ? arguments.options.ran : false;
-		variables.testbox = arguments.testbox;
-		variables.fullPage = structKeyExists( arguments.options, "fullPage" ) ? arguments.options.fullPage : true;
-		variables.gapEmbedCompact = structKeyExists( arguments.options, "gapEmbedCompact" ) ? arguments.options.gapEmbedCompact : false;
-		variables.gapRunAnalysisUrl = structKeyExists( arguments.options, "gapRunAnalysisUrl" ) ? toString( arguments.options.gapRunAnalysisUrl ) : "";
+		variables.gapReport           = structKeyExists( arguments.options, "gapReport" ) && isStruct( arguments.options.gapReport ) ? arguments.options.gapReport : {};
+		variables.gapRunnerSummary    = structKeyExists( arguments.options, "gapRunnerSummary" ) && isStruct( arguments.options.gapRunnerSummary ) ? arguments.options.gapRunnerSummary : {};
+		variables.runnerErrors        = structKeyExists( arguments.options, "runnerErrors" ) && isArray( arguments.options.runnerErrors ) ? arguments.options.runnerErrors : [];
+		variables.ran                 = structKeyExists( arguments.options, "ran" ) ? arguments.options.ran : false;
+		variables.testbox             = arguments.testbox;
+		variables.fullPage            = structKeyExists( arguments.options, "fullPage" ) ? arguments.options.fullPage : true;
+		variables.gapEmbedCompact     = structKeyExists( arguments.options, "gapEmbedCompact" ) ? arguments.options.gapEmbedCompact : false;
+		variables.gapRunAnalysisUrl   = structKeyExists( arguments.options, "gapRunAnalysisUrl" ) ? toString( arguments.options.gapRunAnalysisUrl ) : "";
 
 		savecontent variable="local.report" {
 			include "assets/gapAnalysis.cfm";
