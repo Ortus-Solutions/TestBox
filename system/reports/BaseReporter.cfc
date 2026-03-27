@@ -14,6 +14,96 @@ component {
 	}
 
 	/**
+	 * The indicator format to use when rendering console output.
+	 */
+	string function getConsoleFormat(){
+		return "text";
+	}
+
+	/**
+	 * Lazily build a console helper utility.
+	 */
+	function getConsoleUtil(){
+		if ( !structKeyExists( variables, "consoleUtils" ) ) {
+			variables.consoleUtils = new testbox.system.util.ConsoleUtil();
+		}
+		return variables.consoleUtils;
+	}
+
+	/**
+	 * Return a styled text for reporters that support ANSI output.
+	 */
+	function color( required style, required text ){
+		return getConsoleUtil().color( arguments.style, arguments.text );
+	}
+
+	/**
+	 * Get the indicator status text.
+	 */
+	function getStatusIndicator( required status ){
+		return getConsoleUtil().getStatusIndicator( arguments.status, getConsoleFormat() );
+	}
+
+	/**
+	 * Style a line of output according to the status.
+	 */
+	function printByStatus( required status, required text ){
+		return getConsoleUtil().printByStatus( arguments.status, arguments.text );
+	}
+
+	/**
+	 * Build a bundle indicator for the reporter's format.
+	 */
+	function getBundleIndicator( required bundle ){
+		return getConsoleUtil().getBundleIndicator( arguments.bundle, getConsoleFormat() );
+	}
+
+	/**
+	 * Build the standard TestBox banner.
+	 */
+	function getHeaderBanner( required testbox ){
+		return getConsoleUtil().getBanner(
+			arguments.testbox.getVersion(),
+			"TestBox v",
+			getConsoleFormat()
+		);
+	}
+
+	/**
+	 * Build a horizontal divider.
+	 */
+	function getDividerLine(
+		numeric width    = 81,
+		string character = "=",
+		string style     = ""
+	){
+		return getConsoleUtil().getDivider(
+			arguments.width,
+			arguments.character,
+			arguments.style
+		);
+	}
+
+	/**
+	 * Build an alert divider.
+	 */
+	function getAlertDivider( numeric width = 81 ){
+		return getDividerLine(
+			width     = arguments.width,
+			character = "!",
+			style     = "red+bold"
+		);
+	}
+
+	function space( count = 1 ){
+		return getConsoleUtil( false ).space( arguments.count );
+	}
+
+	function tab(){
+		return getConsoleUtil( false ).tab();
+	}
+
+	/**
 	 * Helper method to deal with ACF2016's overload of the page context response, come on Adobe, get your act together!
 	 */
 	function getPageContextResponse(){

@@ -1,4 +1,4 @@
-<cfoutput>#color( "bold+cyan", "█▓▒▒░░░ " )##color( "bold+green", "TestBox v" & testbox.getVersion() )##color( "bold+cyan", " ░░░▒▒▓█" )#
+<cfoutput>#getHeaderBanner( testbox )#
 <!--- Iterate over each bundle tested --->
 <cfloop array="#variables.bundleStats#" index="thisBundle">
 <!--- Skip if not in the includes list --->
@@ -12,9 +12,9 @@
 [Passed: #thisBundle.totalPass#] [Failed: #thisBundle.totalFail#] [Errors: #thisBundle.totalError#] [Skipped: #thisBundle.totalSkipped#] [Suites/Specs: #thisBundle.totalSuites#/#thisBundle.totalSpecs#]
 #space()#<!--- Bundle Exception Output --->
 <cfif !isSimpleValue( thisBundle.globalException )>
-#color( "red+bold", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" )#
+#getAlertDivider()#
 #color( "red+magenta", "<GLOBAL BUNDLE EXCEPTION>" )#
-#color( "red+bold", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" )#
+#getAlertDivider()#
 #space()#
 #color( "bold+white", "#thisBundle.globalException.type#:#thisBundle.globalException.message#:#thisBundle.globalException.detail#")#
 <cfloop array="#thisBundle.globalException.tagContext#" item="thisContext">
@@ -23,14 +23,14 @@
 #color( "bold+white", "#thisContext.codePrintPlain ?: ""#")#
 </cfif>
 </cfloop>
-#color( "red+bold", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" )#
+#getAlertDivider()#
 </cfif><!--- Generate Suite Reports --->
 <cfloop array="#thisBundle.suiteStats#" index="suiteStats">#genSuiteReport( suiteStats, thisBundle )#</cfloop>
 </cfloop>
 <!--- Final Stats --->
-#color( "bold+white", repeatString( "=", 80 ) )#
+#getDividerLine( width = 80, style = "bold+white" )#
 #color( "bold+cyan", "Final Stats" )#
-#color( "bold+white", repeatString( "=", 80 ) )#
+#getDividerLine( width = 80, style = "bold+white" )#
 [ ✅ #color( "green", "Passed:" )# #color( "white", results.getTotalPass() )# ]
 [ ❌ #color( "red", "Failed:" )# #color( "white", results.getTotalFail() )# ]
 [ 💥 #color( "magenta", "Errors:" )# #color( "white", results.getTotalError() )# ]
@@ -38,7 +38,7 @@
 [ ⏱️  #color( "white+dim", "Duration:" )# #color( "white", "#numberFormat( results.getTotalDuration() )# ms" )# ]
 [ 📦 #color( "white+dim", "Bundles/Suites/Specs:" )# #color( "white", results.getTotalBundles() & "/" & results.getTotalSuites() & "/" & results.getTotalSpecs() )# ]
 [ 🏷️  #color( "white+dim", "Labels:")# #arrayToList( results.getLabels() )#<cfif !arrayLen( results.getLabels() )>None</cfif>]
-#color( "bold+white", repeatString( "=", 80 ) )#
+#getDividerLine( width = 80, style = "bold+white" )#
 <cfif results.getCoverageEnabled()>
 #space()#
 =================================================================================

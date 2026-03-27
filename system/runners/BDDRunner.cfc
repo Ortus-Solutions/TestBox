@@ -223,22 +223,7 @@ component
 			// Determine if this suite is a DIRECT match for the testSuites filter,
 			// vs only matching because a descendant suite matched.
 			// If it's only a child match, we skip the parent's own specs but still recurse into child suites.
-			var testSuites    = arguments.testResults.getTestSuites();
-			var isDirectMatch = true;
-			if ( arrayLen( testSuites ) ) {
-				// Direct name match
-				isDirectMatch = arrayFindNoCase( testSuites, arguments.suite.name ) > 0;
-				// Also check slug-based match (parent name in filter means run all descendants)
-				if ( !isDirectMatch && len( arguments.suite.slug ) ) {
-					var slugArray = listToArray( arguments.suite.slug, "/" );
-					for ( var thisSlug in slugArray ) {
-						if ( arrayFindNoCase( testSuites, thisSlug ) ) {
-							isDirectMatch = true;
-							break;
-						}
-					}
-				}
-			}
+			var isDirectMatch = isDirectSuiteMatch( arguments.suite, arguments.testResults );
 
 			// If the suite only matched because of a descendant, skip its own specs
 			if ( !isDirectMatch ) {
@@ -380,6 +365,11 @@ component
 				if ( arguments.suite.asyncAll ) {
 					thread action="join" name="#arrayToList( threadNames )#" {
 					};
+
+					// Drain any queued streaming events from async spec execution
+					if ( structKeyExists( arguments.callbacks, "onAsyncDrain" ) ) {
+						arguments.callbacks.onAsyncDrain();
+					}
 				}
 			}
 			// end isDirectMatch else block
@@ -463,6 +453,38 @@ component
 	private array function getTestSuites( required target, required targetMD ){
 		// get the spec suites
 		return arguments.target.$suites;
+	}
+
+	/**
+	 * Determine if a suite is a DIRECT match for the testSuites filter,
+	 * vs only matching because a descendant suite matched.
+	 *
+	 * @suite       The suite to check
+	 * @testResults The test results object containing the filter
+	 *
+	 * @return Boolean - true if suite is directly matched or no filter exists, false if only descendant matched
+	 */
+	private boolean function isDirectSuiteMatch( required suite, required testResults ){
+		var testSuites    = arguments.testResults.getTestSuites();
+		var isDirectMatch = true;
+
+		if ( arrayLen( testSuites ) ) {
+			// Direct name match
+			isDirectMatch = arrayFindNoCase( testSuites, arguments.suite.name ) > 0;
+
+			// Also check slug-based match (parent name in filter means run all descendants)
+			if ( !isDirectMatch && len( arguments.suite.slug ) ) {
+				var slugArray = listToArray( arguments.suite.slug, "/" );
+				for ( var thisSlug in slugArray ) {
+					if ( arrayFindNoCase( testSuites, thisSlug ) ) {
+						isDirectMatch = true;
+						break;
+					}
+				}
+			}
+		}
+
+		return isDirectMatch;
 	}
 
 }

@@ -22,11 +22,6 @@ jobs:
         jdkVersion: [ "21" ]
         experimental: [ false ]
         include:
-          # Old Supported One
-          - cfengine: "adobe@2021"
-            commandbox_version: "6.3.1"
-            jdkVersion: "11"
-            experimental: false
           - cfengine: "boxlang@be"
             commandbox_version: "6.3.1"
             jdkVersion: "21"
