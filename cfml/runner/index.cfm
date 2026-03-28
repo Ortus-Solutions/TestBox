@@ -21,6 +21,17 @@
 <cfparam name="url.isBatched" default="false">
 <cfparam name="url.gapAnalysis" default="false">
 
+<cfparam name="url.metadataSmoke" default="false">
+<cfparam name="url.metadataSmokeManifest" default="">
+<cfparam name="url.metadataSmokeComponent" default="">
+<cfparam name="url.metadataSmokeDirectoryRoot" default="">
+<cfparam name="url.metadataSmokeDirectoryPrefix" default="">
+<cfparam name="url.metadataSmokeExcludeFileNames" default="">
+<cfparam name="url.metadataSmokeExcludePathPrefixes" default="">
+<cfparam name="url.metadataSmokeExcludeComponentIds" default="">
+<cfparam name="url.metadataSmokeInvoke" default="false">
+<cfparam name="url.metadataSmokeFormat" default="">
+
 <cfparam name="url.opt_run" default="false">
 <cfscript>
 	// create reporters
@@ -114,6 +125,47 @@
 							<div class="form-group form-check">
 								<input class="form-check-input" title="Heuristic gap analysis report instead of running tests" name="gapAnalysis" id="gapAnalysis" type="checkbox" value="true" <cfif url.gapAnalysis>checked="true"</cfif> />
 								<label class="form-check-label" for="gapAnalysis"> Gap analysis (HTML report)</label>
+							</div>
+							<p class="small">Metadata smoke validates component metadata (and optional dummy invokes). Use a manifest path, <code>directory root + prefix</code>, or a single component—see TestBox readme.</p>
+							<div class="form-group form-check">
+								<input class="form-check-input" title="Metadata smoke report instead of running tests" name="metadataSmoke" id="metadataSmoke" type="checkbox" value="true" <cfif url.metadataSmoke>checked="true"</cfif> />
+								<label class="form-check-label" for="metadataSmoke"> Metadata smoke (HTML or JSON)</label>
+							</div>
+							<div class="form-group">
+								<label for="metadataSmokeManifest">Metadata smoke — manifest (web path)</label>
+								<input class="form-control" type="text" name="metadataSmokeManifest" id="metadataSmokeManifest" value="#htmlEditFormat( url.metadataSmokeManifest )#" placeholder="/tests/specs/manifest.json" />
+							</div>
+							<div class="form-group">
+								<label for="metadataSmokeComponent">Metadata smoke — single component</label>
+								<input class="form-control" type="text" name="metadataSmokeComponent" id="metadataSmokeComponent" value="#htmlEditFormat( url.metadataSmokeComponent )#" placeholder="com.myapp.Foo" />
+							</div>
+							<div class="form-group">
+								<label for="metadataSmokeDirectoryRoot">Metadata smoke — directory root (mapping path)</label>
+								<input class="form-control" type="text" name="metadataSmokeDirectoryRoot" id="metadataSmokeDirectoryRoot" value="#htmlEditFormat( url.metadataSmokeDirectoryRoot )#" placeholder="/com/myapp" />
+							</div>
+							<div class="form-group">
+								<label for="metadataSmokeDirectoryPrefix">Metadata smoke — dotted prefix</label>
+								<input class="form-control" type="text" name="metadataSmokeDirectoryPrefix" id="metadataSmokeDirectoryPrefix" value="#htmlEditFormat( url.metadataSmokeDirectoryPrefix )#" placeholder="com.myapp" />
+							</div>
+							<div class="form-group">
+								<label for="metadataSmokeExcludeFileNames">Exclude file names (comma list)</label>
+								<input class="form-control" type="text" name="metadataSmokeExcludeFileNames" id="metadataSmokeExcludeFileNames" value="#htmlEditFormat( url.metadataSmokeExcludeFileNames )#" />
+							</div>
+							<div class="form-group">
+								<label for="metadataSmokeExcludePathPrefixes">Exclude path prefixes (comma list)</label>
+								<input class="form-control" type="text" name="metadataSmokeExcludePathPrefixes" id="metadataSmokeExcludePathPrefixes" value="#htmlEditFormat( url.metadataSmokeExcludePathPrefixes )#" />
+							</div>
+							<div class="form-group">
+								<label for="metadataSmokeExcludeComponentIds">Exclude component IDs (comma list)</label>
+								<input class="form-control" type="text" name="metadataSmokeExcludeComponentIds" id="metadataSmokeExcludeComponentIds" value="#htmlEditFormat( url.metadataSmokeExcludeComponentIds )#" />
+							</div>
+							<div class="form-group form-check">
+								<input class="form-check-input" name="metadataSmokeInvoke" id="metadataSmokeInvoke" type="checkbox" value="true" <cfif url.metadataSmokeInvoke>checked="true"</cfif> />
+								<label class="form-check-label" for="metadataSmokeInvoke"> Metadata smoke — dummy invoke</label>
+							</div>
+							<div class="form-group">
+								<label for="metadataSmokeFormat">Metadata smoke output format</label>
+								<input class="form-control" type="text" name="metadataSmokeFormat" id="metadataSmokeFormat" value="#htmlEditFormat( url.metadataSmokeFormat )#" placeholder="json or leave empty for HTML" />
 							</div>
 							<div class="form-group">
 								<label for="reporter">Reporter</label>

@@ -51,9 +51,9 @@
     },
     "scripts":{
         "release":"recipe build/release.boxr",
-        "format":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc --overwrite",
-        "format:check":"cfformat check system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
-        "format:watch":"cfformat watch system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
+        "format":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,tests/resources/**/*.cfc --overwrite",
+        "format:check":"cfformat check system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,tests/resources/**/*.cfc ./.cfformat.json",
+        "format:watch":"cfformat watch system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc,tests/resources/**/*.cfc ./.cfformat.json",
         "start:lucee":"server start serverConfigFile=server-lucee@5.json",
         "start:adobe":"server start serverConfigFile=server-adobe@2025.json",
         "start:boxlang":"server start serverConfigFile=server-boxlang@1.json",

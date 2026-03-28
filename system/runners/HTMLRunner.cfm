@@ -25,6 +25,16 @@
 <!--- Enable batched code coverage reporter, useful for large test bundles which require spreading over multiple testbox run commands. --->
 <cfparam name="url.isBatched"						default="false">
 <cfparam name="url.gapAnalysis"						default="false">
+<cfparam name="url.metadataSmoke"					default="false">
+<cfparam name="url.metadataSmokeManifest"			default="">
+<cfparam name="url.metadataSmokeComponent"			default="">
+<cfparam name="url.metadataSmokeDirectoryRoot"		default="">
+<cfparam name="url.metadataSmokeDirectoryPrefix"	default="">
+<cfparam name="url.metadataSmokeExcludeFileNames"	default="">
+<cfparam name="url.metadataSmokeExcludePathPrefixes"	default="">
+<cfparam name="url.metadataSmokeExcludeComponentIds"	default="">
+<cfparam name="url.metadataSmokeInvoke"				default="false">
+<cfparam name="url.metadataSmokeFormat"				default="">
 
 <cfscript>
 // If we have incoming bundles, then clear out the directory
@@ -131,6 +141,122 @@ if ( gapFlag ) {
 		ran = ran
 	);
 	writeOutput( gapHtml );
+	abort;
+}
+
+metadataSmokeFlag = structKeyExists( url, "metadataSmoke" ) && listFindNoCase( "true,yes,1", trim( toString( url.metadataSmoke ) ) ) > 0;
+if ( !metadataSmokeFlag ) {
+	for ( var k in url ) {
+		if ( reReplace( lCase( k ), "[^a-z]", "", "all" ) == "metadatasmoke" && listFindNoCase( "true,yes,1", trim( toString( url[ k ] ) ) ) > 0 ) {
+			metadataSmokeFlag = true;
+			break;
+		}
+	}
+}
+metadataSmokeJson = structKeyExists( url, "metadataSmokeFormat" ) && listFindNoCase( "json", trim( toString( url.metadataSmokeFormat ) ) ) > 0;
+
+if ( metadataSmokeFlag ) {
+	runnerErrors = [];
+	smokeResult = {};
+	ran = false;
+	manifestWeb = "";
+	smokeComponentForUrl = "";
+	invokeFlag = structKeyExists( url, "metadataSmokeInvoke" ) && listFindNoCase( "true,yes,1", trim( toString( url.metadataSmokeInvoke ) ) ) > 0;
+	smokeSvc = testbox.getMetadataSmokeService();
+	try {
+		if ( structKeyExists( request, "metadataSmokeManifestItems" ) ) {
+			smokeResult = smokeSvc.runSmokeFromManifestItems( request.metadataSmokeManifestItems, invokeFlag );
+			ran = true;
+			manifestWeb = "(in-memory manifest)";
+		} else if ( structKeyExists( request, "metadataSmokeDirectoryScan" ) && isStruct( request.metadataSmokeDirectoryScan ) ) {
+			ds = request.metadataSmokeDirectoryScan;
+			rootAbs = structKeyExists( ds, "absoluteComponentRoot" ) ? trim( toString( ds.absoluteComponentRoot ) ) : "";
+			dotted = structKeyExists( ds, "dottedPrefix" ) ? trim( toString( ds.dottedPrefix ) ) : "";
+			dsOpts = structKeyExists( ds, "options" ) && isStruct( ds.options ) ? ds.options : {};
+			if ( !len( rootAbs ) || !len( dotted ) ) {
+				arrayAppend( runnerErrors, "request.metadataSmokeDirectoryScan requires absoluteComponentRoot and dottedPrefix." );
+			} else {
+				smokeResult = smokeSvc.runSmokeFromDirectoryInline( rootAbs, dotted, dsOpts, invokeFlag );
+				ran = true;
+				manifestWeb = "(directory scan)";
+			}
+		} else {
+			smokeComponentForUrl = structKeyExists( url, "metadataSmokeComponent" ) ? trim( toString( url.metadataSmokeComponent ) ) : "";
+			if ( len( smokeComponentForUrl ) ) {
+				smokeResult = smokeSvc.runSmokeForSingleComponent( smokeComponentForUrl, invokeFlag );
+				ran = true;
+				manifestWeb = smokeComponentForUrl;
+			} else {
+				manifestWeb = structKeyExists( url, "metadataSmokeManifest" ) ? trim( toString( url.metadataSmokeManifest ) ) : "";
+				if ( len( manifestWeb ) ) {
+					absManifest = smokeSvc.resolveManifestAbsolutePath( manifestWeb );
+					if ( !fileExists( absManifest ) ) {
+						arrayAppend( runnerErrors, "Manifest not found: #absManifest#" );
+					} else {
+						smokeResult = smokeSvc.runSmokeFromManifestFile( absManifest, invokeFlag );
+						ran = true;
+					}
+				} else {
+					dirRootWeb = structKeyExists( url, "metadataSmokeDirectoryRoot" ) ? trim( toString( url.metadataSmokeDirectoryRoot ) ) : "";
+					dirPrefix = structKeyExists( url, "metadataSmokeDirectoryPrefix" ) ? trim( toString( url.metadataSmokeDirectoryPrefix ) ) : "";
+					if ( len( dirRootWeb ) && len( dirPrefix ) ) {
+						rootAbs = smokeSvc.resolveManifestAbsolutePath( dirRootWeb );
+						dsOpts = {};
+						exFiles = structKeyExists( url, "metadataSmokeExcludeFileNames" ) ? trim( toString( url.metadataSmokeExcludeFileNames ) ) : "";
+						exPfx = structKeyExists( url, "metadataSmokeExcludePathPrefixes" ) ? trim( toString( url.metadataSmokeExcludePathPrefixes ) ) : "";
+						exIds = structKeyExists( url, "metadataSmokeExcludeComponentIds" ) ? trim( toString( url.metadataSmokeExcludeComponentIds ) ) : "";
+						if ( len( exFiles ) ) {
+							dsOpts.excludeFileNames = exFiles;
+						}
+						if ( len( exPfx ) ) {
+							dsOpts.excludeRelativePathPrefixes = exPfx;
+						}
+						if ( len( exIds ) ) {
+							dsOpts.excludeComponentIds = exIds;
+						}
+						smokeResult = smokeSvc.runSmokeFromDirectoryInline( rootAbs, dirPrefix, dsOpts, invokeFlag );
+						ran = true;
+						manifestWeb = "(directory scan)";
+					} else {
+						arrayAppend( runnerErrors, "metadataSmoke requires one of: request.metadataSmokeManifestItems, request.metadataSmokeDirectoryScan, url.metadataSmokeComponent, url.metadataSmokeManifest, or url.metadataSmokeDirectoryRoot + url.metadataSmokeDirectoryPrefix." );
+					}
+				}
+			}
+		}
+	} catch ( any e ) {
+		arrayAppend( runnerErrors, e.message );
+		if ( structKeyExists( e, "detail" ) && len( toString( e.detail ) ) ) {
+			arrayAppend( runnerErrors, toString( e.detail ) );
+		}
+	}
+	if ( metadataSmokeJson ) {
+		cfcontent( type="application/json", reset="true" );
+		writeOutput( serializeJSON( {
+			"runnerErrors"  : runnerErrors,
+			"ran"           : ran,
+			"smokeResult"   : smokeResult,
+			"manifestPath"  : manifestWeb,
+			"invokeEnabled" : invokeFlag,
+			"metadataSmokeComponent" : smokeComponentForUrl
+		} ) );
+	} else {
+		html = smokeSvc.renderReport(
+			testbox = testbox,
+			smokeResult = smokeResult,
+			runnerErrors = runnerErrors,
+			ran = ran,
+			manifestPath = manifestWeb,
+			invokeEnabled = invokeFlag,
+			metadataSmokeComponent = smokeComponentForUrl,
+			metadataSmokeDirectoryRootWeb = structKeyExists( url, "metadataSmokeDirectoryRoot" ) ? trim( toString( url.metadataSmokeDirectoryRoot ) ) : "",
+			metadataSmokeDirectoryPrefixForUrl = structKeyExists( url, "metadataSmokeDirectoryPrefix" ) ? trim( toString( url.metadataSmokeDirectoryPrefix ) ) : "",
+			metadataSmokeExcludeFileNamesForUrl = structKeyExists( url, "metadataSmokeExcludeFileNames" ) ? trim( toString( url.metadataSmokeExcludeFileNames ) ) : "",
+			metadataSmokeExcludePathPrefixesForUrl = structKeyExists( url, "metadataSmokeExcludePathPrefixes" ) ? trim( toString( url.metadataSmokeExcludePathPrefixes ) ) : "",
+			metadataSmokeExcludeComponentIdsForUrl = structKeyExists( url, "metadataSmokeExcludeComponentIds" ) ? trim( toString( url.metadataSmokeExcludeComponentIds ) ) : "",
+			justReturn = false
+		);
+		writeOutput( html );
+	}
 	abort;
 }
 

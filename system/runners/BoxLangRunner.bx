@@ -49,6 +49,14 @@
  * --stacktrace : Stacktrace detail level for stream failures/errors: `short` or `full`, defaults to `short`.
  * --gap-analysis : When `true`, skip test execution and write heuristic gap analysis HTML to the report path (`gapAnalysis.html`). Requires `--directory` (dot paths; comma-separated allowed). Uses `--coverage-path-to-capture` when set (same role as HTML runner `coveragePathToCapture`).
  * --coverage-path-to-capture : Optional absolute or mapping-expandable root of source CFCs for gap analysis (passed through TestBox coverage options).
+ * --metadata-smoke : When `true`, skip test execution and write metadata smoke output to the report path (`metadataSmoke.html` or `metadataSmoke.json` when `--metadata-smoke-format=json`). Provide one of: `--metadata-smoke-manifest`, `--metadata-smoke-component`, or `--metadata-smoke-directory-root` with `--metadata-smoke-directory-prefix` (mirrors `HTMLRunner.cfm`).
+ * --metadata-smoke-manifest : Web or absolute path to JSON manifest (resolved like the HTML runner).
+ * --metadata-smoke-component : Single dotted component path.
+ * --metadata-smoke-directory-root : Source root for directory inline scan (mapping-expandable).
+ * --metadata-smoke-directory-prefix : Dotted prefix paired with directory root.
+ * --metadata-smoke-exclude-file-names / --metadata-smoke-exclude-path-prefixes / --metadata-smoke-exclude-component-ids : Optional comma lists (same as HTML runner).
+ * --metadata-smoke-invoke : When `true`, dummy-invoke public/remote methods (errors swallowed).
+ * --metadata-smoke-format : `json` for JSON file output; omit for HTML.
  *
  * Runner Options:
  * To create runner options just prefix it with the prefix `runner-{optionName}`
@@ -201,6 +209,12 @@ class{
 			gapFlag = ga.listFindNoCase( "true,yes,1" ) > 0
 		}
 
+		var metadataSmokeFlag = false
+		if( options.keyExists( "metadata-smoke" ) ){
+			var msf = trim( toString( options[ "metadata-smoke" ] ?: "" ) )
+			metadataSmokeFlag = msf.listFindNoCase( "true,yes,1" ) > 0
+		}
+
 		var testbox = new testbox.system.TestBox( argumentCollection = initArgs )
 		if( runArgs.verbose ){
 			println( "TestBox Runner started in #getTickCount() - startTime# ms" )
@@ -210,6 +224,11 @@ class{
 
 		if( gapFlag ){
 			runGapAnalysisCli( testbox, initArgs, options, afterRunArgs )
+			return
+		}
+
+		if( metadataSmokeFlag ){
+			runMetadataSmokeCli( testbox, options, afterRunArgs )
 			return
 		}
 
@@ -861,6 +880,101 @@ class{
 		)
 		fileWrite( afterRunArgs.reportPath & "/gapAnalysis.html", gapHtml )
 		println( "Gap analysis report written to #afterRunArgs.reportPath#/gapAnalysis.html" )
+	}
+
+	/**
+	 * Metadata smoke mode: HTML or JSON in report path (mirrors HTMLRunner metadataSmoke branch).
+	 */
+	private function runMetadataSmokeCli(
+		required testbox,
+		required options,
+		required afterRunArgs
+	){
+		var smokeSvc = testbox.getMetadataSmokeService()
+		var runnerErrors = []
+		var smokeResult = {}
+		var ran = false
+		var manifestWeb = ""
+		var invokeFlag = false
+		if( options.keyExists( "metadata-smoke-invoke" ) ){
+			var inv = trim( toString( options[ "metadata-smoke-invoke" ] ?: "" ) )
+			invokeFlag = inv.listFindNoCase( "true,yes,1" ) > 0
+		}
+		try {
+			var manifestPath = options.keyExists( "metadata-smoke-manifest" ) ? trim( toString( options[ "metadata-smoke-manifest" ] ?: "" ) ) : ""
+			var componentPath = options.keyExists( "metadata-smoke-component" ) ? trim( toString( options[ "metadata-smoke-component" ] ?: "" ) ) : ""
+			var dirRoot = options.keyExists( "metadata-smoke-directory-root" ) ? trim( toString( options[ "metadata-smoke-directory-root" ] ?: "" ) ) : ""
+			var dirPrefix = options.keyExists( "metadata-smoke-directory-prefix" ) ? trim( toString( options[ "metadata-smoke-directory-prefix" ] ?: "" ) ) : ""
+			if( len( componentPath ) ){
+				smokeResult = smokeSvc.runSmokeForSingleComponent( componentPath, invokeFlag )
+				ran = true
+				manifestWeb = componentPath
+			} else if( len( manifestPath ) ){
+				var absManifest = smokeSvc.resolveManifestAbsolutePath( manifestPath )
+				if( !fileExists( absManifest ) ){
+					arrayAppend( runnerErrors, "Manifest not found: #absManifest#" )
+				} else {
+					smokeResult = smokeSvc.runSmokeFromManifestFile( absManifest, invokeFlag )
+					ran = true
+					manifestWeb = manifestPath
+				}
+			} else if( len( dirRoot ) && len( dirPrefix ) ){
+				var rootAbs = smokeSvc.resolveManifestAbsolutePath( dirRoot )
+				var dsOpts = {}
+				if( options.keyExists( "metadata-smoke-exclude-file-names" ) && len( trim( toString( options[ "metadata-smoke-exclude-file-names" ] ?: "" ) ) ) ){
+					dsOpts[ "excludeFileNames" ] = trim( toString( options[ "metadata-smoke-exclude-file-names" ] ?: "" ) )
+				}
+				if( options.keyExists( "metadata-smoke-exclude-path-prefixes" ) && len( trim( toString( options[ "metadata-smoke-exclude-path-prefixes" ] ?: "" ) ) ) ){
+					dsOpts[ "excludeRelativePathPrefixes" ] = trim( toString( options[ "metadata-smoke-exclude-path-prefixes" ] ?: "" ) )
+				}
+				if( options.keyExists( "metadata-smoke-exclude-component-ids" ) && len( trim( toString( options[ "metadata-smoke-exclude-component-ids" ] ?: "" ) ) ) ){
+					dsOpts[ "excludeComponentIds" ] = trim( toString( options[ "metadata-smoke-exclude-component-ids" ] ?: "" ) )
+				}
+				smokeResult = smokeSvc.runSmokeFromDirectoryInline( rootAbs, dirPrefix, dsOpts, invokeFlag )
+				ran = true
+				manifestWeb = "(directory scan)"
+			} else {
+				arrayAppend( runnerErrors, "metadata-smoke requires --metadata-smoke-manifest, --metadata-smoke-component, or --metadata-smoke-directory-root with --metadata-smoke-directory-prefix." )
+			}
+		} catch( any e ){
+			arrayAppend( runnerErrors, e.message )
+			if( structKeyExists( e, "detail" ) && len( toString( e.detail ) ) ){
+				arrayAppend( runnerErrors, toString( e.detail ) )
+			}
+		}
+		if( !directoryExists( afterRunArgs.reportPath ) ){
+			directoryCreate( afterRunArgs.reportPath, true )
+		}
+		var fmt = options.keyExists( "metadata-smoke-format" ) ? lCase( trim( toString( options[ "metadata-smoke-format" ] ?: "" ) ) ) : ""
+		if( fmt == "json" ){
+			var jsonPayload = {
+				"runnerErrors"  : runnerErrors,
+				"ran"           : ran,
+				"smokeResult"   : smokeResult,
+				"manifestPath"  : manifestWeb,
+				"invokeEnabled" : invokeFlag
+			}
+			fileWrite( afterRunArgs.reportPath & "/metadataSmoke.json", jsonSerialize( jsonPayload ) )
+			println( "Metadata smoke JSON written to #afterRunArgs.reportPath#/metadataSmoke.json" )
+		} else {
+			var smokeHtml = smokeSvc.renderReport(
+				testbox = testbox,
+				smokeResult = smokeResult,
+				runnerErrors = runnerErrors,
+				ran = ran,
+				manifestPath = manifestWeb,
+				invokeEnabled = invokeFlag,
+				metadataSmokeComponent = "",
+				metadataSmokeDirectoryRootWeb = "",
+				metadataSmokeDirectoryPrefixForUrl = "",
+				metadataSmokeExcludeFileNamesForUrl = "",
+				metadataSmokeExcludePathPrefixesForUrl = "",
+				metadataSmokeExcludeComponentIdsForUrl = "",
+				justReturn = true
+			)
+			fileWrite( afterRunArgs.reportPath & "/metadataSmoke.html", smokeHtml )
+			println( "Metadata smoke report written to #afterRunArgs.reportPath#/metadataSmoke.html" )
+		}
 	}
 
 	/**

@@ -66,6 +66,22 @@
 			#testbox.getGapAnalysisService().renderRunnerEmbed( testbox, false )#
 		</cfif>
 
+		<cfset msEmbedShow = true>
+		<cfif structKeyExists( url, "metadataSmoke" ) AND listFindNoCase( "true,yes,1", trim( toString( url.metadataSmoke ) ) ) GT 0>
+			<cfset msEmbedShow = false>
+		</cfif>
+		<cfif msEmbedShow>
+			<cfloop list="#structKeyList( url )#" index="uk">
+				<cfif reReplace( lCase( uk ), "[^a-z]", "", "all" ) EQ "metadatasmoke" AND listFindNoCase( "true,yes,1", trim( toString( url[ uk ] ) ) ) GT 0>
+					<cfset msEmbedShow = false>
+					<cfbreak>
+				</cfif>
+			</cfloop>
+		</cfif>
+		<cfif msEmbedShow>
+			#testbox.getMetadataSmokeService().renderRunnerEmbed( testbox, false )#
+		</cfif>
+
 		<!--- Global Stats --->
 		<div class="list-group">
 

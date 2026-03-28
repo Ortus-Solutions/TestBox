@@ -29,6 +29,8 @@ component accessors="true" {
 	property name="coverageService";
 	// Gap Analysis Service (heuristic runner HTML and Simple reporter embed)
 	property name="gapAnalysisService";
+	// Metadata smoke reflection helper (optional manifest-based checks)
+	property name="metadataSmokeService";
 	// TestBox Modules Registry
 	property name="modules";
 	// A list of globbing patterns to match bundles to test ONLY! Ex: *Spec|*Test
@@ -79,6 +81,7 @@ component accessors="true" {
 		}
 		variables.coverageService = new testbox.system.coverage.CoverageService( arguments.options.coverage );
 		variables.gapAnalysisService = new testbox.system.gap.GapAnalysisService();
+		variables.metadataSmokeService = new testbox.system.smoke.MetadataSmokeService();
 		// reporter
 		variables.reporter        = arguments.reporter;
 		// options

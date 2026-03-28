@@ -12,10 +12,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Heuristic gap analysis: `TestBox.getGapAnalysisService()` with `buildRunnerSummaryFromRequest()`, `renderRunnerEmbed()` (Simple reporter embed), and `renderReport()`; HTML runner (`gapAnalysis=true`) and BoxLang CLI (`--gap-analysis`).
+- Metadata smoke helpers: `TestBox.getMetadataSmokeService()` / `testbox.system.smoke.MetadataSmokeService` for manifest-driven component metadata checks and optional dummy invokes (`runSmokeFromManifestFile`, `runSmokeFromManifestItems`, `runSmokeForSingleComponent`, `runSmokeFromDirectoryInline`, `scanDirectoryToManifestItems`, `writeManifestEnvelope`, `resolveManifestAbsolutePath`, **`renderRunnerEmbed`** for the Simple reporter); HTML runner supports `request.metadataSmokeManifestItems`, `request.metadataSmokeDirectoryScan`, `metadataSmokeComponent`, file-based `metadataSmokeManifest`, **URL-driven** `metadataSmokeDirectoryRoot` + `metadataSmokeDirectoryPrefix` (and optional exclude lists), plus `metadataSmokeInvoke` and `metadataSmokeFormat=json`; **`cfml/runner/index.cfm`** form fields; **BoxLang** `BoxLangRunner.bx` `--metadata-smoke` and related CLI flags writing `metadataSmoke.html` / `metadataSmoke.json`; `MetadataSmokeReporter` HTML output. HTML runner accepts `metadatasmoke=true` as an alias for `metadataSmoke=true` (letters-only match on the parameter name).
 
 ### Tests
 
 - Regression coverage for gap analysis: `tests/specs/GapAnalysisServiceSpec.cfc`, `tests/specs/GapAnalysisReporterSpec.cfc`, and fixtures under `tests/resources/gapAnalysisFixtures/`.
+- Metadata smoke: `tests/specs/MetadataSmokeServiceSpec.cfc`, `tests/specs/MetadataSmokeReporterSpec.cfc`, and fixtures under `tests/resources/metadataSmokeFixtures/`.
 
 ## [7.0.0] - 2026-03-17
 
