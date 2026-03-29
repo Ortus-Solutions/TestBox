@@ -1,6 +1,6 @@
 component {
 
-	public void function excludedByIdOption() {
+	public void function excludedByIdOption(){
 	}
 
 }

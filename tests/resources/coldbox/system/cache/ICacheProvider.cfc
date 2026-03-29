@@ -8,29 +8,16 @@ Description :
 The main interface for a CacheBox cache provider.  You need to implement
 all the methods in order for CacheBox to work correctly for the implementing
 cache provider.
-
 Please note that all cache providers have a reference back to the CacheBox Factory.
 ----------------------------------------------------------------------->
 <cfinterface
 	hint="The main interface for a CacheBox cache provider object, you implement it so CacheBox can manage it for you."
 >
 	<!--- getName --->
-	<cffunction
-		name      ="getName"
-		output    ="false"
-		access    ="public"
-		returntype="any"
-		hint      ="Get the name of this cache"
-	></cffunction>
+	<cffunction name="getName" output="false" access="public" returntype="any" hint="Get the name of this cache"></cffunction>
 
 	<!--- setName --->
-	<cffunction
-		name      ="setName"
-		output    ="false"
-		access    ="public"
-		returntype="void"
-		hint      ="Set the cache name"
-	>
+	<cffunction name="setName" output="false" access="public" returntype="void" hint="Set the cache name">
 		<cfargument name="name" type="any" required="true" hint="The cache name"/>
 	</cffunction>
 
@@ -87,12 +74,7 @@ Please note that all cache providers have a reference back to the CacheBox Facto
 		returntype="void"
 		hint      ="Set the entire configuration structure for this cache"
 	>
-		<cfargument
-			name    ="configuration"
-			type    ="any"
-			required="true"
-			hint    ="The configuration structure"
-		/>
+		<cfargument name="configuration" type="any" required="true" hint="The configuration structure"/>
 	</cffunction>
 
 	<!--- getCacheFactory --->
@@ -112,11 +94,7 @@ Please note that all cache providers have a reference back to the CacheBox Facto
 		returntype="void"
 		hint      ="Set the cache factory reference for this cache"
 	>
-		<cfargument
-			name    ="cacheFactory"
-			type    ="any"
-			required="true"
-		/>
+		<cfargument name="cacheFactory" type="any" required="true"/>
 	</cffunction>
 
 	<!--- getEventManager --->
@@ -203,12 +181,7 @@ Please note that all cache providers have a reference back to the CacheBox Facto
 		returntype="any"
 		hint      ="Get a cache objects metadata about its performance. This value is a structure of name-value pairs of metadata."
 	>
-		<cfargument
-			name    ="objectKey"
-			type    ="any"
-			required="true"
-			hint    ="The key of the object to lookup its metadata"
-		>
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup its metadata">
 	</cffunction>
 
 	<!--- get --->
@@ -252,12 +225,7 @@ Please note that all cache providers have a reference back to the CacheBox Facto
 		returntype="any"
 		hint      ="Check if an object is in cache, if not found it records a miss."
 	>
-		<cfargument
-			name    ="objectKey"
-			type    ="any"
-			required="true"
-			hint    ="The key of the object to lookup."
-		>
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 	</cffunction>
 
 	<!--- lookupQuiet --->
@@ -268,12 +236,7 @@ Please note that all cache providers have a reference back to the CacheBox Facto
 		returntype="any"
 		hint      ="Check if an object is in cache, no stats updated or listeners"
 	>
-		<cfargument
-			name    ="objectKey"
-			type    ="any"
-			required="true"
-			hint    ="The key of the object to lookup."
-		>
+		<cfargument name="objectKey" type="any" required="true" hint="The key of the object to lookup.">
 	</cffunction>
 
 	<!--- Set --->

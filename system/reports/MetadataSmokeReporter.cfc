@@ -6,7 +6,7 @@
  */
 component extends="BaseReporter" {
 
-	function getName() {
+	function getName(){
 		return "MetadataSmoke";
 	}
 
@@ -17,20 +17,28 @@ component extends="BaseReporter" {
 		required testbox.system.TestBox testbox,
 		struct options     = {},
 		boolean justReturn = false
-	) {
+	){
 		if ( !arguments.justReturn ) {
 			getPageContextResponse().setContentType( "text/html" );
 		}
 
-		variables.testbox             = arguments.testbox;
-		variables.smokeResult         = structKeyExists( arguments.options, "smokeResult" ) && isStruct( arguments.options.smokeResult ) ? arguments.options.smokeResult : {};
-		variables.runnerErrors        = structKeyExists( arguments.options, "runnerErrors" ) && isArray( arguments.options.runnerErrors ) ? arguments.options.runnerErrors : [];
-		variables.ran                 = structKeyExists( arguments.options, "ran" ) ? arguments.options.ran : false;
-		variables.manifestPath        = structKeyExists( arguments.options, "manifestPath" ) ? toString( arguments.options.manifestPath ) : "";
-		variables.invokeEnabled       = structKeyExists( arguments.options, "invokeEnabled" ) ? arguments.options.invokeEnabled : false;
-		variables.smokeRunnerSummary  = structKeyExists( arguments.options, "smokeRunnerSummary" ) && isStruct( arguments.options.smokeRunnerSummary ) ? arguments.options.smokeRunnerSummary : {};
-		variables.smokeEmbedCompact   = structKeyExists( arguments.options, "smokeEmbedCompact" ) ? arguments.options.smokeEmbedCompact : false;
-		variables.fullPage            = structKeyExists( arguments.options, "fullPage" ) ? arguments.options.fullPage : true;
+		variables.testbox     = arguments.testbox;
+		variables.smokeResult = structKeyExists( arguments.options, "smokeResult" ) && isStruct(
+			arguments.options.smokeResult
+		) ? arguments.options.smokeResult : {};
+		variables.runnerErrors = structKeyExists( arguments.options, "runnerErrors" ) && isArray(
+			arguments.options.runnerErrors
+		) ? arguments.options.runnerErrors : [];
+		variables.ran          = structKeyExists( arguments.options, "ran" ) ? arguments.options.ran : false;
+		variables.manifestPath = structKeyExists( arguments.options, "manifestPath" ) ? toString(
+			arguments.options.manifestPath
+		) : "";
+		variables.invokeEnabled      = structKeyExists( arguments.options, "invokeEnabled" ) ? arguments.options.invokeEnabled : false;
+		variables.smokeRunnerSummary = structKeyExists( arguments.options, "smokeRunnerSummary" ) && isStruct(
+			arguments.options.smokeRunnerSummary
+		) ? arguments.options.smokeRunnerSummary : {};
+		variables.smokeEmbedCompact = structKeyExists( arguments.options, "smokeEmbedCompact" ) ? arguments.options.smokeEmbedCompact : false;
+		variables.fullPage          = structKeyExists( arguments.options, "fullPage" ) ? arguments.options.fullPage : true;
 
 		savecontent variable="local.report" {
 			include "assets/metadataSmoke.cfm";

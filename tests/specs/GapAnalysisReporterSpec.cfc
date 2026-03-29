@@ -4,7 +4,7 @@
 component extends="testbox.system.BaseSpec" {
 
 	function beforeAll(){
-		variables.tb   = new testbox.system.TestBox();
+		variables.tb  = new testbox.system.TestBox();
 		variables.rep = new testbox.system.reports.GapAnalysisReporter();
 	}
 
@@ -20,9 +20,9 @@ component extends="testbox.system.BaseSpec" {
 					options = {
 						gapReport : {
 							stats : {
-								totalFunctions : 0,
-								coveredHeuristic : 0,
-								missingHeuristic : 0,
+								totalFunctions    : 0,
+								coveredHeuristic  : 0,
+								missingHeuristic  : 0,
 								skippedComponents : 0
 							},
 							uncovered : [],

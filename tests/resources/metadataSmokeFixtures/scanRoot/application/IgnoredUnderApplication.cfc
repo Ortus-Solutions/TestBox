@@ -1,6 +1,6 @@
 component {
 
-	public void function ignored() {
+	public void function ignored(){
 	}
 
 }

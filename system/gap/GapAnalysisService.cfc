@@ -13,7 +13,7 @@ component accessors="true" {
 	 */
 	public string function inferComponentPrefix( required string sourceRootAbs ){
 		var normalized = replace( arguments.sourceRootAbs, "\", "/", "all" );
-		normalized = reReplace( normalized, "/+$", "", "all" );
+		normalized     = reReplace( normalized, "/+$", "", "all" );
 		if ( !len( normalized ) ) {
 			return "";
 		}
@@ -29,8 +29,8 @@ component accessors="true" {
 						mapKey = "/" & mapKey;
 					}
 					var phys = expandPath( mapKey );
-					phys = replace( phys, "\", "/", "all" );
-					phys = reReplace( phys, "/+$", "", "all" );
+					phys     = replace( phys, "\", "/", "all" );
+					phys     = reReplace( phys, "/+$", "", "all" );
 					if ( !len( phys ) ) {
 						continue;
 					}
@@ -49,8 +49,8 @@ component accessors="true" {
 		} catch ( any e0 ) {
 		}
 		if ( len( bestPhys ) && len( bestKey ) ) {
-			var rel = len( normalized ) > len( bestPhys ) ? mid( normalized, len( bestPhys ) + 1, 9999 ) : "";
-			rel = reReplace( rel, "^/+|/+$", "", "all" );
+			var rel     = len( normalized ) > len( bestPhys ) ? mid( normalized, len( bestPhys ) + 1, 9999 ) : "";
+			rel         = reReplace( rel, "^/+|/+$", "", "all" );
 			var mapPart = reReplace( bestKey, "^/+|/+$", "", "all" );
 			var mapDots = replace( mapPart, "/", ".", "all" );
 			if ( len( rel ) ) {
@@ -62,20 +62,20 @@ component accessors="true" {
 	}
 
 	/**
-	 * @sourceRoot Absolute directory containing CFCs to scan (e.g. expandPath("/com/myapp")).
-	 * @componentPrefix Dotted prefix for component IDs (e.g. "com.myapp" for files under sourceRoot).
-	 * @testRootList Comma-separated absolute directories to scan for test/spec text (cfc/cfm).
-	 * @excludeFileNames Comma list of file names to skip (case-insensitive), e.g. "accessLog.cfc,application.cfc".
+	 * @sourceRoot          Absolute directory containing CFCs to scan (e.g. expandPath("/com/myapp")).
+	 * @componentPrefix     Dotted prefix for component IDs (e.g. "com.myapp" for files under sourceRoot).
+	 * @testRootList        Comma-separated absolute directories to scan for test/spec text (cfc/cfm).
+	 * @excludeFileNames    Comma list of file names to skip (case-insensitive), e.g. "accessLog.cfc,application.cfc".
 	 * @excludePathPrefixes Comma list of relative path prefixes under sourceRoot to skip, e.g. "application".
-	 * @recurseTestRoots Same as TestBox directory runner: when true, include all nested files under each test root (matches getSpecPaths / addDirectories recurse).
+	 * @recurseTestRoots    Same as TestBox directory runner: when true, include all nested files under each test root (matches getSpecPaths / addDirectories recurse).
 	 */
 	struct function analyze(
 		required string sourceRoot,
 		required string componentPrefix,
 		required string testRootList,
-		string excludeFileNames = "",
+		string excludeFileNames    = "",
 		string excludePathPrefixes = "",
-		boolean recurseTestRoots = true
+		boolean recurseTestRoots   = true
 	){
 		var opts = {
 			"sourceRoot"          : _normalizeDir( arguments.sourceRoot ),
@@ -91,7 +91,11 @@ component accessors="true" {
 				arrayAppend( testRoots, tr );
 			}
 		}
-		var testBlob = _buildTestBlob( testRoots, opts.sourceRoot, arguments.recurseTestRoots );
+		var testBlob = _buildTestBlob(
+			testRoots,
+			opts.sourceRoot,
+			arguments.recurseTestRoots
+		);
 
 		var uncovered = [];
 		var covered   = [];
@@ -112,10 +116,10 @@ component accessors="true" {
 					skipped,
 					{
 						"componentId" : componentId,
-						"file"          : replace( rel, "\", "/", "all" ),
-						"reason"        : "metadata",
-						"message"       : structKeyExists( e, "message" ) ? e.message : "",
-						"detail"        : structKeyExists( e, "detail" ) ? toString( e.detail ) : ""
+						"file"        : replace( rel, "\", "/", "all" ),
+						"reason"      : "metadata",
+						"message"     : structKeyExists( e, "message" ) ? e.message : "",
+						"detail"      : structKeyExists( e, "detail" ) ? toString( e.detail ) : ""
 					}
 				);
 				continue;
@@ -128,8 +132,8 @@ component accessors="true" {
 				if ( !structKeyExists( fn, "name" ) || _ignoreFunction( fn ) ) {
 					continue;
 				}
-				var fl   = lCase( fn.name );
-				var row  = {
+				var fl  = lCase( fn.name );
+				var row = {
 					"componentId" : componentId,
 					"file"        : displayFile,
 					"function"    : fn.name,
@@ -146,11 +150,11 @@ component accessors="true" {
 
 		var total = arrayLen( covered ) + arrayLen( uncovered );
 		return {
-			"stats"     : {
-				"totalFunctions"     : total,
-				"coveredHeuristic"   : arrayLen( covered ),
-				"missingHeuristic"   : arrayLen( uncovered ),
-				"skippedComponents"  : arrayLen( skipped )
+			"stats" : {
+				"totalFunctions"    : total,
+				"coveredHeuristic"  : arrayLen( covered ),
+				"missingHeuristic"  : arrayLen( uncovered ),
+				"skippedComponents" : arrayLen( skipped )
 			},
 			"uncovered" : uncovered,
 			"covered"   : covered,
@@ -247,7 +251,14 @@ component accessors="true" {
 	}
 
 	private array function _listCfcFiles( required string root ){
-		var raw = directoryList( arguments.root, true, "path", "", "asc", "file" );
+		var raw = directoryList(
+			arguments.root,
+			true,
+			"path",
+			"",
+			"asc",
+			"file"
+		);
 		var files = [];
 		for ( var fp in raw ) {
 			if ( !fileExists( fp ) ) {
@@ -262,14 +273,23 @@ component accessors="true" {
 	}
 
 	private boolean function _ignoreFunction( required struct fnMeta ){
-		if ( structKeyExists( arguments.fnMeta, "access" ) && arrayFindNoCase( [ "public", "remote" ], arguments.fnMeta.access ) == 0 ) {
+		if (
+			structKeyExists( arguments.fnMeta, "access" ) && arrayFindNoCase(
+				[ "public", "remote" ],
+				arguments.fnMeta.access
+			) == 0
+		) {
 			return true;
 		}
 		var ignored = [ "init", "onmissingmethod" ];
 		return arrayFindNoCase( ignored, arguments.fnMeta.name ) > 0;
 	}
 
-	private string function _buildTestBlob( required array testRoots, required string sourceRootHint, boolean recurseTestRoots = true ){
+	private string function _buildTestBlob(
+		required array testRoots,
+		required string sourceRootHint,
+		boolean recurseTestRoots = true
+	){
 		var parts = [];
 		for ( var tr in arguments.testRoots ) {
 			var base = trim( tr );
@@ -282,7 +302,14 @@ component accessors="true" {
 			if ( !directoryExists( base ) ) {
 				continue;
 			}
-			var files = directoryList( base, arguments.recurseTestRoots, "path", "", "asc", "file" );
+			var files = directoryList(
+				base,
+				arguments.recurseTestRoots,
+				"path",
+				"",
+				"asc",
+				"file"
+			);
 			for ( var fp in files ) {
 				if ( !fileExists( fp ) ) {
 					continue;
@@ -303,25 +330,27 @@ component accessors="true" {
 	/**
 	 * Build runner summary and URLs from the current request (url + cgi) for the HTML runner and Simple embed.
 	 *
-	 * @testbox               The TestBox core object
-	 * @sourceRootAbs         Resolved source root (optional when resolveOptionalPaths is true)
-	 * @componentPrefix       Dotted component prefix (optional when resolveOptionalPaths is true)
-	 * @testRootAbs           Resolved test root directories (optional when resolveOptionalPaths is true)
-	 * @resolveOptionalPaths  When true (default), fill missing source/prefix/test roots from coverage options and url.directory
+	 * @testbox              The TestBox core object
+	 * @sourceRootAbs        Resolved source root (optional when resolveOptionalPaths is true)
+	 * @componentPrefix      Dotted component prefix (optional when resolveOptionalPaths is true)
+	 * @testRootAbs          Resolved test root directories (optional when resolveOptionalPaths is true)
+	 * @resolveOptionalPaths When true (default), fill missing source/prefix/test roots from coverage options and url.directory
 	 */
 	public struct function buildRunnerSummaryFromRequest(
 		required testbox.system.TestBox testbox,
-		string sourceRootAbs = "",
-		string componentPrefix = "",
-		array testRootAbs = [],
+		string sourceRootAbs         = "",
+		string componentPrefix       = "",
+		array testRootAbs            = [],
 		boolean resolveOptionalPaths = true
 	){
 		var qs                = structKeyExists( cgi, "query_string" ) ? cgi.query_string : "";
 		var stripQs           = reReplace( qs, "&gapAnalysis=[^&]*", "", "all" );
-		stripQs = reReplace( stripQs, "^gapAnalysis=[^&]*&?", "", "all" );
-		stripQs = reReplace( stripQs, "^[&]+|[&]+$", "", "all" );
+		stripQs               = reReplace( stripQs, "^gapAnalysis=[^&]*&?", "", "all" );
+		stripQs               = reReplace( stripQs, "^[&]+|[&]+$", "", "all" );
 		var testsUrl          = len( stripQs ) ? ( cgi.script_name & "?" & stripQs ) : cgi.script_name;
-		var gapRunAnalysisUrl = len( stripQs ) ? ( cgi.script_name & "?" & stripQs & "&gapAnalysis=true" ) : ( cgi.script_name & "?gapAnalysis=true" );
+		var gapRunAnalysisUrl = len( stripQs ) ? ( cgi.script_name & "?" & stripQs & "&gapAnalysis=true" ) : (
+			cgi.script_name & "?gapAnalysis=true"
+		);
 
 		var sr  = trim( toString( arguments.sourceRootAbs ) );
 		var cp  = trim( toString( arguments.componentPrefix ) );
@@ -330,7 +359,9 @@ component accessors="true" {
 		if ( arguments.resolveOptionalPaths ) {
 			if ( !len( sr ) ) {
 				try {
-					sr = trim( toString( arguments.testbox.getCoverageService().getCoverageOptions().pathToCapture ) );
+					sr = trim(
+						toString( arguments.testbox.getCoverageService().getCoverageOptions().pathToCapture )
+					);
 				} catch ( any e0 ) {
 					sr = "";
 				}
@@ -338,7 +369,11 @@ component accessors="true" {
 			if ( !len( cp ) && len( sr ) ) {
 				cp = inferComponentPrefix( sr );
 			}
-			if ( !arrayLen( trs ) && len( trim( toString( structKeyExists( url, "directory" ) ? url.directory : "" ) ) ) ) {
+			if (
+				!arrayLen( trs ) && len(
+					trim( toString( structKeyExists( url, "directory" ) ? url.directory : "" ) )
+				)
+			) {
 				trs = [];
 				for ( var dir in listToArray( structKeyExists( url, "directory" ) ? url.directory : "" ) ) {
 					dir = trim( dir );
@@ -362,29 +397,34 @@ component accessors="true" {
 		};
 
 		return {
-			"gapRunnerSummary"    : gapRunnerSummary,
-			"gapRunAnalysisUrl"   : gapRunAnalysisUrl,
-			"testsUrl"            : testsUrl
+			"gapRunnerSummary"  : gapRunnerSummary,
+			"gapRunAnalysisUrl" : gapRunAnalysisUrl,
+			"testsUrl"          : testsUrl
 		};
 	}
 
 	/**
 	 * Render HTML for embedding in the Simple reporter (same role as CoverageService.renderStats).
 	 *
-	 * @testbox    The TestBox core object
-	 * @fullPage   When false, omit outer document wrapper for inclusion in the Simple report
+	 * @testbox  The TestBox core object
+	 * @fullPage When false, omit outer document wrapper for inclusion in the Simple report
 	 */
 	public any function renderRunnerEmbed( required testbox.system.TestBox testbox, boolean fullPage = false ){
 		var built = buildRunnerSummaryFromRequest( arguments.testbox, "", "", [], true );
 		return renderReport(
-			testbox = arguments.testbox,
-			gapReport = { "stats" : {}, "uncovered" : [], "covered" : [], "skipped" : [] },
-			gapRunnerSummary = built.gapRunnerSummary,
-			runnerErrors = [],
-			ran = false,
-			fullPage = arguments.fullPage,
-			justReturn = true,
-			gapEmbedCompact = true,
+			testbox   = arguments.testbox,
+			gapReport = {
+				"stats"     : {},
+				"uncovered" : [],
+				"covered"   : [],
+				"skipped"   : []
+			},
+			gapRunnerSummary  = built.gapRunnerSummary,
+			runnerErrors      = [],
+			ran               = false,
+			fullPage          = arguments.fullPage,
+			justReturn        = true,
+			gapEmbedCompact   = true,
 			gapRunAnalysisUrl = built.gapRunAnalysisUrl
 		);
 	}
@@ -392,38 +432,38 @@ component accessors="true" {
 	/**
 	 * Render gap analysis HTML via GapAnalysisReporter and assets/gapAnalysis.cfm.
 	 *
-	 * @testbox             The TestBox core object
-	 * @gapReport           Result struct from analyze() or empty stub for parameter-only views
-	 * @gapRunnerSummary    Runner parameters and resolved paths for the template
-	 * @runnerErrors        Messages when analysis could not run
-	 * @ran                 Whether analyze() completed
-	 * @fullPage            When true, emit DOCTYPE and asset includes for a standalone page
-	 * @justReturn          When true, skip setting the response content type
-	 * @gapEmbedCompact     When true, use the compact header for Simple reporter embed
-	 * @gapRunAnalysisUrl   URL to open full gap analysis with the same query string
+	 * @testbox           The TestBox core object
+	 * @gapReport         Result struct from analyze() or empty stub for parameter-only views
+	 * @gapRunnerSummary  Runner parameters and resolved paths for the template
+	 * @runnerErrors      Messages when analysis could not run
+	 * @ran               Whether analyze() completed
+	 * @fullPage          When true, emit DOCTYPE and asset includes for a standalone page
+	 * @justReturn        When true, skip setting the response content type
+	 * @gapEmbedCompact   When true, use the compact header for Simple reporter embed
+	 * @gapRunAnalysisUrl URL to open full gap analysis with the same query string
 	 */
 	any function renderReport(
 		required testbox.system.TestBox testbox,
 		required struct gapReport,
 		required struct gapRunnerSummary,
 		required array runnerErrors,
-		boolean ran = false,
-		boolean fullPage = true,
-		boolean justReturn = false,
-		boolean gapEmbedCompact = false,
+		boolean ran              = false,
+		boolean fullPage         = true,
+		boolean justReturn       = false,
+		boolean gapEmbedCompact  = false,
 		string gapRunAnalysisUrl = ""
 	){
 		var rep = new testbox.system.reports.GapAnalysisReporter();
 		return rep.renderHtml(
 			testbox = arguments.testbox,
 			options = {
-				"gapReport"           : arguments.gapReport,
-				"gapRunnerSummary"    : arguments.gapRunnerSummary,
-				"runnerErrors"        : arguments.runnerErrors,
-				"ran"                 : arguments.ran,
-				"fullPage"            : arguments.fullPage,
-				"gapEmbedCompact"     : arguments.gapEmbedCompact,
-				"gapRunAnalysisUrl"   : arguments.gapRunAnalysisUrl
+				"gapReport"         : arguments.gapReport,
+				"gapRunnerSummary"  : arguments.gapRunnerSummary,
+				"runnerErrors"      : arguments.runnerErrors,
+				"ran"               : arguments.ran,
+				"fullPage"          : arguments.fullPage,
+				"gapEmbedCompact"   : arguments.gapEmbedCompact,
+				"gapRunAnalysisUrl" : arguments.gapRunAnalysisUrl
 			},
 			justReturn = arguments.justReturn
 		);

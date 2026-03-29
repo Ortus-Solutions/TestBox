@@ -1,21 +1,22 @@
 /**
-* Copyright Since 2005 Ortus Solutions, Corp
-* www.ortussolutions.com
-**************************************************************************************
-*/
-component{
-	this.name = "A TestBox Runner Suite " & hash( getCurrentTemplatePath() );
+ * Copyright Since 2005 Ortus Solutions, Corp
+ * www.ortussolutions.com
+ **************************************************************************************
+ */
+component {
+
+	this.name              = "A TestBox Runner Suite " & hash( getCurrentTemplatePath() );
 	// any other application.cfc stuff goes below:
 	this.sessionManagement = true;
-	this.enableNullSupport  = shouldEnableFullNullSupport();
+	this.enableNullSupport = shouldEnableFullNullSupport();
 
 	// any mappings go here, we create one that points to the root called test.
-	this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() );
+	this.mappings[ "/tests" ]           = getDirectoryFromPath( getCurrentTemplatePath() );
 	// Map back to its root
-	rootPath = REReplaceNoCase( this.mappings[ "/tests" ], "tests(\\|/)$", "" );
-	this.mappings[ "/testbox" ] = rootPath;
+	rootPath                            = reReplaceNoCase( this.mappings[ "/tests" ], "tests(\\|/)$", "" );
+	this.mappings[ "/testbox" ]         = rootPath;
 	// Map resources
-	this.mappings[ "/coldbox" ] = this.mappings[ "/tests" ] & "resources/coldbox";
+	this.mappings[ "/coldbox" ]         = this.mappings[ "/tests" ] & "resources/coldbox";
 	// Turn on/off remote cfc content whitespace
 	this.suppressRemoteComponentContent = false;
 
@@ -26,10 +27,11 @@ component{
 		return true;
 	}
 
-	private boolean function shouldEnableFullNullSupport() {
+	private boolean function shouldEnableFullNullSupport(){
 		param value = url.keyExists( "FULL_NULL" );
-		var system = createObject( "java", "java.lang.System" );
-        var value = system.getEnv( "FULL_NULL" ) ?: false;
-        return !!value;
-    }
+		var system  = createObject( "java", "java.lang.System" );
+		var value   = system.getEnv( "FULL_NULL" ) ?: false;
+		return !!value;
+	}
+
 }

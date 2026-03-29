@@ -3,26 +3,26 @@
  */
 component extends="testbox.system.BaseSpec" {
 
-	function run() {
-		describe( "MetadataSmokeReporter", function() {
-			it( "getName returns MetadataSmoke", function() {
+	function run(){
+		describe( "MetadataSmokeReporter", function(){
+			it( "getName returns MetadataSmoke", function(){
 				var rep = new testbox.system.reports.MetadataSmokeReporter();
 				expect( rep.getName() ).toBe( "MetadataSmoke" );
 			} );
 
-			it( "renderHtml returns HTML with title and summary links", function() {
-				var tb = new testbox.system.TestBox( options = { coverage : { enabled : false } } );
-				var rep = new testbox.system.reports.MetadataSmokeReporter();
+			it( "renderHtml returns HTML with title and summary links", function(){
+				var tb   = new testbox.system.TestBox( options = { coverage : { enabled : false } } );
+				var rep  = new testbox.system.reports.MetadataSmokeReporter();
 				var html = rep.renderHtml(
 					tb,
 					{
-						"smokeResult"        : {
-							"success"             : true,
-							"errorMessage"        : "",
-							"componentCount"      : 0,
-							"discovered"          : 0,
-							"attempted"           : 0,
-							"skippedComponents"   : []
+						"smokeResult" : {
+							"success"           : true,
+							"errorMessage"      : "",
+							"componentCount"    : 0,
+							"discovered"        : 0,
+							"attempted"         : 0,
+							"skippedComponents" : []
 						},
 						"runnerErrors"       : [],
 						"ran"                : true,
@@ -40,9 +40,9 @@ component extends="testbox.system.BaseSpec" {
 				expect( html ).toInclude( "DOCTYPE" );
 			} );
 
-			it( "renderHtml includes runner errors when present", function() {
-				var tb = new testbox.system.TestBox( options = { coverage : { enabled : false } } );
-				var rep = new testbox.system.reports.MetadataSmokeReporter();
+			it( "renderHtml includes runner errors when present", function(){
+				var tb   = new testbox.system.TestBox( options = { coverage : { enabled : false } } );
+				var rep  = new testbox.system.reports.MetadataSmokeReporter();
 				var html = rep.renderHtml(
 					tb,
 					{

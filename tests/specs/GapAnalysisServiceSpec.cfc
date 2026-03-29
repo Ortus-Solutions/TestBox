@@ -4,11 +4,11 @@
 component extends="testbox.system.BaseSpec" {
 
 	function beforeAll(){
-		variables.gapSvc = new testbox.system.gap.GapAnalysisService();
-		variables.fixtureSrc = _gapFixtureAbs( "resources/gapAnalysisFixtures/src" );
-		variables.fixtureCorpus = _gapFixtureAbs( "resources/gapAnalysisFixtures/corpus" );
+		variables.gapSvc              = new testbox.system.gap.GapAnalysisService();
+		variables.fixtureSrc          = _gapFixtureAbs( "resources/gapAnalysisFixtures/src" );
+		variables.fixtureCorpus       = _gapFixtureAbs( "resources/gapAnalysisFixtures/corpus" );
 		variables.fixtureCorpusNested = _gapFixtureAbs( "resources/gapAnalysisFixtures/corpusNested" );
-		variables.fixtureSrcNested = _gapFixtureAbs( "resources/gapAnalysisFixtures/srcNested" );
+		variables.fixtureSrcNested    = _gapFixtureAbs( "resources/gapAnalysisFixtures/srcNested" );
 	}
 
 	private string function _gapFixtureAbs( required string relativeFromTests ){
@@ -26,9 +26,9 @@ component extends="testbox.system.BaseSpec" {
 
 			it( "analyze marks functions mentioned in corpus and leaves others uncovered", function(){
 				var r = gapSvc.analyze(
-					sourceRoot = fixtureSrc,
+					sourceRoot      = fixtureSrc,
 					componentPrefix = "tests.resources.gapAnalysisFixtures.src",
-					testRootList = fixtureCorpus
+					testRootList    = fixtureCorpus
 				);
 				expect( r.stats.totalFunctions ).toBe( 2 );
 				expect( r.stats.coveredHeuristic ).toBe( 1 );
@@ -48,17 +48,17 @@ component extends="testbox.system.BaseSpec" {
 
 			it( "analyze with recurseTestRoots false skips nested corpus files", function(){
 				var rDeep = gapSvc.analyze(
-					sourceRoot = fixtureSrcNested,
-					componentPrefix = "tests.resources.gapAnalysisFixtures.srcNested",
-					testRootList = fixtureCorpusNested,
+					sourceRoot       = fixtureSrcNested,
+					componentPrefix  = "tests.resources.gapAnalysisFixtures.srcNested",
+					testRootList     = fixtureCorpusNested,
 					recurseTestRoots = true
 				);
 				expect( rDeep.stats.coveredHeuristic ).toBe( 1 );
 
 				var rFlat = gapSvc.analyze(
-					sourceRoot = fixtureSrcNested,
-					componentPrefix = "tests.resources.gapAnalysisFixtures.srcNested",
-					testRootList = fixtureCorpusNested,
+					sourceRoot       = fixtureSrcNested,
+					componentPrefix  = "tests.resources.gapAnalysisFixtures.srcNested",
+					testRootList     = fixtureCorpusNested,
 					recurseTestRoots = false
 				);
 				expect( rFlat.stats.coveredHeuristic ).toBe( 0 );
@@ -70,9 +70,9 @@ component extends="testbox.system.BaseSpec" {
 
 			it( "analyze with excludeFileNames omits matching CFCs", function(){
 				var r = gapSvc.analyze(
-					sourceRoot = fixtureSrc,
-					componentPrefix = "tests.resources.gapAnalysisFixtures.src",
-					testRootList = fixtureCorpus,
+					sourceRoot       = fixtureSrc,
+					componentPrefix  = "tests.resources.gapAnalysisFixtures.src",
+					testRootList     = fixtureCorpus,
 					excludeFileNames = "GapFixture.cfc"
 				);
 				expect( r.stats.totalFunctions ).toBe( 0 );
@@ -82,23 +82,23 @@ component extends="testbox.system.BaseSpec" {
 
 			it( "analyze with excludePathPrefixes omits CFCs under that path", function(){
 				var r = gapSvc.analyze(
-					sourceRoot = fixtureSrc,
-					componentPrefix = "tests.resources.gapAnalysisFixtures.src",
-					testRootList = fixtureCorpus,
+					sourceRoot          = fixtureSrc,
+					componentPrefix     = "tests.resources.gapAnalysisFixtures.src",
+					testRootList        = fixtureCorpus,
 					excludePathPrefixes = "small"
 				);
 				expect( r.stats.totalFunctions ).toBe( 0 );
 			} );
 
 			it( "renderReport returns HTML with gap branding", function(){
-				var tb = new testbox.system.TestBox();
+				var tb   = new testbox.system.TestBox();
 				var html = gapSvc.renderReport(
-					testbox = tb,
+					testbox   = tb,
 					gapReport = {
-						stats     : {
-							totalFunctions : 0,
-							coveredHeuristic : 0,
-							missingHeuristic : 0,
+						stats : {
+							totalFunctions    : 0,
+							coveredHeuristic  : 0,
+							missingHeuristic  : 0,
 							skippedComponents : 0
 						},
 						uncovered : [],
@@ -106,9 +106,9 @@ component extends="testbox.system.BaseSpec" {
 						skipped   : []
 					},
 					gapRunnerSummary = {},
-					runnerErrors = [],
-					ran = false,
-					justReturn = true
+					runnerErrors     = [],
+					ran              = false,
+					justReturn       = true
 				);
 				expect( len( html ) ).toBeGT( 200 );
 				expect( html ).toInclude( "Gap analysis" );
@@ -116,7 +116,7 @@ component extends="testbox.system.BaseSpec" {
 			} );
 
 			it( "renderRunnerEmbed returns inline fragment without doctype", function(){
-				var tb = new testbox.system.TestBox();
+				var tb   = new testbox.system.TestBox();
 				var html = gapSvc.renderRunnerEmbed( tb, false );
 				expect( html ).notToInclude( "<!DOCTYPE html>" );
 				expect( html ).toInclude( "Gap analysis" );

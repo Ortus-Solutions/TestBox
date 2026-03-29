@@ -1,6 +1,6 @@
 component {
 
-	public void function excludedByFileName() {
+	public void function excludedByFileName(){
 	}
 
 }

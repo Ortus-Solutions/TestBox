@@ -1,6 +1,6 @@
 component {
 
-	public void function keep() {
+	public void function keep(){
 	}
 
 }

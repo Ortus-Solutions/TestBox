@@ -1,5 +1,7 @@
 component {
-	public function gapFixtureNestedOnly() {
+
+	public function gapFixtureNestedOnly(){
 		return true;
 	}
+
 }

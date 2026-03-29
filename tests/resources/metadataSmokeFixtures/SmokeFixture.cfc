@@ -3,10 +3,10 @@
  */
 component {
 
-	public void function publicNoArg() {
+	public void function publicNoArg(){
 	}
 
-	public void function publicRequiredString( required string x ) {
+	public void function publicRequiredString( required string x ){
 	}
 
 }
