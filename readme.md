@@ -301,11 +301,27 @@ class {
 
 The **HTML runner** (`system/runners/HTMLRunner.cfm`) supports `gapAnalysis=true` on the **same URL** as a normal test run. TestBox wires the run the usual way (`directory`, `bundles`, `recurse`, `coveragePathToCapture`, etc.); gap mode skips `testbox.run()` and renders an HTML report (same TestBox CSS/JS as the Simple reporter) comparing **public/remote** function names from component metadata against a **concatenated test corpus** (`.cfc`/`.cfm` text under the resolved `directory` paths). Test corpus discovery uses the same **`recurse`** flag and **`directoryList`** shape as `getSpecPaths` (nested folders match a normal directory run). A function is “covered” when its **lowercased name** appears as a substring in that corpus. The **component prefix** is inferred from `coveragePathToCapture` and application **mappings** (longest mapping match).
 
-The **Simple** HTML reporter embeds a short gap analysis strip on normal test runs (description and a **Run gap analysis** link; the full runner parameter list appears only on the dedicated gap report), via `TestBox.getGapAnalysisService().renderRunnerEmbed()`—the same service pattern as code coverage’s `getCoverageService().renderStats()`.
+The **Simple** HTML reporter shows a **toolbar** beside *Run all tests* with:
 
-Example: `runner.cfm?directory=tests/specs&coveragePathToCapture=/com/myapp&gapAnalysis=true` (adjust paths for your app).
+- **Gap analysis** — same URL as the current run plus `gapAnalysis=true` (via `GapAnalysisService.buildRunnerSummaryFromRequest()`).
+- **Metadata smoke** — same query string plus `metadataSmoke=true` (via `MetadataSmokeService.buildSmokeRunnerSummaryFromRequest()`).
+- **Code coverage** — same query string plus `coverageEnabled=true` and `coveragePathToCapture` when set (via `CoverageService.buildCoverageRunUrlFromRequest()`). The button is **disabled** until a capture path exists (runner URL `coveragePathToCapture` or TestBox `coverage.options.pathToCapture`).
 
-**Portability:** Gap analysis is implemented only in TestBox (`HTMLRunner.cfm` + `GapAnalysisService`). Any application with a **`/testbox` mapping** and a thin **`runner.cfm`** that includes `HTMLRunner.cfm` can use it by URL parameters alone—no PalCare- or project-specific CFC glue is required. You must pass a non-empty **`coveragePathToCapture`** (and **`directory`**) so the engine can resolve the source root and infer the component prefix.
+Standalone embeds and full pages still use `GapAnalysisService.renderRunnerEmbed()`, `MetadataSmokeService.renderRunnerEmbed()`, and `getCoverageService().renderStats()` where appropriate.
+
+Example (gap analysis in the browser):  
+`http://localhost/tests/runner.cfm?directory=tests/specs&coveragePathToCapture=/com/myapp&reporter=simple&gapAnalysis=true`
+
+Example (same host, Simple reporter first, then use the toolbar *Gap analysis* instead of hand-editing the URL):  
+`http://localhost/tests/runner.cfm?directory=tests/specs&coveragePathToCapture=/com/myapp&reporter=simple`
+
+Example (metadata smoke directory mode):  
+`http://localhost/tests/runner.cfm?directory=tests/specs&reporter=simple&metadataSmoke=true&metadataSmokeDirectoryRoot=/com/myapp&metadataSmokeDirectoryPrefix=com.myapp`
+
+Example (line coverage run — requires FusionReactor instrumentation as documented for `CoverageService`):  
+`http://localhost/tests/runner.cfm?directory=tests/specs&coveragePathToCapture=/com/myapp&reporter=simple&coverageEnabled=true`
+
+**Portability:** Gap analysis is implemented only in TestBox (`HTMLRunner.cfm` + `GapAnalysisService`). Any application with a **`/testbox` mapping** and a thin **`runner.cfm`** that includes `HTMLRunner.cfm` can use it by URL parameters alone—no application-specific CFC glue is required. You must pass a non-empty **`coveragePathToCapture`** (and **`directory`**) so the engine can resolve the source root and infer the component prefix.
 
 On **BoxLang**, the CLI runner (`system/runners/BoxLangRunner.bx`) can write `gapAnalysis.html` when `--gap-analysis=true` is set (requires `--directory`; uses `--coverage-path-to-capture` like the HTML runner).
 
@@ -364,7 +380,7 @@ Single component: `runner.cfm?metadataSmoke=true&metadataSmokeComponent=com.myap
 
 Optional: `&metadataSmokeInvoke=true` or `&metadataSmokeFormat=json`.
 
-The **Simple** HTML reporter embeds a short metadata smoke strip on normal test runs (a **Run metadata smoke** link built from the current URL), via **`TestBox.getMetadataSmokeService().renderRunnerEmbed()`**—the same pattern as gap analysis and code coverage stats.
+On normal test runs with the **Simple** reporter, use the toolbar **Metadata smoke** control (built from the current URL) or call **`TestBox.getMetadataSmokeService().renderRunnerEmbed()`** if you are composing a custom report page.
 
 The bundled **cfml/runner/index.cfm** developer form includes **metadata smoke** fields (alongside gap analysis); submitting runs **`HTMLRunner.cfm`** with the same query parameters as a hand-built URL.
 
