@@ -146,7 +146,7 @@ if ( gapFlag ) {
 
 metadataSmokeFlag = structKeyExists( url, "metadataSmoke" ) && listFindNoCase( "true,yes,1", trim( toString( url.metadataSmoke ) ) ) > 0;
 if ( !metadataSmokeFlag ) {
-	for ( var k in url ) {
+	for ( k in url ) {
 		if ( reReplace( lCase( k ), "[^a-z]", "", "all" ) == "metadatasmoke" && listFindNoCase( "true,yes,1", trim( toString( url[ k ] ) ) ) > 0 ) {
 			metadataSmokeFlag = true;
 			break;
