@@ -86,8 +86,7 @@ component accessors="true" {
 				continue;
 			}
 
-			var rel = replaceNoCase( f, rootPath, "", "one" );
-			rel     = reReplace( rel, "^[\\/]+", "" );
+			var relPath = relativeCfcFileUnderRoot( rootPath, f );
 
 			if ( len( excludePrefixes ) ) {
 				var skipByPrefix = false;
@@ -102,7 +101,7 @@ component accessors="true" {
 						"\\$1",
 						"all"
 					) & "[\\/]";
-					if ( reFindNoCase( pfxRe, rel ) ) {
+					if ( reFindNoCase( pfxRe, relPath ) ) {
 						skipByPrefix = true;
 						break;
 					}
@@ -112,10 +111,7 @@ component accessors="true" {
 				}
 			}
 
-			rel             = reReplaceNoCase( rel, "\.cfc$", "" );
-			rel             = replace( rel, "\", ".", "all" );
-			rel             = replace( rel, "/", ".", "all" );
-			var componentId = arguments.dottedPrefix & "." & rel;
+			var componentId = arguments.dottedPrefix & "." & dottedSuffixFromRelativeCfcFile( relPath );
 
 			if ( len( excludeIds ) && listFindNoCase( excludeIds, componentId ) ) {
 				continue;
@@ -255,8 +251,7 @@ component accessors="true" {
 				continue;
 			}
 
-			var rel = replaceNoCase( f, rootPath, "", "one" );
-			rel     = reReplace( rel, "^[\\/]+", "" );
+			var relPath = relativeCfcFileUnderRoot( rootPath, f );
 
 			if ( len( excludePrefixes ) ) {
 				var skipByPrefix = false;
@@ -271,7 +266,7 @@ component accessors="true" {
 						"\\$1",
 						"all"
 					) & "[\\/]";
-					if ( reFindNoCase( pfxRe, rel ) ) {
+					if ( reFindNoCase( pfxRe, relPath ) ) {
 						skipByPrefix = true;
 						break;
 					}
@@ -281,10 +276,7 @@ component accessors="true" {
 				}
 			}
 
-			rel             = reReplaceNoCase( rel, "\.cfc$", "" );
-			rel             = replace( rel, "\", ".", "all" );
-			rel             = replace( rel, "/", ".", "all" );
-			var componentId = arguments.dottedPrefix & "." & rel;
+			var componentId = arguments.dottedPrefix & "." & dottedSuffixFromRelativeCfcFile( relPath );
 
 			if ( len( excludeIds ) && listFindNoCase( excludeIds, componentId ) ) {
 				continue;
@@ -396,6 +388,24 @@ component accessors="true" {
 	}
 
 	/**
+	 * Path of a CFC relative to root, using forward slashes (directoryList() may use backslashes on Windows).
+	 */
+	private string function relativeCfcFileUnderRoot( required string rootDir, required string absoluteFilePath ){
+		var rootNorm = normalizeDirectoryPath( arguments.rootDir );
+		if ( right( rootNorm, 1 ) != "/" ) {
+			rootNorm &= "/";
+		}
+		var fileNorm = replace( arguments.absoluteFilePath, "\", "/", "all" );
+		var rel = replaceNoCase( fileNorm, rootNorm, "", "one" );
+		return reReplace( rel, "^[\\/]+", "" );
+	}
+
+	private string function dottedSuffixFromRelativeCfcFile( required string relPathUnderRoot ){
+		var base = reReplaceNoCase( arguments.relPathUnderRoot, "\.cfc$", "" );
+		return replace( base, "/", ".", "all" );
+	}
+
+	/**
 	 * Resolve manifest path for the HTML runner: use the path as-is if it already exists on disk, otherwise expandPath (mapping-relative).
 	 */
 	public string function resolveManifestAbsolutePath( required string manifestInput ){
@@ -448,9 +458,9 @@ component accessors="true" {
 			smokeRunUrl &= "&metadataSmokeManifest=" & urlEncodedFormat( trim( arguments.metadataSmokeManifest ) );
 		}
 		if ( len( trim( arguments.metadataSmokeComponent ) ) ) {
-			smokeRunUrl &= "&metadataSmokeComponent=" & urlEncodedFormat(
-				trim( arguments.metadataSmokeComponent )
-			);
+			var compEnc = urlEncodedFormat( trim( arguments.metadataSmokeComponent ) );
+			compEnc = replace( compEnc, "%2E", ".", "all" );
+			smokeRunUrl &= "&metadataSmokeComponent=" & compEnc;
 		}
 		if (
 			len( trim( arguments.metadataSmokeDirectoryRootWeb ) ) && len(
