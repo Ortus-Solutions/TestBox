@@ -15,6 +15,7 @@ component {
 	// Map back to its root
 	rootPath                            = reReplaceNoCase( this.mappings[ "/tests" ], "tests(\\|/)$", "" );
 	this.mappings[ "/testbox" ]         = rootPath;
+	this.mappings[ "/system" ]          = rootPath & "system";
 	// Map resources
 	this.mappings[ "/coldbox" ]         = this.mappings[ "/tests" ] & "resources/coldbox";
 	// Turn on/off remote cfc content whitespace

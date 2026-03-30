@@ -126,25 +126,25 @@
 								<input class="form-check-input" title="Heuristic gap analysis report instead of running tests" name="gapAnalysis" id="gapAnalysis" type="checkbox" value="true" <cfif url.gapAnalysis>checked="true"</cfif> />
 								<label class="form-check-label" for="gapAnalysis"> Gap analysis (HTML report)</label>
 							</div>
-							<p class="small">Metadata smoke validates component metadata (and optional dummy invokes). Use a manifest path, <code>directory root + prefix</code>, or a single component—see TestBox readme.</p>
+							<p class="small">Smoke Test lists public/remote functions from metadata and can optionally dummy-invoke them (failures ignored). Not line coverage. Use a manifest, <code>directory root + prefix</code>, or a single component—see TestBox readme.</p>
 							<div class="form-group form-check">
-								<input class="form-check-input" title="Metadata smoke report instead of running tests" name="metadataSmoke" id="metadataSmoke" type="checkbox" value="true" <cfif url.metadataSmoke>checked="true"</cfif> />
-								<label class="form-check-label" for="metadataSmoke"> Metadata smoke (HTML or JSON)</label>
+								<input class="form-check-input" title="Smoke Test report instead of running tests" name="metadataSmoke" id="metadataSmoke" type="checkbox" value="true" <cfif url.metadataSmoke>checked="true"</cfif> />
+								<label class="form-check-label" for="metadataSmoke"> Smoke Test (HTML or JSON)</label>
 							</div>
 							<div class="form-group">
-								<label for="metadataSmokeManifest">Metadata smoke — manifest (web path)</label>
+								<label for="metadataSmokeManifest">Smoke Test — manifest (web path)</label>
 								<input class="form-control" type="text" name="metadataSmokeManifest" id="metadataSmokeManifest" value="#htmlEditFormat( url.metadataSmokeManifest )#" placeholder="/tests/specs/manifest.json" />
 							</div>
 							<div class="form-group">
-								<label for="metadataSmokeComponent">Metadata smoke — single component</label>
+								<label for="metadataSmokeComponent">Smoke Test — single component</label>
 								<input class="form-control" type="text" name="metadataSmokeComponent" id="metadataSmokeComponent" value="#htmlEditFormat( url.metadataSmokeComponent )#" placeholder="com.myapp.Foo" />
 							</div>
 							<div class="form-group">
-								<label for="metadataSmokeDirectoryRoot">Metadata smoke — directory root (mapping path)</label>
+								<label for="metadataSmokeDirectoryRoot">Smoke Test — directory root (mapping path)</label>
 								<input class="form-control" type="text" name="metadataSmokeDirectoryRoot" id="metadataSmokeDirectoryRoot" value="#htmlEditFormat( url.metadataSmokeDirectoryRoot )#" placeholder="/com/myapp" />
 							</div>
 							<div class="form-group">
-								<label for="metadataSmokeDirectoryPrefix">Metadata smoke — dotted prefix</label>
+								<label for="metadataSmokeDirectoryPrefix">Smoke Test — dotted prefix</label>
 								<input class="form-control" type="text" name="metadataSmokeDirectoryPrefix" id="metadataSmokeDirectoryPrefix" value="#htmlEditFormat( url.metadataSmokeDirectoryPrefix )#" placeholder="com.myapp" />
 							</div>
 							<div class="form-group">
@@ -161,10 +161,10 @@
 							</div>
 							<div class="form-group form-check">
 								<input class="form-check-input" name="metadataSmokeInvoke" id="metadataSmokeInvoke" type="checkbox" value="true" <cfif url.metadataSmokeInvoke>checked="true"</cfif> />
-								<label class="form-check-label" for="metadataSmokeInvoke"> Metadata smoke — dummy invoke</label>
+								<label class="form-check-label" for="metadataSmokeInvoke"> Smoke Test — dummy invoke</label>
 							</div>
 							<div class="form-group">
-								<label for="metadataSmokeFormat">Metadata smoke output format</label>
+								<label for="metadataSmokeFormat">Smoke Test output format</label>
 								<input class="form-control" type="text" name="metadataSmokeFormat" id="metadataSmokeFormat" value="#htmlEditFormat( url.metadataSmokeFormat )#" placeholder="json or leave empty for HTML" />
 							</div>
 							<div class="form-group">

@@ -49,7 +49,7 @@
  * --stacktrace : Stacktrace detail level for stream failures/errors: `short` or `full`, defaults to `short`.
  * --gap-analysis : When `true`, skip test execution and write heuristic gap analysis HTML to the report path (`gapAnalysis.html`). Requires `--directory` (dot paths; comma-separated allowed). Uses `--coverage-path-to-capture` when set (same role as HTML runner `coveragePathToCapture`).
  * --coverage-path-to-capture : Optional absolute or mapping-expandable root of source CFCs for gap analysis (passed through TestBox coverage options).
- * --metadata-smoke : When `true`, skip test execution and write metadata smoke output to the report path (`metadataSmoke.html` or `metadataSmoke.json` when `--metadata-smoke-format=json`). Provide one of: `--metadata-smoke-manifest`, `--metadata-smoke-component`, or `--metadata-smoke-directory-root` with `--metadata-smoke-directory-prefix` (mirrors `HTMLRunner.cfm`).
+ * --metadata-smoke : When `true`, skip test execution and write Smoke Test output to the report path (`metadataSmoke.html` or `metadataSmoke.json` when `--metadata-smoke-format=json`). Provide one of: `--metadata-smoke-manifest`, `--metadata-smoke-component`, or `--metadata-smoke-directory-root` with `--metadata-smoke-directory-prefix` (mirrors `HTMLRunner.cfm`).
  * --metadata-smoke-manifest : Web or absolute path to JSON manifest (resolved like the HTML runner).
  * --metadata-smoke-component : Single dotted component path.
  * --metadata-smoke-directory-root : Source root for directory inline scan (mapping-expandable).
@@ -883,7 +883,7 @@ class{
 	}
 
 	/**
-	 * Metadata smoke mode: HTML or JSON in report path (mirrors HTMLRunner metadataSmoke branch).
+	 * Smoke Test mode: HTML or JSON in report path (mirrors HTMLRunner metadataSmoke branch).
 	 */
 	private function runMetadataSmokeCli(
 		required testbox,
@@ -955,7 +955,7 @@ class{
 				"invokeEnabled" : invokeFlag
 			}
 			fileWrite( afterRunArgs.reportPath & "/metadataSmoke.json", jsonSerialize( jsonPayload ) )
-			println( "Metadata smoke JSON written to #afterRunArgs.reportPath#/metadataSmoke.json" )
+			println( "Smoke Test JSON written to #afterRunArgs.reportPath#/metadataSmoke.json" )
 		} else {
 			var smokeHtml = smokeSvc.renderReport(
 				testbox = testbox,
@@ -973,7 +973,7 @@ class{
 				justReturn = true
 			)
 			fileWrite( afterRunArgs.reportPath & "/metadataSmoke.html", smokeHtml )
-			println( "Metadata smoke report written to #afterRunArgs.reportPath#/metadataSmoke.html" )
+			println( "Smoke Test report written to #afterRunArgs.reportPath#/metadataSmoke.html" )
 		}
 	}
 

@@ -301,11 +301,13 @@ class {
 
 The **HTML runner** (`system/runners/HTMLRunner.cfm`) supports `gapAnalysis=true` on the **same URL** as a normal test run. TestBox wires the run the usual way (`directory`, `bundles`, `recurse`, `coveragePathToCapture`, etc.); gap mode skips `testbox.run()` and renders an HTML report (same TestBox CSS/JS as the Simple reporter) comparing **public/remote** function names from component metadata against a **concatenated test corpus** (`.cfc`/`.cfm` text under the resolved `directory` paths). Test corpus discovery uses the same **`recurse`** flag and **`directoryList`** shape as `getSpecPaths` (nested folders match a normal directory run). A function is “covered” when its **lowercased name** appears as a substring in that corpus. The **component prefix** is inferred from `coveragePathToCapture` and application **mappings** (longest mapping match).
 
-The **Simple** HTML reporter shows a **toolbar** beside *Run all tests* with:
+The **Simple** HTML reporter places **Gap analysis**, **Smoke Test**, and **Code coverage** on **one** row below the main header/filter area: a single flex strip (`d-flex flex-wrap justify-content-end align-items-center mt-3 mb-3` in `system/reports/assets/simple.cfm`) so those controls align with each other (not on the same bar as *Run all tests*).
 
 - **Gap analysis** — same URL as the current run plus `gapAnalysis=true` (via `GapAnalysisService.buildRunnerSummaryFromRequest()`).
-- **Metadata smoke** — same query string plus `metadataSmoke=true` (via `MetadataSmokeService.buildSmokeRunnerSummaryFromRequest()`).
+- **Smoke Test** — same query string plus `metadataSmoke=true` (via `MetadataSmokeService.buildSmokeRunnerSummaryFromRequest()`).
 - **Code coverage** — same query string plus `coverageEnabled=true` and `coveragePathToCapture` when set (via `CoverageService.buildCoverageRunUrlFromRequest()`). The button is **disabled** until a capture path exists (runner URL `coveragePathToCapture` or TestBox `coverage.options.pathToCapture`).
+
+The TestBox **`tests/Application.cfc`** maps `/testbox` and **`/system`** (the latter to `rootPath & "system"`, i.e. `testbox/system/` next to `tests/`) so specs that reference `system.*` components resolve when the CFML webroot is **not** the TestBox root (for example, TestBox embedded under another site). Standalone servers whose webroot **is** the TestBox folder still resolve `system/` from the filesystem as before.
 
 Standalone embeds and full pages still use `GapAnalysisService.renderRunnerEmbed()`, `MetadataSmokeService.renderRunnerEmbed()`, and `getCoverageService().renderStats()` where appropriate.
 
@@ -315,7 +317,7 @@ Example (gap analysis in the browser):
 Example (same host, Simple reporter first, then use the toolbar *Gap analysis* instead of hand-editing the URL):  
 `http://localhost/tests/runner.cfm?directory=tests/specs&coveragePathToCapture=/com/myapp&reporter=simple`
 
-Example (metadata smoke directory mode):  
+Example (Smoke Test directory mode):  
 `http://localhost/tests/runner.cfm?directory=tests/specs&reporter=simple&metadataSmoke=true&metadataSmokeDirectoryRoot=/com/myapp&metadataSmokeDirectoryPrefix=com.myapp`
 
 Example (line coverage run — requires FusionReactor instrumentation as documented for `CoverageService`):  
@@ -327,7 +329,7 @@ On **BoxLang**, the CLI runner (`system/runners/BoxLangRunner.bx`) can write `ga
 
 This is a **development signal only**: not line coverage, not execution coverage; false positives/negatives are possible.
 
-### Metadata smoke (CFML, optional)
+### Smoke Test (CFML, optional)
 
 `TestBox.getMetadataSmokeService()` exposes `testbox.system.smoke.MetadataSmokeService` for **reflection smoke checks** driven by dotted component paths (from a file, an in-memory list, a single component, or a directory walk):
 
@@ -353,7 +355,7 @@ The stock **`system/runners/HTMLRunner.cfm`** supports query parameters so you d
 
 | Parameter | Meaning |
 |-----------|---------|
-| `metadataSmoke=true` | Run metadata smoke instead of the normal test suite. (Alias: any query key whose letters match `metadatasmoke`, e.g. `metadatasmoke=true`.) |
+| `metadataSmoke=true` | Run Smoke Test instead of the normal test suite. (Alias: any query key whose letters match `metadatasmoke`, e.g. `metadatasmoke=true`.) |
 | *(request scope)* | **`request.metadataSmokeManifestItems`** — array or `{ "items": [ ... ] }` envelope: in-memory manifest (no file). Highest precedence. |
 | *(request scope)* | **`request.metadataSmokeDirectoryScan`** — struct: **`absoluteComponentRoot`**, **`dottedPrefix`**, optional **`options`**. |
 | `metadataSmokeComponent` | Single dotted component path (e.g. `com.myapp.Foo`). |
@@ -380,9 +382,9 @@ Single component: `runner.cfm?metadataSmoke=true&metadataSmokeComponent=com.myap
 
 Optional: `&metadataSmokeInvoke=true` or `&metadataSmokeFormat=json`.
 
-On normal test runs with the **Simple** reporter, use the toolbar **Metadata smoke** control (built from the current URL) or call **`TestBox.getMetadataSmokeService().renderRunnerEmbed()`** if you are composing a custom report page.
+On normal test runs with the **Simple** reporter, use the toolbar **Smoke Test** control (built from the current URL) or call **`TestBox.getMetadataSmokeService().renderRunnerEmbed()`** if you are composing a custom report page.
 
-The bundled **cfml/runner/index.cfm** developer form includes **metadata smoke** fields (alongside gap analysis); submitting runs **`HTMLRunner.cfm`** with the same query parameters as a hand-built URL.
+The bundled **cfml/runner/index.cfm** developer form includes **Smoke Test** fields (alongside gap analysis); submitting runs **`HTMLRunner.cfm`** with the same query parameters as a hand-built URL.
 
 On **BoxLang**, the CLI runner (`system/runners/BoxLangRunner.bx`) writes **`metadataSmoke.html`** (or **`metadataSmoke.json`** when **`--metadata-smoke-format=json`**) under **`--reportpath`** when **`--metadata-smoke=true`**. Provide one of **`--metadata-smoke-manifest`**, **`--metadata-smoke-component`**, or **`--metadata-smoke-directory-root`** with **`--metadata-smoke-directory-prefix`**; optional **`--metadata-smoke-invoke`** and exclude lists mirror the HTML runner.
 

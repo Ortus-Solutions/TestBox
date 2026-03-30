@@ -2,7 +2,7 @@
  * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * HTML view for metadata smoke (manifest reflection checks); used by MetadataSmokeService.renderReport().
+ * HTML view for Smoke Test (manifest reflection checks); used by MetadataSmokeService.renderReport().
  */
 component extends="BaseReporter" {
 

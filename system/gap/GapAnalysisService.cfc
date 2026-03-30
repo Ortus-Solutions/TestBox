@@ -2,8 +2,8 @@
  * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * Heuristic gap analysis: compares public/remote function names from component metadata
- * to concatenated test/spec file text. This is not line coverage and not proof a test exercises a function.
+ * Gap analysis: for each public/remote function, checks whether its name appears in test/spec
+ * file text (substring anywhere in .cfc/.cfm contents). Not coverage; not proof a function runs.
  * Use TestBox.getGapAnalysisService(); renderRunnerEmbed() feeds the Simple reporter; renderReport() renders full HTML.
  */
 component accessors="true" {

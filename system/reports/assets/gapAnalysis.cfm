@@ -39,6 +39,8 @@
 	variables.coveredFiles = structKeyArray( variables.byFileCovered );
 	arraySort( variables.missingFiles, "textnocase", "asc" );
 	arraySort( variables.coveredFiles, "textnocase", "asc" );
+	variables.gapTooltipDesc = "Gap analysis: In plain terms: does each public or remote function name appear somewhere in your test/spec .cfc / .cfm text? (Anywhere in those files—not only in a test's name.) Not coverage; seeing the name does not prove that function runs.";
+	variables.gapRunTestsTooltip = "Run the normal HTML test suite with the same URL parameters (without gap analysis).";
 </cfscript>
 
 <cfoutput>
@@ -58,49 +60,28 @@
 			<body>
 	</cfif>
 
-	<div class="<cfif variables.gapEmbedCompact && !variables.fullPage>mb-3<cfelse>container-fluid my-3</cfif>">
+	<cfif variables.gapEmbedCompact && !variables.fullPage>
+			<div class="text-nowrap mr-2">
+					<cfif len( variables.gapRunAnalysisUrl )>
+						<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( variables.gapRunAnalysisUrl )#" title="#encodeForHtml( variables.gapTooltipDesc )#"><i class="fas fa-search"></i> Run Gap Analysis</a>
+					</cfif>
+			</div>
+	<cfelse>
+		<div class="container-fluid my-3">
 
-		<cfif variables.gapEmbedCompact && !variables.fullPage>
-			<div class="d-flex justify-content-between align-items-end mb-3 flex-wrap">
+			<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
 				<div class="mb-2 mb-md-0">
-					<h5 class="mb-1"><span class="badge badge-secondary">Gap analysis</span></h5>
-					<p class="text-muted small mb-0 mt-1">
-						Heuristic: public/remote function names are searched as substrings in test/spec <code>.cfc</code>/<code>.cfm</code> text.
-						This is not line coverage and not proof a test exercises a function.
-					</p>
+					<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75" alt="TestBox">
 				</div>
 				<div class="text-nowrap">
 					<cfif len( variables.gapRunAnalysisUrl )>
-						<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( variables.gapRunAnalysisUrl )#"><i class="fas fa-search"></i> Run gap analysis</a>
+						<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( variables.gapRunAnalysisUrl )#" title="#encodeForHtml( variables.gapTooltipDesc )#"><i class="fas fa-search"></i> Run Gap Analysis</a>
 					</cfif>
 					<cfif structKeyExists( gapRunnerSummary, "testsUrl" ) && len( gapRunnerSummary.testsUrl )>
-						<a class="btn btn-sm btn-outline-primary mr-1" href="#htmlEditFormat( gapRunnerSummary.testsUrl )#"><i class="fas fa-vial"></i> Run tests (same URL)</a>
+						<a class="btn btn-sm btn-outline-primary mr-1" href="#htmlEditFormat( gapRunnerSummary.testsUrl )#" title="#encodeForHtml( variables.gapRunTestsTooltip )#"><i class="fas fa-vial"></i> Run tests (same URL)</a>
 					</cfif>
 				</div>
 			</div>
-		<cfelse>
-			<div class="d-flex justify-content-between align-items-end mb-3">
-				<div>
-					<div>
-						<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75">
-						<span class="badge badge-info">v#testbox.getVersion()#</span>
-						<span class="badge badge-secondary">Gap analysis</span>
-					</div>
-					<p class="text-muted small mb-0 mt-2">
-						Heuristic: public/remote function names are searched as substrings in test/spec <code>.cfc</code>/<code>.cfm</code> text.
-						This is not line coverage and not proof a test exercises a function.
-					</p>
-				</div>
-				<div>
-					<cfif len( variables.gapRunAnalysisUrl )>
-						<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( variables.gapRunAnalysisUrl )#"><i class="fas fa-search"></i> Run gap analysis</a>
-					</cfif>
-					<cfif structKeyExists( gapRunnerSummary, "testsUrl" ) && len( gapRunnerSummary.testsUrl )>
-						<a class="btn btn-sm btn-outline-primary mr-1" href="#htmlEditFormat( gapRunnerSummary.testsUrl )#"><i class="fas fa-vial"></i> Run tests (same URL)</a>
-					</cfif>
-				</div>
-			</div>
-		</cfif>
 
 		<cfif !( variables.gapEmbedCompact && !variables.fullPage )>
 			<div class="card mb-3">
@@ -353,7 +334,9 @@
 			</div>
 
 		</cfif>
-	</div>
+
+		</div>
+	</cfif>
 
 </cfoutput>
 <cfif variables.fullPage>

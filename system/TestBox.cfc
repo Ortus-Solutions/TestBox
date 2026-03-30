@@ -29,7 +29,7 @@ component accessors="true" {
 	property name="coverageService";
 	// Gap Analysis Service (heuristic runner HTML and Simple reporter embed)
 	property name="gapAnalysisService";
-	// Metadata smoke reflection helper (optional manifest-based checks)
+	// Smoke Test reflection helper (optional manifest-based checks)
 	property name="metadataSmokeService";
 	// TestBox Modules Registry
 	property name="modules";

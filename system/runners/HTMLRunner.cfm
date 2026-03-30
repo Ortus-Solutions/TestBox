@@ -218,7 +218,7 @@ if ( metadataSmokeFlag ) {
 						ran = true;
 						manifestWeb = "(directory scan)";
 					} else {
-						arrayAppend( runnerErrors, "metadataSmoke requires one of: request.metadataSmokeManifestItems, request.metadataSmokeDirectoryScan, url.metadataSmokeComponent, url.metadataSmokeManifest, or url.metadataSmokeDirectoryRoot + url.metadataSmokeDirectoryPrefix." );
+						arrayAppend( runnerErrors, "Smoke Test requires one of: request.metadataSmokeManifestItems, request.metadataSmokeDirectoryScan, url.metadataSmokeComponent, url.metadataSmokeManifest, or url.metadataSmokeDirectoryRoot + url.metadataSmokeDirectoryPrefix." );
 					}
 				}
 			}

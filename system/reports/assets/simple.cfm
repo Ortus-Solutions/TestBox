@@ -62,10 +62,7 @@
 			#testbox.getCoverageService().renderStats( results.getCoverageData(), false )#
 		</cfif>
 
-		<cfif !structKeyExists( url, "gapAnalysis" ) OR !listFindNoCase( "true,yes,1", trim( toString( url.gapAnalysis ) ) )>
-			#testbox.getGapAnalysisService().renderRunnerEmbed( testbox, false )#
-		</cfif>
-
+		<cfset showGapEmbed = !structKeyExists( url, "gapAnalysis" ) OR !listFindNoCase( "true,yes,1", trim( toString( url.gapAnalysis ) ) )>
 		<cfset msEmbedShow = true>
 		<cfif structKeyExists( url, "metadataSmoke" ) AND listFindNoCase( "true,yes,1", trim( toString( url.metadataSmoke ) ) ) GT 0>
 			<cfset msEmbedShow = false>
@@ -78,8 +75,15 @@
 				</cfif>
 			</cfloop>
 		</cfif>
-		<cfif msEmbedShow>
-			#testbox.getMetadataSmokeService().renderRunnerEmbed( testbox, false )#
+		<cfif showGapEmbed OR msEmbedShow>
+			<div class="d-flex flex-wrap justify-content-end align-items-center mt-3 mb-3">
+				<cfif showGapEmbed>
+					#testbox.getGapAnalysisService().renderRunnerEmbed( testbox, false )#
+				</cfif>
+				<cfif msEmbedShow>
+					#testbox.getMetadataSmokeService().renderRunnerEmbed( testbox, false )#
+				</cfif>
+			</div>
 		</cfif>
 
 		<!--- Global Stats --->

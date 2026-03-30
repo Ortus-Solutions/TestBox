@@ -40,7 +40,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Run metadata smoke for a single component (minimal memory; suitable for one CFC per request).
+	 * Run Smoke Test for a single component (minimal memory; suitable for one CFC per request).
 	 */
 	public struct function runSmokeForSingleComponent(
 		required string componentPath,
@@ -293,7 +293,7 @@ component accessors="true" {
 		required array items,
 		struct envelope = {}
 	){
-		var desc = structKeyExists( arguments.envelope, "description" ) ? arguments.envelope.description : "Component manifest for metadata smoke checks.";
+		var desc = structKeyExists( arguments.envelope, "description" ) ? arguments.envelope.description : "Component manifest for Smoke Test checks.";
 		var lim  = structKeyExists( arguments.envelope, "limitations" ) && isArray( arguments.envelope.limitations )
 		 ? arguments.envelope.limitations
 		 : [];
@@ -396,7 +396,7 @@ component accessors="true" {
 			rootNorm &= "/";
 		}
 		var fileNorm = replace( arguments.absoluteFilePath, "\", "/", "all" );
-		var rel = replaceNoCase( fileNorm, rootNorm, "", "one" );
+		var rel      = replaceNoCase( fileNorm, rootNorm, "", "one" );
 		return reReplace( rel, "^[\\/]+", "" );
 	}
 
@@ -420,7 +420,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Build “back to tests” and “re-run metadata smoke” URLs from the current request (HTML runner).
+	 * Build “back to tests” and “re-run Smoke Test” URLs from the current request (HTML runner).
 	 */
 	public struct function buildSmokeRunnerSummaryFromRequest(
 		required testbox.system.TestBox testbox,
@@ -459,7 +459,7 @@ component accessors="true" {
 		}
 		if ( len( trim( arguments.metadataSmokeComponent ) ) ) {
 			var compEnc = urlEncodedFormat( trim( arguments.metadataSmokeComponent ) );
-			compEnc = replace( compEnc, "%2E", ".", "all" );
+			compEnc     = replace( compEnc, "%2E", ".", "all" );
 			smokeRunUrl &= "&metadataSmokeComponent=" & compEnc;
 		}
 		if (
@@ -492,7 +492,22 @@ component accessors="true" {
 		if ( arguments.metadataSmokeInvoke ) {
 			smokeRunUrl &= "&metadataSmokeInvoke=true";
 		}
-		return { "testsUrl" : testsUrl, "smokeRunUrl" : smokeRunUrl };
+		var smokeRunUrlWithInvoke = smokeRunUrl;
+		if ( findNoCase( "metadataSmokeInvoke=", smokeRunUrlWithInvoke ) ) {
+			smokeRunUrlWithInvoke = reReplaceNoCase(
+				smokeRunUrlWithInvoke,
+				"metadataSmokeInvoke=[^&]*",
+				"metadataSmokeInvoke=true",
+				"all"
+			);
+		} else {
+			smokeRunUrlWithInvoke &= "&metadataSmokeInvoke=true";
+		}
+		return {
+			"testsUrl"              : testsUrl,
+			"smokeRunUrl"           : smokeRunUrl,
+			"smokeRunUrlWithInvoke" : smokeRunUrlWithInvoke
+		};
 	}
 
 	/**
@@ -527,7 +542,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Full-page HTML for metadata smoke (used by HTMLRunner.cfm).
+	 * Full-page HTML for Smoke Test (used by HTMLRunner.cfm).
 	 */
 	public any function renderReport(
 		required testbox.system.TestBox testbox,

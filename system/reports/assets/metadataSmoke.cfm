@@ -9,33 +9,36 @@
 <cfparam name="variables.fullPage" default="true">
 <cfparam name="variables.ASSETS_DIR" default="#expandPath( '/testbox/system/reports/assets' )#">
 
+<cfscript>
+	variables.smokeEmbedTooltip = "Smoke Test: Uses component metadata to list public and remote functions. Not line coverage and not a substitute for real tests.";
+	variables.smokeFullTooltip = "Smoke Test: Loads components from a manifest, a directory scan, or a single CFC path, then does the same metadata pass. Use synthetic arguments; errors are ignored. Not line coverage.";
+	variables.smokeDummySuffix = " Adds metadataSmokeInvoke=true (dummy invokes).";
+	variables.smokeRunTestsTooltip = "Run the normal HTML test suite with the same URL parameters (without Smoke Test mode).";
+</cfscript>
+
 <cfoutput>
 	<cfif variables.smokeEmbedCompact && !variables.fullPage>
-		<div class="mb-3">
-			<div class="d-flex justify-content-between align-items-end mb-3 flex-wrap">
-				<div class="mb-2 mb-md-0">
-					<h5 class="mb-1"><span class="badge badge-secondary">Metadata smoke</span></h5>
-					<p class="text-muted small mb-0 mt-1">
-						Reflection checks on component metadata (public/remote functions). Optional dummy invokes. Not line coverage.
-					</p>
-				</div>
-				<div class="text-nowrap">
+			<div class="text-nowrap">
 					<cfif structKeyExists( smokeRunnerSummary, "smokeRunUrl" ) && len( smokeRunnerSummary.smokeRunUrl )>
-						<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrl )#"><i class="fas fa-search"></i> Run metadata smoke</a>
+						<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeEmbedTooltip )#"><i class="fas fa-search"></i> Run Smoke Test</a>
 					</cfif>
-					<cfif structKeyExists( smokeRunnerSummary, "testsUrl" ) && len( smokeRunnerSummary.testsUrl )>
-						<a class="btn btn-sm btn-outline-primary" href="#htmlEditFormat( smokeRunnerSummary.testsUrl )#"><i class="fas fa-vial"></i> Run tests (same URL)</a>
+					<cfif
+						structKeyExists( smokeRunnerSummary, "smokeRunUrl" )
+						&& len( smokeRunnerSummary.smokeRunUrl )
+						&& structKeyExists( smokeRunnerSummary, "smokeRunUrlWithInvoke" )
+						&& len( smokeRunnerSummary.smokeRunUrlWithInvoke )
+						&& smokeRunnerSummary.smokeRunUrlWithInvoke NEQ smokeRunnerSummary.smokeRunUrl
+					>
+						<a class="btn btn-sm btn-outline-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrlWithInvoke )#" title="#encodeForHtml( variables.smokeEmbedTooltip & variables.smokeDummySuffix )#"><i class="fas fa-bolt"></i> Smoke Test with Dummy Invoke</a>
 					</cfif>
-				</div>
 			</div>
-		</div>
 	<cfelse>
 		<!DOCTYPE html>
 		<html>
 			<head>
 				<meta charset="utf-8">
 				<meta name="generator" content="TestBox v#testbox.getVersion()#">
-				<title>Metadata smoke — TestBox</title>
+				<title>Smoke Test — TestBox</title>
 				<style>#fileRead( "#ASSETS_DIR#/css/main.css" )#</style>
 				<script>#fileRead( "#ASSETS_DIR#/js/jquery-3.3.1.min.js" )#</script>
 				<script>#fileRead( "#ASSETS_DIR#/js/popper.min.js" )#</script>
@@ -44,28 +47,32 @@
 			</head>
 			<body>
 				<div class="container-fluid my-3">
-					<div class="d-flex justify-content-between align-items-end mb-3 flex-wrap">
-						<div>
-							<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75">
-							<span class="badge badge-info">v#htmlEditFormat( testbox.getVersion() )#</span>
-							<span class="badge badge-secondary">Metadata smoke</span>
-							<p class="text-muted small mb-0 mt-2">
-								Reflection checks on component paths (manifest, directory scan, or single CFC). Not line coverage; optional dummy invokes swallow errors.
-							</p>
+					<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+						<div class="mb-2 mb-md-0">
+							<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75" alt="TestBox">
 						</div>
 						<div class="text-nowrap">
 							<cfif structKeyExists( smokeRunnerSummary, "smokeRunUrl" ) && len( smokeRunnerSummary.smokeRunUrl )>
-								<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrl )#"><i class="fas fa-redo"></i> Re-run metadata smoke</a>
+								<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeFullTooltip )#"><i class="fas fa-redo"></i> Re-run Smoke Test</a>
+							</cfif>
+							<cfif
+								structKeyExists( smokeRunnerSummary, "smokeRunUrl" )
+								&& len( smokeRunnerSummary.smokeRunUrl )
+								&& structKeyExists( smokeRunnerSummary, "smokeRunUrlWithInvoke" )
+								&& len( smokeRunnerSummary.smokeRunUrlWithInvoke )
+								&& smokeRunnerSummary.smokeRunUrlWithInvoke NEQ smokeRunnerSummary.smokeRunUrl
+							>
+								<a class="btn btn-sm btn-outline-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrlWithInvoke )#" title="#encodeForHtml( variables.smokeFullTooltip & variables.smokeDummySuffix )#"><i class="fas fa-bolt"></i> Re-run with Dummy Invoke</a>
 							</cfif>
 							<cfif structKeyExists( smokeRunnerSummary, "testsUrl" ) && len( smokeRunnerSummary.testsUrl )>
-								<a class="btn btn-sm btn-outline-primary" href="#htmlEditFormat( smokeRunnerSummary.testsUrl )#"><i class="fas fa-vial"></i> Run tests (same URL)</a>
+								<a class="btn btn-sm btn-outline-primary" href="#htmlEditFormat( smokeRunnerSummary.testsUrl )#" title="#encodeForHtml( variables.smokeRunTestsTooltip )#"><i class="fas fa-vial"></i> Run tests (same URL)</a>
 							</cfif>
 						</div>
 					</div>
 
 					<cfif arrayLen( runnerErrors )>
 						<div class="alert alert-danger">
-							<h5 class="alert-heading">Cannot run metadata smoke</h5>
+							<h5 class="alert-heading">Cannot run Smoke Test</h5>
 							<ul class="mb-0">
 								<cfloop array="#runnerErrors#" index="local.err">
 									<li>#htmlEditFormat( toString( local.err ) )#</li>

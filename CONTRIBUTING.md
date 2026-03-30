@@ -65,7 +65,7 @@ If you discover a security vulnerability, please send an email to the developmen
 
 ### Features consumed from any application
 
-Gap analysis and metadata smoke are implemented in **`system/runners/HTMLRunner.cfm`** and TestBox services, not in consuming applications. **Do not** add vendor-specific or app-specific CFC glue to TestBox for those features. Prefer **documented URL parameters** (and optional **`request`** overrides). A consumer typically only needs a **`/testbox` mapping**, a thin **`runner.cfm`** that includes **`HTMLRunner.cfm`**, and test specs—optionally with **`cfparam`** defaults for URLs such as **`coveragePathToCapture`**, **`metadataSmokeDirectoryRoot`**, or **`metadataSmokeDirectoryPrefix`**.
+Gap analysis and Smoke Test are implemented in **`system/runners/HTMLRunner.cfm`** and TestBox services, not in consuming applications. **Do not** add vendor-specific or app-specific CFC glue to TestBox for those features. Prefer **documented URL parameters** (and optional **`request`** overrides). A consumer typically only needs a **`/testbox` mapping**, a thin **`runner.cfm`** that includes **`HTMLRunner.cfm`**, and test specs—optionally with **`cfparam`** defaults for URLs such as **`coveragePathToCapture`**, **`metadataSmokeDirectoryRoot`**, or **`metadataSmokeDirectoryPrefix`**.
 
 ## Language Compatiblity
 

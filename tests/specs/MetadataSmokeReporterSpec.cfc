@@ -1,5 +1,5 @@
 /**
- * Regression tests for MetadataSmokeReporter (HTML output for metadata smoke runner).
+ * Regression tests for MetadataSmokeReporter (HTML output for Smoke Test runner).
  */
 component extends="testbox.system.BaseSpec" {
 
@@ -29,14 +29,16 @@ component extends="testbox.system.BaseSpec" {
 						"manifestPath"       : "/tests/specs/manifest.json",
 						"invokeEnabled"      : false,
 						"smokeRunnerSummary" : {
-							"testsUrl"    : "/tests/runner.cfm",
-							"smokeRunUrl" : "/tests/runner.cfm?metadataSmoke=true"
+							"testsUrl"              : "/tests/runner.cfm",
+							"smokeRunUrl"           : "/tests/runner.cfm?metadataSmoke=true",
+							"smokeRunUrlWithInvoke" : "/tests/runner.cfm?metadataSmoke=true&metadataSmokeInvoke=true"
 						}
 					},
 					true
 				);
 				expect( len( html ) ).toBeGT( 100 );
-				expect( html ).toInclude( "Metadata smoke" );
+				expect( html ).toInclude( "Smoke Test" );
+				expect( html ).toInclude( "dummy invoke" );
 				expect( html ).toInclude( "DOCTYPE" );
 			} );
 
@@ -55,7 +57,7 @@ component extends="testbox.system.BaseSpec" {
 					},
 					true
 				);
-				expect( html ).toInclude( "Cannot run metadata smoke" );
+				expect( html ).toInclude( "Cannot run Smoke Test" );
 				expect( html ).toInclude( "missing manifest" );
 			} );
 		} );

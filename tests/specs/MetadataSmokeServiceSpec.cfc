@@ -1,5 +1,5 @@
 /**
- * Regression tests for metadata smoke helpers (manifest parsing, directory scan, envelope IO, synthetic invoke args).
+ * Regression tests for Smoke Test helpers (manifest parsing, directory scan, envelope IO, synthetic invoke args).
  */
 component extends="testbox.system.BaseSpec" {
 
@@ -222,7 +222,7 @@ component extends="testbox.system.BaseSpec" {
 				try {
 					svc.writeManifestEnvelope( p, [ "a.b" ], {} );
 					var raw = deserializeJSON( fileRead( p ) );
-					expect( raw.description ).toInclude( "metadata smoke" );
+					expect( raw.description ).toInclude( "Smoke Test" );
 					expect( isArray( raw.limitations ) ).toBeTrue();
 					expect( arrayLen( raw.limitations ) ).toBe( 0 );
 				} finally {
@@ -307,7 +307,8 @@ component extends="testbox.system.BaseSpec" {
 				var tb   = new testbox.system.TestBox( options = { coverage : { enabled : false } } );
 				var html = metaSmokeSvc.renderRunnerEmbed( tb, false );
 				expect( len( html ) ).toBeGT( 80 );
-				expect( html ).toInclude( "Metadata smoke" );
+				expect( html ).toInclude( "Smoke Test" );
+				expect( html ).toInclude( "dummy invoke" );
 				expect( html ).notToInclude( "<!DOCTYPE html>" );
 			} );
 
@@ -322,8 +323,17 @@ component extends="testbox.system.BaseSpec" {
 				var s  = metaSmokeSvc.buildSmokeRunnerSummaryFromRequest( tb, "/tests/specs/m.json", false );
 				expect( structKeyExists( s, "testsUrl" ) ).toBeTrue();
 				expect( structKeyExists( s, "smokeRunUrl" ) ).toBeTrue();
+				expect( structKeyExists( s, "smokeRunUrlWithInvoke" ) ).toBeTrue();
 				expect( s.smokeRunUrl ).toInclude( "metadataSmoke=true" );
 				expect( s.smokeRunUrl ).toInclude( "metadataSmokeManifest" );
+				expect( s.smokeRunUrlWithInvoke ).toInclude( "metadataSmokeInvoke=true" );
+				expect( s.smokeRunUrl ).notToInclude( "metadataSmokeInvoke=" );
+			} );
+
+			it( "buildSmokeRunnerSummaryFromRequest smokeRunUrl matches smokeRunUrlWithInvoke when invoke already on", function(){
+				var tb = new testbox.system.TestBox( options = { coverage : { enabled : false } } );
+				var s  = metaSmokeSvc.buildSmokeRunnerSummaryFromRequest( tb, "/tests/specs/m.json", true );
+				expect( s.smokeRunUrl ).toBe( s.smokeRunUrlWithInvoke );
 			} );
 
 			it( "buildSmokeRunnerSummaryFromRequest includes metadataSmokeComponent when set", function(){
@@ -372,7 +382,7 @@ component extends="testbox.system.BaseSpec" {
 					true
 				);
 				expect( len( html ) ).toBeGT( 100 );
-				expect( html ).toInclude( "Metadata smoke" );
+				expect( html ).toInclude( "Smoke Test" );
 			} );
 		} );
 	}
