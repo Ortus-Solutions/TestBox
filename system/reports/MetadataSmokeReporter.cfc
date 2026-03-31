@@ -37,8 +37,8 @@ component extends="BaseReporter" {
 		variables.smokeRunnerSummary = structKeyExists( arguments.options, "smokeRunnerSummary" ) && isStruct(
 			arguments.options.smokeRunnerSummary
 		) ? arguments.options.smokeRunnerSummary : {};
-		variables.smokeEmbedCompact = structKeyExists( arguments.options, "smokeEmbedCompact" ) ? arguments.options.smokeEmbedCompact : false;
-		variables.fullPage          = structKeyExists( arguments.options, "fullPage" ) ? arguments.options.fullPage : true;
+		variables.smokeEmbedCompact     = structKeyExists( arguments.options, "smokeEmbedCompact" ) ? arguments.options.smokeEmbedCompact : false;
+		variables.fullPage              = structKeyExists( arguments.options, "fullPage" ) ? arguments.options.fullPage : true;
 		variables.smokeEmbedRerunLabels = structKeyExists( arguments.options, "smokeEmbedRerunLabels" ) ? arguments.options.smokeEmbedRerunLabels : false;
 
 		savecontent variable="local.report" {

@@ -62,7 +62,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * When a directory run targets tests/specs/<path>, narrow the source root to <baseSourceRoot>/<path> if present.
+	 * When a directory run targets tests/specs/<path>, narrow the source root to <basesourceroot>/<path> if present.
 	 */
 	public string function resolveSourceRootForDirectoryRequest(
 		required string baseSourceRoot,
@@ -216,7 +216,12 @@ component accessors="true" {
 	}
 
 	private string function _resolveCandidateUnderBase( required string base, required string relativeSourcePath ){
-		var rel = reReplace( replace( arguments.relativeSourcePath, "\", "/", "all" ), "^/+|/+$", "", "all" );
+		var rel = reReplace(
+			replace( arguments.relativeSourcePath, "\", "/", "all" ),
+			"^/+|/+$",
+			"",
+			"all"
+		);
 		if ( !len( rel ) ) {
 			return arguments.base;
 		}
@@ -337,7 +342,7 @@ component accessors="true" {
 	 */
 	private array function _walkDirectoryFiles(
 		required string absoluteRoot,
-		boolean recurse = true,
+		boolean recurse           = true,
 		array extensionsLowercase = [ "cfc" ]
 	){
 		var out      = [];
@@ -345,7 +350,12 @@ component accessors="true" {
 		if ( !rootFile.exists() || !rootFile.isDirectory() ) {
 			return out;
 		}
-		_walkDirectoryFilesWorker( rootFile, arguments.recurse, arguments.extensionsLowercase, out );
+		_walkDirectoryFilesWorker(
+			rootFile,
+			arguments.recurse,
+			arguments.extensionsLowercase,
+			out
+		);
 		return out;
 	}
 
@@ -363,14 +373,24 @@ component accessors="true" {
 			var jarr = createObject( "java", "java.lang.reflect.Array" );
 			var n    = jarr.getLength( children );
 			for ( var i = 0; i < n; i++ ) {
-				var fj = jarr.get( children, javaCast( "int", i ) );
-				_walkDirectoryFilesProcessEntry( fj, arguments.recurse, arguments.extLower, arguments.out );
+				var fj = jarr.get( children, javacast( "int", i ) );
+				_walkDirectoryFilesProcessEntry(
+					fj,
+					arguments.recurse,
+					arguments.extLower,
+					arguments.out
+				);
 			}
 		} else {
 			var n2 = arrayLen( children );
 			for ( var j = 1; j <= n2; j++ ) {
 				var fj2 = children[ j ];
-				_walkDirectoryFilesProcessEntry( fj2, arguments.recurse, arguments.extLower, arguments.out );
+				_walkDirectoryFilesProcessEntry(
+					fj2,
+					arguments.recurse,
+					arguments.extLower,
+					arguments.out
+				);
 			}
 		}
 	}
@@ -383,7 +403,12 @@ component accessors="true" {
 	){
 		if ( arguments.f.isDirectory() ) {
 			if ( arguments.recurse ) {
-				_walkDirectoryFilesWorker( arguments.f, arguments.recurse, arguments.extLower, arguments.out );
+				_walkDirectoryFilesWorker(
+					arguments.f,
+					arguments.recurse,
+					arguments.extLower,
+					arguments.out
+				);
 			}
 		} else {
 			var ext = listLast( arguments.f.getName(), "." );
@@ -417,10 +442,15 @@ component accessors="true" {
 		var files = [];
 		if ( !server.keyExists( "boxlang" ) ) {
 			try {
-				var paths = directoryList( arguments.root, arguments.recurse, "path", "*.cf?" );
+				var paths = directoryList(
+					arguments.root,
+					arguments.recurse,
+					"path",
+					"*.cf?"
+				);
 				if ( isArray( paths ) ) {
 					for ( var i = 1; i <= arrayLen( paths ); i++ ) {
-						var p = replace( paths[ i ], "\", "/", "all" );
+						var p   = replace( paths[ i ], "\", "/", "all" );
 						var ext = listLast( p, "." );
 						if ( arrayFindNoCase( [ "cfc", "cfm" ], ext ) > 0 ) {
 							arrayAppend( files, p );
@@ -431,7 +461,11 @@ component accessors="true" {
 			}
 		}
 		if ( !arrayLen( files ) ) {
-			files = _walkDirectoryFiles( arguments.root, arguments.recurse, [ "cfc", "cfm" ] );
+			files = _walkDirectoryFiles(
+				arguments.root,
+				arguments.recurse,
+				[ "cfc", "cfm" ]
+			);
 		}
 		arraySort( files, "textnocase", "asc" );
 		return files;
@@ -497,10 +531,10 @@ component accessors="true" {
 		array testRootAbs            = [],
 		boolean resolveOptionalPaths = true
 	){
-		var qs                = structKeyExists( cgi, "query_string" ) ? cgi.query_string : "";
-		var stripQs           = reReplace( qs, "&gapAnalysis=[^&]*", "", "all" );
-		stripQs               = reReplace( stripQs, "^gapAnalysis=[^&]*&?", "", "all" );
-		stripQs               = reReplace(
+		var qs      = structKeyExists( cgi, "query_string" ) ? cgi.query_string : "";
+		var stripQs = reReplace( qs, "&gapAnalysis=[^&]*", "", "all" );
+		stripQs     = reReplace( stripQs, "^gapAnalysis=[^&]*&?", "", "all" );
+		stripQs     = reReplace(
 			stripQs,
 			"&metadataSmoke(Invoke|Manifest|Format|Component|DirectoryRoot|DirectoryPrefix|ExcludeFileNames|ExcludePathPrefixes|ExcludeComponentIds)=[^&]*",
 			"",
@@ -513,7 +547,7 @@ component accessors="true" {
 			"",
 			"all"
 		);
-		stripQs = reReplace( stripQs, "^metadataSmoke=[^&]*&?", "", "all" );
+		stripQs               = reReplace( stripQs, "^metadataSmoke=[^&]*&?", "", "all" );
 		stripQs               = reReplace( stripQs, "^[&]+|[&]+$", "", "all" );
 		var testsUrl          = len( stripQs ) ? ( cgi.script_name & "?" & stripQs ) : cgi.script_name;
 		var gapRunAnalysisUrl = len( stripQs ) ? ( cgi.script_name & "?" & stripQs & "&gapAnalysis=true" ) : (

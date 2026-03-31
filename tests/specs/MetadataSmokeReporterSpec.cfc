@@ -62,7 +62,7 @@ component extends="testbox.system.BaseSpec" {
 			} );
 
 			it( "compact embed rerun labels: primary Re-run when last run was normal smoke", function(){
-				var hadInvoke = structKeyExists( url, "metadataSmokeInvoke" );
+				var hadInvoke  = structKeyExists( url, "metadataSmokeInvoke" );
 				var prevInvoke = hadInvoke ? url.metadataSmokeInvoke : "";
 				try {
 					if ( hadInvoke ) {
@@ -82,10 +82,10 @@ component extends="testbox.system.BaseSpec" {
 								"skippedComponents" : []
 							},
 							"runnerErrors"       : [],
-							"ran"                  : true,
-							"manifestPath"         : "",
-							"invokeEnabled"        : false,
-							"smokeRunnerSummary"   : {
+							"ran"                : true,
+							"manifestPath"       : "",
+							"invokeEnabled"      : false,
+							"smokeRunnerSummary" : {
 								"testsUrl"              : "/tests/runner.cfm",
 								"smokeRunUrl"           : "/tests/runner.cfm?metadataSmoke=true",
 								"smokeRunUrlWithInvoke" : "/tests/runner.cfm?metadataSmoke=true&metadataSmokeInvoke=true"
@@ -109,14 +109,14 @@ component extends="testbox.system.BaseSpec" {
 			} );
 
 			it( "compact embed rerun labels: dummy Re-run when last run used dummy invoke (URLs match)", function(){
-				var hadInvoke = structKeyExists( url, "metadataSmokeInvoke" );
+				var hadInvoke  = structKeyExists( url, "metadataSmokeInvoke" );
 				var prevInvoke = hadInvoke ? url.metadataSmokeInvoke : "";
 				try {
 					url.metadataSmokeInvoke = true;
-					var tb   = new testbox.system.TestBox( options = { coverage : { enabled : false } } );
-					var rep  = new testbox.system.reports.MetadataSmokeReporter();
-					var sameInvokeUrl = "/tests/runner.cfm?metadataSmoke=true&metadataSmokeInvoke=true";
-					var html = rep.renderHtml(
+					var tb                  = new testbox.system.TestBox( options = { coverage : { enabled : false } } );
+					var rep                 = new testbox.system.reports.MetadataSmokeReporter();
+					var sameInvokeUrl       = "/tests/runner.cfm?metadataSmoke=true&metadataSmokeInvoke=true";
+					var html                = rep.renderHtml(
 						tb,
 						{
 							"smokeResult" : {
@@ -128,10 +128,10 @@ component extends="testbox.system.BaseSpec" {
 								"skippedComponents" : []
 							},
 							"runnerErrors"       : [],
-							"ran"                  : true,
-							"manifestPath"         : "",
-							"invokeEnabled"        : true,
-							"smokeRunnerSummary"   : {
+							"ran"                : true,
+							"manifestPath"       : "",
+							"invokeEnabled"      : true,
+							"smokeRunnerSummary" : {
 								"testsUrl"              : "/tests/runner.cfm",
 								"smokeRunUrl"           : sameInvokeUrl,
 								"smokeRunUrlWithInvoke" : sameInvokeUrl
@@ -155,13 +155,13 @@ component extends="testbox.system.BaseSpec" {
 			} );
 
 			it( "compact embed rerun labels: two URLs differ after dummy invoke — primary Run, outline Re-run dummy", function(){
-				var hadInvoke = structKeyExists( url, "metadataSmokeInvoke" );
+				var hadInvoke  = structKeyExists( url, "metadataSmokeInvoke" );
 				var prevInvoke = hadInvoke ? url.metadataSmokeInvoke : "";
 				try {
 					url.metadataSmokeInvoke = true;
-					var tb   = new testbox.system.TestBox( options = { coverage : { enabled : false } } );
-					var rep  = new testbox.system.reports.MetadataSmokeReporter();
-					var html = rep.renderHtml(
+					var tb                  = new testbox.system.TestBox( options = { coverage : { enabled : false } } );
+					var rep                 = new testbox.system.reports.MetadataSmokeReporter();
+					var html                = rep.renderHtml(
 						tb,
 						{
 							"smokeResult" : {
@@ -173,10 +173,10 @@ component extends="testbox.system.BaseSpec" {
 								"skippedComponents" : []
 							},
 							"runnerErrors"       : [],
-							"ran"                  : true,
-							"manifestPath"         : "",
-							"invokeEnabled"        : true,
-							"smokeRunnerSummary"   : {
+							"ran"                : true,
+							"manifestPath"       : "",
+							"invokeEnabled"      : true,
+							"smokeRunnerSummary" : {
 								"testsUrl"              : "/tests/runner.cfm",
 								"smokeRunUrl"           : "/tests/runner.cfm?metadataSmoke=true",
 								"smokeRunUrlWithInvoke" : "/tests/runner.cfm?metadataSmoke=true&metadataSmokeInvoke=true"

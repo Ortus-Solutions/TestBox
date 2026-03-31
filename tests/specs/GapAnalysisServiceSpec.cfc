@@ -20,7 +20,7 @@ component extends="testbox.system.BaseSpec" {
 	private void function _ensureDirectory( required string absolutePath ){
 		var f = createObject( "java", "java.io.File" ).init( arguments.absolutePath );
 		if ( !f.exists() && !f.mkdirs() ) {
-			throw( type="TestSetupError", message="Could not create directory: " & arguments.absolutePath );
+			throw( type = "TestSetupError", message = "Could not create directory: " & arguments.absolutePath );
 		}
 	}
 
@@ -83,7 +83,9 @@ component extends="testbox.system.BaseSpec" {
 				_ensureDirectory( mirroredRoot );
 				try {
 					var resolved = gapSvc.resolveSourceRootForDirectoryRequest( srcRoot, directoryArg );
-					expect( replace( resolved, "\", "/", "all" ) ).toBe( replace( mirroredRoot, "\", "/", "all" ) & "/" );
+					expect( replace( resolved, "\", "/", "all" ) ).toBe(
+						replace( mirroredRoot, "\", "/", "all" ) & "/"
+					);
 				} finally {
 					if ( directoryExists( tmpRoot ) ) {
 						directoryDelete( tmpRoot, true );
@@ -99,7 +101,9 @@ component extends="testbox.system.BaseSpec" {
 				_ensureDirectory( mirroredRoot );
 				try {
 					var resolved = gapSvc.resolveSourceRootForDirectoryRequest( srcRoot, directoryArg );
-					expect( replace( resolved, "\", "/", "all" ) ).toBe( replace( mirroredRoot, "\", "/", "all" ) & "/" );
+					expect( replace( resolved, "\", "/", "all" ) ).toBe(
+						replace( mirroredRoot, "\", "/", "all" ) & "/"
+					);
 				} finally {
 					if ( directoryExists( tmpRoot ) ) {
 						directoryDelete( tmpRoot, true );
