@@ -17,6 +17,13 @@ component extends="testbox.system.BaseSpec" {
 		return replace( f.getCanonicalPath(), "\", "/", "all" );
 	}
 
+	private void function _ensureDirectory( required string absolutePath ){
+		var f = createObject( "java", "java.io.File" ).init( arguments.absolutePath );
+		if ( !f.exists() && !f.mkdirs() ) {
+			throw( type="TestSetupError", message="Could not create directory: " & arguments.absolutePath );
+		}
+	}
+
 	function run(){
 		describe( "GapAnalysisService", function(){
 			it( "inferComponentPrefix resolves longest mapping for fixture source root", function(){
@@ -73,7 +80,7 @@ component extends="testbox.system.BaseSpec" {
 				var srcRoot      = tmpRoot & "/src";
 				var mirroredRoot = srcRoot & "/com/palcare/hl7";
 				var directoryArg = "tests/specs/com/palcare/hl7";
-				directoryCreate( mirroredRoot, true );
+				_ensureDirectory( mirroredRoot );
 				try {
 					var resolved = gapSvc.resolveSourceRootForDirectoryRequest( srcRoot, directoryArg );
 					expect( replace( resolved, "\", "/", "all" ) ).toBe( replace( mirroredRoot, "\", "/", "all" ) & "/" );
@@ -89,7 +96,7 @@ component extends="testbox.system.BaseSpec" {
 				var srcRoot      = tmpRoot & "/src/com";
 				var mirroredRoot = srcRoot & "/palcare/hl7";
 				var directoryArg = "tests/specs/com/palcare/hl7";
-				directoryCreate( mirroredRoot, true );
+				_ensureDirectory( mirroredRoot );
 				try {
 					var resolved = gapSvc.resolveSourceRootForDirectoryRequest( srcRoot, directoryArg );
 					expect( replace( resolved, "\", "/", "all" ) ).toBe( replace( mirroredRoot, "\", "/", "all" ) & "/" );

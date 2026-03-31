@@ -41,8 +41,8 @@
 	arraySort( variables.coveredFiles, "textnocase", "asc" );
 	variables.gapTooltipDesc = "Gap analysis: In plain terms: does each public or remote function name appear somewhere in your test/spec .cfc / .cfm text? (Anywhere in those files—not only in a test's name.) Not coverage; seeing the name does not prove that function runs.";
 	if ( !len( variables.gapRunAnalysisUrl ) && structKeyExists( gapRunnerSummary, "testsUrl" ) && len( trim( toString( gapRunnerSummary.testsUrl ) ) ) ) {
-		var tu = trim( toString( gapRunnerSummary.testsUrl ) );
-		variables.gapRunAnalysisUrl = tu & ( find( "?", tu ) ? "&" : "?" ) & "gapAnalysis=true";
+		variables.gapRunAnalysisUrl = trim( toString( gapRunnerSummary.testsUrl ) );
+		variables.gapRunAnalysisUrl = variables.gapRunAnalysisUrl & ( find( "?", variables.gapRunAnalysisUrl ) ? "&" : "?" ) & "gapAnalysis=true";
 	}
 </cfscript>
 
@@ -67,7 +67,7 @@
 	<cfif variables.gapEmbedCompact && !variables.fullPage>
 			<div class="text-nowrap mr-2">
 					<cfif len( variables.gapRunAnalysisUrl )>
-						<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( variables.gapRunAnalysisUrl )#" title="#encodeForHtml( variables.gapTooltipDesc )#"><i class="fas fa-search"></i> Run Gap Analysis</a>
+						<a class="btn btn-sm btn-primary mr-1" href="#encodeForHTML( variables.gapRunAnalysisUrl )#" title="#encodeForHtml( variables.gapTooltipDesc )#"><i class="fas fa-search"></i> Run Gap Analysis</a>
 					</cfif>
 			</div>
 	<cfelse>
@@ -82,7 +82,7 @@
 			<div class="d-flex flex-wrap justify-content-end align-items-center mt-3 mb-3">
 				<cfif len( variables.gapRunAnalysisUrl )>
 					<span class="text-nowrap mr-2">
-						<a class="btn btn-sm btn-primary mr-1 mb-1" href="#htmlEditFormat( variables.gapRunAnalysisUrl )#" title="#encodeForHtml( variables.gapTooltipDesc )#"><i class="fas fa-redo"></i> Re-run Gap Analysis</a>
+						<a class="btn btn-sm btn-primary mr-1 mb-1" href="#encodeForHTML( variables.gapRunAnalysisUrl )#" title="#encodeForHtml( variables.gapTooltipDesc )#"><i class="fas fa-redo"></i> Re-run Gap Analysis</a>
 					</span>
 				</cfif>
 				#testbox.getMetadataSmokeService().renderRunnerEmbed( testbox, false, false )#

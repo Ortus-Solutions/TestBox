@@ -136,7 +136,7 @@ component accessors="true" {
 			var componentId = _toComponentId( rel, opts.componentPrefix );
 			var md          = {};
 			try {
-				md = getComponentMetadata( componentId );
+				md = _getComponentMetadata( fp, componentId );
 			} catch ( any e ) {
 				arrayAppend(
 					skipped,
@@ -246,7 +246,7 @@ component accessors="true" {
 			s = expandPath( arguments.p );
 			s = replace( s, "\", "/", "all" );
 		}
-		if ( !s.endsWith( "/" ) ) {
+		if ( !reFind( "/$", s ) ) {
 			s &= "/";
 		}
 		return s;
@@ -300,12 +300,27 @@ component accessors="true" {
 	private string function _relativePath( required string fullPath, required string root ){
 		var fp   = replace( arguments.fullPath, "\", "/", "all" );
 		var rSrc = replace( arguments.root, "\", "/", "all" );
-		if ( !rSrc.endsWith( "/" ) ) {
+		if ( !reFind( "/$", rSrc ) ) {
 			rSrc &= "/";
 		}
 		var r = replaceNoCase( fp, rSrc, "", "one" );
 		r     = reReplace( r, "^/+", "" );
 		return r;
+	}
+
+	private struct function _getComponentMetadata( required string filePath, required string componentId ){
+		if ( server.keyExists( "boxlang" ) ) {
+			try {
+				return getClassMetadata( arguments.componentId );
+			} catch ( any e0 ) {
+				return getClassMetadata( arguments.filePath );
+			}
+		}
+		try {
+			return getComponentMetadata( arguments.filePath );
+		} catch ( any ePath ) {
+			return getComponentMetadata( arguments.componentId );
+		}
 	}
 
 	private string function _toComponentId( required string relForward, required string prefix ){
@@ -316,23 +331,107 @@ component accessors="true" {
 		return base & "." & p;
 	}
 
+	/**
+	 * Recursive file listing. Adobe/Lucee: same pattern as MetadataSmokeService / CoverageGenerator (directoryList).
+	 * BoxLang CFML: directoryList semantics differ; JVM walk is used first, with directoryList as fallback when empty.
+	 */
+	private array function _walkDirectoryFiles(
+		required string absoluteRoot,
+		boolean recurse = true,
+		array extensionsLowercase = [ "cfc" ]
+	){
+		var out      = [];
+		var rootFile = createObject( "java", "java.io.File" ).init( arguments.absoluteRoot );
+		if ( !rootFile.exists() || !rootFile.isDirectory() ) {
+			return out;
+		}
+		_walkDirectoryFilesWorker( rootFile, arguments.recurse, arguments.extensionsLowercase, out );
+		return out;
+	}
+
+	private void function _walkDirectoryFilesWorker(
+		required any dirFile,
+		required boolean recurse,
+		required array extLower,
+		required array out
+	){
+		var children = dirFile.listFiles();
+		if ( isNull( children ) ) {
+			return;
+		}
+		if ( server.keyExists( "boxlang" ) ) {
+			var jarr = createObject( "java", "java.lang.reflect.Array" );
+			var n    = jarr.getLength( children );
+			for ( var i = 0; i < n; i++ ) {
+				var fj = jarr.get( children, javaCast( "int", i ) );
+				_walkDirectoryFilesProcessEntry( fj, arguments.recurse, arguments.extLower, arguments.out );
+			}
+		} else {
+			var n2 = arrayLen( children );
+			for ( var j = 1; j <= n2; j++ ) {
+				var fj2 = children[ j ];
+				_walkDirectoryFilesProcessEntry( fj2, arguments.recurse, arguments.extLower, arguments.out );
+			}
+		}
+	}
+
+	private void function _walkDirectoryFilesProcessEntry(
+		required any f,
+		required boolean recurse,
+		required array extLower,
+		required array out
+	){
+		if ( arguments.f.isDirectory() ) {
+			if ( arguments.recurse ) {
+				_walkDirectoryFilesWorker( arguments.f, arguments.recurse, arguments.extLower, arguments.out );
+			}
+		} else {
+			var ext = listLast( arguments.f.getName(), "." );
+			if ( arrayFindNoCase( arguments.extLower, ext ) > 0 ) {
+				arrayAppend( arguments.out, replace( arguments.f.getAbsolutePath(), "\", "/", "all" ) );
+			}
+		}
+	}
+
 	private array function _listCfcFiles( required string root ){
-		var raw = directoryList(
-			arguments.root,
-			true,
-			"path",
-			"",
-			"asc",
-			"file"
-		);
 		var files = [];
-		for ( var fp in raw ) {
-			if ( !fileExists( fp ) ) {
-				continue;
+		if ( !server.keyExists( "boxlang" ) ) {
+			try {
+				var paths = directoryList( arguments.root, true, "path", "*.cfc" );
+				if ( isArray( paths ) ) {
+					for ( var i = 1; i <= arrayLen( paths ); i++ ) {
+						arrayAppend( files, replace( paths[ i ], "\", "/", "all" ) );
+					}
+				}
+			} catch ( any e0 ) {
 			}
-			if ( compareNoCase( listLast( fp, "." ), "cfc" ) == 0 ) {
-				arrayAppend( files, fp );
+		}
+		if ( !arrayLen( files ) ) {
+			files = _walkDirectoryFiles( arguments.root, true, [ "cfc" ] );
+		}
+		arraySort( files, "textnocase", "asc" );
+		return files;
+	}
+
+	private array function _listCorpusFiles( required string root, required boolean recurse ){
+		var files = [];
+		if ( !server.keyExists( "boxlang" ) ) {
+			try {
+				var paths = directoryList( arguments.root, arguments.recurse, "path", "*.cf?" );
+				if ( isArray( paths ) ) {
+					for ( var i = 1; i <= arrayLen( paths ); i++ ) {
+						var p = replace( paths[ i ], "\", "/", "all" );
+						var ext = listLast( p, "." );
+						if ( arrayFindNoCase( [ "cfc", "cfm" ], ext ) > 0 ) {
+							arrayAppend( files, p );
+						}
+					}
+				}
+			} catch ( any e0 ) {
 			}
+		}
+		if ( !arrayLen( files ) ) {
+			files = _walkDirectoryFiles( arguments.root, arguments.recurse, [ "cfc", "cfm" ] );
 		}
 		arraySort( files, "textnocase", "asc" );
 		return files;
@@ -368,20 +467,9 @@ component accessors="true" {
 			if ( !directoryExists( base ) ) {
 				continue;
 			}
-			var files = directoryList(
-				base,
-				arguments.recurseTestRoots,
-				"path",
-				"",
-				"asc",
-				"file"
-			);
+			var files = _listCorpusFiles( base, arguments.recurseTestRoots );
 			for ( var fp in files ) {
 				if ( !fileExists( fp ) ) {
-					continue;
-				}
-				var ext = listLast( fp, "." );
-				if ( !arrayFindNoCase( [ "cfc", "cfm" ], ext ) ) {
 					continue;
 				}
 				try {

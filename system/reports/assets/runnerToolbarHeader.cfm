@@ -15,7 +15,7 @@
 		<input class="d-inline col-7 ml-2 form-control float-right mb-1" type="text" name="bundleFilter" id="bundleFilter" placeholder="Filter Bundles..." size="35">
 		<div class="buttonBar mb-1 float-right">
 			<cfif len( trim( variables.runnerToolbarTestsUrl ) )>
-				<a class="ml-1 btn btn-sm btn-primary float-right" href="#htmlEditFormat( variables.runnerToolbarRunAllUrl )#" title="Run all tests">
+				<a class="ml-1 btn btn-sm btn-primary float-right" href="#encodeForHTML( variables.runnerToolbarRunAllUrl )#" title="Run all tests">
 					<i class="fas fa-running"></i> Run All Tests
 				</a>
 			</cfif>

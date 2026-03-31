@@ -164,7 +164,9 @@ component accessors="true" {
 
 		var md = {};
 		try {
-			md = getComponentMetadata( arguments.componentPath );
+			md = server.keyExists( "boxlang" ) ? getClassMetadata( arguments.componentPath ) : getComponentMetadata(
+				arguments.componentPath
+			);
 		} catch ( any mdErr ) {
 			arrayAppend( arguments.out.skippedComponents, arguments.componentPath );
 			return;

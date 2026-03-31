@@ -131,23 +131,23 @@
 							</div>
 							<div class="form-group">
 								<label for="metadataSmokeManifest">Smoke Test — manifest (web path)</label>
-								<input class="form-control" type="text" name="metadataSmokeManifest" id="metadataSmokeManifest" value="#htmlEditFormat( url.metadataSmokeManifest )#" placeholder="/tests/specs/manifest.json" />
+								<input class="form-control" type="text" name="metadataSmokeManifest" id="metadataSmokeManifest" value="#encodeForHTML( url.metadataSmokeManifest )#" placeholder="/tests/specs/manifest.json" />
 							</div>
 							<div class="form-group">
 								<label for="metadataSmokeComponent">Smoke Test — single component</label>
-								<input class="form-control" type="text" name="metadataSmokeComponent" id="metadataSmokeComponent" value="#htmlEditFormat( url.metadataSmokeComponent )#" placeholder="com.myapp.Foo" />
+								<input class="form-control" type="text" name="metadataSmokeComponent" id="metadataSmokeComponent" value="#encodeForHTML( url.metadataSmokeComponent )#" placeholder="com.myapp.Foo" />
 							</div>
 							<div class="form-group">
 								<label for="metadataSmokeExcludeFileNames">Exclude file names (comma list)</label>
-								<input class="form-control" type="text" name="metadataSmokeExcludeFileNames" id="metadataSmokeExcludeFileNames" value="#htmlEditFormat( url.metadataSmokeExcludeFileNames )#" />
+								<input class="form-control" type="text" name="metadataSmokeExcludeFileNames" id="metadataSmokeExcludeFileNames" value="#encodeForHTML( url.metadataSmokeExcludeFileNames )#" />
 							</div>
 							<div class="form-group">
 								<label for="metadataSmokeExcludePathPrefixes">Exclude path prefixes (comma list)</label>
-								<input class="form-control" type="text" name="metadataSmokeExcludePathPrefixes" id="metadataSmokeExcludePathPrefixes" value="#htmlEditFormat( url.metadataSmokeExcludePathPrefixes )#" />
+								<input class="form-control" type="text" name="metadataSmokeExcludePathPrefixes" id="metadataSmokeExcludePathPrefixes" value="#encodeForHTML( url.metadataSmokeExcludePathPrefixes )#" />
 							</div>
 							<div class="form-group">
 								<label for="metadataSmokeExcludeComponentIds">Exclude component IDs (comma list)</label>
-								<input class="form-control" type="text" name="metadataSmokeExcludeComponentIds" id="metadataSmokeExcludeComponentIds" value="#htmlEditFormat( url.metadataSmokeExcludeComponentIds )#" />
+								<input class="form-control" type="text" name="metadataSmokeExcludeComponentIds" id="metadataSmokeExcludeComponentIds" value="#encodeForHTML( url.metadataSmokeExcludeComponentIds )#" />
 							</div>
 							<div class="form-group form-check">
 								<input class="form-check-input" name="metadataSmokeInvoke" id="metadataSmokeInvoke" type="checkbox" value="true" <cfif url.metadataSmokeInvoke>checked="true"</cfif> />
@@ -155,7 +155,7 @@
 							</div>
 							<div class="form-group">
 								<label for="metadataSmokeFormat">Smoke Test output format</label>
-								<input class="form-control" type="text" name="metadataSmokeFormat" id="metadataSmokeFormat" value="#htmlEditFormat( url.metadataSmokeFormat )#" placeholder="json or leave empty for HTML" />
+								<input class="form-control" type="text" name="metadataSmokeFormat" id="metadataSmokeFormat" value="#encodeForHTML( url.metadataSmokeFormat )#" placeholder="json or leave empty for HTML" />
 							</div>
 							<div class="form-group">
 								<label for="reporter">Reporter</label>

@@ -34,14 +34,14 @@
 						<cfset variables.smokeToolbarUrlsDiffer = !structKeyExists( smokeRunnerSummary, "smokeRunUrlWithInvoke" ) OR !len( smokeRunnerSummary.smokeRunUrlWithInvoke ) OR smokeRunnerSummary.smokeRunUrlWithInvoke NEQ smokeRunnerSummary.smokeRunUrl>
 						<cfif variables.smokeEmbedRerunLabels>
 							<cfif variables.smokeToolbarLastRanWithInvoke && !variables.smokeToolbarUrlsDiffer>
-								<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeFullTooltip & variables.smokeDummySuffix )#"><i class="fas fa-redo"></i> Re-run Smoke Test with Dummy Invoke</a>
+								<a class="btn btn-sm btn-primary mr-1" href="#encodeForHTML( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeFullTooltip & variables.smokeDummySuffix )#"><i class="fas fa-redo"></i> Re-run Smoke Test with Dummy Invoke</a>
 							<cfelseif variables.smokeToolbarLastRanWithInvoke>
-								<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeEmbedTooltip )#"><i class="fas fa-search"></i> Run Smoke Test</a>
+								<a class="btn btn-sm btn-primary mr-1" href="#encodeForHTML( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeEmbedTooltip )#"><i class="fas fa-search"></i> Run Smoke Test</a>
 							<cfelse>
-								<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeFullTooltip )#"><i class="fas fa-redo"></i> Re-run Smoke Test</a>
+								<a class="btn btn-sm btn-primary mr-1" href="#encodeForHTML( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeFullTooltip )#"><i class="fas fa-redo"></i> Re-run Smoke Test</a>
 							</cfif>
 						<cfelse>
-							<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeEmbedTooltip )#"><i class="fas fa-search"></i> Run Smoke Test</a>
+							<a class="btn btn-sm btn-primary mr-1" href="#encodeForHTML( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeEmbedTooltip )#"><i class="fas fa-search"></i> Run Smoke Test</a>
 						</cfif>
 					</cfif>
 					<cfif
@@ -52,9 +52,9 @@
 						&& smokeRunnerSummary.smokeRunUrlWithInvoke NEQ smokeRunnerSummary.smokeRunUrl
 					>
 						<cfif variables.smokeEmbedRerunLabels && variables.smokeToolbarLastRanWithInvoke>
-							<a class="btn btn-sm btn-outline-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrlWithInvoke )#" title="#encodeForHtml( variables.smokeFullTooltip & variables.smokeDummySuffix )#"><i class="fas fa-redo"></i> Re-run Smoke Test with Dummy Invoke</a>
+							<a class="btn btn-sm btn-outline-primary mr-1" href="#encodeForHTML( smokeRunnerSummary.smokeRunUrlWithInvoke )#" title="#encodeForHtml( variables.smokeFullTooltip & variables.smokeDummySuffix )#"><i class="fas fa-redo"></i> Re-run Smoke Test with Dummy Invoke</a>
 						<cfelse>
-							<a class="btn btn-sm btn-outline-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrlWithInvoke )#" title="#encodeForHtml( variables.smokeEmbedTooltip & variables.smokeDummySuffix )#"><i class="fas fa-bolt"></i> Smoke Test with Dummy Invoke</a>
+							<a class="btn btn-sm btn-outline-primary mr-1" href="#encodeForHTML( smokeRunnerSummary.smokeRunUrlWithInvoke )#" title="#encodeForHtml( variables.smokeEmbedTooltip & variables.smokeDummySuffix )#"><i class="fas fa-bolt"></i> Smoke Test with Dummy Invoke</a>
 						</cfif>
 					</cfif>
 			</div>
@@ -90,7 +90,7 @@
 							<h5 class="alert-heading">Cannot run Smoke Test</h5>
 							<ul class="mb-0">
 								<cfloop array="#runnerErrors#" index="local.err">
-									<li>#htmlEditFormat( toString( local.err ) )#</li>
+									<li>#encodeForHTML( toString( local.err ) )#</li>
 								</cfloop>
 							</ul>
 						</div>
@@ -101,7 +101,7 @@
 						<div class="card-body">
 							<dl class="row mb-0 small">
 								<dt class="col-sm-3">Manifest / source</dt>
-								<dd class="col-sm-9"><code>#htmlEditFormat( manifestPath )#</code></dd>
+								<dd class="col-sm-9"><code>#encodeForHTML( manifestPath )#</code></dd>
 								<dt class="col-sm-3">Dummy invoke</dt>
 								<dd class="col-sm-9">#invokeEnabled ? "yes" : "no"#</dd>
 							</dl>
@@ -117,7 +117,7 @@
 									<dd class="col-sm-9">#structKeyExists( smokeResult, "success" ) && smokeResult.success ? "true" : "false"#</dd>
 									<cfif structKeyExists( smokeResult, "errorMessage" ) && len( toString( smokeResult.errorMessage ) )>
 										<dt class="col-sm-3">errorMessage</dt>
-										<dd class="col-sm-9 text-danger">#htmlEditFormat( toString( smokeResult.errorMessage ) )#</dd>
+										<dd class="col-sm-9 text-danger">#encodeForHTML( toString( smokeResult.errorMessage ) )#</dd>
 									</cfif>
 									<dt class="col-sm-3">componentCount</dt>
 									<dd class="col-sm-9">#structKeyExists( smokeResult, "componentCount" ) ? val( smokeResult.componentCount ) : 0#</dd>
@@ -130,7 +130,7 @@
 									<h6 class="mt-3">Skipped components (metadata unreadable)</h6>
 									<ul>
 										<cfloop array="#smokeResult.skippedComponents#" index="local.sc">
-											<li><code>#htmlEditFormat( toString( local.sc ) )#</code></li>
+											<li><code>#encodeForHTML( toString( local.sc ) )#</code></li>
 										</cfloop>
 									</ul>
 								</cfif>
