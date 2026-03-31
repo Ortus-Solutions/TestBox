@@ -261,7 +261,7 @@ component extends="testbox.system.BaseSpec" {
 			it( "scanDirectoryToManifestItems lists all CFCs under root when no excludes", function(){
 				var svc = metaSmokeSvc;
 				var ids = svc.scanDirectoryToManifestItems( fixtureScanRoot, fixtureScanPrefix, {} );
-				expect( arrayLen( ids ) ).toBe( 5 );
+				expect( arrayLen( ids ) ).toBe( 4 );
 				expect( ids ).toInclude( fixtureScanPrefix & ".KeepMe" );
 			} );
 
@@ -270,7 +270,7 @@ component extends="testbox.system.BaseSpec" {
 				var ids = svc.scanDirectoryToManifestItems(
 					fixtureScanRoot,
 					fixtureScanPrefix,
-					{ excludeFileNames : "accesslog.cfc,application.cfc" }
+					{ excludeFileNames : "application.cfc" }
 				);
 				expect( arrayLen( ids ) ).toBe( 3 );
 				expect( ids ).toInclude( fixtureScanPrefix & ".KeepMe" );
@@ -283,7 +283,7 @@ component extends="testbox.system.BaseSpec" {
 					fixtureScanPrefix,
 					{ excludeRelativePathPrefixes : "application" }
 				);
-				expect( arrayLen( ids ) ).toBe( 4 );
+				expect( arrayLen( ids ) ).toBe( 3 );
 				expect( ids ).notToInclude( fixtureScanPrefix & ".application.IgnoredUnderApplication" );
 			} );
 
@@ -295,7 +295,7 @@ component extends="testbox.system.BaseSpec" {
 					{ excludeComponentIds : fixtureExcludedById }
 				);
 				expect( ids ).notToInclude( fixtureExcludedById );
-				expect( arrayLen( ids ) ).toBe( 4 );
+				expect( arrayLen( ids ) ).toBe( 3 );
 			} );
 
 			it( "TestBox wires getMetadataSmokeService", function(){

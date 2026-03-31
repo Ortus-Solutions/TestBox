@@ -65,7 +65,7 @@ component accessors="true" {
 	 * @sourceRoot          Absolute directory containing CFCs to scan (e.g. expandPath("/com/myapp")).
 	 * @componentPrefix     Dotted prefix for component IDs (e.g. "com.myapp" for files under sourceRoot).
 	 * @testRootList        Comma-separated absolute directories to scan for test/spec text (cfc/cfm).
-	 * @excludeFileNames    Comma list of file names to skip (case-insensitive), e.g. "accessLog.cfc,application.cfc".
+	 * @excludeFileNames    Comma list of file names to skip (case-insensitive), e.g. "legacyHelper.cfc,application.cfc".
 	 * @excludePathPrefixes Comma list of relative path prefixes under sourceRoot to skip, e.g. "application".
 	 * @recurseTestRoots    Same as TestBox directory runner: when true, include all nested files under each test root (matches getSpecPaths / addDirectories recurse).
 	 */
