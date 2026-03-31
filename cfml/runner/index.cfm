@@ -24,8 +24,6 @@
 <cfparam name="url.metadataSmoke" default="false">
 <cfparam name="url.metadataSmokeManifest" default="">
 <cfparam name="url.metadataSmokeComponent" default="">
-<cfparam name="url.metadataSmokeDirectoryRoot" default="">
-<cfparam name="url.metadataSmokeDirectoryPrefix" default="">
 <cfparam name="url.metadataSmokeExcludeFileNames" default="">
 <cfparam name="url.metadataSmokeExcludePathPrefixes" default="">
 <cfparam name="url.metadataSmokeExcludeComponentIds" default="">
@@ -126,7 +124,7 @@
 								<input class="form-check-input" title="Heuristic gap analysis report instead of running tests" name="gapAnalysis" id="gapAnalysis" type="checkbox" value="true" <cfif url.gapAnalysis>checked="true"</cfif> />
 								<label class="form-check-label" for="gapAnalysis"> Gap analysis (HTML report)</label>
 							</div>
-							<p class="small">Smoke Test lists public/remote functions from metadata and can optionally dummy-invoke them (failures ignored). Not line coverage. Use a manifest, <code>directory root + prefix</code>, or a single component—see TestBox readme.</p>
+							<p class="small">Smoke Test lists public/remote functions from metadata and can optionally dummy-invoke them (failures ignored). Not line coverage. It uses the same <code>directory</code> and <code>coveragePathToCapture</code> flow as normal and gap runs, or you can target a manifest/single component.</p>
 							<div class="form-group form-check">
 								<input class="form-check-input" title="Smoke Test report instead of running tests" name="metadataSmoke" id="metadataSmoke" type="checkbox" value="true" <cfif url.metadataSmoke>checked="true"</cfif> />
 								<label class="form-check-label" for="metadataSmoke"> Smoke Test (HTML or JSON)</label>
@@ -138,14 +136,6 @@
 							<div class="form-group">
 								<label for="metadataSmokeComponent">Smoke Test — single component</label>
 								<input class="form-control" type="text" name="metadataSmokeComponent" id="metadataSmokeComponent" value="#htmlEditFormat( url.metadataSmokeComponent )#" placeholder="com.myapp.Foo" />
-							</div>
-							<div class="form-group">
-								<label for="metadataSmokeDirectoryRoot">Smoke Test — directory root (mapping path)</label>
-								<input class="form-control" type="text" name="metadataSmokeDirectoryRoot" id="metadataSmokeDirectoryRoot" value="#htmlEditFormat( url.metadataSmokeDirectoryRoot )#" placeholder="/com/myapp" />
-							</div>
-							<div class="form-group">
-								<label for="metadataSmokeDirectoryPrefix">Smoke Test — dotted prefix</label>
-								<input class="form-control" type="text" name="metadataSmokeDirectoryPrefix" id="metadataSmokeDirectoryPrefix" value="#htmlEditFormat( url.metadataSmokeDirectoryPrefix )#" placeholder="com.myapp" />
 							</div>
 							<div class="form-group">
 								<label for="metadataSmokeExcludeFileNames">Exclude file names (comma list)</label>

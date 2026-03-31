@@ -7,20 +7,42 @@
 <cfparam name="variables.smokeRunnerSummary" default="#structNew()#">
 <cfparam name="variables.smokeEmbedCompact" default="false">
 <cfparam name="variables.fullPage" default="true">
+<cfparam name="variables.smokeEmbedRerunLabels" default="false">
 <cfparam name="variables.ASSETS_DIR" default="#expandPath( '/testbox/system/reports/assets' )#">
 
 <cfscript>
 	variables.smokeEmbedTooltip = "Smoke Test: Uses component metadata to list public and remote functions. Not line coverage and not a substitute for real tests.";
 	variables.smokeFullTooltip = "Smoke Test: Loads components from a manifest, a directory scan, or a single CFC path, then does the same metadata pass. Use synthetic arguments; errors are ignored. Not line coverage.";
 	variables.smokeDummySuffix = " Adds metadataSmokeInvoke=true (dummy invokes).";
-	variables.smokeRunTestsTooltip = "Run the normal HTML test suite with the same URL parameters (without Smoke Test mode).";
+	variables.smokeToolbarLastRanWithInvoke = false;
+	if ( structKeyExists( url, "metadataSmokeInvoke" ) && listFindNoCase( "true,yes,1", trim( toString( url.metadataSmokeInvoke ) ) ) GT 0 ) {
+		variables.smokeToolbarLastRanWithInvoke = true;
+	} else {
+		for ( uk in structKeyList( url ) ) {
+			if ( reReplace( lCase( uk ), "[^a-z]", "", "all" ) == "metadatasmokeinvoke" && listFindNoCase( "true,yes,1", trim( toString( url[ uk ] ) ) ) GT 0 ) {
+				variables.smokeToolbarLastRanWithInvoke = true;
+				break;
+			}
+		}
+	}
 </cfscript>
 
 <cfoutput>
 	<cfif variables.smokeEmbedCompact && !variables.fullPage>
 			<div class="text-nowrap">
 					<cfif structKeyExists( smokeRunnerSummary, "smokeRunUrl" ) && len( smokeRunnerSummary.smokeRunUrl )>
-						<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeEmbedTooltip )#"><i class="fas fa-search"></i> Run Smoke Test</a>
+						<cfset variables.smokeToolbarUrlsDiffer = !structKeyExists( smokeRunnerSummary, "smokeRunUrlWithInvoke" ) OR !len( smokeRunnerSummary.smokeRunUrlWithInvoke ) OR smokeRunnerSummary.smokeRunUrlWithInvoke NEQ smokeRunnerSummary.smokeRunUrl>
+						<cfif variables.smokeEmbedRerunLabels>
+							<cfif variables.smokeToolbarLastRanWithInvoke && !variables.smokeToolbarUrlsDiffer>
+								<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeFullTooltip & variables.smokeDummySuffix )#"><i class="fas fa-redo"></i> Re-run Smoke Test with Dummy Invoke</a>
+							<cfelseif variables.smokeToolbarLastRanWithInvoke>
+								<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeEmbedTooltip )#"><i class="fas fa-search"></i> Run Smoke Test</a>
+							<cfelse>
+								<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeFullTooltip )#"><i class="fas fa-redo"></i> Re-run Smoke Test</a>
+							</cfif>
+						<cfelse>
+							<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeEmbedTooltip )#"><i class="fas fa-search"></i> Run Smoke Test</a>
+						</cfif>
 					</cfif>
 					<cfif
 						structKeyExists( smokeRunnerSummary, "smokeRunUrl" )
@@ -29,7 +51,11 @@
 						&& len( smokeRunnerSummary.smokeRunUrlWithInvoke )
 						&& smokeRunnerSummary.smokeRunUrlWithInvoke NEQ smokeRunnerSummary.smokeRunUrl
 					>
-						<a class="btn btn-sm btn-outline-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrlWithInvoke )#" title="#encodeForHtml( variables.smokeEmbedTooltip & variables.smokeDummySuffix )#"><i class="fas fa-bolt"></i> Smoke Test with Dummy Invoke</a>
+						<cfif variables.smokeEmbedRerunLabels && variables.smokeToolbarLastRanWithInvoke>
+							<a class="btn btn-sm btn-outline-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrlWithInvoke )#" title="#encodeForHtml( variables.smokeFullTooltip & variables.smokeDummySuffix )#"><i class="fas fa-redo"></i> Re-run Smoke Test with Dummy Invoke</a>
+						<cfelse>
+							<a class="btn btn-sm btn-outline-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrlWithInvoke )#" title="#encodeForHtml( variables.smokeEmbedTooltip & variables.smokeDummySuffix )#"><i class="fas fa-bolt"></i> Smoke Test with Dummy Invoke</a>
+						</cfif>
 					</cfif>
 			</div>
 	<cfelse>
@@ -43,31 +69,20 @@
 				<script>#fileRead( "#ASSETS_DIR#/js/jquery-3.3.1.min.js" )#</script>
 				<script>#fileRead( "#ASSETS_DIR#/js/popper.min.js" )#</script>
 				<script>#fileRead( "#ASSETS_DIR#/js/bootstrap.min.js" )#</script>
+				<script>#fileRead( "#ASSETS_DIR#/js/stupidtable.min.js" )#</script>
 				<script>#fileRead( "#ASSETS_DIR#/js/fontawesome.js" )#</script>
 			</head>
 			<body>
 				<div class="container-fluid my-3">
-					<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-						<div class="mb-2 mb-md-0">
-							<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75" alt="TestBox">
-						</div>
-						<div class="text-nowrap">
-							<cfif structKeyExists( smokeRunnerSummary, "smokeRunUrl" ) && len( smokeRunnerSummary.smokeRunUrl )>
-								<a class="btn btn-sm btn-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrl )#" title="#encodeForHtml( variables.smokeFullTooltip )#"><i class="fas fa-redo"></i> Re-run Smoke Test</a>
-							</cfif>
-							<cfif
-								structKeyExists( smokeRunnerSummary, "smokeRunUrl" )
-								&& len( smokeRunnerSummary.smokeRunUrl )
-								&& structKeyExists( smokeRunnerSummary, "smokeRunUrlWithInvoke" )
-								&& len( smokeRunnerSummary.smokeRunUrlWithInvoke )
-								&& smokeRunnerSummary.smokeRunUrlWithInvoke NEQ smokeRunnerSummary.smokeRunUrl
-							>
-								<a class="btn btn-sm btn-outline-primary mr-1" href="#htmlEditFormat( smokeRunnerSummary.smokeRunUrlWithInvoke )#" title="#encodeForHtml( variables.smokeFullTooltip & variables.smokeDummySuffix )#"><i class="fas fa-bolt"></i> Re-run with Dummy Invoke</a>
-							</cfif>
-							<cfif structKeyExists( smokeRunnerSummary, "testsUrl" ) && len( smokeRunnerSummary.testsUrl )>
-								<a class="btn btn-sm btn-outline-primary" href="#htmlEditFormat( smokeRunnerSummary.testsUrl )#" title="#encodeForHtml( variables.smokeRunTestsTooltip )#"><i class="fas fa-vial"></i> Run tests (same URL)</a>
-							</cfif>
-						</div>
+					<cfset variables.runnerToolbarTestsUrl = "">
+					<cfif structKeyExists( smokeRunnerSummary, "testsUrl" ) && len( trim( toString( smokeRunnerSummary.testsUrl ) ) )>
+						<cfset variables.runnerToolbarTestsUrl = trim( toString( smokeRunnerSummary.testsUrl ) )>
+					</cfif>
+					<cfinclude template="runnerToolbarHeader.cfm">
+
+					<div class="d-flex flex-wrap justify-content-end align-items-center mt-3 mb-3">
+						#testbox.getGapAnalysisService().renderRunnerEmbed( testbox, false )#
+						#testbox.getMetadataSmokeService().renderRunnerEmbed( testbox, false, true )#
 					</div>
 
 					<cfif arrayLen( runnerErrors )>
@@ -123,6 +138,11 @@
 						</div>
 					</cfif>
 				</div>
+			<script>
+			$( document ).ready( function() {
+				<cfinclude template="runnerToolbarBundleScripts.cfm">
+			} );
+			</script>
 			</body>
 		</html>
 	</cfif>

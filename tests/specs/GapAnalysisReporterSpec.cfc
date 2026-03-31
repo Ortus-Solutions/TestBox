@@ -40,6 +40,8 @@ component extends="testbox.system.BaseSpec" {
 				expect( html ).toInclude( "Gap analysis" );
 				expect( html ).toInclude( tb.getVersion() );
 				expect( html ).toInclude( "<!DOCTYPE html>" );
+				expect( html ).toInclude( "Filter Bundles" );
+				expect( html ).toInclude( "collapse-bundles" );
 			} );
 
 			it( "renderHtml surfaces runnerErrors in output", function(){

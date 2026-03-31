@@ -343,21 +343,17 @@ component extends="testbox.system.BaseSpec" {
 				expect( s.smokeRunUrl ).toInclude( "com.example.Foo" );
 			} );
 
-			it( "buildSmokeRunnerSummaryFromRequest includes directory URL params when set", function(){
+			it( "buildSmokeRunnerSummaryFromRequest includes exclude URL params when set", function(){
 				var tb = new testbox.system.TestBox( options = { coverage : { enabled : false } } );
 				var s  = metaSmokeSvc.buildSmokeRunnerSummaryFromRequest(
 					tb,
 					"",
 					false,
 					"",
-					"/com/myapp",
-					"com.myapp",
 					"application.cfc",
 					"stubs",
 					"com.myapp.Skip"
 				);
-				expect( s.smokeRunUrl ).toInclude( "metadataSmokeDirectoryRoot" );
-				expect( s.smokeRunUrl ).toInclude( "metadataSmokeDirectoryPrefix" );
 				expect( s.smokeRunUrl ).toInclude( "metadataSmokeExcludeFileNames" );
 				expect( s.smokeRunUrl ).toInclude( "metadataSmokeExcludePathPrefixes" );
 				expect( s.smokeRunUrl ).toInclude( "metadataSmokeExcludeComponentIds" );

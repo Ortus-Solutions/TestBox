@@ -28,8 +28,6 @@
 <cfparam name="url.metadataSmoke"					default="false">
 <cfparam name="url.metadataSmokeManifest"			default="">
 <cfparam name="url.metadataSmokeComponent"			default="">
-<cfparam name="url.metadataSmokeDirectoryRoot"		default="">
-<cfparam name="url.metadataSmokeDirectoryPrefix"	default="">
 <cfparam name="url.metadataSmokeExcludeFileNames"	default="">
 <cfparam name="url.metadataSmokeExcludePathPrefixes"	default="">
 <cfparam name="url.metadataSmokeExcludeComponentIds"	default="">
@@ -101,6 +99,7 @@ if ( gapFlag ) {
 		} else {
 			sourceRoot = testbox.getCoverageService().getCoverageOptions().pathToCapture;
 			gapSvc = testbox.getGapAnalysisService();
+			sourceRoot = gapSvc.resolveSourceRootForDirectoryRequest( sourceRoot, toString( url.directory ) );
 			componentPrefix = gapSvc.inferComponentPrefix( sourceRoot );
 			if ( !len( componentPrefix ) ) {
 				arrayAppend( runnerErrors, "Could not infer component prefix from coverage pathToCapture; check url.coveragePathToCapture and application mappings." );
@@ -132,13 +131,15 @@ if ( gapFlag ) {
 			arrayAppend( runnerErrors, toString( e.detail ) );
 		}
 	}
-	gapRunnerSummary = testbox.getGapAnalysisService().buildRunnerSummaryFromRequest( testbox, sourceRoot, componentPrefix, testRoots, false ).gapRunnerSummary;
+	gapReq = testbox.getGapAnalysisService().buildRunnerSummaryFromRequest( testbox, sourceRoot, componentPrefix, testRoots, false );
+	gapRunnerSummary = gapReq.gapRunnerSummary;
 	gapHtml = testbox.getGapAnalysisService().renderReport(
 		testbox = testbox,
 		gapReport = gapReport,
 		gapRunnerSummary = gapRunnerSummary,
 		runnerErrors = runnerErrors,
-		ran = ran
+		ran = ran,
+		gapRunAnalysisUrl = gapReq.gapRunAnalysisUrl
 	);
 	writeOutput( gapHtml );
 	abort;
@@ -168,18 +169,6 @@ if ( metadataSmokeFlag ) {
 			smokeResult = smokeSvc.runSmokeFromManifestItems( request.metadataSmokeManifestItems, invokeFlag );
 			ran = true;
 			manifestWeb = "(in-memory manifest)";
-		} else if ( structKeyExists( request, "metadataSmokeDirectoryScan" ) && isStruct( request.metadataSmokeDirectoryScan ) ) {
-			ds = request.metadataSmokeDirectoryScan;
-			rootAbs = structKeyExists( ds, "absoluteComponentRoot" ) ? trim( toString( ds.absoluteComponentRoot ) ) : "";
-			dotted = structKeyExists( ds, "dottedPrefix" ) ? trim( toString( ds.dottedPrefix ) ) : "";
-			dsOpts = structKeyExists( ds, "options" ) && isStruct( ds.options ) ? ds.options : {};
-			if ( !len( rootAbs ) || !len( dotted ) ) {
-				arrayAppend( runnerErrors, "request.metadataSmokeDirectoryScan requires absoluteComponentRoot and dottedPrefix." );
-			} else {
-				smokeResult = smokeSvc.runSmokeFromDirectoryInline( rootAbs, dotted, dsOpts, invokeFlag );
-				ran = true;
-				manifestWeb = "(directory scan)";
-			}
 		} else {
 			smokeComponentForUrl = structKeyExists( url, "metadataSmokeComponent" ) ? trim( toString( url.metadataSmokeComponent ) ) : "";
 			if ( len( smokeComponentForUrl ) ) {
@@ -197,28 +186,34 @@ if ( metadataSmokeFlag ) {
 						ran = true;
 					}
 				} else {
-					dirRootWeb = structKeyExists( url, "metadataSmokeDirectoryRoot" ) ? trim( toString( url.metadataSmokeDirectoryRoot ) ) : "";
-					dirPrefix = structKeyExists( url, "metadataSmokeDirectoryPrefix" ) ? trim( toString( url.metadataSmokeDirectoryPrefix ) ) : "";
-					if ( len( dirRootWeb ) && len( dirPrefix ) ) {
-						rootAbs = smokeSvc.resolveManifestAbsolutePath( dirRootWeb );
-						dsOpts = {};
-						exFiles = structKeyExists( url, "metadataSmokeExcludeFileNames" ) ? trim( toString( url.metadataSmokeExcludeFileNames ) ) : "";
-						exPfx = structKeyExists( url, "metadataSmokeExcludePathPrefixes" ) ? trim( toString( url.metadataSmokeExcludePathPrefixes ) ) : "";
-						exIds = structKeyExists( url, "metadataSmokeExcludeComponentIds" ) ? trim( toString( url.metadataSmokeExcludeComponentIds ) ) : "";
-						if ( len( exFiles ) ) {
-							dsOpts.excludeFileNames = exFiles;
+					if ( len( trim( toString( url.directory ) ) ) ) {
+						coverageRoot = testbox.getCoverageService().getCoverageOptions().pathToCapture;
+						gapSvc = testbox.getGapAnalysisService();
+						resolvedRoot = gapSvc.resolveSourceRootForDirectoryRequest( coverageRoot, toString( url.directory ) );
+						resolvedPrefix = gapSvc.inferComponentPrefix( resolvedRoot );
+						if ( len( resolvedRoot ) && len( resolvedPrefix ) ) {
+							rootAbs = smokeSvc.resolveManifestAbsolutePath( resolvedRoot );
+							dsOpts = {};
+							exFiles = structKeyExists( url, "metadataSmokeExcludeFileNames" ) ? trim( toString( url.metadataSmokeExcludeFileNames ) ) : "";
+							exPfx = structKeyExists( url, "metadataSmokeExcludePathPrefixes" ) ? trim( toString( url.metadataSmokeExcludePathPrefixes ) ) : "";
+							exIds = structKeyExists( url, "metadataSmokeExcludeComponentIds" ) ? trim( toString( url.metadataSmokeExcludeComponentIds ) ) : "";
+							if ( len( exFiles ) ) {
+								dsOpts.excludeFileNames = exFiles;
+							}
+							if ( len( exPfx ) ) {
+								dsOpts.excludeRelativePathPrefixes = exPfx;
+							}
+							if ( len( exIds ) ) {
+								dsOpts.excludeComponentIds = exIds;
+							}
+							smokeResult = smokeSvc.runSmokeFromDirectoryInline( rootAbs, resolvedPrefix, dsOpts, invokeFlag );
+							ran = true;
+							manifestWeb = "(directory scan)";
+						} else {
+							arrayAppend( runnerErrors, "Could not infer component prefix from coverage pathToCapture; check url.coveragePathToCapture and application mappings." );
 						}
-						if ( len( exPfx ) ) {
-							dsOpts.excludeRelativePathPrefixes = exPfx;
-						}
-						if ( len( exIds ) ) {
-							dsOpts.excludeComponentIds = exIds;
-						}
-						smokeResult = smokeSvc.runSmokeFromDirectoryInline( rootAbs, dirPrefix, dsOpts, invokeFlag );
-						ran = true;
-						manifestWeb = "(directory scan)";
 					} else {
-						arrayAppend( runnerErrors, "Smoke Test requires one of: request.metadataSmokeManifestItems, request.metadataSmokeDirectoryScan, url.metadataSmokeComponent, url.metadataSmokeManifest, or url.metadataSmokeDirectoryRoot + url.metadataSmokeDirectoryPrefix." );
+						arrayAppend( runnerErrors, "Smoke Test requires url.directory (same as a normal TestBox directory run), url.metadataSmokeComponent, or url.metadataSmokeManifest." );
 					}
 				}
 			}
@@ -248,8 +243,6 @@ if ( metadataSmokeFlag ) {
 			manifestPath = manifestWeb,
 			invokeEnabled = invokeFlag,
 			metadataSmokeComponent = smokeComponentForUrl,
-			metadataSmokeDirectoryRootWeb = structKeyExists( url, "metadataSmokeDirectoryRoot" ) ? trim( toString( url.metadataSmokeDirectoryRoot ) ) : "",
-			metadataSmokeDirectoryPrefixForUrl = structKeyExists( url, "metadataSmokeDirectoryPrefix" ) ? trim( toString( url.metadataSmokeDirectoryPrefix ) ) : "",
 			metadataSmokeExcludeFileNamesForUrl = structKeyExists( url, "metadataSmokeExcludeFileNames" ) ? trim( toString( url.metadataSmokeExcludeFileNames ) ) : "",
 			metadataSmokeExcludePathPrefixesForUrl = structKeyExists( url, "metadataSmokeExcludePathPrefixes" ) ? trim( toString( url.metadataSmokeExcludePathPrefixes ) ) : "",
 			metadataSmokeExcludeComponentIdsForUrl = structKeyExists( url, "metadataSmokeExcludeComponentIds" ) ? trim( toString( url.metadataSmokeExcludeComponentIds ) ) : "",

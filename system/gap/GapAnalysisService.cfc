@@ -62,10 +62,36 @@ component accessors="true" {
 	}
 
 	/**
+	 * When a directory run targets tests/specs/<path>, narrow the source root to <baseSourceRoot>/<path> if present.
+	 */
+	public string function resolveSourceRootForDirectoryRequest(
+		required string baseSourceRoot,
+		required string directoryList
+	){
+		var base = _normalizeDir( arguments.baseSourceRoot );
+		for ( var dirEntry in listToArray( arguments.directoryList ) ) {
+			var normalizedDir = replace( trim( toString( dirEntry ) ), "\", "/", "all" );
+			normalizedDir     = reReplace( normalizedDir, "^/+|/+$", "", "all" );
+			if ( !len( normalizedDir ) ) {
+				continue;
+			}
+			var relSource = _deriveSourceRelativePathFromTestDirectory( normalizedDir );
+			if ( !len( relSource ) ) {
+				continue;
+			}
+			var candidate = _resolveCandidateUnderBase( base, relSource );
+			if ( directoryExists( candidate ) ) {
+				return _normalizeDir( candidate );
+			}
+		}
+		return base;
+	}
+
+	/**
 	 * @sourceRoot          Absolute directory containing CFCs to scan (e.g. expandPath("/com/myapp")).
 	 * @componentPrefix     Dotted prefix for component IDs (e.g. "com.myapp" for files under sourceRoot).
 	 * @testRootList        Comma-separated absolute directories to scan for test/spec text (cfc/cfm).
-	 * @excludeFileNames    Comma list of file names to skip (case-insensitive), e.g. "legacyHelper.cfc,application.cfc".
+	 * @excludeFileNames    Comma list of file names to skip (case-insensitive), e.g. "accessLog.cfc,application.cfc".
 	 * @excludePathPrefixes Comma list of relative path prefixes under sourceRoot to skip, e.g. "application".
 	 * @recurseTestRoots    Same as TestBox directory runner: when true, include all nested files under each test root (matches getSpecPaths / addDirectories recurse).
 	 */
@@ -172,6 +198,46 @@ component accessors="true" {
 			return segs[ 1 ];
 		}
 		return "";
+	}
+
+	private string function _deriveSourceRelativePathFromTestDirectory( required string testDirectory ){
+		var d = replace( arguments.testDirectory, "\", "/", "all" );
+		d     = reReplace( d, "^/+|/+$", "", "all" );
+		if ( !len( d ) ) {
+			return "";
+		}
+		// Typical runner mapping: tests/specs/com/myapp/... => com/myapp/...
+		if ( reFindNoCase( "(^|/)tests/specs/+", d ) ) {
+			var rel = reReplaceNoCase( d, "^.*?tests/specs/+", "", "one" );
+			rel     = reReplace( rel, "^/+|/+$", "", "all" );
+			return rel;
+		}
+		return "";
+	}
+
+	private string function _resolveCandidateUnderBase( required string base, required string relativeSourcePath ){
+		var rel = reReplace( replace( arguments.relativeSourcePath, "\", "/", "all" ), "^/+|/+$", "", "all" );
+		if ( !len( rel ) ) {
+			return arguments.base;
+		}
+
+		var candidate = arguments.base & rel & "/";
+		if ( directoryExists( candidate ) ) {
+			return candidate;
+		}
+
+		// If base already includes a leading segment from rel (e.g. base .../com and rel com/palcare/hl7),
+		// progressively drop leading segments and find the first existing match.
+		var parts = listToArray( rel, "/" );
+		for ( var i = 2; i <= arrayLen( parts ); i++ ) {
+			var suffix = arrayToList( arraySlice( parts, i ), "/" );
+			candidate  = arguments.base & suffix & "/";
+			if ( directoryExists( candidate ) ) {
+				return candidate;
+			}
+		}
+
+		return arguments.base & rel & "/";
 	}
 
 	private string function _normalizeDir( required string p ){
@@ -346,6 +412,20 @@ component accessors="true" {
 		var qs                = structKeyExists( cgi, "query_string" ) ? cgi.query_string : "";
 		var stripQs           = reReplace( qs, "&gapAnalysis=[^&]*", "", "all" );
 		stripQs               = reReplace( stripQs, "^gapAnalysis=[^&]*&?", "", "all" );
+		stripQs               = reReplace(
+			stripQs,
+			"&metadataSmoke(Invoke|Manifest|Format|Component|DirectoryRoot|DirectoryPrefix|ExcludeFileNames|ExcludePathPrefixes|ExcludeComponentIds)=[^&]*",
+			"",
+			"all"
+		);
+		stripQs = reReplace( stripQs, "&metadataSmoke=[^&]*", "", "all" );
+		stripQs = reReplace(
+			stripQs,
+			"^metadataSmoke(Invoke|Manifest|Format|Component|DirectoryRoot|DirectoryPrefix|ExcludeFileNames|ExcludePathPrefixes|ExcludeComponentIds)=[^&]*&?",
+			"",
+			"all"
+		);
+		stripQs = reReplace( stripQs, "^metadataSmoke=[^&]*&?", "", "all" );
 		stripQs               = reReplace( stripQs, "^[&]+|[&]+$", "", "all" );
 		var testsUrl          = len( stripQs ) ? ( cgi.script_name & "?" & stripQs ) : cgi.script_name;
 		var gapRunAnalysisUrl = len( stripQs ) ? ( cgi.script_name & "?" & stripQs & "&gapAnalysis=true" ) : (

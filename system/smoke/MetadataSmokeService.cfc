@@ -427,8 +427,6 @@ component accessors="true" {
 		string metadataSmokeManifest              = "",
 		boolean metadataSmokeInvoke               = false,
 		string metadataSmokeComponent             = "",
-		string metadataSmokeDirectoryRootWeb      = "",
-		string metadataSmokeDirectoryPrefixForUrl = "",
 		string metadataSmokeExcludeFileNames      = "",
 		string metadataSmokeExcludePathPrefixes   = "",
 		string metadataSmokeExcludeComponentIds   = ""
@@ -449,6 +447,8 @@ component accessors="true" {
 			"all"
 		);
 		stripQs      = reReplace( stripQs, "^metadataSmoke=[^&]*&?", "", "all" );
+		stripQs      = reReplace( stripQs, "&gapAnalysis=[^&]*", "", "all" );
+		stripQs      = reReplace( stripQs, "^gapAnalysis=[^&]*&?", "", "all" );
 		stripQs      = reReplace( stripQs, "^[&]+|[&]+$", "", "all" );
 		var testsUrl = len( stripQs ) ? ( cgi.script_name & "?" & stripQs ) : cgi.script_name;
 
@@ -462,32 +462,20 @@ component accessors="true" {
 			compEnc     = replace( compEnc, "%2E", ".", "all" );
 			smokeRunUrl &= "&metadataSmokeComponent=" & compEnc;
 		}
-		if (
-			len( trim( arguments.metadataSmokeDirectoryRootWeb ) ) && len(
-				trim( arguments.metadataSmokeDirectoryPrefixForUrl )
-			)
-		) {
-			smokeRunUrl &= "&metadataSmokeDirectoryRoot=" & urlEncodedFormat(
-				trim( arguments.metadataSmokeDirectoryRootWeb )
+		if ( len( trim( arguments.metadataSmokeExcludeFileNames ) ) ) {
+			smokeRunUrl &= "&metadataSmokeExcludeFileNames=" & urlEncodedFormat(
+				trim( arguments.metadataSmokeExcludeFileNames )
 			);
-			smokeRunUrl &= "&metadataSmokeDirectoryPrefix=" & urlEncodedFormat(
-				trim( arguments.metadataSmokeDirectoryPrefixForUrl )
+		}
+		if ( len( trim( arguments.metadataSmokeExcludePathPrefixes ) ) ) {
+			smokeRunUrl &= "&metadataSmokeExcludePathPrefixes=" & urlEncodedFormat(
+				trim( arguments.metadataSmokeExcludePathPrefixes )
 			);
-			if ( len( trim( arguments.metadataSmokeExcludeFileNames ) ) ) {
-				smokeRunUrl &= "&metadataSmokeExcludeFileNames=" & urlEncodedFormat(
-					trim( arguments.metadataSmokeExcludeFileNames )
-				);
-			}
-			if ( len( trim( arguments.metadataSmokeExcludePathPrefixes ) ) ) {
-				smokeRunUrl &= "&metadataSmokeExcludePathPrefixes=" & urlEncodedFormat(
-					trim( arguments.metadataSmokeExcludePathPrefixes )
-				);
-			}
-			if ( len( trim( arguments.metadataSmokeExcludeComponentIds ) ) ) {
-				smokeRunUrl &= "&metadataSmokeExcludeComponentIds=" & urlEncodedFormat(
-					trim( arguments.metadataSmokeExcludeComponentIds )
-				);
-			}
+		}
+		if ( len( trim( arguments.metadataSmokeExcludeComponentIds ) ) ) {
+			smokeRunUrl &= "&metadataSmokeExcludeComponentIds=" & urlEncodedFormat(
+				trim( arguments.metadataSmokeExcludeComponentIds )
+			);
 		}
 		if ( arguments.metadataSmokeInvoke ) {
 			smokeRunUrl &= "&metadataSmokeInvoke=true";
@@ -512,9 +500,14 @@ component accessors="true" {
 
 	/**
 	 * Compact HTML for the Simple reporter (same role as GapAnalysisService.renderRunnerEmbed).
+	 *
+	 * @smokeEmbedRerunLabels When true, use Re-run + fa-redo labels (gap/smoke standalone toolbars). Default false = Run Smoke Test + fa-search (test results toolbar).
 	 */
-	public any function renderRunnerEmbed( required testbox.system.TestBox testbox, boolean fullPage = false ){
-		var sum = buildSmokeRunnerSummaryFromRequest( arguments.testbox, "", false );
+	public any function renderRunnerEmbed(
+		required testbox.system.TestBox testbox,
+		boolean fullPage = false,
+		boolean smokeEmbedRerunLabels = false
+	){
 		return renderReport(
 			testbox     = arguments.testbox,
 			smokeResult = {
@@ -530,14 +523,13 @@ component accessors="true" {
 			manifestPath                           = "",
 			invokeEnabled                          = false,
 			metadataSmokeComponent                 = "",
-			metadataSmokeDirectoryRootWeb          = "",
-			metadataSmokeDirectoryPrefixForUrl     = "",
 			metadataSmokeExcludeFileNamesForUrl    = "",
 			metadataSmokeExcludePathPrefixesForUrl = "",
 			metadataSmokeExcludeComponentIdsForUrl = "",
 			smokeEmbedCompact                      = true,
 			fullPage                               = arguments.fullPage,
-			justReturn                             = true
+			justReturn                             = true,
+			smokeEmbedRerunLabels                  = arguments.smokeEmbedRerunLabels
 		);
 	}
 
@@ -552,14 +544,13 @@ component accessors="true" {
 		string manifestPath                           = "",
 		boolean invokeEnabled                         = false,
 		string metadataSmokeComponent                 = "",
-		string metadataSmokeDirectoryRootWeb          = "",
-		string metadataSmokeDirectoryPrefixForUrl     = "",
 		string metadataSmokeExcludeFileNamesForUrl    = "",
 		string metadataSmokeExcludePathPrefixesForUrl = "",
 		string metadataSmokeExcludeComponentIdsForUrl = "",
 		boolean smokeEmbedCompact                     = false,
 		boolean fullPage                              = true,
-		boolean justReturn                            = false
+		boolean justReturn                            = false,
+		boolean smokeEmbedRerunLabels                 = false
 	){
 		var manifestForUrl = arguments.manifestPath;
 		if ( find( "(", manifestForUrl ) && find( ")", manifestForUrl ) ) {
@@ -568,20 +559,11 @@ component accessors="true" {
 		if ( len( trim( arguments.metadataSmokeComponent ) ) ) {
 			manifestForUrl = "";
 		}
-		if (
-			len( trim( arguments.metadataSmokeDirectoryRootWeb ) ) && len(
-				trim( arguments.metadataSmokeDirectoryPrefixForUrl )
-			)
-		) {
-			manifestForUrl = "";
-		}
 		var smokeRunnerSummary = buildSmokeRunnerSummaryFromRequest(
 			testbox                            = arguments.testbox,
 			metadataSmokeManifest              = manifestForUrl,
 			metadataSmokeInvoke                = arguments.invokeEnabled,
 			metadataSmokeComponent             = arguments.metadataSmokeComponent,
-			metadataSmokeDirectoryRootWeb      = arguments.metadataSmokeDirectoryRootWeb,
-			metadataSmokeDirectoryPrefixForUrl = arguments.metadataSmokeDirectoryPrefixForUrl,
 			metadataSmokeExcludeFileNames      = arguments.metadataSmokeExcludeFileNamesForUrl,
 			metadataSmokeExcludePathPrefixes   = arguments.metadataSmokeExcludePathPrefixesForUrl,
 			metadataSmokeExcludeComponentIds   = arguments.metadataSmokeExcludeComponentIdsForUrl
@@ -590,14 +572,15 @@ component accessors="true" {
 		return rep.renderHtml(
 			testbox = arguments.testbox,
 			options = {
-				"smokeResult"        : arguments.smokeResult,
-				"runnerErrors"       : arguments.runnerErrors,
-				"ran"                : arguments.ran,
-				"manifestPath"       : arguments.manifestPath,
-				"invokeEnabled"      : arguments.invokeEnabled,
-				"smokeRunnerSummary" : smokeRunnerSummary,
-				"smokeEmbedCompact"  : arguments.smokeEmbedCompact,
-				"fullPage"           : arguments.fullPage
+				"smokeResult"             : arguments.smokeResult,
+				"runnerErrors"            : arguments.runnerErrors,
+				"ran"                     : arguments.ran,
+				"manifestPath"            : arguments.manifestPath,
+				"invokeEnabled"           : arguments.invokeEnabled,
+				"smokeRunnerSummary"      : smokeRunnerSummary,
+				"smokeEmbedCompact"       : arguments.smokeEmbedCompact,
+				"fullPage"                : arguments.fullPage,
+				"smokeEmbedRerunLabels"   : arguments.smokeEmbedRerunLabels
 			},
 			justReturn = arguments.justReturn
 		);

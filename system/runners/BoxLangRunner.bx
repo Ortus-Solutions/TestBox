@@ -49,11 +49,9 @@
  * --stacktrace : Stacktrace detail level for stream failures/errors: `short` or `full`, defaults to `short`.
  * --gap-analysis : When `true`, skip test execution and write heuristic gap analysis HTML to the report path (`gapAnalysis.html`). Requires `--directory` (dot paths; comma-separated allowed). Uses `--coverage-path-to-capture` when set (same role as HTML runner `coveragePathToCapture`).
  * --coverage-path-to-capture : Optional absolute or mapping-expandable root of source CFCs for gap analysis (passed through TestBox coverage options).
- * --metadata-smoke : When `true`, skip test execution and write Smoke Test output to the report path (`metadataSmoke.html` or `metadataSmoke.json` when `--metadata-smoke-format=json`). Provide one of: `--metadata-smoke-manifest`, `--metadata-smoke-component`, or `--metadata-smoke-directory-root` with `--metadata-smoke-directory-prefix` (mirrors `HTMLRunner.cfm`).
+ * --metadata-smoke : When `true`, skip test execution and write Smoke Test output to the report path (`metadataSmoke.html` or `metadataSmoke.json` when `--metadata-smoke-format=json`). Uses `--directory` by default (same as normal runs), or accepts `--metadata-smoke-manifest` / `--metadata-smoke-component`.
  * --metadata-smoke-manifest : Web or absolute path to JSON manifest (resolved like the HTML runner).
  * --metadata-smoke-component : Single dotted component path.
- * --metadata-smoke-directory-root : Source root for directory inline scan (mapping-expandable).
- * --metadata-smoke-directory-prefix : Dotted prefix paired with directory root.
  * --metadata-smoke-exclude-file-names / --metadata-smoke-exclude-path-prefixes / --metadata-smoke-exclude-component-ids : Optional comma lists (same as HTML runner).
  * --metadata-smoke-invoke : When `true`, dummy-invoke public/remote methods (errors swallowed).
  * --metadata-smoke-format : `json` for JSON file output; omit for HTML.
@@ -228,7 +226,7 @@ class{
 		}
 
 		if( metadataSmokeFlag ){
-			runMetadataSmokeCli( testbox, options, afterRunArgs )
+			runMetadataSmokeCli( testbox, initArgs, options, afterRunArgs )
 			return
 		}
 
@@ -826,6 +824,7 @@ class{
 			} else {
 				sourceRoot = testbox.getCoverageService().getCoverageOptions().pathToCapture
 				var gapSvc = testbox.getGapAnalysisService()
+				sourceRoot = gapSvc.resolveSourceRootForDirectoryRequest( sourceRoot, dirRaw )
 				componentPrefix = gapSvc.inferComponentPrefix( sourceRoot )
 				if( !len( componentPrefix ) ){
 					arrayAppend( runnerErrors, "Could not infer component prefix from coverage pathToCapture; check --coverage-path-to-capture and application mappings." )
@@ -887,6 +886,7 @@ class{
 	 */
 	private function runMetadataSmokeCli(
 		required testbox,
+		required initArgs,
 		required options,
 		required afterRunArgs
 	){
@@ -903,8 +903,12 @@ class{
 		try {
 			var manifestPath = options.keyExists( "metadata-smoke-manifest" ) ? trim( toString( options[ "metadata-smoke-manifest" ] ?: "" ) ) : ""
 			var componentPath = options.keyExists( "metadata-smoke-component" ) ? trim( toString( options[ "metadata-smoke-component" ] ?: "" ) ) : ""
-			var dirRoot = options.keyExists( "metadata-smoke-directory-root" ) ? trim( toString( options[ "metadata-smoke-directory-root" ] ?: "" ) ) : ""
-			var dirPrefix = options.keyExists( "metadata-smoke-directory-prefix" ) ? trim( toString( options[ "metadata-smoke-directory-prefix" ] ?: "" ) ) : ""
+			var dirRaw = ""
+			if( isStruct( initArgs.directory ) ){
+				dirRaw = initArgs.directory.keyExists( "mapping" ) ? toString( initArgs.directory.mapping ?: "" ) : ""
+			} else {
+				dirRaw = toString( initArgs.directory ?: "" )
+			}
 			if( len( componentPath ) ){
 				smokeResult = smokeSvc.runSmokeForSingleComponent( componentPath, invokeFlag )
 				ran = true
@@ -918,23 +922,33 @@ class{
 					ran = true
 					manifestWeb = manifestPath
 				}
-			} else if( len( dirRoot ) && len( dirPrefix ) ){
-				var rootAbs = smokeSvc.resolveManifestAbsolutePath( dirRoot )
-				var dsOpts = {}
-				if( options.keyExists( "metadata-smoke-exclude-file-names" ) && len( trim( toString( options[ "metadata-smoke-exclude-file-names" ] ?: "" ) ) ) ){
-					dsOpts[ "excludeFileNames" ] = trim( toString( options[ "metadata-smoke-exclude-file-names" ] ?: "" ) )
-				}
-				if( options.keyExists( "metadata-smoke-exclude-path-prefixes" ) && len( trim( toString( options[ "metadata-smoke-exclude-path-prefixes" ] ?: "" ) ) ) ){
-					dsOpts[ "excludeRelativePathPrefixes" ] = trim( toString( options[ "metadata-smoke-exclude-path-prefixes" ] ?: "" ) )
-				}
-				if( options.keyExists( "metadata-smoke-exclude-component-ids" ) && len( trim( toString( options[ "metadata-smoke-exclude-component-ids" ] ?: "" ) ) ) ){
-					dsOpts[ "excludeComponentIds" ] = trim( toString( options[ "metadata-smoke-exclude-component-ids" ] ?: "" ) )
-				}
-				smokeResult = smokeSvc.runSmokeFromDirectoryInline( rootAbs, dirPrefix, dsOpts, invokeFlag )
-				ran = true
-				manifestWeb = "(directory scan)"
 			} else {
-				arrayAppend( runnerErrors, "metadata-smoke requires --metadata-smoke-manifest, --metadata-smoke-component, or --metadata-smoke-directory-root with --metadata-smoke-directory-prefix." )
+				if( !len( trim( dirRaw ) ) ){
+					arrayAppend( runnerErrors, "metadata-smoke requires --directory (same as normal runs), --metadata-smoke-manifest, or --metadata-smoke-component." )
+				} else {
+					var coverageRoot = testbox.getCoverageService().getCoverageOptions().pathToCapture
+					var gapSvc = testbox.getGapAnalysisService()
+					var resolvedRoot = gapSvc.resolveSourceRootForDirectoryRequest( coverageRoot, dirRaw )
+					var resolvedPrefix = gapSvc.inferComponentPrefix( resolvedRoot )
+					if( !len( resolvedRoot ) || !len( resolvedPrefix ) ){
+						arrayAppend( runnerErrors, "Could not infer component prefix from coverage pathToCapture; check --coverage-path-to-capture and application mappings." )
+					} else {
+						var rootAbs = smokeSvc.resolveManifestAbsolutePath( resolvedRoot )
+						var dsOpts = {}
+						if( options.keyExists( "metadata-smoke-exclude-file-names" ) && len( trim( toString( options[ "metadata-smoke-exclude-file-names" ] ?: "" ) ) ) ){
+							dsOpts[ "excludeFileNames" ] = trim( toString( options[ "metadata-smoke-exclude-file-names" ] ?: "" ) )
+						}
+						if( options.keyExists( "metadata-smoke-exclude-path-prefixes" ) && len( trim( toString( options[ "metadata-smoke-exclude-path-prefixes" ] ?: "" ) ) ) ){
+							dsOpts[ "excludeRelativePathPrefixes" ] = trim( toString( options[ "metadata-smoke-exclude-path-prefixes" ] ?: "" ) )
+						}
+						if( options.keyExists( "metadata-smoke-exclude-component-ids" ) && len( trim( toString( options[ "metadata-smoke-exclude-component-ids" ] ?: "" ) ) ) ){
+							dsOpts[ "excludeComponentIds" ] = trim( toString( options[ "metadata-smoke-exclude-component-ids" ] ?: "" ) )
+						}
+						smokeResult = smokeSvc.runSmokeFromDirectoryInline( rootAbs, resolvedPrefix, dsOpts, invokeFlag )
+						ran = true
+						manifestWeb = "(directory scan)"
+					}
+				}
 			}
 		} catch( any e ){
 			arrayAppend( runnerErrors, e.message )
@@ -965,8 +979,6 @@ class{
 				manifestPath = manifestWeb,
 				invokeEnabled = invokeFlag,
 				metadataSmokeComponent = "",
-				metadataSmokeDirectoryRootWeb = "",
-				metadataSmokeDirectoryPrefixForUrl = "",
 				metadataSmokeExcludeFileNamesForUrl = "",
 				metadataSmokeExcludePathPrefixesForUrl = "",
 				metadataSmokeExcludeComponentIdsForUrl = "",

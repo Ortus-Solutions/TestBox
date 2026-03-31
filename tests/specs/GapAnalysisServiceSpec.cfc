@@ -68,6 +68,38 @@ component extends="testbox.system.BaseSpec" {
 				expect( gapSvc.inferComponentPrefix( "" ) ).toBe( "" );
 			} );
 
+			it( "resolveSourceRootForDirectoryRequest narrows to mirrored tests/specs subtree when present", function(){
+				var tmpRoot      = replace( getTempDirectory(), "\", "/", "all" ) & "/tb-gap-" & lCase( createUUID() );
+				var srcRoot      = tmpRoot & "/src";
+				var mirroredRoot = srcRoot & "/com/palcare/hl7";
+				var directoryArg = "tests/specs/com/palcare/hl7";
+				directoryCreate( mirroredRoot, true );
+				try {
+					var resolved = gapSvc.resolveSourceRootForDirectoryRequest( srcRoot, directoryArg );
+					expect( replace( resolved, "\", "/", "all" ) ).toBe( replace( mirroredRoot, "\", "/", "all" ) & "/" );
+				} finally {
+					if ( directoryExists( tmpRoot ) ) {
+						directoryDelete( tmpRoot, true );
+					}
+				}
+			} );
+
+			it( "resolveSourceRootForDirectoryRequest avoids duplicated leading segment when base already includes it", function(){
+				var tmpRoot      = replace( getTempDirectory(), "\", "/", "all" ) & "/tb-gap-" & lCase( createUUID() );
+				var srcRoot      = tmpRoot & "/src/com";
+				var mirroredRoot = srcRoot & "/palcare/hl7";
+				var directoryArg = "tests/specs/com/palcare/hl7";
+				directoryCreate( mirroredRoot, true );
+				try {
+					var resolved = gapSvc.resolveSourceRootForDirectoryRequest( srcRoot, directoryArg );
+					expect( replace( resolved, "\", "/", "all" ) ).toBe( replace( mirroredRoot, "\", "/", "all" ) & "/" );
+				} finally {
+					if ( directoryExists( tmpRoot ) ) {
+						directoryDelete( tmpRoot, true );
+					}
+				}
+			} );
+
 			it( "analyze with excludeFileNames omits matching CFCs", function(){
 				var r = gapSvc.analyze(
 					sourceRoot       = fixtureSrc,
