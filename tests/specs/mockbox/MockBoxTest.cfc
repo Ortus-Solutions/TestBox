@@ -393,15 +393,10 @@
 		$assert.isEqual( "UnitTest3", results );
 	}
 
-	// Regression: struct args with the same contents but different insertion order
-	// must match. normalizeArguments() used to serialize nested structs via
-	// struct.toString(), which is iteration-order dependent, so arg matching broke
-	// whenever the struct under test was built in a different order than the mock.
-	// Surfaced by Preside tests on Lucee 7.1 (LDEV-5098 changed bucket layout).
+	// Struct args must match regardless of insertion order (TESTBOX-448)
 	function testMockArgsStructOrderIndependence(){
 		var service = getMockBox().createStub();
 
-		// Build the expected struct in one insertion order (linked = guaranteed order)
 		var expectedArgs = structNew( "linked" );
 		expectedArgs.foo = "one";
 		expectedArgs.bar = "two";
@@ -409,7 +404,6 @@
 
 		service.$( "save" ).$args( data = expectedArgs ).$results( "matched" );
 
-		// Structurally equal, built in a different insertion order
 		var actualArgs = structNew( "linked" );
 		actualArgs.baz = "three";
 		actualArgs.foo = "one";
@@ -417,7 +411,7 @@
 
 		$assert.isEqual( "matched", service.save( data = actualArgs ) );
 
-		// Nested struct: inner struct key order must not matter either
+		// Nested struct: inner key order must not matter either
 		var expectedNested     = structNew( "linked" );
 		expectedNested.outerA  = "1";
 		expectedNested.inner   = structNew( "linked" );
@@ -435,6 +429,46 @@
 		actualNested.outerA  = "1";
 
 		$assert.isEqual( "nested-matched", service.persist( payload = actualNested ) );
+	}
+
+	// Struct args containing a CFC must not trigger Adobe's JSON-serializer cycle
+	function testMockArgsStructContainingCFC(){
+		var service = getMockBox().createStub();
+
+		var expected = structNew( "linked" );
+		expected.id  = 42;
+		expected.ref = getMockBox().createStub();
+
+		service.$( "save" ).$args( data = expected ).$results( "ok" );
+
+		var actual = structNew( "linked" );
+		actual.ref = getMockBox().createStub();
+		actual.id  = 42;
+
+		$assert.isEqual( "ok", service.save( data = actual ) );
+	}
+
+	// Deep nesting: struct > array > struct must canonicalise all the way down
+	function testMockArgsDeepNesting(){
+		var service = getMockBox().createStub();
+
+		var expected      = structNew( "linked" );
+		expected.outer    = "z";
+		expected.items    = [];
+		arrayAppend( expected.items, { a: 1, b: 2 } );
+		arrayAppend( expected.items, { a: 3, b: 4 } );
+		expected.another  = "y";
+
+		service.$( "process" ).$args( payload = expected ).$results( "deep" );
+
+		var actual     = structNew( "linked" );
+		actual.another = "y";
+		actual.items   = [];
+		arrayAppend( actual.items, { b: 2, a: 1 } );
+		arrayAppend( actual.items, { b: 4, a: 3 } );
+		actual.outer   = "z";
+
+		$assert.isEqual( "deep", service.process( payload = actual ) );
 	}
 
 	function testGetProperty(){

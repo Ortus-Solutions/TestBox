@@ -651,18 +651,29 @@ component accessors=true {
 	}
 
 	/**
-	 * Produce a deterministic string representation of a value for use in argument hashing.
-	 * Structs are sorted by key so iteration order (HashMap bucket layout) does not affect
-	 * the resulting hash. Arrays preserve position but recurse into each element.
+	 * Deterministic string representation of a value for argument hashing.
+	 * Struct keys are sorted so iteration order does not affect the hash.
 	 *
 	 * @value The value to serialize
 	 */
 	private function normalizeValue( required any value ){
-		// Simple value - common case first
+		// Simple value
 		if ( isSimpleValue( arguments.value ) ) {
 			return toString( arguments.value );
 		}
-		// Struct (but not a CFC - those use metadata via the caller)
+		// CFC - must check before struct; CFCs are isStruct+isObject on Adobe
+		if (
+			isObject( arguments.value ) and
+			(
+				isInstanceOf( arguments.value, "Component" ) or structKeyExists(
+					getMetadata( arguments.value ),
+					"extends"
+				)
+			)
+		) {
+			return serializeJSON( getMetadata( arguments.value ) );
+		}
+		// Struct - sort keys
 		if ( isStruct( arguments.value ) && !isObject( arguments.value ) ) {
 			var sorted = createObject( "java", "java.util.TreeMap" ).init( arguments.value );
 			var parts  = [];
@@ -674,7 +685,7 @@ component accessors=true {
 			}
 			return "{" & arrayToList( parts, "," ) & "}";
 		}
-		// Array - order is semantically meaningful, so preserve it but recurse
+		// Array - keep order, recurse
 		if ( isArray( arguments.value ) ) {
 			var parts = [];
 			for ( var item in arguments.value ) {
@@ -682,7 +693,7 @@ component accessors=true {
 			}
 			return "[" & arrayToList( parts, "," ) & "]";
 		}
-		// Fallback: Java object, query, etc
+		// Fallback
 		try {
 			return arguments.value.toString();
 		} catch ( any e ) {
