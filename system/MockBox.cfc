@@ -640,19 +640,54 @@ component accessors=true {
 				// If an object and a class, just use serializeJSON
 				serializedArgs &= serializeJSON( getMetadata( argOrderedTree[ arg ] ) );
 			} else {
-				// Get obj rep
-				try {
-					serializedArgs &= argOrderedTree[ arg ].toString();
-				} catch ( any e ) {
-					// Fallback
-					serializedArgs &= serializeJSON( argOrderedTree[ arg ] );
-				}
+				// Deterministic string representation - struct key iteration order is not guaranteed
+				serializedArgs &= normalizeValue( argOrderedTree[ arg ] );
 			}
 		}
 		/* ColdFusion isn't case sensitive, so case of string values shouldn't matter.  We do it after serializing all args
 		 * to catch any values deep in complex variables.
 		 */
 		return hash( lCase( serializedArgs ) );
+	}
+
+	/**
+	 * Produce a deterministic string representation of a value for use in argument hashing.
+	 * Structs are sorted by key so iteration order (HashMap bucket layout) does not affect
+	 * the resulting hash. Arrays preserve position but recurse into each element.
+	 *
+	 * @value The value to serialize
+	 */
+	private function normalizeValue( required any value ){
+		// Simple value - common case first
+		if ( isSimpleValue( arguments.value ) ) {
+			return toString( arguments.value );
+		}
+		// Struct (but not a CFC - those use metadata via the caller)
+		if ( isStruct( arguments.value ) && !isObject( arguments.value ) ) {
+			var sorted = createObject( "java", "java.util.TreeMap" ).init( arguments.value );
+			var parts  = [];
+			for ( var key in sorted ) {
+				arrayAppend(
+					parts,
+					key & "=" & ( isNull( sorted[ key ] ) ? "null" : normalizeValue( sorted[ key ] ) )
+				);
+			}
+			return "{" & arrayToList( parts, "," ) & "}";
+		}
+		// Array - order is semantically meaningful, so preserve it but recurse
+		if ( isArray( arguments.value ) ) {
+			var parts = [];
+			for ( var item in arguments.value ) {
+				arrayAppend( parts, isNull( item ) ? "null" : normalizeValue( item ) );
+			}
+			return "[" & arrayToList( parts, "," ) & "]";
+		}
+		// Fallback: Java object, query, etc
+		try {
+			return arguments.value.toString();
+		} catch ( any e ) {
+			return serializeJSON( arguments.value );
+		}
 	}
 
 	/**
