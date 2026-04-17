@@ -402,12 +402,12 @@
 		var service = getMockBox().createStub();
 
 		// Build the expected struct in one insertion order (linked = guaranteed order)
-		var expectedArgs  = structNew( "linked" );
-		expectedArgs.foo  = "one";
-		expectedArgs.bar  = "two";
-		expectedArgs.baz  = "three";
+		var expectedArgs = structNew( "linked" );
+		expectedArgs.foo = "one";
+		expectedArgs.bar = "two";
+		expectedArgs.baz = "three";
 
-		service.$( "save" ).$args( data=expectedArgs ).$results( "matched" );
+		service.$( "save" ).$args( data = expectedArgs ).$results( "matched" );
 
 		// Structurally equal, built in a different insertion order
 		var actualArgs = structNew( "linked" );
@@ -415,26 +415,26 @@
 		actualArgs.foo = "one";
 		actualArgs.bar = "two";
 
-		$assert.isEqual( "matched", service.save( data=actualArgs ) );
+		$assert.isEqual( "matched", service.save( data = actualArgs ) );
 
 		// Nested struct: inner struct key order must not matter either
-		var expectedNested      = structNew( "linked" );
-		expectedNested.outerA   = "1";
-		expectedNested.inner    = structNew( "linked" );
-		expectedNested.inner.a  = 1;
-		expectedNested.inner.b  = 2;
-		expectedNested.outerZ   = "9";
+		var expectedNested     = structNew( "linked" );
+		expectedNested.outerA  = "1";
+		expectedNested.inner   = structNew( "linked" );
+		expectedNested.inner.a = 1;
+		expectedNested.inner.b = 2;
+		expectedNested.outerZ  = "9";
 
-		service.$( "persist" ).$args( payload=expectedNested ).$results( "nested-matched" );
+		service.$( "persist" ).$args( payload = expectedNested ).$results( "nested-matched" );
 
-		var actualNested       = structNew( "linked" );
-		actualNested.outerZ    = "9";
-		actualNested.inner     = structNew( "linked" );
-		actualNested.inner.b   = 2;
-		actualNested.inner.a   = 1;
-		actualNested.outerA    = "1";
+		var actualNested     = structNew( "linked" );
+		actualNested.outerZ  = "9";
+		actualNested.inner   = structNew( "linked" );
+		actualNested.inner.b = 2;
+		actualNested.inner.a = 1;
+		actualNested.outerA  = "1";
 
-		$assert.isEqual( "nested-matched", service.persist( payload=actualNested ) );
+		$assert.isEqual( "nested-matched", service.persist( payload = actualNested ) );
 	}
 
 	function testGetProperty(){
