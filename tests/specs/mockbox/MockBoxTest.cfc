@@ -397,14 +397,17 @@
 	function testMockArgsStructOrderIndependence(){
 		var service = getMockBox().createStub();
 
-		var expectedArgs = structNew( "linked" );
+		var expectedArgs = structNew( "ordered" );
 		expectedArgs.foo = "one";
 		expectedArgs.bar = "two";
 		expectedArgs.baz = "three";
 
-		service.$( "save" ).$args( data = expectedArgs ).$results( "matched" );
+		service
+			.$( "save" )
+			.$args( data = expectedArgs )
+			.$results( "matched" );
 
-		var actualArgs = structNew( "linked" );
+		var actualArgs = structNew( "ordered" );
 		actualArgs.baz = "three";
 		actualArgs.foo = "one";
 		actualArgs.bar = "two";
@@ -412,18 +415,21 @@
 		$assert.isEqual( "matched", service.save( data = actualArgs ) );
 
 		// Nested struct: inner key order must not matter either
-		var expectedNested     = structNew( "linked" );
+		var expectedNested     = structNew( "ordered" );
 		expectedNested.outerA  = "1";
-		expectedNested.inner   = structNew( "linked" );
+		expectedNested.inner   = structNew( "ordered" );
 		expectedNested.inner.a = 1;
 		expectedNested.inner.b = 2;
 		expectedNested.outerZ  = "9";
 
-		service.$( "persist" ).$args( payload = expectedNested ).$results( "nested-matched" );
+		service
+			.$( "persist" )
+			.$args( payload = expectedNested )
+			.$results( "nested-matched" );
 
-		var actualNested     = structNew( "linked" );
+		var actualNested     = structNew( "ordered" );
 		actualNested.outerZ  = "9";
-		actualNested.inner   = structNew( "linked" );
+		actualNested.inner   = structNew( "ordered" );
 		actualNested.inner.b = 2;
 		actualNested.inner.a = 1;
 		actualNested.outerA  = "1";
@@ -435,13 +441,16 @@
 	function testMockArgsStructContainingCFC(){
 		var service = getMockBox().createStub();
 
-		var expected = structNew( "linked" );
+		var expected = structNew( "ordered" );
 		expected.id  = 42;
 		expected.ref = getMockBox().createStub();
 
-		service.$( "save" ).$args( data = expected ).$results( "ok" );
+		service
+			.$( "save" )
+			.$args( data = expected )
+			.$results( "ok" );
 
-		var actual = structNew( "linked" );
+		var actual = structNew( "ordered" );
 		actual.ref = getMockBox().createStub();
 		actual.id  = 42;
 
@@ -452,21 +461,24 @@
 	function testMockArgsDeepNesting(){
 		var service = getMockBox().createStub();
 
-		var expected      = structNew( "linked" );
-		expected.outer    = "z";
-		expected.items    = [];
-		arrayAppend( expected.items, { a: 1, b: 2 } );
-		arrayAppend( expected.items, { a: 3, b: 4 } );
-		expected.another  = "y";
+		var expected   = structNew( "ordered" );
+		expected.outer = "z";
+		expected.items = [];
+		arrayAppend( expected.items, { a : 1, b : 2 } );
+		arrayAppend( expected.items, { a : 3, b : 4 } );
+		expected.another = "y";
 
-		service.$( "process" ).$args( payload = expected ).$results( "deep" );
+		service
+			.$( "process" )
+			.$args( payload = expected )
+			.$results( "deep" );
 
-		var actual     = structNew( "linked" );
+		var actual     = structNew( "ordered" );
 		actual.another = "y";
 		actual.items   = [];
-		arrayAppend( actual.items, { b: 2, a: 1 } );
-		arrayAppend( actual.items, { b: 4, a: 3 } );
-		actual.outer   = "z";
+		arrayAppend( actual.items, { b : 2, a : 1 } );
+		arrayAppend( actual.items, { b : 4, a : 3 } );
+		actual.outer = "z";
 
 		$assert.isEqual( "deep", service.process( payload = actual ) );
 	}
