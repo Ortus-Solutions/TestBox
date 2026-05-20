@@ -156,7 +156,7 @@
 									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testBundles=#URLEncodedFormat( thisBundle.path )#&opt_run=true&coverageEnabled=false"
 									title="Run only this bundle"
 								>
-									#thisBundle.name# (#numberFormat( thisBundle.totalDuration )# ms)
+									#encodeForHtml( thisBundle.name )# (#numberFormat( thisBundle.totalDuration )# ms)
 								</a>
 								<button
 										class="btn btn-link float-right py-0 bundle-btn"
@@ -496,7 +496,7 @@ code {
 					title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#"
 					href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
 				>
-					#statusToIcon( arguments.suiteStats.status )# <strong>#arguments.suiteStats.name#</strong>
+					#statusToIcon( arguments.suiteStats.status )# <strong>#encodeForHtml( arguments.suiteStats.name )#</strong>
 					(#numberFormat( arguments.suiteStats.totalDuration )# ms)
 				</a>
 				<ul class="list-group">
@@ -513,7 +513,7 @@ code {
 									class="alert-link text-#statusToBootstrapClass( local.thisSpec.status )#"
 									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( local.thisSpec.id )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
 								>
-									#statusToIcon( local.thisSpec.status )# #local.thisSpec.displayName# (#numberFormat( local.thisSpec.totalDuration )# ms)
+									#statusToIcon( local.thisSpec.status )# #encodeForHtml( local.thisSpec.displayName )# (#numberFormat( local.thisSpec.totalDuration )# ms)
 								</a>
 
 								<!--- Compose message according to status --->
