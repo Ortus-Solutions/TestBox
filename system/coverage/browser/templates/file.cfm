@@ -26,6 +26,11 @@
 		</head>
 		<body>
 			<div class="container-fluid my-3">
+				<cfif structKeyExists( coverageRunStats, "generatedAt" )>
+					<p class="text-center text-muted small mb-2">
+						Report generated: #dateTimeFormat( coverageRunStats.generatedAt, "yyyy-MM-dd HH:mm:ss" )#
+					</p>
+				</cfif>
 				<table class="table-borderless mx-auto">
 					<thead>
 						<tr>

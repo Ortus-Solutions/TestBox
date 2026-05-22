@@ -89,6 +89,8 @@ component accessors=true {
 
 		stats.qryFilesWorstCoverage = qryWorst;
 
+		stats.generatedAt = now();
+
 		return stats;
 	}
 

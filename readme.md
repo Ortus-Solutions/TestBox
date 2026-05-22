@@ -1,4 +1,4 @@
-﻿[![Total Downloads](https://forgebox.io/api/v1/entry/testbox/badges/downloads)](https://forgebox.io/view/testbox)
+[![Total Downloads](https://forgebox.io/api/v1/entry/testbox/badges/downloads)](https://forgebox.io/view/testbox)
 [![Latest Stable Version](https://forgebox.io/api/v1/entry/testbox/badges/version)](https://forgebox.io/view/testbox)
 [![Apache2 License](https://img.shields.io/badge/License-Apache2-blue.svg)](https://forgebox.io/view/testbox)
 
@@ -111,7 +111,10 @@ class extends="testbox.system.BaseSpec" {
             } );
         } );
     }
-}### Realistic Test Data with CBMockData
+}
+```
+
+### Realistic Test Data with CBMockData
 
 ```javascript
 class extends="testbox.system.BaseSpec" {
@@ -296,6 +299,114 @@ class {
     }
 }
 ```
+
+### Gap analysis (CFML, heuristic)
+
+The **HTML runner** (`system/runners/HTMLRunner.cfm`) supports `gapAnalysis=true` on the **same URL** as a normal test run. TestBox wires the run the usual way (`directory`, `bundles`, `recurse`, `coveragePathToCapture`, etc.); gap mode skips `testbox.run()` and renders an HTML report (same TestBox CSS/JS as the Simple reporter) comparing **public/remote** function names from component metadata against a **concatenated test corpus** (`.cfc`/`.cfm` text under the resolved `directory` paths). Test corpus discovery uses the same **`recurse`** flag and **`directoryList`** shape as `getSpecPaths` (nested folders match a normal directory run). A function is “covered” when its **lowercased name** appears as a substring in that corpus. The **component prefix** is inferred from `coveragePathToCapture` and application **mappings** (longest mapping match).
+
+The **Simple** HTML reporter places **Gap analysis**, **Smoke Test**, and **Code coverage** on **one** row below the main header/filter area: a single flex strip (`d-flex flex-wrap justify-content-end align-items-center mt-3 mb-3` in `system/reports/assets/simple.cfm`) so those controls align with each other (not on the same bar as *Run all tests*).
+
+When you open **only** gap analysis or **only** Smoke Test (`gapAnalysis=true` or `metadataSmoke=true` on the HTML runner), the full-page reports (`system/reports/assets/gapAnalysis.cfm`, `system/reports/assets/metadataSmoke.cfm`) use the **same first row** as the Simple reporter: **Filter Bundles**, **Run All Tests** (same query string as a normal run plus `opt_run=true`), **Collapse All Bundles**, and **Expand All Bundles** (`runnerToolbarHeader.cfm`). The **next** row shows **Re-run Gap Analysis** and/or the **Smoke Test** embed strip with *Re-run* / *Run* labels that match what you last executed (including dummy-invoke vs normal smoke when the URL includes `metadataSmokeInvoke`).
+
+- **Gap analysis** — same URL as the current run plus `gapAnalysis=true` (via `GapAnalysisService.buildRunnerSummaryFromRequest()`).
+- **Smoke Test** — same query string plus `metadataSmoke=true` (via `MetadataSmokeService.buildSmokeRunnerSummaryFromRequest()`).
+- **Code coverage** — same query string plus `coverageEnabled=true` and `coveragePathToCapture` when set (via `CoverageService.buildCoverageRunUrlFromRequest()`). The button is **disabled** until a capture path exists (runner URL `coveragePathToCapture` or TestBox `coverage.options.pathToCapture`).
+
+The TestBox **`tests/Application.cfc`** maps `/testbox` and **`/system`** (the latter to `rootPath & "system"`, i.e. `testbox/system/` next to `tests/`) so specs that reference `system.*` components resolve when the CFML webroot is **not** the TestBox root (for example, TestBox embedded under another site). Standalone servers whose webroot **is** the TestBox folder still resolve `system/` from the filesystem as before.
+
+Standalone embeds and full pages still use `GapAnalysisService.renderRunnerEmbed()`, `MetadataSmokeService.renderRunnerEmbed()`, and `getCoverageService().renderStats()` where appropriate.
+
+Example (gap analysis in the browser):  
+`http://localhost/tests/runner.cfm?directory=tests/specs&coveragePathToCapture=/com/myapp&reporter=simple&gapAnalysis=true`
+
+Example (same host, Simple reporter first, then use the toolbar *Gap analysis* instead of hand-editing the URL):  
+`http://localhost/tests/runner.cfm?directory=tests/specs&coveragePathToCapture=/com/myapp&reporter=simple`
+
+Example (Smoke Test directory mode):  
+`http://localhost/tests/runner.cfm?directory=tests/specs&coveragePathToCapture=/com/myapp&reporter=simple&metadataSmoke=true`
+
+Example (line coverage run — requires FusionReactor instrumentation as documented for `CoverageService`):  
+`http://localhost/tests/runner.cfm?directory=tests/specs&coveragePathToCapture=/com/myapp&reporter=simple&coverageEnabled=true`
+
+**Portability:** Gap analysis is implemented only in TestBox (`HTMLRunner.cfm` + `GapAnalysisService`). Any application with a **`/testbox` mapping** and a thin **`runner.cfm`** that includes `HTMLRunner.cfm` can use it by URL parameters alone—no application-specific CFC glue is required. You must pass a non-empty **`coveragePathToCapture`** (and **`directory`**) so the engine can resolve the source root and infer the component prefix.
+
+On **BoxLang**, the CLI runner (`system/runners/BoxLangRunner.bx`) can write `gapAnalysis.html` when `--gap-analysis=true` is set (requires `--directory`; uses `--coverage-path-to-capture` like the HTML runner).
+
+This is a **development signal only**: not line coverage, not execution coverage; false positives/negatives are possible.
+
+### Smoke Test (CFML, optional)
+
+`TestBox.getMetadataSmokeService()` exposes `testbox.system.smoke.MetadataSmokeService` for **reflection smoke checks** driven by dotted component paths (from a file, an in-memory list, a single component, or a directory walk):
+
+- **`runSmokeFromManifestFile( manifestAbsolutePath, runInvocations )`** — loads `items` (or a legacy JSON array), runs `getComponentMetadata()` on each component, validates basic metadata for **public** / **remote** methods (excluding `init` / `onMissingMethod`), and optionally **dummy-invokes** each method with synthetic values for **required** parameters only (invoke failures are swallowed). Returns a struct with `success`, counts, and `skippedComponents` for components whose metadata could not be read.
+
+- **`runSmokeFromManifestItems( manifestItemsOrRaw, runInvocations )`** — same behavior as a manifest file using an **array** of dotted paths or an **envelope struct** with `items` (see `parseManifestItems`); no disk read.
+
+- **`runSmokeForSingleComponent( componentPath, runInvocations )`** — runs checks for **one** dotted component path (minimal memory per request).
+
+- **`runSmokeFromDirectoryInline( absoluteComponentRoot, dottedPrefix, options, runInvocations )`** — walks `*.cfc` under the root and processes each component **in order** without building a full manifest array in memory (same exclusion options as `scanDirectoryToManifestItems`).
+
+- **`scanDirectoryToManifestItems( absoluteComponentRoot, dottedPrefix, options )`** — walks `*.cfc` files and builds manifest IDs; supports `excludeFileNames`, `excludeRelativePathPrefixes`, and `excludeComponentIds` (comma-separated lists).
+
+- **`writeManifestEnvelope( outputAbsolutePath, items, envelope )`** — writes `{ generatedAt, description, limitations, items }`.
+
+- **`resolveManifestAbsolutePath( manifestInput )`** — used by the HTML runner: returns an existing path if `fileExists()` is true, otherwise `expandPath()` on a mapping-relative path.
+
+- Helpers: **`parseManifestItems`**, **`buildArgsForFunction`**, **`defaultValueForType`**, **`shouldIgnoreFunction`**.
+
+**How to use the HTML runner (same idea as gap analysis / dry run)**
+
+The stock **`system/runners/HTMLRunner.cfm`** supports query parameters so you do not have to write code to run a check:
+
+| Parameter | Meaning |
+|-----------|---------|
+| `metadataSmoke=true` | Run Smoke Test instead of the normal test suite. (Alias: any query key whose letters match `metadatasmoke`, e.g. `metadatasmoke=true`.) |
+| *(request scope)* | **`request.metadataSmokeManifestItems`** — array or `{ "items": [ ... ] }` envelope: in-memory manifest (no file). Highest precedence. |
+| `metadataSmokeComponent` | Single dotted component path (e.g. `com.myapp.Foo`). |
+| `metadataSmokeManifest` | Web path passed to **`resolveManifestAbsolutePath()`** (e.g. `/tests/specs/my-manifest.json`). JSON manifest file. |
+| `metadataSmokeExcludeFileNames` | Optional comma list (same as `scanDirectoryToManifestItems` **options**). |
+| `metadataSmokeExcludePathPrefixes` | Optional comma list (**excludeRelativePathPrefixes**). |
+| `metadataSmokeExcludeComponentIds` | Optional comma list. |
+| `metadataSmokeInvoke=true` | Optional: dummy-invoke public/remote methods (invoke errors swallowed). |
+| `metadataSmokeFormat=json` | Optional: return JSON instead of HTML. |
+
+Resolution order when `metadataSmoke=true`: request **`metadataSmokeManifestItems`** → **`metadataSmokeComponent`** → **`metadataSmokeManifest`** (file) → derived directory scan from the same **`directory`** and **`coveragePathToCapture`** values used by normal and gap runs.
+
+**Portability:** Directory-based smoke in **`HTMLRunner.cfm`** uses the same directory flow as normal runs (`directory` + `recurse`) and the same source-root inference path as gap analysis (`coveragePathToCapture` + mapping-based prefix inference). A consuming app only needs a **`/testbox` mapping**, specs, and a valid `coveragePathToCapture`.
+
+Examples (adjust host and paths):
+
+`runner.cfm?metadataSmoke=true&metadataSmokeManifest=/tests/specs/my-manifest.json`
+
+`runner.cfm?metadataSmoke=true&directory=tests/specs&coveragePathToCapture=/com/myapp`
+
+Single component: `runner.cfm?metadataSmoke=true&metadataSmokeComponent=com.myapp.Foo`
+
+Optional: `&metadataSmokeInvoke=true` or `&metadataSmokeFormat=json`.
+
+On normal test runs with the **Simple** reporter, use the toolbar **Smoke Test** control (built from the current URL) or call **`TestBox.getMetadataSmokeService().renderRunnerEmbed()`** if you are composing a custom report page.
+
+The bundled **cfml/runner/index.cfm** developer form includes **Smoke Test** fields (alongside gap analysis); submitting runs **`HTMLRunner.cfm`** with the same query parameters as a hand-built URL.
+
+On **BoxLang**, the CLI runner (`system/runners/BoxLangRunner.bx`) writes **`metadataSmoke.html`** (or **`metadataSmoke.json`** when **`--metadata-smoke-format=json`**) under **`--reportpath`** when **`--metadata-smoke=true`**. By default it uses the same **`--directory`** scope as normal and gap runs (with optional **`--coverage-path-to-capture`**), or you can target **`--metadata-smoke-manifest`** / **`--metadata-smoke-component`** directly. Optional **`--metadata-smoke-invoke`** and exclude lists are still supported.
+
+**Manifest file** — JSON: either a **plain array** of dotted component paths, or `{ "items": [ "com.myapp.Foo", ... ], ... }`. Generate with **`scanDirectoryToManifestItems`** + **`writeManifestEnvelope`**, or maintain by hand / CI.
+
+**Programmatic API** — Call **`runSmokeFromManifestFile( expandPath("/path/to/manifest.json"), runInvocations )`** and inspect **`success`**, **`errorMessage`**, **`componentCount`**, **`discovered`**, **`attempted`**, **`skippedComponents`**, or use **`renderReport()`** from a custom entry point.
+
+Minimal programmatic example:
+
+```cfscript
+svc = new testbox.system.smoke.MetadataSmokeService();
+result = svc.runSmokeFromManifestFile( expandPath("/tests/resources/my-manifest.json"), false );
+if ( !result.success ) {
+	throw( result.errorMessage );
+}
+```
+
+This is **not** gap analysis, not line coverage, and not proof that real tests exist or that invocations succeed.
+
+Regression coverage: `tests/specs/MetadataSmokeServiceSpec.cfc`, `tests/specs/MetadataSmokeReporterSpec.cfc`; fixtures under `tests/resources/metadataSmokeFixtures/`.
 
 ### Web Runner Configuration
 

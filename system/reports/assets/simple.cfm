@@ -62,6 +62,30 @@
 			#testbox.getCoverageService().renderStats( results.getCoverageData(), false )#
 		</cfif>
 
+		<cfset showGapEmbed = !structKeyExists( url, "gapAnalysis" ) OR !listFindNoCase( "true,yes,1", trim( toString( url.gapAnalysis ) ) )>
+		<cfset msEmbedShow = true>
+		<cfif structKeyExists( url, "metadataSmoke" ) AND listFindNoCase( "true,yes,1", trim( toString( url.metadataSmoke ) ) ) GT 0>
+			<cfset msEmbedShow = false>
+		</cfif>
+		<cfif msEmbedShow>
+			<cfloop list="#structKeyList( url )#" index="uk">
+				<cfif reReplace( lCase( uk ), "[^a-z]", "", "all" ) EQ "metadatasmoke" AND listFindNoCase( "true,yes,1", trim( toString( url[ uk ] ) ) ) GT 0>
+					<cfset msEmbedShow = false>
+					<cfbreak>
+				</cfif>
+			</cfloop>
+		</cfif>
+		<cfif showGapEmbed OR msEmbedShow>
+			<div class="d-flex flex-wrap justify-content-end align-items-center mt-3 mb-3">
+				<cfif showGapEmbed>
+					#testbox.getGapAnalysisService().renderRunnerEmbed( testbox, false )#
+				</cfif>
+				<cfif msEmbedShow>
+					#testbox.getMetadataSmokeService().renderRunnerEmbed( testbox, false )#
+				</cfif>
+			</div>
+		</cfif>
+
 		<!--- Global Stats --->
 		<div class="list-group">
 
@@ -519,6 +543,10 @@ code {
 								<!--- Compose message according to status --->
 								<cfif local.thisSpec.status eq "failed">
 									<cfset local.thisSpec.message = local.thisSpec.failMessage>
+								</cfif>
+								<!--- Enable the err9or that caused the skip to be displayed --->
+								<cfif local.thisSpec.status eq "skipped">
+									<cfset local.thisSpec.message = structKeyExists( local.thisSpec, "failMessage" ) ? local.thisSpec.failMessage : "">
 								</cfif>
 								<cfif local.thisSpec.status eq "error">
 									<cfset local.thisSpec.message = local.thisSpec.error.message & local.thisSpec.error.detail>

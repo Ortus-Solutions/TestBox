@@ -27,6 +27,10 @@ component accessors="true" {
 	property name="result";
 	// Code Coverage Service
 	property name="coverageService";
+	// Gap Analysis Service (heuristic runner HTML and Simple reporter embed)
+	property name="gapAnalysisService";
+	// Smoke Test reflection helper (optional manifest-based checks)
+	property name="metadataSmokeService";
 	// TestBox Modules Registry
 	property name="modules";
 	// A list of globbing patterns to match bundles to test ONLY! Ex: *Spec|*Test
@@ -75,15 +79,17 @@ component accessors="true" {
 		if ( !structKeyExists( arguments.options, "coverage" ) ) {
 			arguments.options.coverage = {};
 		}
-		variables.coverageService = new testbox.system.coverage.CoverageService( arguments.options.coverage );
+		variables.coverageService      = new testbox.system.coverage.CoverageService( arguments.options.coverage );
+		variables.gapAnalysisService   = new testbox.system.gap.GapAnalysisService();
+		variables.metadataSmokeService = new testbox.system.smoke.MetadataSmokeService();
 		// reporter
-		variables.reporter        = arguments.reporter;
+		variables.reporter             = arguments.reporter;
 		// options
-		variables.options         = arguments.options;
+		variables.options              = arguments.options;
 		// Empty bundles to start
-		variables.bundles         = [];
+		variables.bundles              = [];
 		// Modules Init
-		variables.modules         = { "mappings" : {}, "registry" : structNew( "ordered" ) };
+		variables.modules              = { "mappings" : {}, "registry" : structNew( "ordered" ) };
 
 		// inflate labels
 		inflateLabels( arguments.labels );

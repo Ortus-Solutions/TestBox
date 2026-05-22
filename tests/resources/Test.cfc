@@ -1,13 +1,12 @@
 ﻿<cfcomponent output="false">
-
 	<cfscript>
-		variables.reload = false;
-		variables.name = "Luis";
-		variables.settings = structnew();
-		variables.settings["appname"] = "mockFactory";
-		variables.settings["appmapping"] = "/mockFactory";
+	variables.reload                   = false;
+	variables.name                     = "Luis";
+	variables.settings                 = structNew();
+	variables.settings[ "appname" ]    = "mockFactory";
+	variables.settings[ "appmapping" ] = "/mockFactory";
 
-		variables.collaborator = createObject("component","Collaborator");
+	variables.collaborator = createObject( "component", "Collaborator" );
 	</cfscript>
 
 	<cffunction name="containsTest">
@@ -15,7 +14,13 @@
 		<cfset mock.contains()>
 	</cffunction>
 
-	<cffunction name="displayData" access="public" returntype="query" hint="get data and send it back" output="false" >
+	<cffunction
+		name      ="displayData"
+		access    ="public"
+		returntype="query"
+		hint      ="get data and send it back"
+		output    ="false"
+	>
 		<cfreturn variables.collaborator.getDataFromDB()>
 	</cffunction>
 
@@ -49,26 +54,24 @@
 	<!--- spyTest --->
 	<cffunction name="spyTest" output="false" access="public" returntype="any" hint="Spy test">
 		<cfscript>
-			/* I do a spy test call */
-			if( getData() gt 100 ){
-				return 0;
-			}
-			else{
-				return getData();
-			}
+		/* I do a spy test call */
+		if ( getData() gt 100 ) {
+			return 0;
+		} else {
+			return getData();
+		}
 		</cfscript>
 	</cffunction>
 
 	<!--- getSetting --->
 	<cffunction name="getSetting" output="true" access="public" returntype="string" hint="Get a setting">
-		<cfargument name="name" 	type="string" required="true" default="" hint="Name of setting"/>
-		<cfargument name="testArg" 	type="string" required="false" hint=""/>
+		<cfargument name="name" type="string" required="true" default="" hint="Name of setting"/>
+		<cfargument name="testArg" type="string" required="false" hint=""/>
 
-		<cfif structKeyExists(variables.settings,arguments.name)>
-			<cfreturn variables.settings[arguments.name]>
+		<cfif structKeyExists( variables.settings, arguments.name )>
+			<cfreturn variables.settings[ arguments.name ]>
 		<cfelse>
 			<cfreturn "NOT FOUND">
 		</cfif>
 	</cffunction>
-
 </cfcomponent>

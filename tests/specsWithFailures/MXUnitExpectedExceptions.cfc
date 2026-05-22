@@ -1,6 +1,6 @@
 component extends="testbox.system.compat.framework.TestCase" {
 
-/*********************************** LIFE CYCLE Methods ***********************************/
+	/*********************************** LIFE CYCLE Methods ***********************************/
 
 	function beforeTests(){
 		application.salvador = 1;
@@ -18,14 +18,14 @@ component extends="testbox.system.compat.framework.TestCase" {
 		structClear( request );
 	}
 
-/*********************************** Test Methods ***********************************/
+	/*********************************** Test Methods ***********************************/
 
 	/**
-	* @mxunit:expectedException
-	*/
+	 * @mxunit:expectedException
+	 */
 	function testExpectedExceptionNoValue(){
 		// This method should throw an invalid exception and pass
-		throw( type="InvalidException", message="This test method should pass with an expected exception" );
+		throw( type = "InvalidException", message = "This test method should pass with an expected exception" );
 	}
 
 	function testShouldThrowException(){
@@ -34,52 +34,56 @@ component extends="testbox.system.compat.framework.TestCase" {
 	}
 
 	/**
-	* @mxunit:expectedException InvalidException
-	*/
+	 * @mxunit:expectedException InvalidException
+	 */
 	function testExpectedExceptionWithValue(){
 		// This method should throw an invalid exception and pass
-		throw( type="InvalidException", message="This test method should pass with an expected exception of type InvalidException" );
+		throw(
+			type    = "InvalidException",
+			message = "This test method should pass with an expected exception of type InvalidException"
+		);
 	}
 
 	function testExpectedExceptionFromMethodWithType(){
 		expectedException( "InvalidException" );
 		// This method should throw an invalid exception and pass
-		throw( type="InvalidException", message="This test method should pass with an expected exception" );
+		throw( type = "InvalidException", message = "This test method should pass with an expected exception" );
 	}
 
 	function testExpectedExceptionFromMethodWithTypeAndRegex(){
 		expectedException( "InvalidException", "(pass with an)" );
 		// This method should throw an invalid exception and pass
-		throw( type="InvalidException", message="This test method should pass with an expected exception" );
+		throw( type = "InvalidException", message = "This test method should pass with an expected exception" );
 	}
 
 	function testExpectException_should_fail(){
-		expectException("MyException");
+		expectException( "MyException" );
 	}
 
 	function testRaiseException_pass(){
-		expectException("MyException");
+		expectException( "MyException" );
 		raiseExpectedException();
 	}
 	function testRaiseException_fail_wrong_exception_raised(){
-		expectException("MyException");
-		try{
+		expectException( "MyException" );
+		try {
 			raiseUnexpectedException();
+		} catch ( "DifferentException" e ) {
+		} catch ( Any e ) {
+			rethrow;
 		}
-		catch( "DifferentException" e ){}
-		catch( Any e ){ rethrow; }
 	}
 
-	private	function raiseExpectedException(){
-		throw(type="MyException");
+	private function raiseExpectedException(){
+		throw( type = "MyException" );
 	}
 
 	private function raiseUnexpectedException(){
-		throw(type="DifferentException");
+		throw( type = "DifferentException" );
 	}
 
 	private function getData(){
-		return [1,2,3];
+		return [ 1, 2, 3 ];
 	}
 
 }

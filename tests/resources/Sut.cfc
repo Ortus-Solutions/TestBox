@@ -1,4 +1,4 @@
-component{
+component {
 
 	variables.instance = {};
 
@@ -9,14 +9,14 @@ component{
 
 	public string function returnPrivateMethod(){
 		return privateMethod();
-		//works if scoped to this
-		//return this.privateMethod();
+		// works if scoped to this
+		// return this.privateMethod();
 	}
 
 	public string function returnPublicMethod(){
 		return publicMethod();
-		//works if scoped to this
-		//return this.publicMethod();
+		// works if scoped to this
+		// return this.publicMethod();
 	}
 
 	private string function privateMethod(){

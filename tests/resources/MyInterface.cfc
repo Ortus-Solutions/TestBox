@@ -1,5 +1,5 @@
-interface{
+interface {
 
-	function testThis(required name, age);
+	function testThis( required name, age );
 
 }

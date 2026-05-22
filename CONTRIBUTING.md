@@ -61,7 +61,19 @@ If you discover a security vulnerability, please send an email to the developmen
 2. Make sure you have CommandBox installed: https://www.ortussolutions.com/products/commandbox#download
 3. Start a CommandBox shell in the root of the project: `box`
 4. Install the development dependencies: `install`
-5. Hack away! Create tests under `/tests/specs` and run the tests!
+5. Hack away! Create tests under `/tests/specs` (and optional fixtures under `/tests/resources`) and run the tests!
+
+With a CommandBox server started for this project (`box run-script start:lucee` or your usual `server start`), run the **full** suite from the repo root:
+
+```bash
+box testbox run reporter=json
+```
+
+That uses `box.json` → `testbox.runner` (default `http://localhost:49616/tests/runner.cfm`) and discovers all bundles under `tests/specs`. Fix any failures before opening a PR.
+
+### Features consumed from any application
+
+Gap analysis and Smoke Test are implemented in **`system/runners/HTMLRunner.cfm`** and TestBox services, not in consuming applications. **Do not** add vendor-specific or app-specific CFC glue to TestBox for those features. Prefer **documented URL parameters** (and optional **`request`** overrides). A consumer typically only needs a **`/testbox` mapping**, a thin **`runner.cfm`** that includes **`HTMLRunner.cfm`**, and test specs—optionally with **`cfparam`** defaults for URLs such as **`directory`** and **`coveragePathToCapture`**.
 
 ## Language Compatiblity
 
@@ -82,6 +94,8 @@ box run-script format
 # Start a watcher, type away, save and auto-format for you
 box run-script format:watch
 ```
+
+If CommandBox reports that `cfformat` cannot be resolved, install the formatter: `box install commandbox-cfformat`.
 
 We recommend that anytime you hack on the core you start the formatter watcher (`box run-script format:watch`). This will monitor your changes and auto-format your code for you.
 

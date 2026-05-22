@@ -21,6 +21,11 @@
 					<h3 class="mb-auto">
 						<i class="fas fa-microscope"></i> Code Coverage Stats
 					</h3>
+					<cfif structKeyExists( stats, "generatedAt" )>
+						<p class="mb-0 mt-1 text-muted small">
+							Report generated: #dateTimeFormat( stats.generatedAt, "yyyy-MM-dd HH:mm:ss" )#
+						</p>
+					</cfif>
 
 					<cfif len( coverageData.sonarQubeResults ) >
 						<h5 class="mt-2">

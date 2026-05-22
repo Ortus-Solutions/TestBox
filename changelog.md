@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Simple HTML reporter **toolbar**: one-click links for **Gap analysis**, **Smoke Test**, and **Code coverage** (plus existing *Run all tests* / bundle expand). Code coverage uses `CoverageService.buildCoverageRunUrlFromRequest()`; the control stays disabled until `coveragePathToCapture` is available. Removes the duplicate gap/metadata embed strips from the default Simple layout in favor of this toolbar.
+- Heuristic gap analysis: `TestBox.getGapAnalysisService()` with `buildRunnerSummaryFromRequest()`, `renderRunnerEmbed()` (Simple reporter embed), and `renderReport()`; HTML runner (`gapAnalysis=true`) and BoxLang CLI (`--gap-analysis`).
+- Smoke Test helpers: `TestBox.getMetadataSmokeService()` / `testbox.system.smoke.MetadataSmokeService` for manifest-driven component metadata checks and optional dummy invokes (`runSmokeFromManifestFile`, `runSmokeFromManifestItems`, `runSmokeForSingleComponent`, `runSmokeFromDirectoryInline`, `scanDirectoryToManifestItems`, `writeManifestEnvelope`, `resolveManifestAbsolutePath`, **`renderRunnerEmbed`** for the Simple reporter); HTML runner supports `request.metadataSmokeManifestItems`, `metadataSmokeComponent`, file-based `metadataSmokeManifest`, and directory-scoped smoke from the same `directory` + `coveragePathToCapture` flow used by normal runs and gap analysis (plus optional exclude lists), plus `metadataSmokeInvoke` and `metadataSmokeFormat=json`; **`cfml/runner/index.cfm`** form fields; **BoxLang** `BoxLangRunner.bx` `--metadata-smoke` and related CLI flags writing `metadataSmoke.html` / `metadataSmoke.json`; `MetadataSmokeReporter` HTML output. HTML runner accepts `metadatasmoke=true` as an alias for `metadataSmoke=true` (letters-only match on the parameter name).
+- `system/reports/assets/runnerToolbarHeader.cfm` and `system/reports/assets/runnerToolbarBundleScripts.cfm` — shared toolbar markup and bundle-filter/collapse JS for full pages that align with the Simple reporter header.
+
+### Tests
+
+- Regression coverage for gap analysis: `tests/specs/GapAnalysisServiceSpec.cfc`, `tests/specs/GapAnalysisReporterSpec.cfc`, and fixtures under `tests/resources/gapAnalysisFixtures/`.
+- Smoke Test: `tests/specs/MetadataSmokeServiceSpec.cfc`, `tests/specs/MetadataSmokeReporterSpec.cfc`, and fixtures under `tests/resources/metadataSmokeFixtures/`.
+- `CoverageService.buildCoverageRunUrlFromRequest()`: `tests/specs/coverage/CoverageServiceTest.cfc`.
+
+### Changed
+
+- HTML and BoxLang runners now scope both **gap analysis** and **Smoke Test** directory mode from the same `directory` + `coveragePathToCapture` resolution path used by normal runs (with shared root/prefix inference), and remove legacy smoke directory-root/prefix runner configuration paths.
+- Full-page **Gap analysis** and **Smoke Test** HTML (`assets/gapAnalysis.cfm`, `assets/metadataSmoke.cfm`) reuse the Simple reporter’s top toolbar (**Filter Bundles**, **Run All Tests**, **Collapse/Expand All Bundles**) via `runnerToolbarHeader.cfm` and `runnerToolbarBundleScripts.cfm`, so the layout matches a normal Simple run. The row below keeps **Re-run Gap Analysis** and the Smoke Test embed (with re-run vs run labels as appropriate). The separate **Run tests (same URL)** control was removed as redundant with **Run All Tests**.
+
 ## [7.0.0] - 2026-03-17
 
 - <https://testbox.ortusbooks.com/readme/release-history/whats-new-with-7.0.0>

@@ -71,11 +71,7 @@ The main interface to produce a ColdBox Application cache.
 		returntype="void"
 		hint      ="Clears all events from the cache."
 	>
-		<cfargument
-			name   ="async"
-			type   ="any"
-			hint   ="Run command asynchronously or not"
-		/>
+		<cfargument name="async" type="any" hint="Run command asynchronously or not"/>
 	</cffunction>
 
 	<!--- clearEvent --->
@@ -164,10 +160,6 @@ The main interface to produce a ColdBox Application cache.
 		returntype="void"
 		hint      ="Clears all views from the cache."
 	>
-		<cfargument
-			name   ="async"
-			type   ="any"
-			hint   ="Run command asynchronously or not"
-		/>
+		<cfargument name="async" type="any" hint="Run command asynchronously or not"/>
 	</cffunction>
 </cfinterface>

@@ -15,6 +15,11 @@
 	<body>
 		<div class="container-fluid my-3">
 			<h2 class="text-center">Code Coverage Browser</h2>
+			<cfif structKeyExists( stats, "generatedAt" )>
+				<p class="text-center text-muted small mb-3">
+					Report generated: #dateTimeFormat( stats.generatedAt, "yyyy-MM-dd HH:mm:ss" )#
+				</p>
+			</cfif>
 
 			<table class="table-borderless">
 				<tbody>

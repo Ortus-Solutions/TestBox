@@ -8,6 +8,8 @@ grapher/**
 
 # Test Results
 tests/results/**
+bx/tests/results/**
+cfml/tests/results/**
 
 # Dependencies
 system/modules/**

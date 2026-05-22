@@ -24,12 +24,37 @@
 <cfparam name="url.coverageBlacklist"				default="/testbox">
 <!--- Enable batched code coverage reporter, useful for large test bundles which require spreading over multiple testbox run commands. --->
 <cfparam name="url.isBatched"						default="false">
+<cfparam name="url.gapAnalysis"						default="false">
+<cfparam name="url.metadataSmoke"					default="false">
+<cfparam name="url.metadataSmokeManifest"			default="">
+<cfparam name="url.metadataSmokeComponent"			default="">
+<cfparam name="url.metadataSmokeExcludeFileNames"	default="">
+<cfparam name="url.metadataSmokeExcludePathPrefixes"	default="">
+<cfparam name="url.metadataSmokeExcludeComponentIds"	default="">
+<cfparam name="url.metadataSmokeInvoke"				default="false">
+<cfparam name="url.metadataSmokeFormat"				default="">
 
 <cfscript>
 // If we have incoming bundles, then clear out the directory
 if( len( url.bundles ) ){
 	url.directory = ""
 }
+
+function escapePropertyValue( required string value ) {
+	if ( len( arguments.value ) == 0 ) {
+		return arguments.value;
+	}
+	var v = replaceNoCase( arguments.value, '\', '\\', 'all' );
+	v = replaceNoCase( v, chr(13), '\r', 'all' );
+	v = replaceNoCase( v, chr(10), '\n', 'all' );
+	v = replaceNoCase( v, chr(9), '\t', 'all' );
+	v = replaceNoCase( v, chr(60), '\u003c', 'all' );
+	v = replaceNoCase( v, chr(62), '\u003e', 'all' );
+	v = replaceNoCase( v, chr(47), '\u002f', 'all' );
+	return replaceNoCase( v, chr(32), '\u0020', 'all' );
+}
+
+gapFlag = structKeyExists( url, "gapAnalysis" ) && listFindNoCase( "true,yes,1", trim( toString( url.gapAnalysis ) ) ) > 0;
 
 // prepare for tests for bundles or directories
 testbox = new testbox.system.TestBox(
@@ -61,6 +86,173 @@ if( len( url.directory ) ){
 	}
 }
 
+if ( gapFlag ) {
+	runnerErrors = [];
+	gapReport = {};
+	ran = false;
+	sourceRoot = "";
+	componentPrefix = "";
+	testRoots = [];
+	try {
+		if ( !len( trim( toString( url.directory ) ) ) ) {
+			arrayAppend( runnerErrors, "gapAnalysis requires url.directory (same as a normal TestBox directory run)." );
+		} else {
+			sourceRoot = testbox.getCoverageService().getCoverageOptions().pathToCapture;
+			gapSvc = testbox.getGapAnalysisService();
+			sourceRoot = gapSvc.resolveSourceRootForDirectoryRequest( sourceRoot, toString( url.directory ) );
+			componentPrefix = gapSvc.inferComponentPrefix( sourceRoot );
+			if ( !len( componentPrefix ) ) {
+				arrayAppend( runnerErrors, "Could not infer component prefix from coverage pathToCapture; check url.coveragePathToCapture and application mappings." );
+			} else {
+				testRoots = [];
+				for ( dir in listToArray( url.directory ) ) {
+					dir = trim( dir );
+					if ( !len( dir ) ) {
+						continue;
+					}
+					arrayAppend( testRoots, expandPath( "/" & replace( dir, ".", "/", "all" ) ) );
+				}
+				if ( !arrayLen( testRoots ) ) {
+					arrayAppend( runnerErrors, "No valid test directories resolved from url.directory." );
+				} else {
+					gapReport = gapSvc.analyze(
+						sourceRoot = sourceRoot,
+						componentPrefix = componentPrefix,
+						testRootList = arrayToList( testRoots, "," ),
+						recurseTestRoots = url.recurse
+					);
+					ran = true;
+				}
+			}
+		}
+	} catch ( any e ) {
+		arrayAppend( runnerErrors, e.message );
+		if ( structKeyExists( e, "detail" ) && len( toString( e.detail ) ) ) {
+			arrayAppend( runnerErrors, toString( e.detail ) );
+		}
+	}
+	gapReq = testbox.getGapAnalysisService().buildRunnerSummaryFromRequest( testbox, sourceRoot, componentPrefix, testRoots, false );
+	gapRunnerSummary = gapReq.gapRunnerSummary;
+	gapHtml = testbox.getGapAnalysisService().renderReport(
+		testbox = testbox,
+		gapReport = gapReport,
+		gapRunnerSummary = gapRunnerSummary,
+		runnerErrors = runnerErrors,
+		ran = ran,
+		gapRunAnalysisUrl = gapReq.gapRunAnalysisUrl
+	);
+	writeOutput( gapHtml );
+	abort;
+}
+
+metadataSmokeFlag = structKeyExists( url, "metadataSmoke" ) && listFindNoCase( "true,yes,1", trim( toString( url.metadataSmoke ) ) ) > 0;
+if ( !metadataSmokeFlag ) {
+	for ( k in url ) {
+		if ( reReplace( lCase( k ), "[^a-z]", "", "all" ) == "metadatasmoke" && listFindNoCase( "true,yes,1", trim( toString( url[ k ] ) ) ) > 0 ) {
+			metadataSmokeFlag = true;
+			break;
+		}
+	}
+}
+metadataSmokeJson = structKeyExists( url, "metadataSmokeFormat" ) && listFindNoCase( "json", trim( toString( url.metadataSmokeFormat ) ) ) > 0;
+
+if ( metadataSmokeFlag ) {
+	runnerErrors = [];
+	smokeResult = {};
+	ran = false;
+	manifestWeb = "";
+	smokeComponentForUrl = "";
+	invokeFlag = structKeyExists( url, "metadataSmokeInvoke" ) && listFindNoCase( "true,yes,1", trim( toString( url.metadataSmokeInvoke ) ) ) > 0;
+	smokeSvc = testbox.getMetadataSmokeService();
+	try {
+		if ( structKeyExists( request, "metadataSmokeManifestItems" ) ) {
+			smokeResult = smokeSvc.runSmokeFromManifestItems( request.metadataSmokeManifestItems, invokeFlag );
+			ran = true;
+			manifestWeb = "(in-memory manifest)";
+		} else {
+			smokeComponentForUrl = structKeyExists( url, "metadataSmokeComponent" ) ? trim( toString( url.metadataSmokeComponent ) ) : "";
+			if ( len( smokeComponentForUrl ) ) {
+				smokeResult = smokeSvc.runSmokeForSingleComponent( smokeComponentForUrl, invokeFlag );
+				ran = true;
+				manifestWeb = smokeComponentForUrl;
+			} else {
+				manifestWeb = structKeyExists( url, "metadataSmokeManifest" ) ? trim( toString( url.metadataSmokeManifest ) ) : "";
+				if ( len( manifestWeb ) ) {
+					absManifest = smokeSvc.resolveManifestAbsolutePath( manifestWeb );
+					if ( !fileExists( absManifest ) ) {
+						arrayAppend( runnerErrors, "Manifest not found: #absManifest#" );
+					} else {
+						smokeResult = smokeSvc.runSmokeFromManifestFile( absManifest, invokeFlag );
+						ran = true;
+					}
+				} else {
+					if ( len( trim( toString( url.directory ) ) ) ) {
+						coverageRoot = testbox.getCoverageService().getCoverageOptions().pathToCapture;
+						gapSvc = testbox.getGapAnalysisService();
+						resolvedRoot = gapSvc.resolveSourceRootForDirectoryRequest( coverageRoot, toString( url.directory ) );
+						resolvedPrefix = gapSvc.inferComponentPrefix( resolvedRoot );
+						if ( len( resolvedRoot ) && len( resolvedPrefix ) ) {
+							rootAbs = smokeSvc.resolveManifestAbsolutePath( resolvedRoot );
+							dsOpts = {};
+							exFiles = structKeyExists( url, "metadataSmokeExcludeFileNames" ) ? trim( toString( url.metadataSmokeExcludeFileNames ) ) : "";
+							exPfx = structKeyExists( url, "metadataSmokeExcludePathPrefixes" ) ? trim( toString( url.metadataSmokeExcludePathPrefixes ) ) : "";
+							exIds = structKeyExists( url, "metadataSmokeExcludeComponentIds" ) ? trim( toString( url.metadataSmokeExcludeComponentIds ) ) : "";
+							if ( len( exFiles ) ) {
+								dsOpts.excludeFileNames = exFiles;
+							}
+							if ( len( exPfx ) ) {
+								dsOpts.excludeRelativePathPrefixes = exPfx;
+							}
+							if ( len( exIds ) ) {
+								dsOpts.excludeComponentIds = exIds;
+							}
+							smokeResult = smokeSvc.runSmokeFromDirectoryInline( rootAbs, resolvedPrefix, dsOpts, invokeFlag );
+							ran = true;
+							manifestWeb = "(directory scan)";
+						} else {
+							arrayAppend( runnerErrors, "Could not infer component prefix from coverage pathToCapture; check url.coveragePathToCapture and application mappings." );
+						}
+					} else {
+						arrayAppend( runnerErrors, "Smoke Test requires url.directory (same as a normal TestBox directory run), url.metadataSmokeComponent, or url.metadataSmokeManifest." );
+					}
+				}
+			}
+		}
+	} catch ( any e ) {
+		arrayAppend( runnerErrors, e.message );
+		if ( structKeyExists( e, "detail" ) && len( toString( e.detail ) ) ) {
+			arrayAppend( runnerErrors, toString( e.detail ) );
+		}
+	}
+	if ( metadataSmokeJson ) {
+		cfcontent( type="application/json", reset="true" );
+		writeOutput( serializeJSON( {
+			"runnerErrors"  : runnerErrors,
+			"ran"           : ran,
+			"smokeResult"   : smokeResult,
+			"manifestPath"  : manifestWeb,
+			"invokeEnabled" : invokeFlag,
+			"metadataSmokeComponent" : smokeComponentForUrl
+		} ) );
+	} else {
+		html = smokeSvc.renderReport(
+			testbox = testbox,
+			smokeResult = smokeResult,
+			runnerErrors = runnerErrors,
+			ran = ran,
+			manifestPath = manifestWeb,
+			invokeEnabled = invokeFlag,
+			metadataSmokeComponent = smokeComponentForUrl,
+			metadataSmokeExcludeFileNamesForUrl = structKeyExists( url, "metadataSmokeExcludeFileNames" ) ? trim( toString( url.metadataSmokeExcludeFileNames ) ) : "",
+			metadataSmokeExcludePathPrefixesForUrl = structKeyExists( url, "metadataSmokeExcludePathPrefixes" ) ? trim( toString( url.metadataSmokeExcludePathPrefixes ) ) : "",
+			metadataSmokeExcludeComponentIdsForUrl = structKeyExists( url, "metadataSmokeExcludeComponentIds" ) ? trim( toString( url.metadataSmokeExcludeComponentIds ) ) : "",
+			justReturn = false
+		);
+		writeOutput( html );
+	}
+	abort;
+}
+
 // Run Tests using correct reporter
 if( url.dryRun ){
 	discovery = testbox.dryRun()
@@ -68,20 +260,6 @@ if( url.dryRun ){
 	results = serializeJSON( discovery )
 } else {
 	results = testbox.run( reporter=url.reporter )
-}
-
-function escapePropertyValue( required string value ) {
-	if ( len( arguments.value ) == 0 ) {
-		return arguments.value;
-	}
-	local.value = replaceNoCase( arguments.value, '\', '\\', 'all' );
-	value = replaceNoCase( value, chr(13), '\r', 'all' );
-	value = replaceNoCase( value, chr(10), '\n', 'all' );
-	value = replaceNoCase( value, chr(9), '\t', 'all' );
-	value = replaceNoCase( value, chr(60), '\u003c', 'all' );
-	value = replaceNoCase( value, chr(62), '\u003e', 'all' );
-	value = replaceNoCase( value, chr(47), '\u002f', 'all' );
-	return replaceNoCase( value, chr(32), '\u0020', 'all' );
 }
 
 // Write TEST.properties in report destination path.

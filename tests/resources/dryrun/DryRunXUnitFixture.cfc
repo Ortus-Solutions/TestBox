@@ -16,11 +16,11 @@ component extends="testbox.system.BaseSpec" labels="componentLabel" {
 		request.dryRunXAfterTests = ( request.dryRunXAfterTests ?: 0 ) + 1;
 	}
 
-	function testRunnable() labels="methodLabel" {
+	function testRunnable() labels="methodLabel"{
 		request.dryRunXSpecRuns = ( request.dryRunXSpecRuns ?: 0 ) + 1;
 	}
 
-	function testSkipped() skip labels="skipLabel" {
+	function testSkipped() skip labels="skipLabel"{
 		request.dryRunXSkippedSpecRuns = ( request.dryRunXSkippedSpecRuns ?: 0 ) + 1;
 	}
 
