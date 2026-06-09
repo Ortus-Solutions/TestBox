@@ -1811,27 +1811,27 @@ component {
 	 */
 
 	function isAdobe(){
-		return server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion Server" );
+		return server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion Server" )
 	}
 
 	function isLucee(){
-		return server.keyExists( "lucee" );
+		return server.keyExists( "lucee" ) && !server.keyExists( "boxlang" )
 	}
 
 	function isBoxLang(){
-		return server.keyExists( "boxlang" );
+		return server.keyExists( "boxlang" )
 	}
 
 	function isWindows(){
-		return server.keyExists( "os" ) && server.os.name.findNoCase( "windows" );
+		return server.keyExists( "os" ) && server.os.name.findNoCase( "windows" )
 	}
 
 	function isLinux(){
-		return server.keyExists( "os" ) && server.os.name.findNoCase( "unix" );
+		return server.keyExists( "os" ) && server.os.name.findNoCase( "unix" )
 	}
 
 	function isMac(){
-		return server.keyExists( "os" ) && server.os.name.findNoCase( "mac" );
+		return server.keyExists( "os" ) && server.os.name.findNoCase( "mac" )
 	}
 
 	/**
