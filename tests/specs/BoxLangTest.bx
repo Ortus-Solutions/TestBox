@@ -221,7 +221,9 @@ class extends="testbox.system.BaseSpec" {
 						expectAll( [ 2, 4, 10, 8 ] ).toBeLT( 10 );
 						fail( "expectAll() failed to detect a bad element" );
 					} catch ( any e ) {
-						expect( e.message ).toBe( "The actual [10] is not less than [10]" );
+						expect( e.message ).toInclude( "expectAll() failed" );
+						expect( e.message ).toInclude( "1 of 4" );
+						expect( e.detail ).toInclude( "[3]: The actual [10] is not less than [10]" );
 					}
 				} );
 
