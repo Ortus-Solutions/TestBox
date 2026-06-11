@@ -542,6 +542,90 @@ component extends="testbox.system.BaseSpec" {
 			} );
 		} );
 
+		describe( "assertAll() grouped assertions", function(){
+			it( "passes when all closures pass", function(){
+				$assert.all( [
+					function(){
+						$assert.isTrue( true );
+					},
+					function(){
+						$assert.isEqual( 1, 1 );
+					}
+				] );
+			} );
+
+			it( "reports all failures when multiple assertions fail", function(){
+				try {
+					$assert.all( [
+						function(){
+							$assert.isTrue( false );
+						},
+						function(){
+							$assert.isEqual( 1, 2 );
+						}
+					] );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "2 assertion(s) failed" );
+					expect( e.detail ).toInclude( "[1]" );
+					expect( e.detail ).toInclude( "[2]" );
+				}
+			} );
+
+			it( "reports a single failure correctly", function(){
+				try {
+					$assert.all( [
+						function(){
+							$assert.isTrue( true );
+						},
+						function(){
+							$assert.isTrue( false );
+						}
+					] );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "1 assertion(s) failed" );
+				}
+			} );
+
+			it( "includes the heading in the failure message", function(){
+				try {
+					$assert.all(
+						executables = [
+							function(){
+								$assert.isTrue( false );
+							}
+						],
+						heading = "user validation"
+					);
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "user validation — 1 assertion(s) failed" );
+				}
+			} );
+
+			it( "rethrows unexpected exceptions immediately", function(){
+				try {
+					$assert.all( [
+						function(){
+							throw( type = "CustomBoom", message = "unexpected" );
+						}
+					] );
+				} catch ( "CustomBoom" e ) {
+					expect( e.message ).toBe( "unexpected" );
+				}
+			} );
+
+			it( "works via the assertAll shortcut on the spec", function(){
+				try {
+					assertAll( [
+						function(){
+							$assert.isTrue( false );
+						}
+					] );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "1 assertion(s) failed" );
+				}
+			} );
+		} );
+
 		describe( "A calculator test suite", function(){
 			// before each spec in THIS suite group
 			beforeEach( function(){

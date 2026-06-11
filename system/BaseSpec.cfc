@@ -77,6 +77,20 @@ component {
 	}
 
 	/**
+	 * Run all given executables and report every assertion failure at once instead of stopping at the first.
+	 * Delegates to the internal $assert.all() method.
+	 *
+	 * @executables An array of closures to execute
+	 * @heading     An optional heading to prepend to the aggregated failure message
+	 * @facade     
+	 *
+	 * @throws TestBox.AssertionFailed
+	 */
+	function assertAll( required array executables, string heading = "" ){
+		this.$assert.all( argumentCollection = arguments );
+	}
+
+	/**
 	 * Skip a test
 	 *
 	 * @message The message to send in the skip information dialog

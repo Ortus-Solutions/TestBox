@@ -42,15 +42,15 @@
 - [x] Add tests for all pass/fail combinations
 - [x] Add chainability tests for collection expectations
 
-## Phase 3: Grouped Assertions
+## Phase 3: Grouped Assertions (COMPLETE)
 
-- [ ] Add `$assert.all( executables, heading = "" )`
-- [ ] Add `assertAll()` facade to `BaseSpec`
-- [ ] Add `expectAllAssertions()`
-- [ ] Add `TestBox.MultipleAssertionFailed` failure type
-- [ ] Aggregate assertion failures
-- [ ] Define behavior for unexpected exceptions
-- [ ] Add grouped assertion tests
+- [x] Add `$assert.all( executables, heading = "" )`
+- [x] Add `assertAll()` facade to `BaseSpec`
+- [x] Aggregate assertion failures — catch `TestBox.AssertionFailed`, collect all, rethrow single aggregated
+- [x] Unexpected exceptions rethrow immediately (not caught by `all()`)
+- [x] Heading prepended to aggregated failure message
+- [x] Detail contains numbered list of individual failures
+- [x] Add tests: all-pass, multi-fail, single-fail, heading, unexpected exception, facade shortcut
 
 ## Phase 4: Low-Risk Matchers
 

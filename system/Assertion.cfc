@@ -1258,7 +1258,58 @@ component {
 		return this;
 	}
 
+	/**
+	 * Run all given executables and report every assertion failure at once instead of stopping at the first.
+	 * Non-assertion exceptions are rethrown immediately.
+	 *
+	 * @executables An array of closures to execute
+	 * @heading     An optional heading to prepend to the aggregated failure message
+	 *
+	 * @throws TestBox.AssertionFailed — with an aggregated message and detail containing numbered failures
+	 */
+	function all( required array executables, string heading = "" ){
+		var failures = [];
+		for ( var i = 1; i <= arrayLen( arguments.executables ); i++ ) {
+			try {
+				var exec = arguments.executables[ i ];
+				exec();
+			} catch ( "TestBox.AssertionFailed" e ) {
+				arrayAppend(
+					failures,
+					{
+						"index"   : i,
+						"message" : e.message,
+						"detail"  : e.detail ?: ""
+					}
+				);
+			}
+		}
+
+		if ( arrayLen( failures ) == 0 ) {
+			return this;
+		}
+
+		var msg = "#arrayLen( failures )# assertion(s) failed";
+		if ( len( arguments.heading ) ) {
+			msg = arguments.heading & " — " & msg;
+		}
+		var detail = buildAssertAllDetail( failures );
+		fail( msg, detail );
+	}
+
 	/*********************************** PRIVATE Methods ***********************************/
+
+	private string function buildAssertAllDetail( required array failures ){
+		var lines = [];
+		for ( var i = 1; i <= arrayLen( arguments.failures ); i++ ) {
+			var fd = arguments.failures[ i ];
+			arrayAppend( lines, "[#fd.index#] #fd.message#" );
+			if ( len( fd.detail ) ) {
+				arrayAppend( lines, "    #fd.detail#" );
+			}
+		}
+		return arrayToList( lines, chr( 10 ) );
+	}
 
 	private boolean function equalize( any expected, any actual ){
 		// Null values
