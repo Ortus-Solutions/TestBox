@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add expectation context support via `expect( value ).withContext( message )` that prepends semantic context to all failure messages including negated matchers and custom matchers.
+- Add collection expectation modes: `expectAny()`, `expectSome()`, and `expectNone()` alongside existing `expectAll()` with detailed failure summaries including element index/key and pass count reporting.
+
+### Improvements
+
+- Improve matcher failure messages with optional contextual prefix for distinguishing chained expectations.
+- Improve `expectAll()` failure messages to include pass/fail counts and per-element failure details with index/key context.
+
+### Fixed
+
+- Fix custom matcher failure messages not routing through the expectation's internal fail method.
+
 ## [7.0.0] - 2026-03-17
 
 - <https://testbox.ortusbooks.com/readme/release-history/whats-new-with-7.0.0>

@@ -19,6 +19,8 @@ component accessors="true" {
 	this.isNot   = false;
 	// Custom messages
 	this.message = "";
+	// Additional context added to failure messages, useful for distinguishing expectations
+	this.context = "";
 
 	/**
 	 * Constructor
@@ -45,7 +47,7 @@ component accessors="true" {
 			// execute custom matcher
 			var results = body( this, arguments );
 			// if not passed, then fail the custom matcher, else you can concatenate
-			return ( !results ? variables.assert.fail( this.message ) : this );
+			return ( !results ? fail( this.message ) : this );
 		};
 	}
 
@@ -56,6 +58,7 @@ component accessors="true" {
 	 * @detail  The detail to fail with.
 	 */
 	function fail( message = "", detail = "" ){
+		arguments.message = resolveMessage( arguments.message );
 		variables.assert.fail( argumentCollection = arguments );
 	}
 
@@ -70,6 +73,11 @@ component accessors="true" {
 				arguments.missingMethodName,
 				len( arguments.missingMethodName ) - 3
 			);
+			// Inject context into the missingMethodArguments so the routed matcher picks it up,
+			// but only if the caller did not supply an explicit message
+			if ( len( this.context ) && !structKeyExists( arguments.missingMethodArguments, "message" ) ) {
+				arguments.missingMethodArguments.message = this.context;
+			}
 			// set isNot pivot on this matcher
 			try {
 				this.isNot = true;
@@ -127,13 +135,39 @@ component accessors="true" {
 	}
 
 	/**
+	 * Add semantic context to this expectation so that failure messages
+	 * include additional identifying information.
+	 *
+	 * @message The context message to include when this expectation fails
+	 */
+	function withContext( required string message ){
+		this.context = arguments.message;
+		return this;
+	}
+
+	/************************************** PRIVATE *********************************************/
+
+	/**
+	 * Resolve a failure message by prepending the context if it has been set.
+	 */
+	private string function resolveMessage( required string message ){
+		if ( len( arguments.message ) && len( this.context ) ) {
+			return this.context & " — " & arguments.message;
+		}
+		return arguments.message;
+	}
+
+	/************************************** MATCHERS *********************************************/
+
+	/**
 	 * Assert something is true
 	 *
 	 * @actual  The actual data to test
 	 * @message The message to send in the failure
 	 */
 	function toBeTrue( message = "" ){
-		arguments.actual = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.actual  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.isFalse( argumentCollection = arguments );
 		} else {
@@ -150,7 +184,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toBeFalse( message = "" ){
-		arguments.actual = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.actual  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.isTrue( argumentCollection = arguments );
 		} else {
@@ -166,6 +201,7 @@ component accessors="true" {
 	 * @message  The message to send in the failure
 	 */
 	function toBe( any expected, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
 		// Null checks
 		if ( isNull( this.actual ) ) {
 			arguments.actual = javacast( "null", "" );
@@ -189,7 +225,8 @@ component accessors="true" {
 	 * @message  The message to send in the failure
 	 */
 	function toBeWithCase( required string expected, message = "" ){
-		arguments.actual = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.actual  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.isNotEqual( argumentCollection = arguments );
 		} else {
@@ -208,18 +245,17 @@ component accessors="true" {
 			if ( !isNull( this.actual ) ) {
 				return this;
 			}
-			arguments.message = (
+			fail(
 				len( arguments.message ) ? arguments.message : "Expected the actual value to be NOT null but it was null"
 			);
 		} else {
 			if ( isNull( this.actual ) ) {
 				return this;
 			}
-			arguments.message = (
+			fail(
 				len( arguments.message ) ? arguments.message : "Expected a null value but got [#variables.assert.getStringName( this.actual )#] instead"
 			);
 		}
-		variables.assert.fail( arguments.message );
 	}
 
 
@@ -230,7 +266,8 @@ component accessors="true" {
 	 * @message  The message to send in the failure
 	 */
 	function toBeInstanceOf( required string typeName, message = "" ){
-		arguments.actual = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.actual  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notInstanceOf( argumentCollection = arguments );
 		} else {
@@ -246,7 +283,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toMatch( required string regex, message = "" ){
-		arguments.actual = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.actual  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notMatch( argumentCollection = arguments );
 		} else {
@@ -263,7 +301,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toStartWith( required needle, message = "" ){
-		arguments.target = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.target  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notStartsWith( argumentCollection = arguments );
 		} else {
@@ -281,7 +320,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toStartWithCase( required needle, message = "" ){
-		arguments.target = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.target  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notStartsWithCase( argumentCollection = arguments );
 		} else {
@@ -299,7 +339,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toEndWith( required needle, message = "" ){
-		arguments.target = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.target  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notEndsWith( argumentCollection = arguments );
 		} else {
@@ -317,7 +358,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toEndWithCase( required needle, message = "" ){
-		arguments.target = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.target  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notEndsWithCase( argumentCollection = arguments );
 		} else {
@@ -335,7 +377,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toMatchWithCase( required string regex, message = "" ){
-		arguments.actual = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.actual  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notMatchWithCase( argumentCollection = arguments );
 		} else {
@@ -351,7 +394,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toBeTypeOf( required string type, message = "" ){
-		arguments.actual = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.actual  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notTypeOf( argumentCollection = arguments );
 		} else {
@@ -366,7 +410,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toBeEmpty( message = "" ){
-		arguments.target = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.target  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.isNotEmpty( argumentCollection = arguments );
 		} else {
@@ -382,7 +427,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toHaveKey( required string key, message = "" ){
-		arguments.target = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.target  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notKey( argumentCollection = arguments );
 		} else {
@@ -398,6 +444,7 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toHaveKeyWithCase( required string key, message = "" ){
+		arguments.message       = resolveMessage( arguments.message );
 		arguments.caseSensitive = true;
 		arguments.target        = this.actual;
 		if ( this.isNot ) {
@@ -415,7 +462,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toHaveDeepKey( required string key, message = "" ){
-		arguments.target = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.target  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notDeepKey( argumentCollection = arguments );
 		} else {
@@ -431,7 +479,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toHaveLength( required numeric length, message = "" ){
-		arguments.target = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.target  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notLengthOf( argumentCollection = arguments );
 		} else {
@@ -448,7 +497,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toThrow( type = "", regex = ".*", message = "" ){
-		arguments.target = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.target  = this.actual;
 		variables.assert.throws( argumentCollection = arguments );
 		return this;
 	}
@@ -461,7 +511,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function notToThrow( type = "", regex = "", message = "" ){
-		arguments.target = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.target  = this.actual;
 		variables.assert.notThrows( argumentCollection = arguments );
 		return this;
 	}
@@ -481,14 +532,14 @@ component accessors="true" {
 		datePart = "",
 		message  = ""
 	){
-		arguments.actual = this.actual;
+		arguments.actual  = this.actual;
+		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
 			try {
 				variables.assert.closeTo( argumentCollection = arguments );
-				arguments.message = (
+				fail(
 					len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is actually in range of [#arguments.expected#] by +/- [#arguments.delta#]"
 				);
-				variables.assert.fail( arguments.message );
 			} catch ( Any e ) {
 				return this;
 			}
@@ -510,7 +561,8 @@ component accessors="true" {
 		required any max,
 		message = ""
 	){
-		arguments.actual = this.actual;
+		arguments.actual  = this.actual;
+		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
 			var pass = false;
 			try {
@@ -519,10 +571,9 @@ component accessors="true" {
 				pass = true;
 			}
 			if ( !pass ) {
-				arguments.message = (
+				fail(
 					len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is actually between [#arguments.min#] and [#arguments.max#]"
 				);
-				variables.assert.fail( arguments.message );
 			}
 			return this;
 		} else {
@@ -559,7 +610,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toInclude( required any needle, message = "" ){
-		arguments.target = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.target  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notIncludes( argumentCollection = arguments );
 		} else {
@@ -575,7 +627,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toBeIn( required any target, message = "" ){
-		arguments.needle = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.needle  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notIncludes( argumentCollection = arguments );
 		} else {
@@ -591,7 +644,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toBeInWithCase( required any target, message = "" ){
-		arguments.needle = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.needle  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notIncludesWithCase( argumentCollection = arguments );
 		} else {
@@ -607,7 +661,8 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toIncludeWithCase( required any needle, message = "" ){
-		arguments.target = this.actual;
+		arguments.message = resolveMessage( arguments.message );
+		arguments.target  = this.actual;
 		if ( this.isNot ) {
 			variables.assert.notIncludesWithCase( argumentCollection = arguments );
 		} else {
@@ -623,7 +678,7 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toBeGT( required any target, message = "" ){
-		arguments.message = (
+		arguments.message = resolveMessage(
 			len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not greater than [#arguments.target#]"
 		);
 		if ( this.isNot ) {
@@ -649,7 +704,7 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toBeGTE( required any target, message = "" ){
-		arguments.message = (
+		arguments.message = resolveMessage(
 			len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not greater than or equal to [#arguments.target#]"
 		);
 		if ( this.isNot ) {
@@ -675,7 +730,7 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toBeLT( required any target, message = "" ){
-		arguments.message = (
+		arguments.message = resolveMessage(
 			len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not less than [#arguments.target#]"
 		);
 		if ( this.isNot ) {
@@ -701,7 +756,7 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toBeLTE( required any target, message = "" ){
-		arguments.message = (
+		arguments.message = resolveMessage(
 			len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not less than or equal to [#arguments.target#]"
 		);
 		if ( this.isNot ) {
@@ -726,7 +781,7 @@ component accessors="true" {
 	 * @message The message to send in the failure
 	 */
 	function toBeJSON( message = "" ){
-		arguments.message = (
+		arguments.message = resolveMessage(
 			len( arguments.message ) ? arguments.message : "The actual [#this.actual#] is not valid JSON"
 		);
 		if ( this.isNot ) {

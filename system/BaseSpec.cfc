@@ -864,6 +864,59 @@ component {
 	}
 
 	/**
+	 * Start a collection expectation expression that passes when at least one element passes the chained matcher.
+	 * Returns an instance of CollectionExpectation in "any" mode.
+	 *
+	 * @actual The actual value, it should be an array or a struct.
+	 */
+	CollectionExpectation function expectAny( required any actual ){
+		return new CollectionExpectation(
+			spec       = this,
+			assertions = this.$assert,
+			collection = arguments.actual,
+			mode       = "any"
+		);
+	}
+
+	/**
+	 * Start a collection expectation expression that passes when a bounded number of elements pass.
+	 * Returns an instance of CollectionExpectation in "some" mode.
+	 *
+	 * @actual The actual value, it should be an array or a struct.
+	 * @min    The minimum number of elements that must pass, defaults to 1
+	 * @max    The maximum number of elements that may pass, 0 means no upper bound
+	 */
+	CollectionExpectation function expectSome(
+		required any actual,
+		numeric min = 1,
+		numeric max = 0
+	){
+		return new CollectionExpectation(
+			spec       = this,
+			assertions = this.$assert,
+			collection = arguments.actual,
+			mode       = "some",
+			min        = arguments.min,
+			max        = arguments.max
+		);
+	}
+
+	/**
+	 * Start a collection expectation expression that passes when zero elements pass the chained matcher.
+	 * Returns an instance of CollectionExpectation in "none" mode.
+	 *
+	 * @actual The actual value, it should be an array or a struct.
+	 */
+	CollectionExpectation function expectNone( required any actual ){
+		return new CollectionExpectation(
+			spec       = this,
+			assertions = this.$assert,
+			collection = arguments.actual,
+			mode       = "none"
+		);
+	}
+
+	/**
 	 * Add custom matchers to your expectations
 	 *
 	 * @matchers The structure of custom matcher functions to register or a path or instance of a class containing all the matcher functions to register

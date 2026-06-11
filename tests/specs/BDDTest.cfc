@@ -237,11 +237,12 @@ component extends="testbox.system.BaseSpec" {
 
 				it( "can fail any element of a collection", function(){
 					try {
-						// we need to verify the expectation fails
 						expectAll( [ 2, 4, 10, 8 ] ).toBeLT( 10 );
 						fail( "expectAll() failed to detect a bad element" );
 					} catch ( any e ) {
-						expect( e.message ).toBe( "The actual [10] is not less than [10]" );
+						expect( e.message ).toInclude( "expectAll() failed" );
+						expect( e.message ).toInclude( "1 of 4" );
+						expect( e.detail ).toInclude( "[3]: The actual [10] is not less than [10]" );
 					}
 				} );
 
@@ -356,6 +357,188 @@ component extends="testbox.system.BaseSpec" {
 		xdescribe( "A suite that is skipped via xdescribe()", function(){
 			it( "will never execute this", function(){
 				fail( "This should not have executed" );
+			} );
+		} );
+
+		describe( "withContext()", function(){
+			it( "prepends context to failure messages when an explicit message is given", function(){
+				try {
+					expect( 1 ).withContext( "user id" ).toBe( 2, "values should match" );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "user id" );
+					expect( e.message ).toInclude( "values should match" );
+				}
+			} );
+
+			it( "prepends context to failure messages for matchers that auto-generate messages", function(){
+				try {
+					expect( 1 ).withContext( "negation check" ).toBeNull();
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "negation check" );
+					expect( e.message ).toInclude( "null" );
+				}
+			} );
+
+			it( "does not alter passing expectations", function(){
+				expect( 1 ).withContext( "should not appear" ).toBe( 1 );
+			} );
+
+			it( "should be chainable and return the expectation", function(){
+				var result = expect( 1 ).withContext( "test" );
+				expect( result ).toBeInstanceOf( "testbox.system.Expectation" );
+			} );
+
+			it( "prepends context on negated matchers", function(){
+				try {
+					expect( 1 ).withContext( "negative check" ).notToBe( 1 );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "negative check" );
+				}
+			} );
+
+			it( "prepends context on custom matcher failures", function(){
+				addMatchers( {
+					toBeGoofy : function( expectation, args = {} ){
+						expectation.message = (
+							structKeyExists( args, "message" ) ? args.message : "[#expectation.actual#] is not goofy"
+						);
+						if ( expectation.isNot ) return ( expectation.actual != "goofy" );
+						else return ( expectation.actual == "goofy" );
+					}
+				} );
+				try {
+					expect( "serious" ).withContext( "custom matcher" ).toBeGoofy();
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "custom matcher" );
+					expect( e.message ).toInclude( "is not goofy" );
+				}
+			} );
+
+			it( "prepends context on toThrow failures with an explicit message", function(){
+				try {
+					expect( function(){
+						writeOutput( "no error" );
+					} ).withContext( "dangerous call" ).toThrow( message = "should have thrown" );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "dangerous call" );
+					expect( e.message ).toInclude( "should have thrown" );
+				}
+			} );
+
+			it( "prepends context on toSatisfy failures", function(){
+				try {
+					expect( 5 )
+						.withContext( "truth test" )
+						.toSatisfy( function( v ){
+							return v > 10;
+						} );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "truth test" );
+				}
+			} );
+		} );
+
+		describe( "expectAny()", function(){
+			it( "passes when at least one array element passes", function(){
+				expectAny( [ 1, 2, 3 ] ).toBeGT( 2 );
+			} );
+
+			it( "passes when at least one struct value passes", function(){
+				expectAny( { a : 1, b : 2, c : 3 } ).toBeGT( 2 );
+			} );
+
+			it( "fails when no elements pass, and reports all failures", function(){
+				try {
+					expectAny( [ 1, 2, 3 ] ).toBeGT( 5 );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "expectAny() failed" );
+					expect( e.message ).toInclude( "0 passed" );
+					expect( e.detail ).toInclude( "[1]" );
+					expect( e.detail ).toInclude( "[2]" );
+					expect( e.detail ).toInclude( "[3]" );
+				}
+			} );
+
+			it( "reports the failing struct key on failure", function(){
+				try {
+					expectAny( { x : 1, y : 2 } ).toBeGT( 5 );
+				} catch ( any e ) {
+					expect( e.detail ).toInclude( "[x]" );
+					expect( e.detail ).toInclude( "[y]" );
+				}
+			} );
+		} );
+
+		describe( "expectSome()", function(){
+			it( "passes when pass count is within bounded range", function(){
+				expectSome( [ 1, 2, 3 ], 2, 3 ).toBeGT( 1 );
+			} );
+
+			it( "passes when pass count is at least min with no upper bound", function(){
+				expectSome( [ 1, 2, 3 ], 2 ).toBeGT( 1 );
+			} );
+
+			it( "fails when pass count is below min", function(){
+				try {
+					expectSome( [ 1, 2, 3 ], 2, 3 ).toBeGT( 10 );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "expectSome() failed" );
+					expect( e.message ).toInclude( "between 2 and 3" );
+				}
+			} );
+
+			it( "fails when pass count is above max", function(){
+				try {
+					expectSome( [ 4, 5, 6 ], 1, 1 ).toBeGT( 2 );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "expectSome() failed" );
+					expect( e.message ).toInclude( "between 1 and 1" );
+				}
+			} );
+
+			it( "reports failure detail with pass count", function(){
+				try {
+					expectSome( [ 1, 2, 3 ], 2 ).toBeGT( 10 );
+				} catch ( any e ) {
+					expect( e.detail ).toInclude( "Passed: 0 / 3" );
+				}
+			} );
+		} );
+
+		describe( "expectNone()", function(){
+			it( "passes when zero elements pass", function(){
+				expectNone( [ 1, 2, 3 ] ).toBeGT( 5 );
+			} );
+
+			it( "passes when zero struct values pass", function(){
+				expectNone( { a : 1, b : 2 } ).toBeGT( 5 );
+			} );
+
+			it( "fails when any element passes", function(){
+				try {
+					expectNone( [ 1, 2, 8 ] ).toBeGT( 5 );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "expectNone() failed" );
+					expect( e.message ).toInclude( "1 passed" );
+				}
+			} );
+		} );
+
+		describe( "Collection expectation chainability", function(){
+			it( "supports chaining matchers on expectAny", function(){
+				expectAny( [ 3, 5, 7 ] ).toBeGT( 2 ).toBeLT( 10 );
+			} );
+
+			it( "supports chaining matchers on expectSome", function(){
+				expectSome( [ 3, 5, 7 ], 2 ).toBeGT( 2 ).toBeLT( 10 );
+			} );
+
+			it( "fails chained expectAny when the second matcher rejects all", function(){
+				try {
+					expectAny( [ 3, 5, 7 ] ).toBeGT( 2 ).toBeGT( 10 );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "expectAny() failed" );
+				}
 			} );
 		} );
 
