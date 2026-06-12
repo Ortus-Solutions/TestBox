@@ -23,6 +23,7 @@ TestBox is the leading BDD/TDD testing framework for BoxLang and CFML applicatio
 - **Operators**: Binary operators require padding `a + b`, `x == y`
 - **Alignment**: Consecutive assignments, properties, and parameters are aligned
 - **Indentation**: 4-space tabs, max 115 columns, double quotes for strings
+- **Semicolons**: Never use semicolons in code. Only permitted on property/param definitions, no-body BoxLang components (`bx:abort;`), and Lucee/ACF keywords (`continue`, `break`).
 
 ### Reporter Architecture
 - **Interface-Driven**: All reporters implement `IReporter.cfc` interface

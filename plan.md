@@ -52,20 +52,18 @@
 - [x] Detail contains numbered list of individual failures
 - [x] Add tests: all-pass, multi-fail, single-fail, heading, unexpected exception, facade shortcut
 
-## Phase 4: Low-Risk Matchers
+## Phase 4: Low-Risk Matchers (COMPLETE)
 
-- [ ] Add `$assert.isTruthy()`
-- [ ] Add `$assert.isFalsy()`
-- [ ] Add `toBeTruthy()`
-- [ ] Add `toBeFalsy()`
-- [ ] Add `toBeSameInstanceAs()`
-- [ ] Add `notToBeSameInstanceAs()`
-- [ ] Add `toHaveSize()`
-- [ ] Add `toThrowMatching( predicate )`
-- [ ] Add `toIncludeAll( needles )`
-- [ ] Add `toIncludeAny( needles )`
-- [ ] Add `toIncludeNone( needles )`
-- [ ] Add tests for all new matchers and negated forms
+- [x] Add `$assert.isTruthy()` / `$assert.isFalsy()`
+- [x] Add `toBeTruthy()` / `toBeFalsy()`
+- [x] Add `toBeSameInstanceAs()` / `notToBeSameInstanceAs()`
+- [x] Add `toHaveSize()` (alias to `toHaveLength()`)
+- [x] Add `toThrowMatching( predicate )`
+- [x] Add `toIncludeAll( needles )` / `toIncludeAny( needles )` / `toIncludeNone( needles )`
+- [x] Add `$assert.includesAll()` / `$assert.includesAny()` / `$assert.includesNone()`
+- [x] Add `$assert.isFalseyValue()` private helper
+- [x] Add tests for all new matchers, negated forms, and edge cases
+- [x] Verified: 410 Lucee / 448 BoxLang pass
 
 ## Phase 5: Better Failure Diagnostics
 

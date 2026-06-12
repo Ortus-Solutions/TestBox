@@ -626,6 +626,175 @@ component extends="testbox.system.BaseSpec" {
 			} );
 		} );
 
+		describe( "New Phase 4 matchers", function(){
+			describe( "toBeTruthy", function(){
+				it( "passes when the actual value is truthy", function(){
+					expect( true ).toBeTruthy();
+					expect( 1 ).toBeTruthy();
+					expect( "hello" ).toBeTruthy();
+					expect( [ 1 ] ).toBeTruthy();
+				} );
+
+				it( "fails when the actual value is falsy", function(){
+					try {
+						expect( false ).toBeTruthy();
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "to be truthy" );
+					}
+				} );
+
+				it( "supports negation", function(){
+					expect( false ).notToBeTruthy();
+					expect( 0 ).notToBeTruthy();
+					expect( "" ).notToBeTruthy();
+				} );
+			} );
+
+			describe( "toBeFalsy", function(){
+				it( "passes when the actual value is falsy", function(){
+					expect( false ).toBeFalsy();
+					expect( 0 ).toBeFalsy();
+					expect( "" ).toBeFalsy();
+				} );
+
+				it( "fails when the actual value is truthy", function(){
+					try {
+						expect( true ).toBeFalsy();
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "to be falsy" );
+					}
+				} );
+			} );
+
+			describe( "toBeSameInstanceAs", function(){
+				it( "passes when both references point to the same instance", function(){
+					var obj = { name : "test" };
+					expect( obj ).toBeSameInstanceAs( obj );
+				} );
+
+				it( "fails when references point to different instances", function(){
+					try {
+						expect( { name : "a" } ).toBeSameInstanceAs( { name : "a" } );
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "Expected" );
+						expect( e.message ).toInclude( "but received" );
+					}
+				} );
+
+				it( "supports negation", function(){
+					expect( { a : 1 } ).notToBeSameInstanceAs( { a : 1 } );
+				} );
+			} );
+
+			describe( "toHaveSize", function(){
+				it( "is an alias for toHaveLength", function(){
+					expect( "abc" ).toHaveSize( 3 );
+					expect( [ 1, 2 ] ).toHaveSize( 2 );
+					expect( { a : 1, b : 2 } ).toHaveSize( 2 );
+				} );
+
+				it( "supports negation", function(){
+					expect( "ab" ).notToHaveSize( 5 );
+				} );
+			} );
+
+			describe( "toThrowMatching", function(){
+				it( "passes when the thrown exception matches the predicate", function(){
+					expect( function(){
+						throw( type = "FooException", message = "bar" );
+					} ).toThrowMatching( function( e ){
+						return e.type == "FooException" && e.message == "bar";
+					} );
+				} );
+
+				it( "fails when the exception does not match the predicate", function(){
+					try {
+						expect( function(){
+							throw( type = "FooException" );
+						} ).toThrowMatching( function( e ){
+							return e.type == "BarException";
+						} );
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "did not match the predicate" );
+					}
+				} );
+
+				it( "fails when no exception is thrown", function(){
+					try {
+						expect( function(){
+						} ).toThrowMatching( function( e ){
+							return true;
+						} );
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "did not throw an exception" );
+					}
+				} );
+
+				it( "supports negation", function(){
+					expect( function(){
+						throw( "foo" );
+					} ).notToThrowMatching( function( e ){
+						return e.message == "bar";
+					} );
+				} );
+			} );
+
+			describe( "toIncludeAll", function(){
+				it( "passes when all needles are found", function(){
+					expect( "hello world" ).toIncludeAll( [ "hello", "world" ] );
+					expect( [ "a", "b", "c" ] ).toIncludeAll( [ "a", "c" ] );
+				} );
+
+				it( "fails when a needle is missing", function(){
+					try {
+						expect( "hello" ).toIncludeAll( [ "hello", "missing" ] );
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "missing" );
+					}
+				} );
+
+				it( "supports negation", function(){
+					expect( "hello" ).notToIncludeAll( [ "hello", "world" ] );
+				} );
+			} );
+
+			describe( "toIncludeAny", function(){
+				it( "passes when at least one needle is found", function(){
+					expect( "hello world" ).toIncludeAny( [ "hello", "foo" ] );
+				} );
+
+				it( "fails when no needles are found", function(){
+					try {
+						expect( "hello" ).toIncludeAny( [ "x", "y" ] );
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "None of the needles" );
+					}
+				} );
+
+				it( "supports negation", function(){
+					expect( "hello" ).notToIncludeAny( [ "x", "y" ] );
+				} );
+			} );
+
+			describe( "toIncludeNone", function(){
+				it( "passes when no needles are found", function(){
+					expect( "hello world" ).toIncludeNone( [ "foo", "bar" ] );
+				} );
+
+				it( "fails when a needle is found", function(){
+					try {
+						expect( "hello world" ).toIncludeNone( [ "hello", "bar" ] );
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "hello" );
+					}
+				} );
+
+				it( "supports negation", function(){
+					expect( "hello" ).notToIncludeNone( [ "hello" ] );
+				} );
+			} );
+		} );
+
 		describe( "A calculator test suite", function(){
 			// before each spec in THIS suite group
 			beforeEach( function(){

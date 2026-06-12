@@ -14,11 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add expectation context support via `expect( value ).withContext( message )` that prepends semantic context to all failure messages including negated matchers and custom matchers.
 - Add collection expectation modes: `expectAny()`, `expectSome()`, and `expectNone()` alongside existing `expectAll()` with detailed failure summaries including element index/key and pass count reporting.
 - Add grouped assertions via `$assert.all()`, `assertAll()` that run multiple assertion closures and report every failure at once instead of stopping at the first.
+- Add new matchers: `toBeTruthy()`, `toBeFalsy()`, `toBeSameInstanceAs()`, `toHaveSize()`, `toThrowMatching()`, `toIncludeAll()`, `toIncludeAny()`, and `toIncludeNone()`.
+- Add new assertion BIFs: `$assert.isTruthy()`, `$assert.isFalsy()`, `$assert.includesAll()`, `$assert.includesAny()`, and `$assert.includesNone()`.
 
 ### Improvements
 
 - Improve matcher failure messages with optional contextual prefix for distinguishing chained expectations.
 - Improve `expectAll()` failure messages to include pass/fail counts and per-element failure details with index/key context.
+- Add `docs/whats-new-with-7.0.0.md` release page documenting all new assertion and expectation features.
 
 ### Fixed
 

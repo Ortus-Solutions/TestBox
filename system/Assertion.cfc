@@ -1297,28 +1297,175 @@ component {
 		fail( msg, detail );
 	}
 
-	/*********************************** PRIVATE Methods ***********************************/
-
-	private string function buildAssertAllDetail( required array failures ){
-		var lines = [];
-		for ( var i = 1; i <= arrayLen( arguments.failures ); i++ ) {
-			var fd = arguments.failures[ i ];
-			arrayAppend( lines, "[#fd.index#] #fd.message#" );
-			if ( len( fd.detail ) ) {
-				arrayAppend( lines, "    #fd.detail#" );
-			}
+	/**
+	 * Assert the actual value is truthy (not false, 0, empty string, or null).
+	 *
+	 * @actual  The actual data to test
+	 * @message The message to send in the failure
+	 */
+	function isTruthy( any actual, message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be truthy"
+		);
+		if ( isFalseyValue( arguments.actual ) ) {
+			fail( arguments.message );
 		}
-		return arrayToList( lines, chr( 10 ) );
+		return this;
 	}
 
+	/**
+	 * Assert the actual value is falsy (false, 0, empty string, or null).
+	 *
+	 * @actual  The actual data to test
+	 * @message The message to send in the failure
+	 */
+	function isFalsy( any actual, message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be falsy"
+		);
+		if ( !isFalseyValue( arguments.actual ) ) {
+			fail( arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the target contains ALL of the given needles with no case-sensitivity.
+	 *
+	 * @target  The target string or array
+	 * @needles An array of needles that MUST be found
+	 * @message The message to send in the failure
+	 */
+	function includesAll(
+		required any target,
+		required array needles,
+		message = ""
+	){
+		for ( var n in arguments.needles ) {
+			try {
+				includes( arguments.target, n );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "The needle [#n#] was not found in [#arguments.target.toString()#]"
+				);
+				fail( arguments.message );
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the target contains AT LEAST ONE of the given needles with no case-sensitivity.
+	 *
+	 * @target  The target string or array
+	 * @needles An array of needles, at least one MUST be found
+	 * @message The message to send in the failure
+	 */
+	function includesAny(
+		required any target,
+		required array needles,
+		message = ""
+	){
+		for ( var n in arguments.needles ) {
+			try {
+				includes( arguments.target, n );
+				return this;
+			} catch ( "TestBox.AssertionFailed" e ) {
+				// keep searching
+			}
+		}
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "None of the needles [#arguments.needles.toList()#] were found in [#arguments.target.toString()#]"
+		);
+		fail( arguments.message );
+	}
+
+	/**
+	 * Assert that the target contains NONE of the given needles with no case-sensitivity.
+	 *
+	 * @target  The target string or array
+	 * @needles An array of needles that MUST NOT be found
+	 * @message The message to send in the failure
+	 */
+	function includesNone(
+		required any target,
+		required array needles,
+		message = ""
+	){
+		for ( var n in arguments.needles ) {
+			try {
+				includes( arguments.target, n );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "The needle [#n#] was found in [#arguments.target.toString()#] but should not have been"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				// good, keep looking
+			}
+		}
+		return this;
+	}
+
+	/*********************************** PRIVATE Methods ***********************************/
+
+	/**
+	 * Build a detailed message for the assert.all() method that includes each failure's index, message, and detail.
+	 *
+	 * @failures An array of failure objects, each containing 'index', 'message', and 'detail' properties.
+	 *
+	 * @return A formatted string that lists all failures with their respective details.
+	 */
+	private string function buildAssertAllDetail( required array failures ){
+		var lines = []
+		for ( var i = 1; i <= arrayLen( arguments.failures ); i++ ) {
+			var fd = arguments.failures[ i ]
+			arrayAppend( lines, "[#fd.index#] #fd.message#" )
+			if ( len( fd.detail ) ) {
+				arrayAppend( lines, "    #fd.detail#" )
+			}
+		}
+		return arrayToList( lines, chr( 10 ) )
+	}
+
+	/**
+	 * Determine if the incoming value is falsey ( false, 0, empty string, or null )
+	 *
+	 * @value The value to evaluate
+	 *
+	 * @return True if the value is falsey, false otherwise
+	 */
+	private boolean function isFalseyValue( any value ){
+		if ( isNull( arguments.value ) ) {
+			return true
+		}
+		if ( isBoolean( arguments.value ) && !arguments.value ) {
+			return true
+		}
+		if ( isNumeric( arguments.value ) && arguments.value == 0 ) {
+			return true
+		}
+		if ( isSimpleValue( arguments.value ) && len( arguments.value ) == 0 ) {
+			return true
+		}
+		return false
+	}
+
+	/**
+	 * Recursively compare two values for equality, with special handling for various types like queries, arrays, structs, etc.
+	 *
+	 * @expected The expected value
+	 * @actual   The actual value
+	 *
+	 * @return True if the values are considered equal, false otherwise
+	 */
 	private boolean function equalize( any expected, any actual ){
 		// Null values
 		if ( isNull( arguments.expected ) && isNull( arguments.actual ) ) {
-			return true;
+			return true
 		}
 
 		if ( isNull( arguments.expected ) || isNull( arguments.actual ) ) {
-			return false;
+			return false
 		}
 
 		// Numerics
@@ -1327,47 +1474,47 @@ component {
 				arguments.expected
 			)
 		) {
-			return true;
+			return true
 		}
 
 		// Simple values
 		if (
 			isSimpleValue( arguments.actual ) && isSimpleValue( arguments.expected ) && arguments.actual eq arguments.expected
 		) {
-			return true;
+			return true
 		}
 
 		// Queries
 		if ( isQuery( arguments.actual ) && isQuery( arguments.expected ) ) {
 			// Check number of records
 			if ( arguments.actual.recordCount != arguments.expected.recordCount ) {
-				return false;
+				return false
 			}
 
 			// Get both column lists and sort them the same
-			var actualColumnList   = listSort( arguments.actual.columnList, "textNoCase" );
-			var expectedColumnList = listSort( arguments.expected.columnList, "textNoCase" );
+			var actualColumnList   = listSort( arguments.actual.columnList, "textNoCase" )
+			var expectedColumnList = listSort( arguments.expected.columnList, "textNoCase" )
 
 			// Check column lists
 			if ( actualColumnList != expectedColumnList ) {
-				return false;
+				return false
 			}
 
 			// Loop over each row
-			var i = 0;
+			var i = 0
 			while ( ++i <= arguments.actual.recordCount ) {
 				// Loop over each column
 				for ( var column in listToArray( actualColumnList ) ) {
 					// Compare each value
 					if ( arguments.actual[ column ][ i ] != arguments.expected[ column ][ i ] ) {
 						// At the first sign of trouble, bail!
-						return false;
+						return false
 					}
 				}
 			}
 
 			// We made it here so nothing looked wrong
-			return true;
+			return true
 		}
 
 		// UDFs
@@ -1375,7 +1522,7 @@ component {
 			isCustomFunction( arguments.actual ) && isCustomFunction( arguments.expected ) &&
 			arguments.actual.toString() eq arguments.expected.toString()
 		) {
-			return true;
+			return true
 		}
 
 		// XML
@@ -1383,14 +1530,14 @@ component {
 			isXMLDoc( arguments.actual ) && isXMLDoc( arguments.expected ) &&
 			toString( arguments.actual ) eq toString( arguments.expected )
 		) {
-			return true;
+			return true
 		}
 
 		// Arrays
 		if ( isArray( arguments.actual ) && isArray( arguments.expected ) ) {
 			// Confirm both arrays are the same length
 			if ( arrayLen( arguments.actual ) neq arrayLen( arguments.expected ) ) {
-				return false;
+				return false
 			}
 
 			for ( var i = 1; i lte arrayLen( arguments.actual ); i++ ) {
@@ -1402,11 +1549,11 @@ component {
 					}
 					// check if one is null mismatch
 					if ( isNull( arguments.actual[ i ] ) OR isNull( arguments.expected[ i ] ) ) {
-						return false;
+						return false
 					}
 					// And make sure they match
 					if ( !equalize( arguments.actual[ i ], arguments.expected[ i ] ) ) {
-						return false;
+						return false
 					}
 					continue;
 				}
@@ -1414,19 +1561,19 @@ component {
 				if ( !arrayIsDefined( arguments.actual, i ) and !arrayIsDefined( arguments.expected, i ) ) {
 					continue;
 				} else {
-					return false;
+					return false
 				}
 			}
 
 			// If we made it here, we couldn't find anything different
-			return true;
+			return true
 		}
 
 		// Structs / Object
 		if ( isStruct( arguments.actual ) && isStruct( arguments.expected ) ) {
-			var actualKeys   = listSort( structKeyList( arguments.actual ), "textNoCase" );
-			var expectedKeys = listSort( structKeyList( arguments.expected ), "textNoCase" );
-			var key          = "";
+			var actualKeys   = listSort( structKeyList( arguments.actual ), "textNoCase" )
+			var expectedKeys = listSort( structKeyList( arguments.expected ), "textNoCase" )
+			var key          = ""
 
 			// Confirm both structs have the same keys
 			if ( actualKeys neq expectedKeys ) {
@@ -1441,19 +1588,19 @@ component {
 				}
 				// check if one is null mismatch
 				if ( isNull( arguments.actual[ key ] ) OR isNull( arguments.expected[ key ] ) ) {
-					return false;
+					return false
 				}
 				// And make sure they match when actual values exist
 				if ( !equalize( arguments.actual[ key ], arguments.expected[ key ] ) ) {
-					return false;
+					return false
 				}
 			}
 
 			// If we made it here, we couldn't find anything different
-			return true;
+			return true
 		}
 
-		return arguments.actual.equals( arguments.expected );
+		return arguments.actual.equals( arguments.expected )
 	}
 
 	/**

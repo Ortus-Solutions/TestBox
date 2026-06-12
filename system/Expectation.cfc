@@ -818,4 +818,194 @@ component accessors="true" {
 		return this;
 	}
 
+	/**
+	 * Assert that the actual value is truthy (not false, 0, empty string, or null).
+	 *
+	 * @message The message to send in the failure
+	 */
+	function toBeTruthy( message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			variables.assert.isFalsy( this.actual, arguments.message );
+		} else {
+			variables.assert.isTruthy( this.actual, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the actual value is falsy (false, 0, empty string, or null).
+	 *
+	 * @message The message to send in the failure
+	 */
+	function toBeFalsy( message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			variables.assert.isTruthy( this.actual, arguments.message );
+		} else {
+			variables.assert.isFalsy( this.actual, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the actual object is the same instance as the expected object.
+	 *
+	 * @expected The expected object to compare identity with
+	 * @message  The message to send in the failure
+	 */
+	function toBeSameInstanceAs( required any expected, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			variables.assert.isNotSameInstance(
+				arguments.expected,
+				this.actual,
+				arguments.message
+			);
+		} else {
+			variables.assert.isSameInstance(
+				arguments.expected,
+				this.actual,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Assert the size of a given string, array, structure or query. Alias for toHaveLength().
+	 *
+	 * @length  The length to check
+	 * @message The message to send in the failure
+	 */
+	function toHaveSize( required numeric length, message = "" ){
+		return toHaveLength( argumentCollection = arguments );
+	}
+
+	/**
+	 * Assert that the actual function throws an exception matching the given predicate.
+	 *
+	 * @predicate A function/closure that receives the exception and returns true if it matches
+	 * @message   The message to send in the failure
+	 */
+	function toThrowMatching( required any predicate, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		try {
+			var fn = this.actual;
+			fn();
+			arguments.message = (
+				len( arguments.message ) ? arguments.message : "The function did not throw an exception but one was expected"
+			);
+			fail( arguments.message );
+		} catch ( any e ) {
+			var matches = arguments.predicate( e );
+			if ( this.isNot ) {
+				matches = !matches;
+			}
+			if ( !matches ) {
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "The thrown exception did not match the predicate"
+				);
+				fail( arguments.message );
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the actual value contains all of the given needles with no case-sensitivity.
+	 *
+	 * @needles An array of needles that MUST be found
+	 * @message The message to send in the failure
+	 */
+	function toIncludeAll( required array needles, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.includesAll(
+					this.actual,
+					arguments.needles,
+					arguments.message
+				);
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "The target contained all needles but was expected not to"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.includesAll(
+				this.actual,
+				arguments.needles,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the actual value contains at least one of the given needles with no case-sensitivity.
+	 *
+	 * @needles An array of needles, at least one MUST be found
+	 * @message The message to send in the failure
+	 */
+	function toIncludeAny( required array needles, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.includesAny(
+					this.actual,
+					arguments.needles,
+					arguments.message
+				);
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "The target contained at least one needle but was expected not to"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.includesAny(
+				this.actual,
+				arguments.needles,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the actual value contains none of the given needles with no case-sensitivity.
+	 *
+	 * @needles An array of needles that MUST NOT be found
+	 * @message The message to send in the failure
+	 */
+	function toIncludeNone( required array needles, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.includesNone(
+					this.actual,
+					arguments.needles,
+					arguments.message
+				);
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "The target contained none of the needles but was expected to contain at least one"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.includesNone(
+				this.actual,
+				arguments.needles,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
 }
