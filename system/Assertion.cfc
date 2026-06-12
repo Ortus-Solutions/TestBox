@@ -1431,7 +1431,11 @@ component {
 	 * @actual   The actual value to check
 	 * @message  The message to send in the failure
 	 */
-	function isEqualSet( required any expected, required any actual, string message = "" ){
+	function isEqualSet(
+		required any expected,
+		required any actual,
+		string message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]"
 		);
@@ -1455,7 +1459,11 @@ component {
 	 * @actual   The actual value to check
 	 * @message  The message to send in the failure
 	 */
-	function isSubsetOf( required any expected, required any actual, string message = "" ){
+	function isSubsetOf(
+		required any expected,
+		required any actual,
+		string message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "[#getStringName( arguments.actual )#] is not a subset of [#getStringName( arguments.expected )#]"
 		);
@@ -1476,7 +1484,11 @@ component {
 	 * @actual   The actual value to check
 	 * @message  The message to send in the failure
 	 */
-	function isSupersetOf( required any expected, required any actual, string message = "" ){
+	function isSupersetOf(
+		required any expected,
+		required any actual,
+		string message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "[#getStringName( arguments.actual )#] is not a superset of [#getStringName( arguments.expected )#]"
 		);
@@ -1497,7 +1509,11 @@ component {
 	 * @actual   The actual value to check
 	 * @message  The message to send in the failure
 	 */
-	function isDisjointFrom( required any expected, required any actual, string message = "" ){
+	function isDisjointFrom(
+		required any expected,
+		required any actual,
+		string message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "[#getStringName( arguments.actual )#] is not disjoint from [#getStringName( arguments.expected )#]"
 		);
@@ -1519,7 +1535,12 @@ component {
 	 * @actual   The actual value to check (must be a Set)
 	 * @message  The message to send in the failure
 	 */
-	function hasUnion( required any other, required any expected, required any actual, string message = "" ){
+	function hasUnion(
+		required any other,
+		required any expected,
+		required any actual,
+		string message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The union of [#getStringName( arguments.actual )#] and [#getStringName( arguments.other )#] is not [#getStringName( arguments.expected )#]"
 		);
@@ -1539,7 +1560,12 @@ component {
 	 * @actual   The actual value to check (must be a Set)
 	 * @message  The message to send in the failure
 	 */
-	function hasIntersection( required any other, required any expected, required any actual, string message = "" ){
+	function hasIntersection(
+		required any other,
+		required any expected,
+		required any actual,
+		string message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The intersection of [#getStringName( arguments.actual )#] and [#getStringName( arguments.other )#] is not [#getStringName( arguments.expected )#]"
 		);
@@ -1547,7 +1573,11 @@ component {
 		isASet( arguments.other, arguments.message );
 		isASet( arguments.expected, arguments.message );
 		var intersection = arguments.actual.intersection( arguments.other );
-		isEqualSet( arguments.expected, intersection, arguments.message );
+		isEqualSet(
+			arguments.expected,
+			intersection,
+			arguments.message
+		);
 		return this;
 	}
 
@@ -1559,7 +1589,12 @@ component {
 	 * @actual   The actual value to check (must be a Set)
 	 * @message  The message to send in the failure
 	 */
-	function hasDifference( required any other, required any expected, required any actual, string message = "" ){
+	function hasDifference(
+		required any other,
+		required any expected,
+		required any actual,
+		string message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The difference of [#getStringName( arguments.actual )#] and [#getStringName( arguments.other )#] is not [#getStringName( arguments.expected )#]"
 		);
@@ -1567,7 +1602,11 @@ component {
 		isASet( arguments.other, arguments.message );
 		isASet( arguments.expected, arguments.message );
 		var difference = arguments.actual.difference( arguments.other );
-		isEqualSet( arguments.expected, difference, arguments.message );
+		isEqualSet(
+			arguments.expected,
+			difference,
+			arguments.message
+		);
 		return this;
 	}
 
@@ -1579,7 +1618,12 @@ component {
 	 * @actual   The actual value to check (must be a Set)
 	 * @message  The message to send in the failure
 	 */
-	function hasSymmetricDifference( required any other, required any expected, required any actual, string message = "" ){
+	function hasSymmetricDifference(
+		required any other,
+		required any expected,
+		required any actual,
+		string message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The symmetric difference of [#getStringName( arguments.actual )#] and [#getStringName( arguments.other )#] is not [#getStringName( arguments.expected )#]"
 		);

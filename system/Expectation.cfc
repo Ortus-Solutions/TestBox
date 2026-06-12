@@ -1019,10 +1019,7 @@ component accessors="true" {
 		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
 			try {
-				variables.assert.isASet(
-					this.actual,
-					arguments.message
-				);
+				variables.assert.isASet( this.actual, arguments.message );
 				arguments.message = (
 					len( arguments.message ) ? arguments.message : "Expected the actual value to NOT be a Set but it was"
 				);
@@ -1031,10 +1028,7 @@ component accessors="true" {
 				return this;
 			}
 		} else {
-			variables.assert.isASet(
-				this.actual,
-				arguments.message
-			);
+			variables.assert.isASet( this.actual, arguments.message );
 		}
 		return this;
 	}
@@ -1174,7 +1168,11 @@ component accessors="true" {
 	 * @expected The expected result of the union
 	 * @message  The message to send in the failure
 	 */
-	function toHaveUnion( required any other, required any expected, message = "" ){
+	function toHaveUnion(
+		required any other,
+		required any expected,
+		message = ""
+	){
 		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
 			try {
@@ -1209,7 +1207,11 @@ component accessors="true" {
 	 * @expected The expected result of the intersection
 	 * @message  The message to send in the failure
 	 */
-	function toHaveIntersection( required any other, required any expected, message = "" ){
+	function toHaveIntersection(
+		required any other,
+		required any expected,
+		message = ""
+	){
 		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
 			try {
@@ -1244,7 +1246,11 @@ component accessors="true" {
 	 * @expected The expected result of the difference
 	 * @message  The message to send in the failure
 	 */
-	function toHaveDifference( required any other, required any expected, message = "" ){
+	function toHaveDifference(
+		required any other,
+		required any expected,
+		message = ""
+	){
 		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
 			try {
@@ -1279,7 +1285,11 @@ component accessors="true" {
 	 * @expected The expected result of the symmetric difference
 	 * @message  The message to send in the failure
 	 */
-	function toHaveSymmetricDifference( required any other, required any expected, message = "" ){
+	function toHaveSymmetricDifference(
+		required any other,
+		required any expected,
+		message = ""
+	){
 		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
 			try {
