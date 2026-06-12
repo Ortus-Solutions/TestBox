@@ -11,14 +11,14 @@
 
 - [x] Run `box run-script format:check`
 - [x] Run `box testbox run`
-- [ ] Run BoxLang-specific tests for navigator, set, and range expectations
+- [x] Run BoxLang-specific tests for navigator, set, and range expectations
 - [ ] Confirm CFML engines skip BoxLang-only specs cleanly
 
 ## Phase 0: Test Harness Baseline
 
 - [x] Identify existing assertion/expectation specs: `BaseAssertionsTest.cfc`, `AssertionsTest.cfc`, `BDDTest.cfc`
 - [ ] Add dedicated BoxLang-only specs for Data Navigators
-- [ ] Add dedicated BoxLang-only specs for Sets
+- [x] Add dedicated BoxLang-only specs for Sets
 - [ ] Add dedicated BoxLang-only specs for Ranges
 
 ## Phase 1: Expectation Context (COMPLETE)
@@ -85,18 +85,19 @@
 - [ ] Add `queryPath( path )` returning an expectation over query results
 - [ ] Add tests for dot paths, indexes, wildcards, filters, recursive descent, and missing paths
 
-## Phase 7: BoxLang Set Expectations
+## Phase 7: BoxLang Set Expectations (COMPLETE)
 
-- [ ] Add `toBeSet()`
-- [ ] Add `toEqualSet( expected )`
-- [ ] Add `toBeSubsetOf( expected )`
-- [ ] Add `toBeSupersetOf( expected )`
-- [ ] Add `toBeDisjointFrom( expected )`
-- [ ] Add `toHaveUnion( other, expected )`
-- [ ] Add `toHaveIntersection( other, expected )`
-- [ ] Add `toHaveDifference( other, expected )`
-- [ ] Add `toHaveSymmetricDifference( other, expected )`
-- [ ] Add tests for default, linked, sorted, case-sensitive, Java Set, and numeric normalization behavior
+- [x] Add `toBeSet()` / `notToBeSet()`
+- [x] Add `toEqualSet( expected )` / `notToEqualSet( expected )`
+- [x] Add `toBeSubsetOf( expected )` / `notToBeSubsetOf( expected )`
+- [x] Add `toBeSupersetOf( expected )` / `notToBeSupersetOf( expected )`
+- [x] Add `toBeDisjointFrom( expected )`
+- [x] Add `toHaveUnion( other, expected )` / `notToHaveUnion( other, expected )`
+- [x] Add `toHaveIntersection( other, expected )` / `notToHaveIntersection( other, expected )`
+- [x] Add `toHaveDifference( other, expected )` / `notToHaveDifference( other, expected )`
+- [x] Add `toHaveSymmetricDifference( other, expected )` / `notToHaveSymmetricDifference( other, expected )`
+- [x] Add tests for default, linked, sorted, case-sensitive, Java Set, and numeric normalization behavior
+- [x] Verified: BoxLang set expectations tests pass
 
 ## Phase 8: BoxLang Range Expectations
 

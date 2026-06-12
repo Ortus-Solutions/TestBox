@@ -173,6 +173,110 @@ $assert.includesNone( "hello", [ "x", "y" ] )
 
 * * *
 
+## Set Expectations
+
+TestBox now provides a comprehensive suite of set-related matchers for working with BoxLang `Set` objects. These matchers leverage the global `setOf()` function to create sets and provide powerful assertions for set operations.
+
+### Creating Sets with `setOf()`
+
+```javascript
+var set1 = setOf( 1, 2, 3 )
+var set2 = setOf( 3, 4, 5 )
+var set3 = setOf( 1, 2, 3, 4, 5 )
+var emptySet = setOf()
+```
+
+### `toBeASet()` / `notToBeASet()`
+
+Assert that a value is (or is not) a Set object.
+
+```javascript
+expect( set1 ).toBeASet()
+expect( [ 1, 2, 3 ] ).notToBeASet()
+```
+
+### `toEqualSet()` / `notToEqualSet()`
+
+Assert that two sets contain the same elements, regardless of order.
+
+```javascript
+expect( setOf( 1, 2, 3 ) ).toEqualSet( setOf( 3, 2, 1 ) )
+expect( setOf( 'a', 'b' ) ).toEqualSet( setOf( 'b', 'a' ) )
+expect( setOf( 1, 'a', true ) ).toEqualSet( setOf( true, 'a', 1 ) )
+```
+
+### `toBeSubsetOf()` / `notToBeSubsetOf()`
+
+Assert that all elements of the actual set are contained in the expected set.
+
+```javascript
+expect( setOf( 1, 2 ) ).toBeSubsetOf( setOf( 1, 2, 3, 4, 5 ) )
+expect( setOf( 1, 2, 3, 4, 5 ) ).notToBeSubsetOf( setOf( 1, 2 ) )
+```
+
+### `toBeSupersetOf()` / `notToBeSupersetOf()`
+
+Assert that the actual set contains all elements of the expected set.
+
+```javascript
+expect( setOf( 1, 2, 3, 4, 5 ) ).toBeSupersetOf( setOf( 1, 2, 3 ) )
+expect( setOf( 1, 2, 3 ) ).notToBeSupersetOf( setOf( 1, 2, 3, 4, 5 ) )
+```
+
+### `toBeDisjointFrom()`
+
+Assert that two sets share no common elements.
+
+```javascript
+expect( setOf( 1, 2 ) ).toBeDisjointFrom( setOf( 3, 4 ) )
+```
+
+### `toHaveUnion()` / `notToHaveUnion()`
+
+Assert that the union of two sets equals an expected set.
+
+```javascript
+expect( setOf( 1, 2 ) ).toHaveUnion( setOf( 3, 4 ), setOf( 1, 2, 3, 4 ) )
+```
+
+### `toHaveIntersection()` / `notToHaveIntersection()`
+
+Assert that the intersection of two sets equals an expected set.
+
+```javascript
+expect( setOf( 1, 2, 3 ) ).toHaveIntersection( setOf( 3, 4, 5 ), setOf( 3 ) )
+```
+
+### `toHaveDifference()` / `notToHaveDifference()`
+
+Assert that the set difference (actual - expected) equals an expected result.
+
+```javascript
+expect( setOf( 1, 2, 3 ) ).toHaveDifference( setOf( 3, 4, 5 ), setOf( 1, 2 ) )
+```
+
+### `toHaveSymmetricDifference()` / `notToHaveSymmetricDifference()`
+
+Assert that the symmetric difference (elements in either set but not both) equals an expected result.
+
+```javascript
+expect( setOf( 1, 2, 3 ) ).toHaveSymmetricDifference( setOf( 3, 4, 5 ), setOf( 1, 2, 4, 5 ) )
+```
+
+### Real-World Example: Menu Selection
+
+```javascript
+it( "validates menu selection", () => {
+    var fruits = setOf( 'apple', 'banana', 'cherry' )
+    var selected = setOf( 'apple', 'banana' )
+
+    expect( selected ).toBeSubsetOf( fruits )
+    expect( selected ).toHaveIntersection( fruits, setOf( 'apple', 'banana' ) )
+} )
+```
+
+* * *
+
 ## Summary
 
 | Feature | Type | Example |
@@ -190,3 +294,12 @@ $assert.includesNone( "hello", [ "x", "y" ] )
 | `toIncludeAll()` | Matcher | `expect( v ).toIncludeAll( needles )` |
 | `toIncludeAny()` | Matcher | `expect( v ).toIncludeAny( needles )` |
 | `toIncludeNone()` | Matcher | `expect( v ).toIncludeNone( needles )` |
+| `toBeASet()` / `nottoBeASet()` | Set | `expect( setOf( 1, 2 ) ).toBeASet()` |
+| `toEqualSet()` / `notToEqualSet()` | Set | `expect( setOf( 1, 2 ) ).toEqualSet( setOf( 2, 1 ) )` |
+| `toBeSubsetOf()` / `notToBeSubsetOf()` | Set | `expect( setOf( 1 ) ).toBeSubsetOf( setOf( 1, 2 ) )` |
+| `toBeSupersetOf()` / `notToBeSupersetOf()` | Set | `expect( setOf( 1, 2 ) ).toBeSupersetOf( setOf( 1 ) )` |
+| `toBeDisjointFrom()` | Set | `expect( setOf( 1 ) ).toBeDisjointFrom( setOf( 2 ) )` |
+| `toHaveUnion()` / `notToHaveUnion()` | Set | `expect( setOf( 1 ) ).toHaveUnion( setOf( 2 ), setOf( 1, 2 ) )` |
+| `toHaveIntersection()` / `notToHaveIntersection()` | Set | `expect( setOf( 1, 2 ) ).toHaveIntersection( setOf( 2, 3 ), setOf( 2 ) )` |
+| `toHaveDifference()` / `notToHaveDifference()` | Set | `expect( setOf( 1, 2 ) ).toHaveDifference( setOf( 2 ), setOf( 1 ) )` |
+| `toHaveSymmetricDifference()` / `notToHaveSymmetricDifference()` | Set | `expect( setOf( 1, 2 ) ).toHaveSymmetricDifference( setOf( 2, 3 ), setOf( 1, 3 ) )` |

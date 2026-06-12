@@ -1,0 +1,320 @@
+/**
+ * Set Expectations Tests for BoxLang Sets
+ */
+class extends="testbox.system.BaseSpec" {
+
+	variables.set1 = "";
+	variables.set2 = "";
+	variables.set3 = "";
+	variables.setEmpty = "";
+
+	/*********************************** LIFE CYCLE Methods ***********************************/
+
+	function beforeAll() {
+		// nothing to do here
+	}
+
+	function afterAll() {
+		// cleanup if needed
+	}
+
+	/*********************************** BDD SUITES ***********************************/
+
+	function run() {
+		describe( "Set Expectations", () => {
+			beforeEach( () => {
+				variables.set1 = setOf( 1, 2, 3 );
+				variables.set2 = setOf( 3, 4, 5 );
+				variables.set3 = setOf( 1, 2, 3, 4, 5 );
+				variables.setEmpty = setOf();
+			} );
+
+			afterEach( () => {
+				variables.set1 = "";
+				variables.set2 = "";
+				variables.set3 = "";
+				variables.setEmpty = "";
+			} );
+
+			describe( "toBeASet()", () => {
+				it( "passes when actual is a Set", () => {
+					expect( set1 ).toBeASet();
+				} );
+
+				it( "fails when actual is not a Set", () => {
+					expect( [ 1, 2, 3 ] ).nottoBeASet();
+				} );
+
+				it( "fails when actual is an array", () => {
+					expect( [ 1, 2 ] ).nottoBeASet();
+				} );
+
+				it( "fails when actual is a struct", () => {
+					expect( { a = 1 } ).nottoBeASet();
+				} );
+
+				it( "fails when actual is a string", () => {
+					expect( "hello" ).nottoBeASet();
+				} );
+
+				it( "fails when actual is a number", () => {
+					expect( 42 ).nottoBeASet();
+				} );
+
+				it( "fails when actual is null", () => {
+					expect( null ).nottoBeASet();
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( [ 1, 2 ] ).nottoBeASet( "Arrays are not Sets" );
+				} );
+			} );
+
+			describe( "toEqualSet()", () => {
+				it( "passes when sets contain same elements", () => {
+					expect( set1 ).toEqualSet( setOf( 3, 2, 1 ) );
+				} );
+
+				it( "passes when sets are equal regardless of order", () => {
+					expect( setOf( 'a', 'b' ) ).toEqualSet( setOf( 'b', 'a' ) );
+				} );
+
+				it( "passes when both sets are empty", () => {
+					expect( setEmpty ).toEqualSet( setOf() );
+				} );
+
+				it( "fails when sets have different elements", () => {
+					expect( set1 ).notToEqualSet( set2 );
+				} );
+
+				it( "fails when sets have different sizes", () => {
+					expect( set1 ).notToEqualSet( set3 );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( set1 ).notToEqualSet( set2, "Sets should match" );
+				} );
+
+				it( "works with mixed types in sets", () => {
+					expect( setOf( 1, 'a', true ) ).toEqualSet( setOf( true, 'a', 1 ) );
+				} );
+			} );
+
+			describe( "toBeSubsetOf()", () => {
+				it( "passes when actual is a subset of expected", () => {
+					expect( set1 ).toBeSubsetOf( set3 );
+				} );
+
+				it( "passes when sets are equal (a set is a subset of itself)", () => {
+					expect( set1 ).toBeSubsetOf( set1 );
+				} );
+
+				it( "passes when actual is empty", () => {
+					expect( setEmpty ).toBeSubsetOf( set1 );
+				} );
+
+				it( "fails when actual has elements not in expected", () => {
+					expect( set3 ).notToBeSubsetOf( set1 );
+				} );
+
+				it( "fails when sets are disjoint", () => {
+					expect( set1 ).notToBeSubsetOf( set2 );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( set3 ).notToBeSubsetOf( set1, "Should be a subset" );
+				} );
+			} );
+
+			describe( "toBeSupersetOf()", () => {
+				it( "passes when actual is a superset of expected", () => {
+					expect( set3 ).toBeSupersetOf( set1 );
+				} );
+
+				it( "passes when sets are equal (a set is a superset of itself)", () => {
+					expect( set1 ).toBeSupersetOf( set1 );
+				} );
+
+				it( "passes when actual is empty and expected is empty", () => {
+					expect( setEmpty ).toBeSupersetOf( setEmpty );
+				} );
+
+				it( "fails when actual is missing elements from expected", () => {
+					expect( set1 ).notToBeSupersetOf( set3 );
+				} );
+
+				it( "fails when sets are disjoint", () => {
+					expect( set1 ).notToBeSupersetOf( set2 );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( set1 ).notToBeSupersetOf( set3, "Should be a superset" );
+				} );
+			} );
+
+			describe( "toBeDisjointFrom()", () => {
+				it( "passes when sets have no common elements", () => {
+					expect( setOf( 1, 2 ) ).toBeDisjointFrom( setOf( 3, 4 ) );
+				} );
+
+				it( "passes when one set is empty", () => {
+					expect( setEmpty ).toBeDisjointFrom( set1 );
+				} );
+
+				it( "passes when both sets are empty", () => {
+					expect( setEmpty ).toBeDisjointFrom( setEmpty );
+				} );
+
+				it( "fails when sets share common elements", () => {
+					expect( set1 ).notToBeDisjointFrom( set2 );
+				} );
+
+				it( "fails when sets are equal", () => {
+					expect( set1 ).notToBeDisjointFrom( set1 );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( set1 ).notToBeDisjointFrom( set2, "Should be disjoint" );
+				} );
+			} );
+
+			describe( "toHaveUnion()", () => {
+				it( "passes when union equals expected", () => {
+					expect( set1 ).toHaveUnion( set2, set3 );
+				} );
+
+				it( "passes when union of disjoint sets equals combined set", () => {
+					expect( setOf( 1, 2 ) ).toHaveUnion( setOf( 3, 4 ), setOf( 1, 2, 3, 4 ) );
+				} );
+
+				it( "passes when union with empty set equals original", () => {
+					expect( set1 ).toHaveUnion( setEmpty, set1 );
+				} );
+
+				it( "fails when union doesn't match expected", () => {
+					expect( set1 ).notToHaveUnion( set2, setOf( 1, 2, 3 ) );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( set1 ).notToHaveUnion( set2, setOf( 99 ), "Wrong union" );
+				} );
+			} );
+
+			describe( "toHaveIntersection()", () => {
+				it( "passes when intersection equals expected", () => {
+					expect( set1 ).toHaveIntersection( set2, setOf( 3 ) );
+				} );
+
+				it( "passes when intersection is empty", () => {
+					expect( setOf( 1, 2 ) ).toHaveIntersection( setOf( 3, 4 ), setEmpty );
+				} );
+
+				it( "passes when intersection with empty is empty", () => {
+					expect( set1 ).toHaveIntersection( setEmpty, setEmpty );
+				} );
+
+				it( "passes when intersection with self equals self", () => {
+					expect( set1 ).toHaveIntersection( set1, set1 );
+				} );
+
+				it( "fails when intersection doesn't match expected", () => {
+					expect( set1 ).notToHaveIntersection( set2, setOf( 99 ) );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( set1 ).notToHaveIntersection( set2, setOf( 99 ), "Wrong intersection" );
+				} );
+			} );
+
+			describe( "toHaveDifference()", () => {
+				it( "passes when difference equals expected", () => {
+					expect( set1 ).toHaveDifference( set2, setOf( 1, 2 ) );
+				} );
+
+				it( "passes when difference with empty equals original", () => {
+					expect( set1 ).toHaveDifference( setEmpty, set1 );
+				} );
+
+				it( "passes when difference with self is empty", () => {
+					expect( set1 ).toHaveDifference( set1, setEmpty );
+				} );
+
+				it( "passes when difference with superset is empty", () => {
+					expect( set1 ).toHaveDifference( set3, setEmpty );
+				} );
+
+				it( "fails when difference doesn't match expected", () => {
+					expect( set1 ).notToHaveDifference( set2, setOf( 99 ) );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( set1 ).notToHaveDifference( set2, setOf( 99 ), "Wrong difference" );
+				} );
+			} );
+
+			describe( "toHaveSymmetricDifference()", () => {
+				it( "passes when symmetric difference equals expected", () => {
+					expect( set1 ).toHaveSymmetricDifference( set2, setOf( 1, 2, 4, 5 ) );
+				} );
+
+				it( "passes when symmetric difference with empty equals original", () => {
+					expect( set1 ).toHaveSymmetricDifference( setEmpty, set1 );
+				} );
+
+				it( "passes when symmetric difference with self is empty", () => {
+					expect( set1 ).toHaveSymmetricDifference( set1, setEmpty );
+				} );
+
+				it( "passes when symmetric difference of disjoint sets is union", () => {
+					expect( setOf( 1, 2 ) ).toHaveSymmetricDifference( setOf( 3, 4 ), setOf( 1, 2, 3, 4 ) );
+				} );
+
+				it( "fails when symmetric difference doesn't match expected", () => {
+					expect( set1 ).notToHaveSymmetricDifference( set2, setOf( 99 ) );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( set1 ).notToHaveSymmetricDifference( set2, setOf( 99 ), "Wrong symmetric difference" );
+				} );
+			} );
+
+			describe( "Integration Tests", () => {
+				it( "can chain multiple set expectations", () => {
+					var base = setOf( 1, 2, 3, 4, 5 );
+					var sub = setOf( 1, 2 );
+
+					expect( sub ).toBeASet();
+					expect( sub ).toBeSubsetOf( base );
+					expect( sub ).notToEqualSet( base );
+				} );
+
+				it( "can test set operations in sequence", () => {
+					var a = setOf( 1, 2, 3 );
+					var b = setOf( 3, 4, 5 );
+
+					expect( a ).toHaveUnion( b, setOf( 1, 2, 3, 4, 5 ) );
+					expect( a ).toHaveIntersection( b, setOf( 3 ) );
+					expect( a ).toHaveDifference( b, setOf( 1, 2 ), "a - b" );
+				} );
+
+				it( "works with string sets", () => {
+					var fruits = setOf( 'apple', 'banana', 'cherry' );
+					var selected = setOf( 'apple', 'banana' );
+
+					expect( fruits ).toBeASet();
+					expect( selected ).toBeSubsetOf( fruits );
+					expect( selected ).toHaveIntersection( fruits, setOf( 'apple', 'banana' ) );
+				} );
+
+				it( "works with mixed type sets", () => {
+					var mixed = setOf( 1, 'two', true, null );
+					var subset = setOf( 1, 'two' );
+
+					expect( mixed ).toBeASet();
+					expect( subset ).toBeSubsetOf( mixed );
+				} );
+			} );
+		} );
+	}
+
+}

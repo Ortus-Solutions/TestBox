@@ -1406,6 +1406,191 @@ component {
 		return this;
 	}
 
+	/*********************************** BoxLang Set Assertions ***********************************/
+
+	/**
+	 * Assert that the actual value is a BoxLang Set type.
+	 *
+	 * @actual  The actual value to check
+	 * @message The message to send in the failure
+	 */
+	function isASet( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The actual [#getStringName( arguments.actual )#] is not a Set"
+		);
+		if ( !isThisASet( arguments.actual ) ) {
+			fail( arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that two sets are equal (contain the same elements, order-independent).
+	 *
+	 * @expected The expected set
+	 * @actual   The actual value to check
+	 * @message  The message to send in the failure
+	 */
+	function isEqualSet( required any expected, required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]"
+		);
+		isASet( arguments.expected, arguments.message );
+		isASet( arguments.actual, arguments.message );
+		if ( arguments.expected.size() != arguments.actual.size() ) {
+			fail( arguments.message );
+		}
+		for ( var item in arguments.actual ) {
+			if ( !arguments.expected.contains( item ) ) {
+				fail( arguments.message );
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the actual set is a subset of the expected set.
+	 *
+	 * @expected The expected (parent) set
+	 * @actual   The actual value to check
+	 * @message  The message to send in the failure
+	 */
+	function isSubsetOf( required any expected, required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#getStringName( arguments.actual )#] is not a subset of [#getStringName( arguments.expected )#]"
+		);
+		isASet( arguments.expected, arguments.message );
+		isASet( arguments.actual, arguments.message );
+		for ( var item in arguments.actual ) {
+			if ( !arguments.expected.contains( item ) ) {
+				fail( arguments.message );
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the actual set is a superset of the expected set.
+	 *
+	 * @expected The expected (subset) set
+	 * @actual   The actual value to check
+	 * @message  The message to send in the failure
+	 */
+	function isSupersetOf( required any expected, required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#getStringName( arguments.actual )#] is not a superset of [#getStringName( arguments.expected )#]"
+		);
+		isASet( arguments.expected, arguments.message );
+		isASet( arguments.actual, arguments.message );
+		for ( var item in arguments.expected ) {
+			if ( !arguments.actual.contains( item ) ) {
+				fail( arguments.message );
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the actual set is disjoint from the expected set (no common elements).
+	 *
+	 * @expected The expected set to check disjointness against
+	 * @actual   The actual value to check
+	 * @message  The message to send in the failure
+	 */
+	function isDisjointFrom( required any expected, required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#getStringName( arguments.actual )#] is not disjoint from [#getStringName( arguments.expected )#]"
+		);
+		isASet( arguments.expected, arguments.message );
+		isASet( arguments.actual, arguments.message );
+		for ( var item in arguments.actual ) {
+			if ( arguments.expected.contains( item ) ) {
+				fail( arguments.message );
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the union of two sets equals the expected set.
+	 *
+	 * @other    The other set to union with actual
+	 * @expected The expected result of the union
+	 * @actual   The actual value to check (must be a Set)
+	 * @message  The message to send in the failure
+	 */
+	function hasUnion( required any other, required any expected, required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The union of [#getStringName( arguments.actual )#] and [#getStringName( arguments.other )#] is not [#getStringName( arguments.expected )#]"
+		);
+		isASet( arguments.actual, arguments.message );
+		isASet( arguments.other, arguments.message );
+		isASet( arguments.expected, arguments.message );
+		var union = arguments.actual.union( arguments.other );
+		isEqualSet( arguments.expected, union, arguments.message );
+		return this;
+	}
+
+	/**
+	 * Assert that the intersection of two sets equals the expected set.
+	 *
+	 * @other    The other set to intersect with actual
+	 * @expected The expected result of the intersection
+	 * @actual   The actual value to check (must be a Set)
+	 * @message  The message to send in the failure
+	 */
+	function hasIntersection( required any other, required any expected, required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The intersection of [#getStringName( arguments.actual )#] and [#getStringName( arguments.other )#] is not [#getStringName( arguments.expected )#]"
+		);
+		isASet( arguments.actual, arguments.message );
+		isASet( arguments.other, arguments.message );
+		isASet( arguments.expected, arguments.message );
+		var intersection = arguments.actual.intersection( arguments.other );
+		isEqualSet( arguments.expected, intersection, arguments.message );
+		return this;
+	}
+
+	/**
+	 * Assert that the difference of two sets equals the expected set.
+	 *
+	 * @other    The other set to subtract from actual
+	 * @expected The expected result of the difference
+	 * @actual   The actual value to check (must be a Set)
+	 * @message  The message to send in the failure
+	 */
+	function hasDifference( required any other, required any expected, required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The difference of [#getStringName( arguments.actual )#] and [#getStringName( arguments.other )#] is not [#getStringName( arguments.expected )#]"
+		);
+		isASet( arguments.actual, arguments.message );
+		isASet( arguments.other, arguments.message );
+		isASet( arguments.expected, arguments.message );
+		var difference = arguments.actual.difference( arguments.other );
+		isEqualSet( arguments.expected, difference, arguments.message );
+		return this;
+	}
+
+	/**
+	 * Assert that the symmetric difference of two sets equals the expected set.
+	 *
+	 * @other    The other set to compute symmetric difference with actual
+	 * @expected The expected result of the symmetric difference
+	 * @actual   The actual value to check (must be a Set)
+	 * @message  The message to send in the failure
+	 */
+	function hasSymmetricDifference( required any other, required any expected, required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The symmetric difference of [#getStringName( arguments.actual )#] and [#getStringName( arguments.other )#] is not [#getStringName( arguments.expected )#]"
+		);
+		isASet( arguments.actual, arguments.message );
+		isASet( arguments.other, arguments.message );
+		isASet( arguments.expected, arguments.message );
+		var symDiff = arguments.actual.symmetricDifference( arguments.other );
+		isEqualSet( arguments.expected, symDiff, arguments.message );
+		return this;
+	}
+
 	/*********************************** PRIVATE Methods ***********************************/
 
 	/**
@@ -1448,6 +1633,17 @@ component {
 			return true
 		}
 		return false
+	}
+
+	/**
+	 * Temporary BoxSet detector until BoxLang ships an isBoxSet() BIF.
+	 *
+	 * @target The value to evaluate
+	 *
+	 * @return True when the value is a BoxSet instance
+	 */
+	private boolean function isThisASet( required any target ){
+		return isInstanceOf( arguments.target, "BoxSet" )
 	}
 
 	/**

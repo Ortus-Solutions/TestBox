@@ -1008,4 +1008,303 @@ component accessors="true" {
 		return this;
 	}
 
+	/*********************************** BoxLang Set Expectations ***********************************/
+
+	/**
+	 * Assert that the actual value is a BoxLang Set type.
+	 *
+	 * @message The message to send in the failure
+	 */
+	function toBeASet( message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.isASet(
+					this.actual,
+					arguments.message
+				);
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected the actual value to NOT be a Set but it was"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.isASet(
+				this.actual,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that two sets are equal (contain the same elements, order-independent).
+	 *
+	 * @expected The expected set
+	 * @message  The message to send in the failure
+	 */
+	function toEqualSet( required any expected, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.isEqualSet(
+					arguments.expected,
+					this.actual,
+					arguments.message
+				);
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#] but received [#getStringName( this.actual )#]"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.isEqualSet(
+				arguments.expected,
+				this.actual,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the actual set is a subset of the expected set.
+	 *
+	 * @expected The expected (parent) set
+	 * @message  The message to send in the failure
+	 */
+	function toBeSubsetOf( required any expected, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.isSubsetOf(
+					arguments.expected,
+					this.actual,
+					arguments.message
+				);
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "[#getStringName( this.actual )#] is actually a subset of [#getStringName( arguments.expected )#]"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.isSubsetOf(
+				arguments.expected,
+				this.actual,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the actual set is a superset of the expected set.
+	 *
+	 * @expected The expected (subset) set
+	 * @message  The message to send in the failure
+	 */
+	function toBeSupersetOf( required any expected, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.isSupersetOf(
+					arguments.expected,
+					this.actual,
+					arguments.message
+				);
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "[#getStringName( this.actual )#] is actually a superset of [#getStringName( arguments.expected )#]"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.isSupersetOf(
+				arguments.expected,
+				this.actual,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the actual set is disjoint from the expected set (no common elements).
+	 *
+	 * @expected The expected set to check disjointness against
+	 * @message  The message to send in the failure
+	 */
+	function toBeDisjointFrom( required any expected, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.isDisjointFrom(
+					arguments.expected,
+					this.actual,
+					arguments.message
+				);
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "[#getStringName( this.actual )#] is actually not disjoint from [#getStringName( arguments.expected )#]"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.isDisjointFrom(
+				arguments.expected,
+				this.actual,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the union of two sets equals the expected set.
+	 *
+	 * @other    The other set to union with actual
+	 * @expected The expected result of the union
+	 * @message  The message to send in the failure
+	 */
+	function toHaveUnion( required any other, required any expected, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.hasUnion(
+					arguments.other,
+					arguments.expected,
+					this.actual,
+					arguments.message
+				);
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "The union of [#getStringName( this.actual )#] and [#getStringName( arguments.other )#] is actually [#getStringName( arguments.expected )#]"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.hasUnion(
+				arguments.other,
+				arguments.expected,
+				this.actual,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the intersection of two sets equals the expected set.
+	 *
+	 * @other    The other set to intersect with actual
+	 * @expected The expected result of the intersection
+	 * @message  The message to send in the failure
+	 */
+	function toHaveIntersection( required any other, required any expected, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.hasIntersection(
+					arguments.other,
+					arguments.expected,
+					this.actual,
+					arguments.message
+				);
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "The intersection of [#getStringName( this.actual )#] and [#getStringName( arguments.other )#] is actually [#getStringName( arguments.expected )#]"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.hasIntersection(
+				arguments.other,
+				arguments.expected,
+				this.actual,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the difference of two sets equals the expected set.
+	 *
+	 * @other    The other set to subtract from actual
+	 * @expected The expected result of the difference
+	 * @message  The message to send in the failure
+	 */
+	function toHaveDifference( required any other, required any expected, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.hasDifference(
+					arguments.other,
+					arguments.expected,
+					this.actual,
+					arguments.message
+				);
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "The difference of [#getStringName( this.actual )#] and [#getStringName( arguments.other )#] is actually [#getStringName( arguments.expected )#]"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.hasDifference(
+				arguments.other,
+				arguments.expected,
+				this.actual,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the symmetric difference of two sets equals the expected set.
+	 *
+	 * @other    The other set to compute symmetric difference with actual
+	 * @expected The expected result of the symmetric difference
+	 * @message  The message to send in the failure
+	 */
+	function toHaveSymmetricDifference( required any other, required any expected, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.hasSymmetricDifference(
+					arguments.other,
+					arguments.expected,
+					this.actual,
+					arguments.message
+				);
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "The symmetric difference of [#getStringName( this.actual )#] and [#getStringName( arguments.other )#] is actually [#getStringName( arguments.expected )#]"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.hasSymmetricDifference(
+				arguments.other,
+				arguments.expected,
+				this.actual,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
 }
