@@ -17,7 +17,7 @@
 ## Phase 0: Test Harness Baseline
 
 - [x] Identify existing assertion/expectation specs: `BaseAssertionsTest.cfc`, `AssertionsTest.cfc`, `BDDTest.cfc`
-- [ ] Add dedicated BoxLang-only specs for Data Navigators
+- [x] Add dedicated BoxLang-only specs for Data Navigators
 - [x] Add dedicated BoxLang-only specs for Sets
 - [ ] Add dedicated BoxLang-only specs for Ranges
 
@@ -74,16 +74,17 @@
 - [ ] Improve `expectAll()` failure context
 - [ ] Add tests for diagnostics and lazy messages
 
-## Phase 6: BoxLang Data Navigator Expectations
+## Phase 6: BoxLang Data Navigator Expectations (COMPLETE)
 
-- [ ] Add runtime guard for BoxLang-only navigator features
-- [ ] Add `toHavePath( path )`
-- [ ] Add `toHavePathValue( path, expected )`
-- [ ] Add `toHavePathType( path, type )`
-- [ ] Add `toHavePathSatisfying( path, predicate )`
-- [ ] Add `path( path )` returning a normal `Expectation`
-- [ ] Add `queryPath( path )` returning an expectation over query results
-- [ ] Add tests for dot paths, indexes, wildcards, filters, recursive descent, and missing paths
+- [x] Add runtime guard for BoxLang-only navigator features
+- [x] Add `toHavePath( path )`
+- [x] Add `toHavePathValue( path, expected )`
+- [x] Add `toHavePathType( path, type )`
+- [x] Add `toHavePathSatisfying( path, predicate )`
+- [x] Add `path( path )` returning a normal `Expectation`
+- [x] Add `queryPath( path )` returning an expectation over query results
+- [x] Add tests for dot paths, indexes, wildcards, filters, recursive descent, and missing paths
+- [x] Verified: 63 BoxLang data navigator expectations tests pass
 
 ## Phase 7: BoxLang Set Expectations (COMPLETE)
 

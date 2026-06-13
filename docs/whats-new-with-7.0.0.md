@@ -277,6 +277,123 @@ it( "validates menu selection", () => {
 
 * * *
 
+## Data Navigator Expectations
+
+TestBox now provides a suite of matchers that leverage BoxLang's built-in `dataNavigate()` BIF to safely navigate and assert against values in nested data structures. These matchers support dot-notation, array indexes, wildcards, filters, recursive descent, and all other JSONPath-style expressions.
+
+> **BoxLang Only**: Data navigator features require the BoxLang runtime and are guarded at the matcher level. On CFML engines they throw `TestBox.BoxLangFeatureNotAvailable`.
+
+### `toHavePath()` / `notToHavePath()`
+
+Assert that a path exists (or does not exist) in a nested data structure.
+
+```javascript
+var data = {
+    "app" = { "name" = "TestApp", "settings" = { "debug" = true, "port" = 8080 } },
+    "users" = [ { "name" = "Alice", "age" = 30 } ]
+}
+
+expect( data ).toHavePath( "app.name" )
+expect( data ).toHavePath( "app.settings.debug" )
+expect( data ).toHavePath( "users[1].name" )
+expect( data ).notToHavePath( "nonexistent" )
+expect( data ).notToHavePath( "app.nonexistent" )
+```
+
+### `toHavePathValue()` / `notToHavePathValue()`
+
+Assert that the value at a path matches an expected value.
+
+```javascript
+expect( data ).toHavePathValue( "app.name", "TestApp" )
+expect( data ).toHavePathValue( "app.settings.port", 8080 )
+expect( data ).toHavePathValue( "app.settings.debug", true )
+expect( data ).toHavePathValue( "users[1].name", "Alice" )
+expect( data ).notToHavePathValue( "app.name", "WrongApp" )
+```
+
+### `toHavePathType()` / `notToHavePathType()`
+
+Assert the type of the value at a path. Supports standard types (`string`, `numeric`, `boolean`, `struct`, `array`) and common aliases (`str`, `num`, `bool`, `arr`, `obj`, `map`).
+
+```javascript
+expect( data ).toHavePathType( "app.name", "string" )
+expect( data ).toHavePathType( "app.settings.port", "numeric" )
+expect( data ).toHavePathType( "app.settings.debug", "boolean" )
+expect( data ).toHavePathType( "app.settings", "struct" )
+expect( data ).toHavePathType( "users", "array" )
+expect( data ).toHavePathType( "app.settings.port", "num" )       // alias
+expect( data ).notToHavePathType( "app.name", "numeric" )
+```
+
+### `toHavePathSatisfying()` / `notToHavePathSatisfying()`
+
+Assert that the value at a path satisfies a predicate closure.
+
+```javascript
+expect( data ).toHavePathSatisfying( "app.name", name -> name == "TestApp" )
+expect( data ).toHavePathSatisfying( "app.settings.port", port -> port > 1000 )
+expect( data ).toHavePathSatisfying( "app.settings", settings -> settings.keyExists( "debug" ) )
+expect( data ).notToHavePathSatisfying( "app.name", name -> name == "WrongName" )
+```
+
+### `path()`
+
+Navigate to a path and return a normal `Expectation` on the value at that path. Supports chaining any matcher on the result.
+
+```javascript
+expect( data ).path( "app.name" ).toBe( "TestApp" )
+expect( data ).path( "app.settings.port" ).toBeGT( 8000 )
+expect( data ).path( "users" ).toHaveLength( 1 )
+expect( data ).path( "nonexistent" ).toBeNull()
+```
+
+### `queryPath()`
+
+Navigate to a path and return an `Expectation` on an array of all matching values. Fans out at wildcards, filters, and recursive descent segments.
+
+```javascript
+expect( data ).queryPath( "users[*].name" ).toHaveLength( 1 )
+expect( data ).queryPath( "users[*].name" ).toInclude( "Alice" )
+expect( data ).queryPath( "nonexistent" ).toBeEmpty()
+```
+
+### Real-World Example: API Response Validation
+
+```javascript
+it( "validates an API response", () => {
+    var response = {
+        "success" = true,
+        "data" = {
+            "users" = [
+                { "name" = "Alice", "role" = "admin", "active" = true },
+                { "name" = "Bob",   "role" = "user",  "active" = false }
+            ],
+            "metadata" = { "total" = 2, "page" = 1 }
+        }
+    }
+
+    // Path existence
+    expect( response ).toHavePath( "data.users" )
+    expect( response ).notToHavePath( "data.errors" )
+
+    // Path values
+    expect( response ).toHavePathValue( "success", true )
+    expect( response ).toHavePathValue( "data.metadata.total", 2 )
+
+    // Path types
+    expect( response ).toHavePathType( "data.users", "array" )
+    expect( response ).toHavePathType( "data.metadata.total", "numeric" )
+
+    // Predicate
+    expect( response ).toHavePathSatisfying( "data.users[1].role", role -> role == "admin" )
+
+    // Path extraction
+    expect( response ).path( "data.users[1].name" ).toBe( "Alice" )
+    expect( response ).queryPath( "data.users[*].name" ).toInclude( "Bob" )
+} )
+```
+
 ## Summary
 
 | Feature | Type | Example |
@@ -303,3 +420,9 @@ it( "validates menu selection", () => {
 | `toHaveIntersection()` / `notToHaveIntersection()` | Set | `expect( setOf( 1, 2 ) ).toHaveIntersection( setOf( 2, 3 ), setOf( 2 ) )` |
 | `toHaveDifference()` / `notToHaveDifference()` | Set | `expect( setOf( 1, 2 ) ).toHaveDifference( setOf( 2 ), setOf( 1 ) )` |
 | `toHaveSymmetricDifference()` / `notToHaveSymmetricDifference()` | Set | `expect( setOf( 1, 2 ) ).toHaveSymmetricDifference( setOf( 2, 3 ), setOf( 1, 3 ) )` |
+| `toHavePath()` / `notToHavePath()` | Navigator | `expect( data ).toHavePath( "app.name" )` |
+| `toHavePathValue()` / `notToHavePathValue()` | Navigator | `expect( data ).toHavePathValue( "app.name", "TestApp" )` |
+| `toHavePathType()` / `notToHavePathType()` | Navigator | `expect( data ).toHavePathType( "app.settings.port", "numeric" )` |
+| `toHavePathSatisfying()` / `notToHavePathSatisfying()` | Navigator | `expect( data ).toHavePathSatisfying( "app.name", p -> p == "TestApp" )` |
+| `path()` | Navigator | `expect( data ).path( "app.name" ).toBe( "TestApp" )` |
+| `queryPath()` | Navigator | `expect( data ).queryPath( "users[*].name" ).toInclude( "Alice" )` |

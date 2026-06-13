@@ -1317,4 +1317,158 @@ component accessors="true" {
 		return this;
 	}
 
+	/**
+	 * Assert that a path exists in the actual data structure.
+	 * BoxLang Data Navigator feature - requires BoxLang runtime.
+	 *
+	 * @path    The path string (e.g., "a.b.c", "users[0].name")
+	 * @message The message to send in the failure
+	 */
+	function toHavePath( required string path, message = "" ){
+		this._checkBoxLangFeature();
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			variables.assert.notToPath(
+				this.actual,
+				arguments.path,
+				arguments.message
+			);
+		} else {
+			variables.assert.toPath(
+				this.actual,
+				arguments.path,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the value at a path equals the expected value.
+	 * BoxLang Data Navigator feature - requires BoxLang runtime.
+	 *
+	 * @path     The path string (e.g., "a.b.c", "users[0].name")
+	 * @expected The expected value at the path
+	 * @message  The message to send in the failure
+	 */
+	function toHavePathValue( required string path, required any expected, message = "" ){
+		this._checkBoxLangFeature();
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			variables.assert.notToPathValue(
+				this.actual,
+				arguments.path,
+				arguments.expected,
+				arguments.message
+			);
+		} else {
+			variables.assert.toPathValue(
+				this.actual,
+				arguments.path,
+				arguments.expected,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the value at a path is of the expected type.
+	 * BoxLang Data Navigator feature - requires BoxLang runtime.
+	 *
+	 * @path   The path string (e.g., "a.b.c", "users[0].name")
+	 * @type   The expected type string (e.g., "string", "numeric", "array")
+	 * @message The message to send in the failure
+	 */
+	function toHavePathType( required string path, required string type, message = "" ){
+		this._checkBoxLangFeature();
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			variables.assert.notToPathType(
+				this.actual,
+				arguments.path,
+				arguments.type,
+				arguments.message
+			);
+		} else {
+			variables.assert.toPathType(
+				this.actual,
+				arguments.path,
+				arguments.type,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the value at a path satisfies a predicate closure.
+	 * BoxLang Data Navigator feature - requires BoxLang runtime.
+	 *
+	 * @path      The path string (e.g., "a.b.c", "users[0].name")
+	 * @predicate A closure that takes the path value and returns true/false
+	 * @message   The message to send in the failure
+	 */
+	function toHavePathSatisfying( required string path, required function predicate, message = "" ){
+		this._checkBoxLangFeature();
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			variables.assert.notToPathSatisfying(
+				this.actual,
+				arguments.path,
+				arguments.predicate,
+				arguments.message
+			);
+		} else {
+			variables.assert.toPathSatisfying(
+				this.actual,
+				arguments.path,
+				arguments.predicate,
+				arguments.message
+			);
+		}
+		return this;
+	}
+
+	/**
+	 * Navigate to a path and return an Expectation on the value at that path.
+	 * BoxLang Data Navigator feature - requires BoxLang runtime.
+	 *
+	 * @path    The path string (e.g., "a.b.c", "users[0].name")
+	 * @return    A new Expectation object with the value at the path as actual
+	 */
+	function path( required string path ){
+		this._checkBoxLangFeature();
+		var value = variables.assert.resolvePath( this.actual, arguments.path );
+		if ( arrayLen( value ) GT 0 ) {
+			return variables.spec.expect( value[ 1 ] );
+		}
+		return variables.spec.expect( null );
+	}
+
+	/**
+	 * Navigate to a path and return an Expectation over all matching values.
+	 * BoxLang Data Navigator feature - requires BoxLang runtime.
+	 *
+	 * @path    The path string (e.g., "a[*].b", "?@age>18")
+	 * @return    A new Expectation object with an array of values at the path as actual
+	 */
+	function queryPath( required string path ){
+		this._checkBoxLangFeature();
+		var values = variables.assert.resolvePath( this.actual, arguments.path );
+		return variables.spec.expect( values );
+	}
+
+	/**
+	 * Runtime guard for BoxLang-only data navigator features.
+	 */
+	function _checkBoxLangFeature(){
+		if ( !server.keyExists( "boxlang" ) ) {
+			throw(
+				type    = "TestBox.BoxLangFeatureNotAvailable",
+				message = "This feature requires BoxLang runtime. Data navigators are only available in BoxLang."
+			);
+		}
+	}
+
 }

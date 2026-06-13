@@ -75,6 +75,10 @@ class extends="testbox.system.BaseSpec" {
 					expect( set1 ).toEqualSet( setOf( 3, 2, 1 ) );
 				} );
 
+				it( "passes through generic equality when sets contain same elements", () => {
+					expect( set1 ).toBe( setOf( 3, 2, 1 ) );
+				} );
+
 				it( "passes when sets are equal regardless of order", () => {
 					expect( setOf( 'a', 'b' ) ).toEqualSet( setOf( 'b', 'a' ) );
 				} );
@@ -279,6 +283,12 @@ class extends="testbox.system.BaseSpec" {
 			} );
 
 			describe( "Integration Tests", () => {
+				it( "reports the real length of a set", () => {
+					expect( set1 ).toHaveLength( 3 );
+					expect( set1 ).notToBeEmpty();
+					expect( setEmpty ).toBeEmpty();
+				} );
+
 				it( "can chain multiple set expectations", () => {
 					var base = setOf( 1, 2, 3, 4, 5 );
 					var sub = setOf( 1, 2 );

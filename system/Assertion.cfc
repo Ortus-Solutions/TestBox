@@ -1441,13 +1441,8 @@ component {
 		);
 		isASet( arguments.expected, arguments.message );
 		isASet( arguments.actual, arguments.message );
-		if ( arguments.expected.size() != arguments.actual.size() ) {
+		if ( !setsAreEqual( arguments.expected, arguments.actual ) ) {
 			fail( arguments.message );
-		}
-		for ( var item in arguments.actual ) {
-			if ( !arguments.expected.contains( item ) ) {
-				fail( arguments.message );
-			}
 		}
 		return this;
 	}
@@ -1773,6 +1768,11 @@ component {
 			return true
 		}
 
+		// BoxLang Sets
+		if ( isThisASet( arguments.actual ) && isThisASet( arguments.expected ) ) {
+			return setsAreEqual( arguments.expected, arguments.actual )
+		}
+
 		// Arrays
 		if ( isArray( arguments.actual ) && isArray( arguments.expected ) ) {
 			// Confirm both arrays are the same length
@@ -1863,6 +1863,9 @@ component {
 		if ( isQuery( arguments.target ) ) {
 			aLength = arguments.target.recordcount;
 		}
+		if ( isThisASet( arguments.target ) ) {
+			aLength = arguments.target.size();
+		}
 		if ( isCustomFunction( arguments.target ) or isClosure( arguments.target ) ) {
 			throw(
 				type    = "InvalidType",
@@ -1898,6 +1901,353 @@ component {
 			}, {} );
 		}
 		return arguments.target;
+	}
+
+	/**
+	 * Resolve a path expression in the target data structure.
+	 * Uses BoxLang's native dataNavigate() BIF.
+	 */
+	any function resolvePath( required any target, required string path ){
+		try {
+			var navigator = dataNavigate( arguments.target );
+			var results = navigator.query( arguments.path );
+			if ( arrayLen( results ) GT 0 ) {
+				return results;
+			}
+		} catch ( any e ) {
+			return [];
+		}
+		return [];
+	}
+
+	/**
+	 * Resolve a path after normalizing supported target types.
+	 */
+	private array function getPathResults( required any target, required string path ){
+		return this.resolvePath( normalizeToStruct( arguments.target ), arguments.path );
+	}
+
+	/**
+	 * Check if all path results satisfy a predicate.
+	 */
+	private boolean function allPathResultsMatch( required array results, required function predicate ){
+		for ( var result in arguments.results ) {
+			if ( !arguments.predicate( result ) ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Check if any path result satisfies a predicate.
+	 */
+	private boolean function anyPathResultMatches( required array results, required function predicate ){
+		for ( var result in arguments.results ) {
+			if ( arguments.predicate( result ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if a path exists in the target data structure.
+	 *
+	 * @target The target object/struct/array
+	 * @path   The path string (e.g., "a.b.c", "users[0].name")
+	 * @message The message to send on failure
+	 */
+	function toPath(
+		required any target,
+		required string path,
+		message = ""
+	){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The path [#arguments.path#] does not exist in the target." );
+
+		var results = getPathResults( arguments.target, arguments.path );
+		if ( arrayLen( results ) GT 0 ) {
+			return this;
+		}
+
+		fail( arguments.message );
+	}
+
+	/**
+	 * Check if a path does NOT exist in the target data structure.
+	 *
+	 * @target The target object/struct/array
+	 * @path   The path string (e.g., "a.b.c", "users[0].name")
+	 * @message The message to send on failure
+	 */
+	function notToPath(
+		required any target,
+		required string path,
+		message = ""
+	){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The path [#arguments.path#] actually exists in the target." );
+
+		var results = getPathResults( arguments.target, arguments.path );
+		if ( arrayLen( results ) == 0 ) {
+			return this;
+		}
+
+		fail( arguments.message );
+	}
+
+	/**
+	 * Check if the value at a path equals the expected value.
+	 *
+	 * @target   The target object/struct/array
+	 * @path     The path string (e.g., "a.b.c", "users[0].name")
+	 * @expected The expected value at the path
+	 * @message  The message to send on failure
+	 */
+	function toPathValue(
+		required any target,
+		required string path,
+		required any expected,
+		message = ""
+	){
+		var results = getPathResults( arguments.target, arguments.path );
+		if ( arrayLen( results ) == 0 ) {
+			arguments.message = ( len( arguments.message ) ? arguments.message : "The path [#arguments.path#] does not exist in the target." );
+			fail( arguments.message );
+		}
+
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is not [#getStringName( arguments.expected )#]" );
+		var expectedValue = arguments.expected;
+
+		if ( !allPathResultsMatch( results, ( value ) => equalize( expectedValue, value ) ) ) {
+			fail( arguments.message );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Check if the value at a path does NOT equal the expected value.
+	 */
+	function notToPathValue(
+		required any target,
+		required string path,
+		required any expected,
+		message = ""
+	){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is actually [#getStringName( arguments.expected )#]" );
+
+		var results = getPathResults( arguments.target, arguments.path );
+		if ( arrayLen( results ) == 0 ) {
+			return this; // Path doesn't exist, so it's definitely not equal to expected
+		}
+		var expectedValue = arguments.expected;
+
+		if ( anyPathResultMatches( results, ( value ) => equalize( expectedValue, value ) ) ) {
+			fail( arguments.message );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Check if the value at a path is of the expected type.
+	 *
+	 * @target The target object/struct/array
+	 * @path   The path string (e.g., "a.b.c", "users[0].name")
+	 * @type   The expected type string (e.g., "string", "numeric", "array", "struct")
+	 * @message The message to send on failure
+	 */
+	function toPathType(
+		required any target,
+		required string path,
+		required string type,
+		message = ""
+	){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is not of type [#arguments.type#]" );
+
+		var results = getPathResults( arguments.target, arguments.path );
+		if ( arrayLen( results ) == 0 ) {
+			fail( arguments.message );
+		}
+
+		var actualType = this._getTypeName( results[ 1 ] );
+		if ( !this._typeMatches( actualType, arguments.type ) ) {
+			fail( arguments.message );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Check if the value at a path does NOT match the expected type.
+	 */
+	function notToPathType(
+		required any target,
+		required string path,
+		required string type,
+		message = ""
+	){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is actually of type [#arguments.type#]" );
+
+		var results = getPathResults( arguments.target, arguments.path );
+		if ( arrayLen( results ) == 0 ) {
+			return this; // Path doesn't exist, so it's definitely not of the specified type
+		}
+
+		var actualType = this._getTypeName( results[ 1 ] );
+		if ( this._typeMatches( actualType, arguments.type ) ) {
+			fail( arguments.message );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Check if the value at a path satisfies a predicate closure.
+	 *
+	 * @target    The target object/struct/array
+	 * @path      The path string (e.g., "a.b.c", "users[0].name")
+	 * @predicate A closure that takes the path value and returns true/false
+	 * @message   The message to send on failure
+	 */
+	function toPathSatisfying(
+		required any target,
+		required string path,
+		required function predicate,
+		message = ""
+	){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] does not satisfy the predicate" );
+
+		var results = getPathResults( arguments.target, arguments.path );
+		if ( arrayLen( results ) == 0 ) {
+			fail( arguments.message );
+		}
+
+		if ( !allPathResultsMatch( results, arguments.predicate ) ) {
+			fail( arguments.message );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Check if the value at a path does NOT satisfy a predicate closure.
+	 */
+	function notToPathSatisfying(
+		required any target,
+		required string path,
+		required function predicate,
+		message = ""
+	){
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] should not satisfy the predicate" );
+
+		var results = getPathResults( arguments.target, arguments.path );
+		if ( arrayLen( results ) == 0 ) {
+			return this; // Path doesn't exist, so it can't satisfy the predicate
+		}
+
+		if ( anyPathResultMatches( results, arguments.predicate ) ) {
+			fail( arguments.message );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Get the type name of a value for comparison.
+	 */
+	string function _getTypeName( required any target ){
+		if ( isNull( arguments.target ) ) {
+			return "null";
+		} else if ( isSimpleValue( arguments.target ) ) {
+			if ( isNumeric( arguments.target ) ) {
+				return "numeric";
+			} else if ( isBoolean( arguments.target ) ) {
+				return "boolean";
+			} else {
+				return "string";
+			}
+		} else if ( isArray( arguments.target ) ) {
+			return "array";
+		} else if ( isStruct( arguments.target ) ) {
+			return "struct";
+		} else if ( isQuery( arguments.target ) ) {
+			return "query";
+		} else if( isInstanceOf( arguments.target, "BoxSet" ) ) {
+			return "set";
+		} else if( isInstanceOf( arguments.target, "Range" ) ) {
+			return "range";
+		}
+
+		return "object"; // For any other types, return "object" as a generic type
+	}
+
+	/**
+	 * Check if an actual type matches the expected type (with normalization).
+	 */
+	boolean function _typeMatches( required string actualType, required string expectedType ){
+		var normalizedActual = lcase( trim( arguments.actualType ) );
+		var normalizedExpected = lcase( trim( arguments.expectedType ) );
+
+		if ( normalizedActual eq normalizedExpected ) {
+			return true;
+		}
+
+		// Handle common type aliases
+		var typeAliases = {
+			"str": "string",
+			"num": "numeric",
+			"bool": "boolean",
+			"int": "numeric",
+			"float": "numeric",
+			"dbl": "numeric",
+			"dec": "numeric",
+			"arr": "array",
+			"obj": "struct",
+			"map": "struct",
+			"dict": "struct",
+			"fn": "closure",
+			"func": "closure",
+			"closure": "closure",
+			"callback": "closure",
+			"cfm": "component",
+			"cfc": "component",
+			"class": "component"
+		};
+
+		if ( structKeyExists( typeAliases, normalizedActual ) ) {
+			return typeAliases[ normalizedActual ] eq normalizedExpected;
+		}
+
+		if ( structKeyExists( typeAliases, normalizedExpected ) ) {
+			return normalizedActual eq typeAliases[ normalizedExpected ];
+		}
+
+		return false;
+	}
+
+	/**
+	 * Compare two BoxSet instances using BoxSet's normalized, order-independent equality rules.
+	 *
+	 * @expected The expected set
+	 * @actual   The actual set
+	 *
+	 * @return True if both sets contain the same values
+	 */
+	private boolean function setsAreEqual( required any expected, required any actual ){
+		if ( arguments.expected.size() != arguments.actual.size() ) {
+			return false;
+		}
+
+		for ( var item in arguments.actual ) {
+			if ( !arguments.expected.contains( item ) ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	private string function limitString(
