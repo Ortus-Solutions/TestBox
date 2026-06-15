@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add grouped assertions via `$assert.all()`, `assertAll()` that run multiple assertion closures and report every failure at once instead of stopping at the first.
 - Add new matchers: `toBeTruthy()`, `toBeFalsy()`, `toBeSameInstanceAs()`, `toHaveSize()`, `toThrowMatching()`, `toIncludeAll()`, `toIncludeAny()`, and `toIncludeNone()`.
 - Add set expectations: `toBeASet()`, `toEqualSet()`, `toBeSubsetOf()`, `toBeSupersetOf()`, `toBeDisjointFrom()`, `toHaveUnion()`, `toHaveIntersection()`, `toHaveDifference()`, and `toHaveSymmetricDifference()` for working with BoxLang Set objects.
+- Add range expectations: `toBeRange()`, `toContainValue()`, `toContainRange()`, `toBeInRange()`, `toBeBeforeRange()`, `toBeAfterRange()`, `toBeBounded()`, `toBeUnbounded()`, `toBeHalfBounded()`, `toBeIterable()`, `toBeAscending()`, `toBeDescending()`, `toHaveStep()`, and `toClampTo()` for BoxLang Range objects.
 - Add data navigator expectations: `toHavePath()`, `toHavePathValue()`, `toHavePathType()`, `toHavePathSatisfying()`, `path()`, and `queryPath()` for navigating and asserting against nested BoxLang data structures using dot-notation, array indexes, wildcards, filters, and recursive descent.
 - Add new assertion BIFs: `$assert.isTruthy()`, `$assert.isFalsy()`, `$assert.includesAll()`, `$assert.includesAny()`, and `$assert.includesNone()`.
 

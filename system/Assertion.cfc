@@ -1630,6 +1630,298 @@ component {
 		return this;
 	}
 
+	/*********************************** BoxLang Range Assertions ***********************************/
+
+	/**
+	 * Assert that the actual value is a BoxLang Range type.
+	 *
+	 * @actual  The actual value to check
+	 * @message The message to send in the failure
+	 */
+	function isRange( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The actual [#getStringName( arguments.actual )#] is not a Range"
+		);
+		if ( !isInstanceOf( arguments.actual, "Range" ) ) {
+			fail( arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that a range contains a specific value.
+	 *
+	 * @actual  The actual range to check
+	 * @value   The value to look for in the range
+	 * @message The message to send in the failure
+	 */
+	function rangeContainsValue( required any actual, required any value, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to contain [#getStringName( arguments.value )#]"
+		);
+		if ( !arguments.actual.contains( arguments.value ) ) {
+			fail( arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that a range contains another range.
+	 *
+	 * @actual   The actual (parent) range to check
+	 * @expected The expected (child) range that should be contained within actual
+	 * @message  The message to send in the failure
+	 */
+	function rangeContainsRange( required any actual, required any expected, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to contain [#getStringName( arguments.expected )#]"
+		);
+		if ( !isInstanceOf( arguments.actual, "Range" ) || !isInstanceOf( arguments.expected, "Range" ) ) {
+			fail( arguments.message );
+		}
+		if ( !arguments.actual.contains( arguments.expected ) ) {
+			fail( arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that a value is within a range.
+	 *
+	 * @actual  The actual value to check
+	 * @range   The range to check against
+	 * @message The message to send in the failure
+	 */
+	function valueInRange( required any actual, required any range, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be in range [#getStringName( arguments.range )#]"
+		);
+		if ( !isInstanceOf( arguments.range, "Range" ) ) {
+			fail( arguments.message );
+		}
+		if ( !arguments.range.contains( arguments.actual ) ) {
+			fail( arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that a range is entirely before another range.
+	 *
+	 * @actual   The actual (first) range to check
+	 * @expected The expected (second) range that should come after actual
+	 * @message  The message to send in the failure
+	 */
+	function rangeBeforeRange( required any actual, required any expected, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#getStringName( arguments.actual )#] is not before [#getStringName( arguments.expected )#]"
+		);
+		if ( !isInstanceOf( arguments.actual, "Range" ) || !isInstanceOf( arguments.expected, "Range" ) ) {
+			fail( arguments.message );
+		}
+
+		if ( !arguments.actual.hasTo() ) {
+			fail( arguments.message );
+		}
+		if ( !arguments.expected.hasFrom() ) {
+			fail( arguments.message );
+		}
+		if ( arguments.actual.getTo() GT arguments.expected.getFrom() ) {
+			fail( arguments.message );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Assert that a range is entirely after another range.
+	 *
+	 * @actual   The actual (second) range to check
+	 * @expected The expected (first) range that should come before actual
+	 * @message  The message to send in the failure
+	 */
+	function rangeAfterRange( required any actual, required any expected, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#getStringName( arguments.actual )#] is not after [#getStringName( arguments.expected )#]"
+		);
+		if ( !isInstanceOf( arguments.actual, "Range" ) || !isInstanceOf( arguments.expected, "Range" ) ) {
+			fail( arguments.message );
+		}
+
+		if ( !arguments.actual.hasFrom() ) {
+			fail( arguments.message );
+		}
+		if ( !arguments.expected.hasTo() ) {
+			fail( arguments.message );
+		}
+		if ( arguments.actual.getFrom() LT arguments.expected.getTo() ) {
+			fail( arguments.message );
+		}
+
+		return this;
+	}
+
+	/**
+	 * Assert that a range is bounded (has both start and end).
+	 *
+	 * @actual  The actual range to check
+	 * @message The message to send in the failure
+	 */
+	function isRangeBounded( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be bounded"
+		);
+		if ( !isInstanceOf( arguments.actual, "Range" ) || arguments.actual.isBounded() == false ) {
+			fail( arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that a range is unbounded (has no endpoints).
+	 *
+	 * @actual  The actual range to check
+	 * @message The message to send in the failure
+	 */
+	function isRangeUnbounded( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be unbounded"
+		);
+		if ( !isInstanceOf( arguments.actual, "Range" ) || arguments.actual.isUnbounded() == false ) {
+			fail( arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that a range is half-bounded (has exactly one endpoint).
+	 *
+	 * @actual  The actual range to check
+	 * @message The message to send in the failure
+	 */
+	function isRangeHalfBounded( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be half-bounded"
+		);
+		if ( !isInstanceOf( arguments.actual, "Range" ) || arguments.actual.isHalfBounded() == false ) {
+			fail( arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that a range is iterable (can be used in for/in loops).
+	 *
+	 * @actual  The actual range to check
+	 * @message The message to send in the failure
+	 */
+	function isRangeIterable( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be iterable"
+		);
+		if ( !isInstanceOf( arguments.actual, "Range" ) || arguments.actual.isIterable() == false ) {
+			fail( arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that a range is ascending (start < end).
+	 *
+	 * @actual  The actual range to check
+	 * @message The message to send in the failure
+	 */
+	function isRangeAscending( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be ascending"
+		);
+		if ( !isInstanceOf( arguments.actual, "Range" ) || arguments.actual.isAscending() == false ) {
+			fail( arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that a range is descending (start > end).
+	 *
+	 * @actual  The actual range to check
+	 * @message The message to send in the failure
+	 */
+	function isRangeDescending( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be descending"
+		);
+		if ( !isInstanceOf( arguments.actual, "Range" ) ) {
+			fail( arguments.message );
+		}
+		if ( !arguments.actual.hasFrom() || !arguments.actual.hasTo() ) {
+			fail( arguments.message );
+		}
+		if ( arguments.actual.getFrom() LTE arguments.actual.getTo() ) {
+			fail( arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that a range is empty.
+	 *
+	 * @actual  The actual range to check
+	 * @message The message to send in the failure
+	 */
+	function isRangeEmpty( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be empty"
+		);
+		if ( !isInstanceOf( arguments.actual, "Range" ) || arguments.actual.isEmpty() == false ) {
+			fail( arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that a range has a specific step value.
+	 *
+	 * @actual  The actual range to check
+	 * @step    The expected step value
+	 * @message The message to send in the failure
+	 */
+	function rangeHasStep( required any actual, required any step, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to have step [#getStringName( arguments.step )#]"
+		);
+		if ( !isInstanceOf( arguments.actual, "Range" ) ) {
+			fail( arguments.message );
+		}
+		var actualStep = arguments.actual.getStep();
+		if ( !isNumeric( actualStep ) || !isNumeric( arguments.step ) || abs( actualStep - arguments.step ) GT 0.0001 ) {
+			fail( arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that clamping a value to the range produces the expected result.
+	 *
+	 * @actual   The actual range to clamp against
+	 * @value    The value to clamp
+	 * @expected The expected result after clamping
+	 * @message  The message to send in the failure
+	 */
+	function rangeClampTo( required any actual, required any value, required any expected, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected clamp([#getStringName( arguments.value )#], [#getStringName( arguments.actual )#]) to be [#getStringName( arguments.expected )#]"
+		);
+		if ( !isInstanceOf( arguments.actual, "Range" ) ) {
+			fail( arguments.message );
+		}
+		var clamped = arguments.actual.clamp( arguments.value );
+		if ( !equalize( clamped, arguments.expected ) ) {
+			fail( arguments.message );
+		}
+		return this;
+	}
+
 	/*********************************** PRIVATE Methods ***********************************/
 
 	/**

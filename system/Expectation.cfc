@@ -1317,6 +1317,361 @@ component accessors="true" {
 		return this;
 	}
 
+	/*********************************** BoxLang Range Expectations ***********************************/
+
+	/**
+	 * Assert that the actual value is a BoxLang Range type.
+	 *
+	 * @message The message to send in the failure
+	 */
+	function toBeRange( message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.isRange( this.actual, arguments.message );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected the actual value to NOT be a Range but it was"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.isRange( this.actual, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the range contains a specific value.
+	 *
+	 * @value   The expected value within the range
+	 * @message The message to send in the failure
+	 */
+	function toContainValue( required any value, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.rangeContainsValue( this.actual, arguments.value, arguments.message );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT contain [#getStringName( arguments.value )#]"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.rangeContainsValue( this.actual, arguments.value, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the range contains another range.
+	 *
+	 * @expected The expected (child) range contained within actual
+	 * @message  The message to send in the failure
+	 */
+	function toContainRange( required any expected, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.rangeContainsRange( this.actual, arguments.expected, arguments.message );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT contain [#getStringName( arguments.expected )#]"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.rangeContainsRange( this.actual, arguments.expected, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that a value is within the range.
+	 *
+	 * @range   The range to check against
+	 * @message The message to send in the failure
+	 */
+	function toBeInRange( required any range, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.valueInRange( this.actual, arguments.range, arguments.message );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT be in range [#getStringName( arguments.range )#]"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.valueInRange( this.actual, arguments.range, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the range is entirely before another range.
+	 *
+	 * @expected The expected (second) range that should come after actual
+	 * @message  The message to send in the failure
+	 */
+	function toBeBeforeRange( required any expected, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.rangeBeforeRange( this.actual, arguments.expected, arguments.message );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT be before [#getStringName( arguments.expected )#]"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.rangeBeforeRange( this.actual, arguments.expected, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the range is entirely after another range.
+	 *
+	 * @expected The expected (first) range that should come before actual
+	 * @message  The message to send in the failure
+	 */
+	function toBeAfterRange( required any expected, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.rangeAfterRange( this.actual, arguments.expected, arguments.message );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT be after [#getStringName( arguments.expected )#]"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.rangeAfterRange( this.actual, arguments.expected, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the range is bounded (has both start and end).
+	 *
+	 * @message The message to send in the failure
+	 */
+	function toBeBounded( message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.isRangeBounded( this.actual, arguments.message );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT be bounded"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.isRangeBounded( this.actual, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the range is unbounded (has no endpoints).
+	 *
+	 * @message The message to send in the failure
+	 */
+	function toBeUnbounded( message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.isRangeUnbounded( this.actual, arguments.message );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT be unbounded"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.isRangeUnbounded( this.actual, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the range is half-bounded (has exactly one endpoint).
+	 *
+	 * @message The message to send in the failure
+	 */
+	function toBeHalfBounded( message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.isRangeHalfBounded( this.actual, arguments.message );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT be half-bounded"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.isRangeHalfBounded( this.actual, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the range is iterable (can be used in for/in loops).
+	 *
+	 * @message The message to send in the failure
+	 */
+	function toBeIterable( message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.isRangeIterable( this.actual, arguments.message );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT be iterable"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.isRangeIterable( this.actual, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the range is ascending (start < end).
+	 *
+	 * @message The message to send in the failure
+	 */
+	function toBeAscending( message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.isRangeAscending( this.actual, arguments.message );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected [#variables.assert.getStringName( this.actual )#] to NOT be ascending"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.isRangeAscending( this.actual, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the range is descending (start > end).
+	 *
+	 * @message The message to send in the failure
+	 */
+	function toBeDescending( message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.isRangeDescending( this.actual, arguments.message );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT be descending"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.isRangeDescending( this.actual, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the range is empty.
+	 *
+	 * @message The message to send in the failure
+	 */
+	function toBeEmpty( message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.isRangeEmpty( this.actual, arguments.message );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT be empty"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.isRangeEmpty( this.actual, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that the range has a specific step value.
+	 *
+	 * @step    The expected step value
+	 * @message The message to send in the failure
+	 */
+	function toHaveStep( required any step, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.rangeHasStep( this.actual, arguments.step, arguments.message );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT have step [#getStringName( arguments.step )#]"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.rangeHasStep( this.actual, arguments.step, arguments.message );
+		}
+		return this;
+	}
+
+	/**
+	 * Assert that clamping a value to the range produces the expected result.
+	 *
+	 * @value    The value to clamp
+	 * @expected The expected result after clamping
+	 * @message  The message to send in the failure
+	 */
+	function toClampTo( required any value, required any expected, message = "" ){
+		arguments.message = resolveMessage( arguments.message );
+		if ( this.isNot ) {
+			try {
+				variables.assert.rangeClampTo( this.actual, arguments.value, arguments.expected, arguments.message );
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "Expected clamp([#getStringName( arguments.value )#], [#getStringName( this.actual )#]) to NOT be [#getStringName( arguments.expected )#]"
+				);
+				fail( arguments.message );
+			} catch ( "TestBox.AssertionFailed" e ) {
+				return this;
+			}
+		} else {
+			variables.assert.rangeClampTo( this.actual, arguments.value, arguments.expected, arguments.message );
+		}
+		return this;
+	}
+
 	/**
 	 * Assert that a path exists in the actual data structure.
 	 * BoxLang Data Navigator feature - requires BoxLang runtime.

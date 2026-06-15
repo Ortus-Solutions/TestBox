@@ -19,7 +19,7 @@
 - [x] Identify existing assertion/expectation specs: `BaseAssertionsTest.cfc`, `AssertionsTest.cfc`, `BDDTest.cfc`
 - [x] Add dedicated BoxLang-only specs for Data Navigators
 - [x] Add dedicated BoxLang-only specs for Sets
-- [ ] Add dedicated BoxLang-only specs for Ranges
+- [x] Add dedicated BoxLang-only specs for Ranges
 
 ## Phase 1: Expectation Context (COMPLETE)
 
@@ -100,24 +100,25 @@
 - [x] Add tests for default, linked, sorted, case-sensitive, Java Set, and numeric normalization behavior
 - [x] Verified: BoxLang set expectations tests pass
 
-## Phase 8: BoxLang Range Expectations
+## Phase 8: BoxLang Range Expectations (COMPLETE)
 
-- [ ] Add `toBeRange()`
-- [ ] Add `toContainValue( value )`
-- [ ] Add `toContainRange( range )`
-- [ ] Add `toBeInRange( range )`
-- [ ] Add `toBeBeforeRange( range )`
-- [ ] Add `toBeAfterRange( range )`
-- [ ] Add `toBeBounded()`
-- [ ] Add `toBeUnbounded()`
-- [ ] Add `toBeHalfBounded()`
-- [ ] Add `toBeIterable()`
-- [ ] Add `toBeAscending()`
-- [ ] Add `toBeDescending()`
-- [ ] Add `toBeEmpty()`
-- [ ] Add `toHaveStep( step )`
-- [ ] Add `toClampTo( value, expected )`
-- [ ] Add tests for numeric, decimal, character, date, stepped, exclusive, unbounded, half-bounded, typed, and non-iterable ranges
+- [x] Add `toBeRange()`
+- [x] Add `toContainValue( value )`
+- [x] Add `toContainRange( range )`
+- [x] Add `toBeInRange( range )`
+- [x] Add `toBeBeforeRange( range )`
+- [x] Add `toBeAfterRange( range )`
+- [x] Add `toBeBounded()`
+- [x] Add `toBeUnbounded()`
+- [x] Add `toBeHalfBounded()`
+- [x] Add `toBeIterable()`
+- [x] Add `toBeAscending()`
+- [x] Add `toBeDescending()`
+- [x] Add `toBeEmpty()`
+- [x] Add `toHaveStep( step )`
+- [x] Add `toClampTo( value, expected )`
+- [x] Add tests for numeric, decimal, character, date, stepped, exclusive, unbounded, half-bounded, typed, and non-iterable ranges
+- [x] Verified: range matchers exist in `system/Expectation.cfc` and dedicated coverage exists in `tests/specs/RangeExpectationsSpec.bx`
 
 ## Phase 9: Data Navigator With Sets And Ranges
 

@@ -277,6 +277,67 @@ it( "validates menu selection", () => {
 
 * * *
 
+## Range Expectations (BoxLang)
+
+TestBox now includes a full set of matchers for BoxLang `Range` objects, including containment, ordering, bounds, and step/clamp assertions.
+
+> **BoxLang Only**: Range features depend on BoxLang range support. On CFML engines these expectations are guarded and report unsupported behavior cleanly.
+>
+> **Syntax Note**: BoxLang ranges are created with the `..` operator (for example `1..10`, `..10`, `1..`, `..`) and stepped via `.step( n )`. There is no `rangeNew()` BIF.
+
+### Core Range Matchers
+
+- `toBeRange()`
+- `toContainValue( value )`
+- `toContainRange( range )`
+- `toBeInRange( range )`
+- `toBeBeforeRange( range )`
+- `toBeAfterRange( range )`
+
+### Range Shape And Direction
+
+- `toBeBounded()`
+- `toBeUnbounded()`
+- `toBeHalfBounded()`
+- `toBeIterable()`
+- `toBeAscending()`
+- `toBeDescending()`
+
+### Step And Clamp
+
+- `toHaveStep( step )`
+- `toClampTo( value, expected )`
+
+```javascript
+var base = 1..10
+var stepped = (0..100).step( 5 )
+var chars = "a".."z"
+var dates = createDate( 2024, 1, 1 )..createDate( 2024, 1, 31 )
+
+expect( base ).toBeRange()
+expect( base ).toContainValue( 5 )
+expect( base ).toContainRange( 3..7 )
+expect( 8 ).toBeInRange( base )
+
+expect( stepped ).toHaveStep( 5 )
+expect( base ).toClampTo( 15, 10 )
+expect( dates ).toContainValue( "2024-01-15" )
+
+expect( chars ).toBeAscending()
+expect( chars ).toContainValue( "m" )
+```
+
+Equivalent native Range API examples used under these matchers:
+
+```javascript
+base.contains( 5 )
+base.contains( 3..7 )
+stepped.getStep()          // 5
+base.clamp( 15 )           // 10
+```
+
+* * *
+
 ## Data Navigator Expectations
 
 TestBox now provides a suite of matchers that leverage BoxLang's built-in `dataNavigate()` BIF to safely navigate and assert against values in nested data structures. These matchers support dot-notation, array indexes, wildcards, filters, recursive descent, and all other JSONPath-style expressions.
