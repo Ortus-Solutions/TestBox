@@ -1352,7 +1352,11 @@ component accessors="true" {
 		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
 			try {
-				variables.assert.rangeContainsValue( this.actual, arguments.value, arguments.message );
+				variables.assert.rangeContainsValue(
+					this.actual,
+					arguments.value,
+					arguments.message
+				);
 				arguments.message = (
 					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT contain [#getStringName( arguments.value )#]"
 				);
@@ -1361,7 +1365,11 @@ component accessors="true" {
 				return this;
 			}
 		} else {
-			variables.assert.rangeContainsValue( this.actual, arguments.value, arguments.message );
+			variables.assert.rangeContainsValue(
+				this.actual,
+				arguments.value,
+				arguments.message
+			);
 		}
 		return this;
 	}
@@ -1376,7 +1384,11 @@ component accessors="true" {
 		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
 			try {
-				variables.assert.rangeContainsRange( this.actual, arguments.expected, arguments.message );
+				variables.assert.rangeContainsRange(
+					this.actual,
+					arguments.expected,
+					arguments.message
+				);
 				arguments.message = (
 					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT contain [#getStringName( arguments.expected )#]"
 				);
@@ -1385,7 +1397,11 @@ component accessors="true" {
 				return this;
 			}
 		} else {
-			variables.assert.rangeContainsRange( this.actual, arguments.expected, arguments.message );
+			variables.assert.rangeContainsRange(
+				this.actual,
+				arguments.expected,
+				arguments.message
+			);
 		}
 		return this;
 	}
@@ -1400,7 +1416,11 @@ component accessors="true" {
 		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
 			try {
-				variables.assert.valueInRange( this.actual, arguments.range, arguments.message );
+				variables.assert.valueInRange(
+					this.actual,
+					arguments.range,
+					arguments.message
+				);
 				arguments.message = (
 					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT be in range [#getStringName( arguments.range )#]"
 				);
@@ -1409,7 +1429,11 @@ component accessors="true" {
 				return this;
 			}
 		} else {
-			variables.assert.valueInRange( this.actual, arguments.range, arguments.message );
+			variables.assert.valueInRange(
+				this.actual,
+				arguments.range,
+				arguments.message
+			);
 		}
 		return this;
 	}
@@ -1424,7 +1448,11 @@ component accessors="true" {
 		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
 			try {
-				variables.assert.rangeBeforeRange( this.actual, arguments.expected, arguments.message );
+				variables.assert.rangeBeforeRange(
+					this.actual,
+					arguments.expected,
+					arguments.message
+				);
 				arguments.message = (
 					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT be before [#getStringName( arguments.expected )#]"
 				);
@@ -1433,7 +1461,11 @@ component accessors="true" {
 				return this;
 			}
 		} else {
-			variables.assert.rangeBeforeRange( this.actual, arguments.expected, arguments.message );
+			variables.assert.rangeBeforeRange(
+				this.actual,
+				arguments.expected,
+				arguments.message
+			);
 		}
 		return this;
 	}
@@ -1448,7 +1480,11 @@ component accessors="true" {
 		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
 			try {
-				variables.assert.rangeAfterRange( this.actual, arguments.expected, arguments.message );
+				variables.assert.rangeAfterRange(
+					this.actual,
+					arguments.expected,
+					arguments.message
+				);
 				arguments.message = (
 					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT be after [#getStringName( arguments.expected )#]"
 				);
@@ -1457,7 +1493,11 @@ component accessors="true" {
 				return this;
 			}
 		} else {
-			variables.assert.rangeAfterRange( this.actual, arguments.expected, arguments.message );
+			variables.assert.rangeAfterRange(
+				this.actual,
+				arguments.expected,
+				arguments.message
+			);
 		}
 		return this;
 	}
@@ -1654,11 +1694,20 @@ component accessors="true" {
 	 * @expected The expected result after clamping
 	 * @message  The message to send in the failure
 	 */
-	function toClampTo( required any value, required any expected, message = "" ){
+	function toClampTo(
+		required any value,
+		required any expected,
+		message = ""
+	){
 		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
 			try {
-				variables.assert.rangeClampTo( this.actual, arguments.value, arguments.expected, arguments.message );
+				variables.assert.rangeClampTo(
+					this.actual,
+					arguments.value,
+					arguments.expected,
+					arguments.message
+				);
 				arguments.message = (
 					len( arguments.message ) ? arguments.message : "Expected clamp([#getStringName( arguments.value )#], [#getStringName( this.actual )#]) to NOT be [#getStringName( arguments.expected )#]"
 				);
@@ -1667,7 +1716,12 @@ component accessors="true" {
 				return this;
 			}
 		} else {
-			variables.assert.rangeClampTo( this.actual, arguments.value, arguments.expected, arguments.message );
+			variables.assert.rangeClampTo(
+				this.actual,
+				arguments.value,
+				arguments.expected,
+				arguments.message
+			);
 		}
 		return this;
 	}
@@ -1683,17 +1737,9 @@ component accessors="true" {
 		this._checkBoxLangFeature();
 		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
-			variables.assert.notToPath(
-				this.actual,
-				arguments.path,
-				arguments.message
-			);
+			variables.assert.notToPath( this.actual, arguments.path, arguments.message );
 		} else {
-			variables.assert.toPath(
-				this.actual,
-				arguments.path,
-				arguments.message
-			);
+			variables.assert.toPath( this.actual, arguments.path, arguments.message );
 		}
 		return this;
 	}
@@ -1706,7 +1752,11 @@ component accessors="true" {
 	 * @expected The expected value at the path
 	 * @message  The message to send in the failure
 	 */
-	function toHavePathValue( required string path, required any expected, message = "" ){
+	function toHavePathValue(
+		required string path,
+		required any expected,
+		message = ""
+	){
 		this._checkBoxLangFeature();
 		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
@@ -1731,11 +1781,15 @@ component accessors="true" {
 	 * Assert that the value at a path is of the expected type.
 	 * BoxLang Data Navigator feature - requires BoxLang runtime.
 	 *
-	 * @path   The path string (e.g., "a.b.c", "users[0].name")
-	 * @type   The expected type string (e.g., "string", "numeric", "array")
+	 * @path    The path string (e.g., "a.b.c", "users[0].name")
+	 * @type    The expected type string (e.g., "string", "numeric", "array")
 	 * @message The message to send in the failure
 	 */
-	function toHavePathType( required string path, required string type, message = "" ){
+	function toHavePathType(
+		required string path,
+		required string type,
+		message = ""
+	){
 		this._checkBoxLangFeature();
 		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
@@ -1764,7 +1818,11 @@ component accessors="true" {
 	 * @predicate A closure that takes the path value and returns true/false
 	 * @message   The message to send in the failure
 	 */
-	function toHavePathSatisfying( required string path, required function predicate, message = "" ){
+	function toHavePathSatisfying(
+		required string path,
+		required function predicate,
+		message = ""
+	){
 		this._checkBoxLangFeature();
 		arguments.message = resolveMessage( arguments.message );
 		if ( this.isNot ) {
@@ -1789,8 +1847,9 @@ component accessors="true" {
 	 * Navigate to a path and return an Expectation on the value at that path.
 	 * BoxLang Data Navigator feature - requires BoxLang runtime.
 	 *
-	 * @path    The path string (e.g., "a.b.c", "users[0].name")
-	 * @return    A new Expectation object with the value at the path as actual
+	 * @path The path string (e.g., "a.b.c", "users[0].name")
+	 *
+	 * @return A new Expectation object with the value at the path as actual
 	 */
 	function path( required string path ){
 		this._checkBoxLangFeature();
@@ -1805,8 +1864,9 @@ component accessors="true" {
 	 * Navigate to a path and return an Expectation over all matching values.
 	 * BoxLang Data Navigator feature - requires BoxLang runtime.
 	 *
-	 * @path    The path string (e.g., "a[*].b", "?@age>18")
-	 * @return    A new Expectation object with an array of values at the path as actual
+	 * @path The path string (e.g., "a[*].b", "?@age>18")
+	 *
+	 * @return A new Expectation object with an array of values at the path as actual
 	 */
 	function queryPath( required string path ){
 		this._checkBoxLangFeature();

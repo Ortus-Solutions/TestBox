@@ -1655,7 +1655,11 @@ component {
 	 * @value   The value to look for in the range
 	 * @message The message to send in the failure
 	 */
-	function rangeContainsValue( required any actual, required any value, string message = "" ){
+	function rangeContainsValue(
+		required any actual,
+		required any value,
+		string message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to contain [#getStringName( arguments.value )#]"
 		);
@@ -1672,7 +1676,11 @@ component {
 	 * @expected The expected (child) range that should be contained within actual
 	 * @message  The message to send in the failure
 	 */
-	function rangeContainsRange( required any actual, required any expected, string message = "" ){
+	function rangeContainsRange(
+		required any actual,
+		required any expected,
+		string message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to contain [#getStringName( arguments.expected )#]"
 		);
@@ -1692,7 +1700,11 @@ component {
 	 * @range   The range to check against
 	 * @message The message to send in the failure
 	 */
-	function valueInRange( required any actual, required any range, string message = "" ){
+	function valueInRange(
+		required any actual,
+		required any range,
+		string message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be in range [#getStringName( arguments.range )#]"
 		);
@@ -1712,7 +1724,11 @@ component {
 	 * @expected The expected (second) range that should come after actual
 	 * @message  The message to send in the failure
 	 */
-	function rangeBeforeRange( required any actual, required any expected, string message = "" ){
+	function rangeBeforeRange(
+		required any actual,
+		required any expected,
+		string message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "[#getStringName( arguments.actual )#] is not before [#getStringName( arguments.expected )#]"
 		);
@@ -1740,7 +1756,11 @@ component {
 	 * @expected The expected (first) range that should come before actual
 	 * @message  The message to send in the failure
 	 */
-	function rangeAfterRange( required any actual, required any expected, string message = "" ){
+	function rangeAfterRange(
+		required any actual,
+		required any expected,
+		string message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "[#getStringName( arguments.actual )#] is not after [#getStringName( arguments.expected )#]"
 		);
@@ -1886,7 +1906,11 @@ component {
 	 * @step    The expected step value
 	 * @message The message to send in the failure
 	 */
-	function rangeHasStep( required any actual, required any step, string message = "" ){
+	function rangeHasStep(
+		required any actual,
+		required any step,
+		string message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to have step [#getStringName( arguments.step )#]"
 		);
@@ -1908,7 +1932,12 @@ component {
 	 * @expected The expected result after clamping
 	 * @message  The message to send in the failure
 	 */
-	function rangeClampTo( required any actual, required any value, required any expected, string message = "" ){
+	function rangeClampTo(
+		required any actual,
+		required any value,
+		required any expected,
+		string message = ""
+	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected clamp([#getStringName( arguments.value )#], [#getStringName( arguments.actual )#]) to be [#getStringName( arguments.expected )#]"
 		);
@@ -2202,7 +2231,7 @@ component {
 	any function resolvePath( required any target, required string path ){
 		try {
 			var navigator = dataNavigate( arguments.target );
-			var results = navigator.query( arguments.path );
+			var results   = navigator.query( arguments.path );
 			if ( arrayLen( results ) GT 0 ) {
 				return results;
 			}
@@ -2248,8 +2277,8 @@ component {
 	/**
 	 * Check if a path exists in the target data structure.
 	 *
-	 * @target The target object/struct/array
-	 * @path   The path string (e.g., "a.b.c", "users[0].name")
+	 * @target  The target object/struct/array
+	 * @path    The path string (e.g., "a.b.c", "users[0].name")
 	 * @message The message to send on failure
 	 */
 	function toPath(
@@ -2257,7 +2286,9 @@ component {
 		required string path,
 		message = ""
 	){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "The path [#arguments.path#] does not exist in the target." );
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The path [#arguments.path#] does not exist in the target."
+		);
 
 		var results = getPathResults( arguments.target, arguments.path );
 		if ( arrayLen( results ) GT 0 ) {
@@ -2270,8 +2301,8 @@ component {
 	/**
 	 * Check if a path does NOT exist in the target data structure.
 	 *
-	 * @target The target object/struct/array
-	 * @path   The path string (e.g., "a.b.c", "users[0].name")
+	 * @target  The target object/struct/array
+	 * @path    The path string (e.g., "a.b.c", "users[0].name")
 	 * @message The message to send on failure
 	 */
 	function notToPath(
@@ -2279,7 +2310,9 @@ component {
 		required string path,
 		message = ""
 	){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "The path [#arguments.path#] actually exists in the target." );
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The path [#arguments.path#] actually exists in the target."
+		);
 
 		var results = getPathResults( arguments.target, arguments.path );
 		if ( arrayLen( results ) == 0 ) {
@@ -2305,11 +2338,15 @@ component {
 	){
 		var results = getPathResults( arguments.target, arguments.path );
 		if ( arrayLen( results ) == 0 ) {
-			arguments.message = ( len( arguments.message ) ? arguments.message : "The path [#arguments.path#] does not exist in the target." );
+			arguments.message = (
+				len( arguments.message ) ? arguments.message : "The path [#arguments.path#] does not exist in the target."
+			);
 			fail( arguments.message );
 		}
 
-		arguments.message = ( len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is not [#getStringName( arguments.expected )#]" );
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is not [#getStringName( arguments.expected )#]"
+		);
 		var expectedValue = arguments.expected;
 
 		if ( !allPathResultsMatch( results, ( value ) => equalize( expectedValue, value ) ) ) {
@@ -2328,7 +2365,9 @@ component {
 		required any expected,
 		message = ""
 	){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is actually [#getStringName( arguments.expected )#]" );
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is actually [#getStringName( arguments.expected )#]"
+		);
 
 		var results = getPathResults( arguments.target, arguments.path );
 		if ( arrayLen( results ) == 0 ) {
@@ -2346,9 +2385,9 @@ component {
 	/**
 	 * Check if the value at a path is of the expected type.
 	 *
-	 * @target The target object/struct/array
-	 * @path   The path string (e.g., "a.b.c", "users[0].name")
-	 * @type   The expected type string (e.g., "string", "numeric", "array", "struct")
+	 * @target  The target object/struct/array
+	 * @path    The path string (e.g., "a.b.c", "users[0].name")
+	 * @type    The expected type string (e.g., "string", "numeric", "array", "struct")
 	 * @message The message to send on failure
 	 */
 	function toPathType(
@@ -2357,7 +2396,9 @@ component {
 		required string type,
 		message = ""
 	){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is not of type [#arguments.type#]" );
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is not of type [#arguments.type#]"
+		);
 
 		var results = getPathResults( arguments.target, arguments.path );
 		if ( arrayLen( results ) == 0 ) {
@@ -2381,7 +2422,9 @@ component {
 		required string type,
 		message = ""
 	){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is actually of type [#arguments.type#]" );
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is actually of type [#arguments.type#]"
+		);
 
 		var results = getPathResults( arguments.target, arguments.path );
 		if ( arrayLen( results ) == 0 ) {
@@ -2410,7 +2453,9 @@ component {
 		required function predicate,
 		message = ""
 	){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] does not satisfy the predicate" );
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] does not satisfy the predicate"
+		);
 
 		var results = getPathResults( arguments.target, arguments.path );
 		if ( arrayLen( results ) == 0 ) {
@@ -2433,7 +2478,9 @@ component {
 		required function predicate,
 		message = ""
 	){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] should not satisfy the predicate" );
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] should not satisfy the predicate"
+		);
 
 		var results = getPathResults( arguments.target, arguments.path );
 		if ( arrayLen( results ) == 0 ) {
@@ -2467,9 +2514,9 @@ component {
 			return "struct";
 		} else if ( isQuery( arguments.target ) ) {
 			return "query";
-		} else if( isInstanceOf( arguments.target, "BoxSet" ) ) {
+		} else if ( isInstanceOf( arguments.target, "BoxSet" ) ) {
 			return "set";
-		} else if( isInstanceOf( arguments.target, "Range" ) ) {
+		} else if ( isInstanceOf( arguments.target, "Range" ) ) {
 			return "range";
 		}
 
@@ -2480,8 +2527,8 @@ component {
 	 * Check if an actual type matches the expected type (with normalization).
 	 */
 	boolean function _typeMatches( required string actualType, required string expectedType ){
-		var normalizedActual = lcase( trim( arguments.actualType ) );
-		var normalizedExpected = lcase( trim( arguments.expectedType ) );
+		var normalizedActual   = lCase( trim( arguments.actualType ) );
+		var normalizedExpected = lCase( trim( arguments.expectedType ) );
 
 		if ( normalizedActual eq normalizedExpected ) {
 			return true;
@@ -2489,24 +2536,24 @@ component {
 
 		// Handle common type aliases
 		var typeAliases = {
-			"str": "string",
-			"num": "numeric",
-			"bool": "boolean",
-			"int": "numeric",
-			"float": "numeric",
-			"dbl": "numeric",
-			"dec": "numeric",
-			"arr": "array",
-			"obj": "struct",
-			"map": "struct",
-			"dict": "struct",
-			"fn": "closure",
-			"func": "closure",
-			"closure": "closure",
-			"callback": "closure",
-			"cfm": "component",
-			"cfc": "component",
-			"class": "component"
+			"str"      : "string",
+			"num"      : "numeric",
+			"bool"     : "boolean",
+			"int"      : "numeric",
+			"float"    : "numeric",
+			"dbl"      : "numeric",
+			"dec"      : "numeric",
+			"arr"      : "array",
+			"obj"      : "struct",
+			"map"      : "struct",
+			"dict"     : "struct",
+			"fn"       : "closure",
+			"func"     : "closure",
+			"closure"  : "closure",
+			"callback" : "closure",
+			"cfm"      : "component",
+			"cfc"      : "component",
+			"class"    : "component"
 		};
 
 		if ( structKeyExists( typeAliases, normalizedActual ) ) {
