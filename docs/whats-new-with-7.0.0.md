@@ -1,6 +1,6 @@
-# What's New With TestBox 7.0.0
+# What's New With TestBox 7.1.0
 
-TestBox 7.0.0 introduces a significant upgrade to the assertions and expectations library, adding grouped assertions, collection expectation modes, rich failure diagnostics, and a suite of new matchers inspired by JUnit 5 and Jasmine.
+TestBox 7.1.0 introduces a significant upgrade to the assertions and expectations library, adding grouped assertions, collection expectation modes, rich failure diagnostics, and a suite of new matchers inspired by JUnit 5 and Jasmine.
 
 * * *
 
