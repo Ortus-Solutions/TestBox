@@ -12,7 +12,7 @@
 - [x] Run `box run-script format:check`
 - [x] Run `box testbox run`
 - [x] Run BoxLang-specific tests for navigator, set, and range expectations
-- [ ] Confirm CFML engines skip BoxLang-only specs cleanly
+- [x] Confirm CFML engines skip BoxLang-only specs cleanly
 
 ## Phase 0: Test Harness Baseline
 
@@ -120,15 +120,7 @@
 - [x] Add tests for numeric, decimal, character, date, stepped, exclusive, unbounded, half-bounded, typed, and non-iterable ranges
 - [x] Verified: range matchers exist in `system/Expectation.cfc` and dedicated coverage exists in `tests/specs/RangeExpectationsSpec.bx`
 
-## Phase 9: Data Navigator With Sets And Ranges
-
-- [ ] Add `queryPath().asSet()` support
-- [ ] Support set expectations on navigator query results
-- [ ] Support range expectations on navigator path values
-- [ ] Add tests for path values in ranges
-- [ ] Add tests for query results converted to sets
-
-## Phase 10: Partial And Asymmetric Matching
+## Phase 9: Partial And Asymmetric Matching
 
 - [ ] Add `toContainSubset( sample )`
 - [ ] Add `toIncludeSubset( sample )`
@@ -136,12 +128,3 @@
 - [ ] Add matcher helpers for any type, anything, string containing, string matching, array containing, struct containing, allOf, and anyOf
 - [ ] Add nested mismatch diagnostics
 - [ ] Add tests for partial and asymmetric matching
-
-## Phase 11: Custom Equality And Object Formatters
-
-- [ ] Add `addEqualityTester( closure )`
-- [ ] Add `addObjectFormatter( closure )`
-- [ ] Wire equality testers into deep equality
-- [ ] Wire object formatters into failure messages
-- [ ] Ensure test isolation for registered testers and formatters
-- [ ] Add tests for custom equality and custom formatting

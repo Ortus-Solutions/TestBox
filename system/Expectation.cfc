@@ -411,11 +411,29 @@ component accessors="true" {
 	 */
 	function toBeEmpty( message = "" ){
 		arguments.message = resolveMessage( arguments.message );
-		arguments.target  = this.actual;
-		if ( this.isNot ) {
-			variables.assert.isNotEmpty( argumentCollection = arguments );
+
+		// Range types use Range-specific empty check
+		if ( isInstanceOf( this.actual, "Range" ) ) {
+			if ( this.isNot ) {
+				try {
+					variables.assert.isRangeEmpty( this.actual, arguments.message );
+					arguments.message = (
+						len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT be empty"
+					);
+					fail( arguments.message );
+				} catch ( "TestBox.AssertionFailed" e ) {
+					return this;
+				}
+			} else {
+				variables.assert.isRangeEmpty( this.actual, arguments.message );
+			}
 		} else {
-			variables.assert.isEmpty( argumentCollection = arguments );
+			arguments.target = this.actual;
+			if ( this.isNot ) {
+				variables.assert.isNotEmpty( argumentCollection = arguments );
+			} else {
+				variables.assert.isEmpty( argumentCollection = arguments );
+			}
 		}
 		return this;
 	}
@@ -1636,29 +1654,6 @@ component accessors="true" {
 			}
 		} else {
 			variables.assert.isRangeDescending( this.actual, arguments.message );
-		}
-		return this;
-	}
-
-	/**
-	 * Assert that the range is empty.
-	 *
-	 * @message The message to send in the failure
-	 */
-	function toBeEmpty( message = "" ){
-		arguments.message = resolveMessage( arguments.message );
-		if ( this.isNot ) {
-			try {
-				variables.assert.isRangeEmpty( this.actual, arguments.message );
-				arguments.message = (
-					len( arguments.message ) ? arguments.message : "Expected [#getStringName( this.actual )#] to NOT be empty"
-				);
-				fail( arguments.message );
-			} catch ( "TestBox.AssertionFailed" e ) {
-				return this;
-			}
-		} else {
-			variables.assert.isRangeEmpty( this.actual, arguments.message );
 		}
 		return this;
 	}
