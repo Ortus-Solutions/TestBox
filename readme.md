@@ -15,9 +15,7 @@
 
 # TestBox - BDD/TDD Testing Framework for BoxLang & CFML
 
-Professional BDD (Behavior-Driven Development) and TDD (Test-Driven Development) testing framework for BoxLang and CFML applications. TestBox provides a comprehensive testing ecosystem with integrated MockBox mocking capabilities, multiple output formats, and both CLI and web-based test runners.
-
-> **TestBox v6 Now Available**: [Read the announcement »](https://testbox.ortusbooks.com/readme/release-history/whats-new-with-6.0.0)
+Professional BDD (Behavior-Driven Development) and TDD (Test-Driven Development) testing framework for BoxLang and CFML applications. TestBox provides a comprehensive testing ecosystem with integrated mocking capabilities, multiple output formats, and both CLI and web-based test runners.
 
 ## 🌟 Features
 
@@ -35,7 +33,7 @@ Professional BDD (Behavior-Driven Development) and TDD (Test-Driven Development)
 ## 💻 Requirements
 
 - **BoxLang**: 1.0+
-- **Lucee**: 5.0+
+- **Lucee**: 6.0+
 - **Adobe ColdFusion**: 2023+
 
 ## ⚡ Quick Start
@@ -52,102 +50,99 @@ box install testbox@be testbox-cli
 
 ### 2. Create Your First Test
 
-```javascript
+```js
 // tests/specs/UserServiceTest.cfc
 class extends="testbox.system.BaseSpec" {
 
     function run() {
         describe( "UserService", () => {
             beforeEach( () => {
-                userService = new models.UserService();
-            } );
+                userService = new models.UserService()
+            } )
 
             it( "should create a new user", () => {
-                var user = userService.createUser( "john@example.com", "John Doe" );
-                expect( user.getEmail() ).toBe( "john@example.com" );
-                expect( user.getName() ).toBe( "John Doe" );
-            } );
-        } );
+                var user = userService.createUser( "john@example.com", "John Doe" )
+                expect( user.getEmail() ).toBe( "john@example.com" )
+                expect( user.getName() ).toBe( "John Doe" )
+            } )
+        } )
     }
 }
-````
+```
 
 ## 🎭 MockBox Integration & Test Data
 
 ### Advanced Mocking with MockBox
 
-```javascript
+```js
 class extends="testbox.system.BaseSpec" {
 
     function run() {
         describe( "Payment Service", () => {
             beforeEach( () => {
                 // Create mocks and spies
-                mockGateway = createMock( "services.PaymentGateway" );
-                mockLogger = createEmptyMock( "cblogger.models.Logger" );
+                mockGateway = createMock( "services.PaymentGateway" )
+                mockLogger = createEmptyMock( "cblogger.models.Logger" )
 
                 // Setup mock behavior
                 mockGateway.$( "processPayment" ).$results( {
                     success: true,
                     transactionId: "TXN-12345"
-                } );
+                } )
 
                 paymentService = new models.PaymentService(
                     gateway = mockGateway,
                     logger = mockLogger
-                );
-            } );
+                )
+            } )
 
             it( "should process payment and log success", () => {
-                var result = paymentService.charge( 100.00, "USD" );
+                var result = paymentService.charge( 100.00, "USD" )
 
                 // Verify method calls
-                expect( mockGateway.$times( 1, "processPayment" ) ).toBeTrue();
-                expect( mockLogger.$times( 1, "info" ) ).toBeTrue();
+                expect( mockGateway.$times( 1, "processPayment" ) ).toBeTrue()
+                expect( mockLogger.$times( 1, "info" ) ).toBeTrue()
 
                 // Verify results
-                expect( result.success ).toBeTrue();
-                expect( result.transactionId ).toBe( "TXN-12345" );
-            } );
-        } );
+                expect( result.success ).toBeTrue()
+                expect( result.transactionId ).toBe( "TXN-12345" )
+            } )
+        } )
     }
-}### Realistic Test Data with CBMockData
+}
+```
 
-```javascript
+### Realistic Test Data with CBMockData
+
+```js
 class extends="testbox.system.BaseSpec" {
-
-    property name="mockData" inject="MockData@cbMockData";
 
     function run() {
         describe("User Profile Tests", () => {
             it("should handle various user data scenarios", () => {
                 // Generate realistic test data
-                var testUsers = [];
-
-                for (var i = 1; i <= 10; i++) {
-                    arrayAppend(testUsers, {
-                        firstName: mockData.fname(),
-                        lastName: mockData.lname(),
-                        email: mockData.email(),
-                        age: mockData.age(),
-                        address: {
-                            street: mockData.streetaddress(),
-                            city: mockData.city(),
-                            state: mockData.state(),
-                            zipCode: mockData.zipcode()
-                        },
-                        registrationDate: mockData.datetime()
-                    });
-                }
+                var testUsers = mockData(
+					firstName = "fname",
+					lastName = "lname",
+					email = "email",
+					age = "age",
+					address = {
+						street = "streetaddress",
+						city = "city",
+						state = "state",
+						zipCode = "zipcode"
+					},
+					registrationDate = "datetime"
+				)
 
                 // Test with realistic data
-                for (var user in testUsers) {
-                    var profile = userService.createProfile(user);
-                    expect(profile.isValid()).toBeTrue();
-                    expect(profile.getEmail()).toMatch("^[\w\.-]+@[\w\.-]+\.[A-Za-z]{2,}$");
+                for ( var user in testUsers ) {
+                    var profile = userService.createProfile( user )
+                    expect( profile.isValid() ).toBeTrue()
+                    expect( profile.getEmail() ).toMatch( "^[\w\.-]+@[\w\.-]+\.[A-Za-z]{2,}$" )
                 }
-            });
-        });
+            })
+        })
     }
 }
 ```
@@ -173,30 +168,29 @@ box testbox run
 ### BDD Style (Behavior-Driven Development)
 
 ```javascript
-```javascript
 class extends="testbox.system.BaseSpec" {
 
     function run() {
         describe( "User Registration", () => {
             beforeEach(() => {
-                userService = createMock("models.UserService");
-                variables.sut = new handlers.Users();
-            });
+                userService = createMock("models.UserService")
+                variables.sut = new handlers.Users()
+            })
 
             describe("When registering a new user", () => {
                 it("should validate email format", () => {
                     expect(() => {
-                        userService.register("invalid-email", "password");
-                    }).toThrow("ValidationException");
-                });
+                        userService.register("invalid-email", "password")
+                    }).toThrow("ValidationException")
+                })
 
                 it("should create user with valid data", () => {
-                    var result = userService.register("john@test.com", "securePass");
-                    expect(result.success).toBeTrue();
-                    expect(result.user.email).toBe("john@test.com");
-                });
-            });
-        });
+                    var result = userService.register("john@test.com", "securePass")
+                    expect(result.success).toBeTrue()
+                    expect(result.user.email).toBe("john@test.com")
+                })
+            })
+        })
     }
 }
 ```
@@ -204,34 +198,33 @@ class extends="testbox.system.BaseSpec" {
 ### xUnit Style (Traditional Unit Testing)
 
 ```javascript
-```javascript
 class extends="testbox.system.BaseSpec" {
 
     function setup() {
         // Runs before each test
-        userService = new models.UserService();
+        userService = new models.UserService()
         testData = {
             email: "test@example.com",
             name: "Test User"
-        };
+        }
     }
 
     function testUserCreation() {
-        var user = userService.createUser( testData.email, testData.name );
-        $assert.isEqual( testData.email, user.getEmail() );
-        $assert.isEqual( testData.name, user.getName() );
+        var user = userService.createUser( testData.email, testData.name )
+        $assert.isEqual( testData.email, user.getEmail() )
+        $assert.isEqual( testData.name, user.getName() )
     }
 
     function testEmailValidation() {
         $assert.throws( () => {
-            userService.createUser( "invalid-email", "Test User" );
-        }, "ValidationException" );
+            userService.createUser( "invalid-email", "Test User" )
+        }, "ValidationException" )
     }
 
     function tearDown() {
         // Cleanup after each test
-        structDelete( variables, "userService" );
-        structDelete( variables, "testData" );
+        structDelete( variables, "userService" )
+        structDelete( variables, "testData" )
 }
 ```
 
@@ -262,54 +255,33 @@ box testbox create unit MyNewTest
 
 ### Application Setup
 
-Create an `Application.cfc` in your test directory:
+Create an `Application.bx|cfc` in your test directory:
 
-```javascript
+```js
 class {
-    this.name = "MyApp-Tests-" & hash( getCurrentTemplatePath() );
-    this.sessionManagement = true;
-    this.sessionTimeout = createTimeSpan(0, 0, 15, 0);
-    this.applicationTimeout = createTimeSpan(0, 0, 15, 0);
-    this.setClientCookies = true;
+	// Test application name
+    this.name = "MyApp-Tests"
 
     // TestBox mappings
     this.mappings[ "/testbox" ] = expandPath( "/testbox" );
     this.mappings[ "/tests" ] = getDirectoryFromPath( getCurrentTemplatePath() );
     this.mappings[ "/models" ] = expandPath( "/models" );
 
-    // Module mappings
-    this.mappings[ "/cbstreams" ] = expandPath( "/testbox/system/modules/cbstreams" );
-    this.mappings[ "/cbMockData" ] = expandPath( "/testbox/system/modules/cbMockData" );
-    this.mappings[ "/globber" ] = expandPath( "/testbox/system/modules/globber" );    function onApplicationStart() {
-        application.wirebox = new coldbox.system.ioc.Injector();
-        return true;
-    }
-
-    function onRequestStart() {
-        // Reset ORM on every request for clean testing
-        if (structKeyExists(url, "fwreinit")) {
-            if (structKeyExists(server, "lucee")) {
-                pagePoolClear();
-            }
-            ormReload();
-        }
-    }
 }
 ```
 
 ### Web Runner Configuration
 
-Create `tests/runner.cfm` for web-based test execution:
+Create `tests/runner.bxm|cfm` for web-based test execution:
 
 ```html
-<cfsetting showDebugOutput="false">
 <!DOCTYPE html>
 <html>
 <head>
     <title>My Application Test Suite</title>
 </head>
 <body>
-    <cfscript>
+    <bx:script>
         // Create TestBox instance
         testbox = new testbox.system.TestBox(
             options = {
@@ -335,11 +307,11 @@ Create `tests/runner.cfm` for web-based test execution:
                     blacklist = "*Test*.cfc"
                 }
             }
-        );
+        )
 
         // Run tests and output results
-        writeOutput(testbox.run());
-    </cfscript>
+        writeOutput( testbox.run() )
+    </bx:script>
 </body>
 </html>
 ```

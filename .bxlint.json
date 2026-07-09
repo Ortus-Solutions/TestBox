@@ -1,0 +1,68 @@
+{
+  "diagnostics": {
+    "duplicateMethod": {
+      "enabled": true,
+      "severity": "error"
+    },
+    "duplicateProperty": {
+      "enabled": true,
+      "severity": "error"
+    },
+    "emptyCatchBlock": {
+      "enabled": true,
+      "severity": "warning"
+    },
+    "invalidExtends": {
+      "enabled": false,
+      "severity": "error"
+    },
+    "invalidImplements": {
+      "enabled": false,
+      "severity": "error"
+    },
+    "missingQueryParamCfsqltype": {
+      "enabled": true,
+      "severity": "warning"
+    },
+    "missingReturnStatement": {
+      "enabled": true,
+      "severity": "warning"
+    },
+    "shadowedVariable": {
+      "enabled": true,
+      "severity": "warning"
+    },
+    "unescapedQueryParam": {
+      "enabled": true,
+      "severity": "warning"
+    },
+    "unreachableCode": {
+      "enabled": true,
+      "severity": "warning"
+    },
+    "unscopedVariable": {
+      "enabled": true,
+      "severity": "warning"
+    },
+    "unusedImport": {
+      "enabled": true,
+      "severity": "warning"
+    },
+    "unusedPrivateMethod": {
+      "enabled": true,
+      "severity": "info"
+    },
+    "unusedVariable": {
+      "enabled": true,
+      "severity": "hint"
+    }
+  },
+  "include": [],
+  "exclude": [],
+  "mappings": {},
+  "formatting": {
+    "experimental": {
+      "enabled": false
+    }
+  }
+}
