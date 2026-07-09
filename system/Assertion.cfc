@@ -91,9 +91,7 @@ component {
 			return this
 		}
 		arguments.message = (
-			len( arguments.message ) ?
-                arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" :
-                "Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]"
+			len( arguments.message ) ? arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" : "Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]"
 		)
 		// if we reach here, nothing is equal man!
 		fail( arguments.message )
@@ -108,9 +106,7 @@ component {
 	 */
 	function isNotEqual( any expected, any actual, message = "" ){
 		arguments.message = (
-			len( arguments.message ) ?
-                arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" :
-                "Expected [#getStringName( arguments.expected )#] to not be [#getStringName( arguments.actual )#]"
+			len( arguments.message ) ? arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" : "Expected [#getStringName( arguments.expected )#] to not be [#getStringName( arguments.actual )#]"
 		)
 		// validate equality
 		if ( !equalize( argumentCollection = arguments ) ) {
@@ -2031,20 +2027,20 @@ component {
 		// Numerics
 		if (
 			isNumeric( arguments.actual ) &&
-            isNumeric( arguments.expected ) &&
-            toString( arguments.actual ) eq toString( arguments.expected )
+			isNumeric( arguments.expected ) &&
+			toString( arguments.actual ) eq toString( arguments.expected )
 		) {
 			return true
 		}
 
-        // Are they both dates?
-        if (
-            isDate( arguments.actual ) &&
-            isDate( arguments.expected ) &&
-            dateCompare( arguments.actual, arguments.expected ) eq 0
-        ) {
-            return true
-        }
+		// Are they both dates?
+		if (
+			isDate( arguments.actual ) &&
+			isDate( arguments.expected ) &&
+			dateCompare( arguments.actual, arguments.expected ) eq 0
+		) {
+			return true
+		}
 
 		// Simple values
 		if (
