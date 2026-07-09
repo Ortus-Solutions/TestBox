@@ -2115,7 +2115,7 @@ component {
 				if ( arrayIsDefined( arguments.actual, i ) and arrayIsDefined( arguments.expected, i ) ) {
 					// check for both nulls
 					if ( isNull( arguments.actual[ i ] ) and isNull( arguments.expected[ i ] ) ) {
-						continue
+						continue;
 					}
 					// check if one is null mismatch
 					if ( isNull( arguments.actual[ i ] ) OR isNull( arguments.expected[ i ] ) ) {
@@ -2125,11 +2125,11 @@ component {
 					if ( !equalize( arguments.actual[ i ], arguments.expected[ i ] ) ) {
 						return false
 					}
-					continue
+					continue;
 				}
 				// check if both not defined, then continue to next element
 				if ( !arrayIsDefined( arguments.actual, i ) and !arrayIsDefined( arguments.expected, i ) ) {
-					continue
+					continue;
 				} else {
 					return false
 				}
@@ -2154,7 +2154,7 @@ component {
 			for ( key in arguments.actual ) {
 				// check for both nulls
 				if ( isNull( arguments.actual[ key ] ) and isNull( arguments.expected[ key ] ) ) {
-					continue
+					continue;
 				}
 				// check if one is null mismatch
 				if ( isNull( arguments.actual[ key ] ) OR isNull( arguments.expected[ key ] ) ) {
