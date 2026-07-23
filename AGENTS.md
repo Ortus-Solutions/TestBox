@@ -1,4 +1,4 @@
-# Copilot Instructions for TestBox
+# Instructions for TestBox
 
 ## Project Overview
 

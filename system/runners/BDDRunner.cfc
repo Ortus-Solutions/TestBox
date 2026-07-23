@@ -59,6 +59,7 @@ component
 
 		// Verify we can run this bundle
 		if (
+			!getBundleSkip( arguments.target ) &&
 			canRunBundle(
 				bundlePath  = targetMD.name,
 				testResults = arguments.testResults,

@@ -1010,6 +1010,12 @@ component accessors="true" {
 		);
 		var bundleLabels = getMetadataLabels( targetMD );
 
+		// Honor component-level `skip` annotation. If the bundle is marked
+		// as skipped, omit it from the dry-run discovery tree entirely.
+		if ( arguments.baseRunner.getBundleSkip( target ) ) {
+			return {}
+		}
+
 		if (
 			!arguments.baseRunner.canRunBundle(
 				bundlePath  = targetMD.name,

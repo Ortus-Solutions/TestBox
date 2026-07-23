@@ -255,4 +255,47 @@ component {
 		}
 	}
 
+	/**
+	 * Resolve the component-level `skip` annotation on a test bundle.
+	 *
+	 * Accepts:
+	 *   - boolean annotation (e.g. `skip` alone or `skip=true`)
+	 *   - empty string annotation (e.g. `skip=""`) -> treated as skip
+	 *   - a string method name on the target (e.g. `skip="isBoxLang"`) that
+	 *     is invoked on the target to produce the final boolean
+	 *
+	 * @target The test bundle component to inspect
+	 *
+	 * @return The resolved boolean skip value
+	 */
+	boolean function getBundleSkip( required any target ){
+		var md = getMetadata( arguments.target )
+		var md = md.keyExists( "annotations" ) ? md.annotations : md
+
+		if ( isNull( md.skip ) ) {
+			return false
+		}
+
+		// Booleans come back as-is. Empty strings mean "skipped" (matches
+		// the xUnit dry-run convention). Any other value is a candidate
+		// function-name reference.
+		var skipValue = md.skip
+
+		if ( isBoolean( skipValue ) ) {
+			return skipValue
+		}
+
+		if ( isSimpleValue( skipValue ) && !len( skipValue ) ) {
+			return true
+		}
+
+		// Resolve a string function-name reference on the target, e.g.
+		// `skip="isBoxLang"` will call target.isBoxLang() to get the boolean.
+		if ( isCustomFunction( arguments.target[ skipValue ] ) ) {
+			skipValue = invoke( arguments.target, skipValue )
+		}
+
+		return isBoolean( skipValue ) ? skipValue : !!skipValue
+	}
+
 }

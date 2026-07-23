@@ -84,6 +84,35 @@ component extends="testbox.system.BaseSpec" {
 				expect( spec.displayName ).toBe( "Skipped Spec" );
 				expect( spec.skip ).toBeTrue();
 			} );
+
+			it( "omits BDD bundles whose component-level skip annotation resolves to true", function(){
+				clearRequestFlags();
+
+				var testbox = new testbox.system.TestBox(
+					bundles = "tests.resources.dryrun.DryRunBDDSkippedBundleFixture",
+					options = { coverage : { enabled : false } }
+				);
+				var discovery = testbox.dryRun();
+
+				// Skipped bundles should not appear in the dry-run tree at all
+				expect( structKeyExists( request, "dryRunBDDSkippedBeforeAll" ) ).toBeFalse();
+				expect( structKeyExists( request, "dryRunBDDSkippedAfterAll" ) ).toBeFalse();
+				expect( structKeyExists( request, "dryRunBDDSkippedSpecRuns" ) ).toBeFalse();
+				expect( discovery.summary.totalBundles ).toBe( 0 );
+				expect( arrayLen( discovery.bundles ) ).toBe( 0 );
+			} );
+
+			it( "resolves a string function-name skip annotation by invoking it on the target", function(){
+				var target  = new tests.resources.dryrun.DryRunBDDFixture();
+				var baseRunner = new testbox.system.runners.BaseRunner();
+
+				// No annotation -> not skipped
+				expect( baseRunner.getBundleSkip( target ) ).toBeFalse();
+
+				// Function-name reference -> the method is invoked
+				var dynamicTarget = createObject( "component", "testbox.tests.specs.DynamicSkipFixture" );
+				expect( baseRunner.getBundleSkip( dynamicTarget ) ).toBeTrue();
+			} );
 		} );
 	}
 
@@ -95,6 +124,8 @@ component extends="testbox.system.BaseSpec" {
 			"dryRunBDDAfterEach",
 			"dryRunBDDSpecRuns",
 			"dryRunBDDSkippedSpecRuns",
+			"dryRunBDDSkippedBeforeAll",
+			"dryRunBDDSkippedAfterAll",
 			"dryRunXBeforeTests",
 			"dryRunXSetup",
 			"dryRunXTeardown",
