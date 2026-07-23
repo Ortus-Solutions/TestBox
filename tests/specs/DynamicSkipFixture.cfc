@@ -11,11 +11,17 @@ component extends="testbox.system.BaseSpec" skip="alwaysSkip" {
 	}
 
 	function run(){
-		describe( title = "Skipped via function reference", body = function(){
-			it( title = "never runs", body = function(){
-				fail( "this should never execute" )
-			} )
-		} )
+		describe(
+			title = "Skipped via function reference",
+			body  = function(){
+				it(
+					title = "never runs",
+					body  = function(){
+						fail( "this should never execute" )
+					}
+				)
+			}
+		)
 	}
 
 }

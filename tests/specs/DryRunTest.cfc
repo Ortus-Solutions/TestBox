@@ -103,7 +103,7 @@ component extends="testbox.system.BaseSpec" {
 			} );
 
 			it( "resolves a string function-name skip annotation by invoking it on the target", function(){
-				var target  = new tests.resources.dryrun.DryRunBDDFixture();
+				var target     = new tests.resources.dryrun.DryRunBDDFixture();
 				var baseRunner = new testbox.system.runners.BaseRunner();
 
 				// No annotation -> not skipped
