@@ -101,18 +101,20 @@ component accessors="true" {
 				udfOut.append( "						" );
 
 				// Is it required?
-				if ( !isNull( thisParam.required ) && thisParam.required ) {
+				if ( structKeyExists( thisParam, "required" ) && !isNull( thisParam.required ) && thisParam.required ) {
 					udfOut.append( "required " );
 				}
 
 				// If we have a type, add it
-				if ( !isNull( thisParam.type ) ) {
+				if ( structKeyExists( thisParam, "type" ) && !isNull( thisParam.type ) ) {
 					udfOut.append( thisParam.type & " " );
 				}
 
 				// Param name and default
 				udfOut.append( thisParam.name & " " );
-				if ( !isNull( thisParam.default ) && thisParam.default != "[runtime expression]" ) {
+				if (
+					structKeyExists( thisParam, "default" ) && !isNull( thisParam.default ) && thisParam.default != "[runtime expression]"
+				) {
 					udfOut.append( "= " & outputQuotedValue( thisParam.default ) & " " );
 				}
 

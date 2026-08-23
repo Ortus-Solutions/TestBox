@@ -272,7 +272,7 @@ component {
 		var md = getMetadata( arguments.target )
 		var md = md.keyExists( "annotations" ) ? md.annotations : md
 
-		if ( isNull( md.skip ) ) {
+		if ( !structKeyExists( md, "skip" ) || isNull( md.skip ) ) {
 			return false
 		}
 

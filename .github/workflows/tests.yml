@@ -21,11 +21,18 @@ jobs:
         cfengine: [ "boxlang@1", "boxlang-cfml@1", "lucee@6", "lucee@7", "adobe@2023", "adobe@2025" ]
         jdkVersion: [ "21" ]
         experimental: [ false ]
+        fullNull: [ false ]
         include:
           - cfengine: "boxlang@be"
             commandbox_version: "6.3.1"
             jdkVersion: "21"
             experimental: true
+            fullNull: false
+          - cfengine: "adobe@2023"
+            commandbox_version: "6.3.1"
+            jdkVersion: "21"
+            experimental: false
+            fullNull: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v7
@@ -48,10 +55,14 @@ jobs:
           box install --production
 
       - name: Start ${{ matrix.cfengine }}/${{ matrix.jdkVersion }} Server
+        env:
+          FULL_NULL: ${{ matrix.fullNull }}
         run: |
           box server start serverConfigFile="server-${{ matrix.cfengine }}.json" --noSaveSettings --debug
 
       - name: Run Tests
+        env:
+          FULL_NULL: ${{ matrix.fullNull }}
         run: |
           box task run taskfile=build/Build target=runTests
 
@@ -60,13 +71,13 @@ jobs:
         if: always()
         with:
           junit_files: tests/results/**/*.xml
-          check_name: "${{ matrix.cfengine }} ${{ matrix.jdkVersion }} Test Results"
+          check_name: "${{ matrix.cfengine }} ${{ matrix.jdkVersion }} fullNull=${{ matrix.fullNull }} Test Results"
 
       - name: Upload Test Results Artifacts
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: testbox-test-results-${{ matrix.cfengine }}-${{ matrix.jdkVersion }}
+          name: testbox-test-results-${{ matrix.cfengine }}-${{ matrix.jdkVersion }}-${{ matrix.fullNull }}
           path: |
             tests/results/**/*
 
@@ -79,7 +90,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v7
         with:
-          name: Failure Debugging Info - ${{ matrix.cfengine }} - ${{ matrix.jdkVersion }}
+          name: Failure Debugging Info - ${{ matrix.cfengine }} - ${{ matrix.jdkVersion }} - ${{ matrix.fullNull }}
           path: |
             .engine/**/logs/*
             .engine/**/WEB-INF/cfusion/logs/*

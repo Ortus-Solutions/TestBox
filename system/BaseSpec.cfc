@@ -1691,7 +1691,7 @@ component {
 	 */
 	function getCBMockData(){
 		// Lazy Load it
-		if ( isNull( variables.$cbMockData ) ) {
+		if ( !structKeyExists( variables, "$cbMockData" ) || isNull( variables.$cbMockData ) ) {
 			variables.$cbMockData = new testbox.system.modules.cbMockData.models.MockData();
 		}
 		return variables.$cbMockData;
@@ -1704,7 +1704,7 @@ component {
 	 */
 	function getUtility(){
 		// Lazy Load it
-		if ( isNull( variables.$utility ) ) {
+		if ( !structKeyExists( variables, "$utility" ) || isNull( variables.$utility ) ) {
 			variables.$utility = new testbox.system.util.Util();
 		}
 		return variables.$utility;
@@ -1717,7 +1717,7 @@ component {
 	 */
 	function getEnv(){
 		// Lazy Load it
-		if ( isNull( variables.$env ) ) {
+		if ( !structKeyExists( variables, "$env" ) || isNull( variables.$env ) ) {
 			variables.$env = new testbox.system.util.Env();
 		}
 		return variables.$env;
@@ -1732,7 +1732,7 @@ component {
 	 */
 	function getMockBox( string generationPath = "" ){
 		// Lazy Load it
-		if ( isNull( this.$mockbox ) ) {
+		if ( !structKeyExists( this, "$mockbox" ) || isNull( this.$mockbox ) ) {
 			variables.$mockbox = this.$mockbox = new testbox.system.MockBox( arguments.generationPath );
 		} else {
 			// Generation path updates

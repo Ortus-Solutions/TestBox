@@ -256,7 +256,7 @@ component accessors="true" {
 	 */
 	function getEnv(){
 		// Lazy Load it
-		if ( isNull( variables.env ) ) {
+		if ( !structKeyExists( variables, "env" ) || isNull( variables.env ) ) {
 			variables.env = new testbox.system.util.Env();
 		}
 		return variables.env;
@@ -405,16 +405,16 @@ component accessors="true" {
 		);
 
 		// Verify URL conventions for bundle, suites and specs exclusions.
-		if ( !isNull( url.testBundles ) ) {
+		if ( structKeyExists( url, "testBundles" ) && !isNull( url.testBundles ) ) {
 			testBundles.append( listToArray( urlDecode( url.testBundles ) ), true );
 		}
-		if ( !isNull( url.testSuites ) ) {
+		if ( structKeyExists( url, "testSuites" ) && !isNull( url.testSuites ) ) {
 			arguments.testSuites.append( listToArray( urlDecode( url.testSuites ) ), true );
 		}
-		if ( !isNull( url.testSpecs ) ) {
+		if ( structKeyExists( url, "testSpecs" ) && !isNull( url.testSpecs ) ) {
 			arguments.testSpecs.append( listToArray( urlDecode( url.testSpecs ) ), true );
 		}
-		if ( !isNull( url.testMethod ) ) {
+		if ( structKeyExists( url, "testMethod" ) && !isNull( url.testMethod ) ) {
 			arguments.testSpecs.append( listToArray( urlDecode( url.testMethod ) ), true );
 		}
 
@@ -524,16 +524,16 @@ component accessors="true" {
 			isSimpleValue( arguments.testSpecs ) ? listToArray( arguments.testSpecs ) : arguments.testSpecs
 		);
 
-		if ( !isNull( url.testBundles ) ) {
+		if ( structKeyExists( url, "testBundles" ) && !isNull( url.testBundles ) ) {
 			arguments.testBundles.append( listToArray( urlDecode( url.testBundles ) ), true );
 		}
-		if ( !isNull( url.testSuites ) ) {
+		if ( structKeyExists( url, "testSuites" ) && !isNull( url.testSuites ) ) {
 			arguments.testSuites.append( listToArray( urlDecode( url.testSuites ) ), true );
 		}
-		if ( !isNull( url.testSpecs ) ) {
+		if ( structKeyExists( url, "testSpecs" ) && !isNull( url.testSpecs ) ) {
 			arguments.testSpecs.append( listToArray( urlDecode( url.testSpecs ) ), true );
 		}
-		if ( !isNull( url.testMethod ) ) {
+		if ( structKeyExists( url, "testMethod" ) && !isNull( url.testMethod ) ) {
 			arguments.testSpecs.append( listToArray( urlDecode( url.testMethod ) ), true );
 		}
 
