@@ -19,8 +19,14 @@
 #   system/runners/BoxLangRunner.bx
 # passing through all CLI arguments unchanged.
 
-# Get the path to the directory where this script is located
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# Get the path to the directory where this script is located.
+# Deliberately kept relative (no `cd ... && pwd`): BoxLang 1.17.0+ forces
+# absolute-looking paths passed to the engine to resolve against
+# mappings/webroot instead of the OS filesystem, which can make an
+# absolute entry-point path fail to self-resolve during the run. A
+# relative path avoids that, and also keeps server.cli.executionPath
+# pointing at the caller's working directory instead of this directory.
+DIR="$( dirname "${BASH_SOURCE[0]}" )"
 
 # Go baby go!
-boxlang $DIR/system/runners/BoxLangRunner.bx $@
+boxlang "$DIR/system/runners/BoxLangRunner.bx" "$@"
