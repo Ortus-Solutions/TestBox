@@ -13,7 +13,7 @@ component {
 	 */
 	CFMappingHelper function addCustomTagPath( required path ){
 		var appMetadata = getApplicationMetadata();
-		if ( isNull( appMetadata.customTagPaths ) ) {
+		if ( !structKeyExists( appMetadata, "customTagPaths" ) || isNull( appMetadata.customTagPaths ) ) {
 			appMetadata.customTagPaths = "";
 		}
 		getPageContext()

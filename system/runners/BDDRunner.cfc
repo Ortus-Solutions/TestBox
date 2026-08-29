@@ -157,7 +157,7 @@ component
 						e,
 						arguments.target,
 						arguments.testResults,
-						isNull( thisSuite ) ? {} : thisSuite
+						!structKeyExists( local, "thisSuite" ) || isNull( local.thisSuite ) ? {} : local.thisSuite
 					]
 				);
 			}

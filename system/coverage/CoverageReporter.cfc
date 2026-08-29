@@ -176,10 +176,10 @@ component accessors="true" {
 	 * @opts The options to validate and extend/default.
 	 */
 	private struct function setDefaultOptions( struct opts = {} ){
-		if ( isNull( opts.outputDir ) ) {
+		if ( !structKeyExists( opts, "outputDir" ) || isNull( opts.outputDir ) ) {
 			opts.outputDir = "";
 		}
-		if ( isNull( opts.isBatched ) ) {
+		if ( !structKeyExists( opts, "isBatched" ) || isNull( opts.isBatched ) ) {
 			opts.isBatched = false;
 		}
 		return opts;
