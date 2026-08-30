@@ -9,6 +9,10 @@ component accessors=true {
 	property name="mockGenerator";
 	property name="generationPath";
 
+	// Used to gate BoxLang-only type checks (Set/Range) in normalizeValue() so they're
+	// never attempted on engines where those BIFs don't exist at all (Lucee/Adobe).
+	variables.IS_BOXLANG = server.keyExists( "boxlang" );
+
 	/**
 	 * Create an instance of MockBox
 	 *
@@ -640,19 +644,89 @@ component accessors=true {
 				// If an object and a class, just use serializeJSON
 				serializedArgs &= serializeJSON( getMetadata( argOrderedTree[ arg ] ) );
 			} else {
-				// Get obj rep
-				try {
-					serializedArgs &= argOrderedTree[ arg ].toString();
-				} catch ( any e ) {
-					// Fallback
-					serializedArgs &= serializeJSON( argOrderedTree[ arg ] );
-				}
+				// Deterministic string representation - struct/set key and iteration order
+				// is not guaranteed to match between two structurally-equal values
+				serializedArgs &= normalizeValue( argOrderedTree[ arg ] );
 			}
 		}
 		/* ColdFusion isn't case sensitive, so case of string values shouldn't matter.  We do it after serializing all args
 		 * to catch any values deep in complex variables.
 		 */
 		return hash( lCase( serializedArgs ) );
+	}
+
+	/**
+	 * Deterministic string representation of a value for argument hashing.
+	 * Struct keys are sorted so iteration order does not affect the hash. Composite
+	 * values are JSON-encoded (rather than hand-joined with bare delimiters) so that
+	 * delimiter-like characters inside string values can't cause two structurally
+	 * different arguments to normalize to the same string.
+	 *
+	 * @value The value to serialize
+	 */
+	private function normalizeValue( required any value ){
+		// Simple value
+		if ( isSimpleValue( arguments.value ) ) {
+			return toString( arguments.value );
+		}
+		// CFC - must check before struct; CFCs are isStruct+isObject on Adobe
+		if (
+			isObject( arguments.value ) and
+			(
+				isInstanceOf( arguments.value, "Component" ) or structKeyExists(
+					getMetadata( arguments.value ),
+					"extends"
+				)
+			)
+		) {
+			return serializeJSON( getMetadata( arguments.value ) );
+		}
+		// BoxLang Range - must check before isArray(), since isArray() is TRUE for a Range.
+		// Canonicalize via toString(), which fully captures bounds/step/exclusivity
+		// ("1..5" vs "1>..<5" vs "1..10.step(3)" all differ) - never iterate/materialize
+		// the range, since it may be huge or unbounded (an open-start range even throws
+		// if you try to iterate it). Only ever checked on BoxLang, where isRange() exists.
+		if ( variables.IS_BOXLANG && isRange( arguments.value ) ) {
+			return "range:" & arguments.value.toString();
+		}
+		// BoxLang Set - falls through every other check (isStruct/isArray/isObject are
+		// all false for a Set). Sets are unordered by definition - even same-content
+		// linked/sorted sets can iterate differently depending on how they were built -
+		// so normalize each element, then sort the normalized representations, exactly
+		// like the struct-key sort below, before JSON-encoding. Type-tagged (like Range
+		// above) so a Set can never collide with an Array holding the same elements.
+		if ( variables.IS_BOXLANG && isBoxSet( arguments.value ) ) {
+			var setParts = [];
+			for ( var item in arguments.value.toArray() ) {
+				arrayAppend( setParts, isNull( item ) ? "null" : normalizeValue( item ) );
+			}
+			arraySort( setParts, "textnocase" );
+			return "set:" & serializeJSON( setParts );
+		}
+		// Struct - sort keys, recurse, then JSON-encode (escapes any delimiter-like
+		// characters inside values so structurally different args can't collide)
+		if ( isStruct( arguments.value ) && !isObject( arguments.value ) ) {
+			var sorted    = createObject( "java", "java.util.TreeMap" ).init( arguments.value );
+			var canonical = structNew( "ordered" );
+			for ( var key in sorted ) {
+				canonical[ key ] = isNull( sorted[ key ] ) ? "null" : normalizeValue( sorted[ key ] );
+			}
+			return serializeJSON( canonical );
+		}
+		// Array - keep order, recurse, then JSON-encode
+		if ( isArray( arguments.value ) ) {
+			var canonical = [];
+			for ( var item in arguments.value ) {
+				arrayAppend( canonical, isNull( item ) ? "null" : normalizeValue( item ) );
+			}
+			return serializeJSON( canonical );
+		}
+		// Fallback
+		try {
+			return arguments.value.toString();
+		} catch ( any e ) {
+			return serializeJSON( arguments.value );
+		}
 	}
 
 	/**
