@@ -494,11 +494,10 @@
 			.$args( data = { a : 1, b : 2 } )
 			.$results( "should-not-match" );
 
-		// This struct has a single key whose value contains a comma and equals sign that,
-		// if naively joined without escaping, would produce the exact same string as
+		// A single key whose value contains a comma and equals sign that, if naively
+		// joined without escaping, would produce the exact same string as
 		// { a: 1, b: 2 } serialized as "a=1,b=2"
-		var collidingArgs = { a : "1,b=2" };
-		var result         = service.save( data = collidingArgs );
+		var result = service.save( data = { a : "1,b=2" } );
 
 		$assert.isTrue(
 			isNull( result ) || result != "should-not-match",
