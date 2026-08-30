@@ -408,21 +408,20 @@ component accessors="true" {
 		// The `url` scope only exists in a real HTTP request - it isn't registered at all when
 		// TestBox runs via the BoxLang CLI, so even a `structKeyExists( url, ... )` guard throws
 		// (resolving the bare `url` identifier is what fails, not the key lookup within it).
-		// `isDefined()` is the safe way to probe for scope existence without that risk, so
-		// don't just skip on IS_CLI - only skip when the scope truly isn't there.
-		if ( !variables.IS_CLI || isDefined( "url" ) ) {
-			if ( structKeyExists( url, "testBundles" ) && !isNull( url.testBundles ) ) {
-				testBundles.append( listToArray( urlDecode( url.testBundles ) ), true );
-			}
-			if ( structKeyExists( url, "testSuites" ) && !isNull( url.testSuites ) ) {
-				arguments.testSuites.append( listToArray( urlDecode( url.testSuites ) ), true );
-			}
-			if ( structKeyExists( url, "testSpecs" ) && !isNull( url.testSpecs ) ) {
-				arguments.testSpecs.append( listToArray( urlDecode( url.testSpecs ) ), true );
-			}
-			if ( structKeyExists( url, "testMethod" ) && !isNull( url.testMethod ) ) {
-				arguments.testSpecs.append( listToArray( urlDecode( url.testMethod ) ), true );
-			}
+		// Param it to an empty struct so it's always safe to touch below - a no-op everywhere
+		// the scope already exists (every engine, every non-CLI request).
+		param name="url" default={};
+		if ( structKeyExists( url, "testBundles" ) && !isNull( url.testBundles ) ) {
+			testBundles.append( listToArray( urlDecode( url.testBundles ) ), true );
+		}
+		if ( structKeyExists( url, "testSuites" ) && !isNull( url.testSuites ) ) {
+			arguments.testSuites.append( listToArray( urlDecode( url.testSuites ) ), true );
+		}
+		if ( structKeyExists( url, "testSpecs" ) && !isNull( url.testSpecs ) ) {
+			arguments.testSpecs.append( listToArray( urlDecode( url.testSpecs ) ), true );
+		}
+		if ( structKeyExists( url, "testMethod" ) && !isNull( url.testMethod ) ) {
+			arguments.testSpecs.append( listToArray( urlDecode( url.testMethod ) ), true );
 		}
 
 		// Using a directory runner?
@@ -531,20 +530,19 @@ component accessors="true" {
 			isSimpleValue( arguments.testSpecs ) ? listToArray( arguments.testSpecs ) : arguments.testSpecs
 		);
 
-		// The `url` scope only exists in a real HTTP request - see the identical guard in runRaw().
-		if ( !variables.IS_CLI || isDefined( "url" ) ) {
-			if ( structKeyExists( url, "testBundles" ) && !isNull( url.testBundles ) ) {
-				arguments.testBundles.append( listToArray( urlDecode( url.testBundles ) ), true );
-			}
-			if ( structKeyExists( url, "testSuites" ) && !isNull( url.testSuites ) ) {
-				arguments.testSuites.append( listToArray( urlDecode( url.testSuites ) ), true );
-			}
-			if ( structKeyExists( url, "testSpecs" ) && !isNull( url.testSpecs ) ) {
-				arguments.testSpecs.append( listToArray( urlDecode( url.testSpecs ) ), true );
-			}
-			if ( structKeyExists( url, "testMethod" ) && !isNull( url.testMethod ) ) {
-				arguments.testSpecs.append( listToArray( urlDecode( url.testMethod ) ), true );
-			}
+		// The `url` scope only exists in a real HTTP request - see the identical param in runRaw().
+		param name="url" default={};
+		if ( structKeyExists( url, "testBundles" ) && !isNull( url.testBundles ) ) {
+			arguments.testBundles.append( listToArray( urlDecode( url.testBundles ) ), true );
+		}
+		if ( structKeyExists( url, "testSuites" ) && !isNull( url.testSuites ) ) {
+			arguments.testSuites.append( listToArray( urlDecode( url.testSuites ) ), true );
+		}
+		if ( structKeyExists( url, "testSpecs" ) && !isNull( url.testSpecs ) ) {
+			arguments.testSpecs.append( listToArray( urlDecode( url.testSpecs ) ), true );
+		}
+		if ( structKeyExists( url, "testMethod" ) && !isNull( url.testMethod ) ) {
+			arguments.testSpecs.append( listToArray( urlDecode( url.testMethod ) ), true );
 		}
 
 		var filterState = new testbox.system.TestResult(
