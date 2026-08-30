@@ -393,6 +393,132 @@
 		$assert.isEqual( "UnitTest3", results );
 	}
 
+	// Struct args must match regardless of insertion order (TESTBOX-448)
+	function testMockArgsStructOrderIndependence(){
+		var service = getMockBox().createStub();
+
+		var expectedArgs = structNew( "ordered" );
+		expectedArgs.foo = "one";
+		expectedArgs.bar = "two";
+		expectedArgs.baz = "three";
+
+		service
+			.$( "save" )
+			.$args( data = expectedArgs )
+			.$results( "matched" );
+
+		var actualArgs = structNew( "ordered" );
+		actualArgs.baz = "three";
+		actualArgs.foo = "one";
+		actualArgs.bar = "two";
+
+		$assert.isEqual( "matched", service.save( data = actualArgs ) );
+
+		// Nested struct: inner key order must not matter either
+		var expectedNested     = structNew( "ordered" );
+		expectedNested.outerA  = "1";
+		expectedNested.inner   = structNew( "ordered" );
+		expectedNested.inner.a = 1;
+		expectedNested.inner.b = 2;
+		expectedNested.outerZ  = "9";
+
+		service
+			.$( "persist" )
+			.$args( payload = expectedNested )
+			.$results( "nested-matched" );
+
+		var actualNested     = structNew( "ordered" );
+		actualNested.outerZ  = "9";
+		actualNested.inner   = structNew( "ordered" );
+		actualNested.inner.b = 2;
+		actualNested.inner.a = 1;
+		actualNested.outerA  = "1";
+
+		$assert.isEqual( "nested-matched", service.persist( payload = actualNested ) );
+	}
+
+	// Struct args containing a CFC must not trigger Adobe's JSON-serializer cycle
+	function testMockArgsStructContainingCFC(){
+		var service = getMockBox().createStub();
+
+		var expected = structNew( "ordered" );
+		expected.id  = 42;
+		expected.ref = getMockBox().createStub();
+
+		service
+			.$( "save" )
+			.$args( data = expected )
+			.$results( "ok" );
+
+		var actual = structNew( "ordered" );
+		actual.ref = getMockBox().createStub();
+		actual.id  = 42;
+
+		$assert.isEqual( "ok", service.save( data = actual ) );
+	}
+
+	// Deep nesting: struct > array > struct must canonicalise all the way down
+	function testMockArgsDeepNesting(){
+		var service = getMockBox().createStub();
+
+		var expected   = structNew( "ordered" );
+		expected.outer = "z";
+		expected.items = [];
+		arrayAppend( expected.items, { a : 1, b : 2 } );
+		arrayAppend( expected.items, { a : 3, b : 4 } );
+		expected.another = "y";
+
+		service
+			.$( "process" )
+			.$args( payload = expected )
+			.$results( "deep" );
+
+		var actual     = structNew( "ordered" );
+		actual.another = "y";
+		actual.items   = [];
+		arrayAppend( actual.items, { b : 2, a : 1 } );
+		arrayAppend( actual.items, { b : 4, a : 3 } );
+		actual.outer = "z";
+
+		$assert.isEqual( "deep", service.process( payload = actual ) );
+	}
+
+	// A string value that happens to contain delimiter-like characters (comma, equals,
+	// brackets) must not be confused with a structurally different struct/array that
+	// happens to normalize to the same raw text if delimiters aren't escaped (TESTBOX-448)
+	function testMockArgsNoDelimiterCollision(){
+		var service = getMockBox().createStub();
+
+		service
+			.$( "save" )
+			.$args( data = { a : 1, b : 2 } )
+			.$results( "should-not-match" );
+
+		// This struct has a single key whose value contains a comma and equals sign that,
+		// if naively joined without escaping, would produce the exact same string as
+		// { a: 1, b: 2 } serialized as "a=1,b=2"
+		var collidingArgs = { a : "1,b=2" };
+		var result         = service.save( data = collidingArgs );
+
+		$assert.isTrue(
+			isNull( result ) || result != "should-not-match",
+			"A struct with a comma/equals-containing string value falsely matched a differently-shaped struct - delimiter collision in argument hashing"
+		);
+
+		// Same idea for arrays: an embedded comma must not make two different arrays hash the same
+		var service2 = getMockBox().createStub();
+		service2
+			.$( "save" )
+			.$args( items = [ "1,2", "3" ] )
+			.$results( "should-not-match-either" );
+
+		var result2 = service2.save( items = [ "1", "2,3" ] );
+		$assert.isTrue(
+			isNull( result2 ) || result2 != "should-not-match-either",
+			"An array with a comma-containing string element falsely matched a differently-shaped array"
+		);
+	}
+
 	function testGetProperty(){
 		mock      = getMockBox().createStub();
 		mock.luis = "Majano";
