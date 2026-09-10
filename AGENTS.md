@@ -84,7 +84,6 @@ This repository ships domain skills in `.agents/skills`. Before implementing, re
 - `tests/specs/`: Main framework test specs. This directory contains both `.cfc` CFML specs and `.bx` BoxLang-only specs.
 - `bx/`: BoxLang browser/test harness assets.
 - `cfml/`: CFML browser/test harness assets.
-- `docs/`: Release and feature documentation.
 - `test-visualizer/`: Static visualizer assets.
 
 ## Engine And File-Type Rules
