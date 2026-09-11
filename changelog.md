@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+https://testbox.ortusbooks.com/readme/release-history/whats-new-with-7.1.0
+
 ### Added
 
 - TESTBOX-451 BDD class `skip` annotation support for skipping entire test classes.
