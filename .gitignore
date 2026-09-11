@@ -23,3 +23,7 @@ bx/testbox
 bx/grapher
 cfml/testbox
 tests/coverageReport.json
+
+# AI
+.opencode/**
+.agents/skills/**

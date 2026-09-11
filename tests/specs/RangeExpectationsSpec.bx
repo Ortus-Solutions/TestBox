@@ -1,0 +1,714 @@
+/**
+ * Range Expectations Tests for BoxLang Ranges
+ */
+class extends="testbox.system.BaseSpec" {
+
+	variables.numericRange = "";
+	variables.steppedRange = "";
+	variables.descendingRange = "";
+	variables.unboundedRange = "";
+	variables.halfBoundedStart = "";
+	variables.halfBoundedEnd = "";
+	variables.emptyRange = "";
+	variables.charRange = "";
+	variables.decimalRange = "";
+	variables.dateRange = "";
+
+	/*********************************** LIFE CYCLE Methods ***********************************/
+
+	function beforeAll() {
+		// nothing to do here
+	}
+
+	function afterAll() {
+		// cleanup if needed
+	}
+
+	/*********************************** BDD SUITES ***********************************/
+
+	function run() {
+		describe( "Range Expectations", () => {
+			beforeEach( () => {
+				variables.numericRange = 1..10;
+				variables.steppedRange = (0..100).step( 5 );
+				variables.descendingRange = 10..1;
+				variables.unboundedRange = ..;
+				variables.halfBoundedStart = ..10;
+				variables.halfBoundedEnd = 1..;
+				variables.emptyRange = 1>..<1;
+				variables.charRange = "a".."z";
+				variables.decimalRange = (0.5..5.5).step( 0.5 );
+				var todayDate = now();
+				variables.dateRange = todayDate..dateAdd( "d", 30, todayDate );
+			} );
+
+			afterEach( () => {
+				variables.numericRange = "";
+				variables.steppedRange = "";
+				variables.descendingRange = "";
+				variables.unboundedRange = "";
+				variables.halfBoundedStart = "";
+				variables.halfBoundedEnd = "";
+				variables.emptyRange = "";
+				variables.charRange = "";
+				variables.decimalRange = "";
+				variables.dateRange = "";
+			} );
+
+			describe( "toBeRange()", () => {
+				it( "passes when actual is a Range", () => {
+					expect( numericRange ).toBeRange();
+				} );
+
+				it( "passes with a stepped range", () => {
+					expect( steppedRange ).toBeRange();
+				} );
+
+				it( "passes with a descending range", () => {
+					expect( descendingRange ).toBeRange();
+				} );
+
+				it( "passes with an unbounded range", () => {
+					expect( unboundedRange ).toBeRange();
+				} );
+
+				it( "passes with an empty range", () => {
+					expect( emptyRange ).toBeRange();
+				} );
+
+				it( "passes with a character range", () => {
+					expect( charRange ).toBeRange();
+				} );
+
+				it( "passes with a decimal range", () => {
+					expect( decimalRange ).toBeRange();
+				} );
+
+				it( "passes with a date range", () => {
+					expect( dateRange ).toBeRange();
+				} );
+
+				it( "fails when actual is not a Range", () => {
+					expect( [ 1, 2, 3 ] ).notToBeRange();
+				} );
+
+				it( "fails when actual is a string", () => {
+					expect( "hello" ).notToBeRange();
+				} );
+
+				it( "fails when actual is a number", () => {
+					expect( 42 ).notToBeRange();
+				} );
+
+				it( "fails when actual is a struct", () => {
+					expect( { a = 1 } ).notToBeRange();
+				} );
+
+				it( "fails when actual is an array", () => {
+					expect( [ 1, 2 ] ).notToBeRange();
+				} );
+
+				it( "fails when actual is null", () => {
+					expect( null ).notToBeRange();
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( [ 1, 2 ] ).notToBeRange( "Arrays are not Ranges" );
+				} );
+			} );
+
+			describe( "toContainValue()", () => {
+				it( "passes when range contains the value", () => {
+					expect( numericRange ).toContainValue( 5 );
+				} );
+
+				it( "passes when range contains the start value", () => {
+					expect( numericRange ).toContainValue( 1 );
+				} );
+
+				it( "passes when range contains the end value", () => {
+					expect( numericRange ).toContainValue( 10 );
+				} );
+
+				it( "fails when range does not contain the value", () => {
+					expect( numericRange ).notToContainValue( 15 );
+				} );
+
+				it( "fails when range does not contain a value outside bounds", () => {
+					expect( numericRange ).notToContainValue( 0 );
+				} );
+
+				it( "works with stepped ranges", () => {
+					expect( steppedRange ).toContainValue( 25 );
+				} );
+
+				it( "fails with stepped ranges when value is not on step", () => {
+					expect( steppedRange ).notToContainValue( 3 );
+				} );
+
+				it( "works with character ranges", () => {
+					expect( charRange ).toContainValue( "m" );
+				} );
+
+				it( "works with decimal ranges", () => {
+					expect( decimalRange ).toContainValue( 2.5 );
+				} );
+
+				it( "works with date ranges", () => {
+					expect( dateRange ).toContainValue( dateAdd( "d", 15, dateRange.getFrom() ) );
+				} );
+
+				it( "works with descending ranges", () => {
+					expect( descendingRange ).toContainValue( 5 );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( numericRange ).notToContainValue( 99, "Should not contain 99" );
+				} );
+			} );
+
+			describe( "toContainRange()", () => {
+				it( "passes when actual range contains the expected range", () => {
+					expect( numericRange ).toContainRange( 3..7 );
+				} );
+
+				it( "passes when ranges are equal", () => {
+					expect( numericRange ).toContainRange( 1..10 );
+				} );
+
+				it( "passes when actual is unbounded", () => {
+					expect( unboundedRange ).toContainRange( 1..10 );
+				} );
+
+				it( "passes when actual is half-bounded at start", () => {
+					expect( halfBoundedEnd ).toContainRange( 5..10 );
+				} );
+
+				it( "fails when expected range starts before actual", () => {
+					expect( numericRange ).notToContainRange( 0..5 );
+				} );
+
+				it( "fails when expected range ends after actual", () => {
+					expect( numericRange ).notToContainRange( 5..15 );
+				} );
+
+				it( "works with stepped ranges", () => {
+					expect( steppedRange ).toContainRange( (10..50).step( 5 ) );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( numericRange ).notToContainRange( 0..15, "Should not contain" );
+				} );
+			} );
+
+			describe( "toBeInRange()", () => {
+				it( "passes when value is within the range", () => {
+					expect( 5 ).toBeInRange( numericRange );
+				} );
+
+				it( "passes when value equals the start", () => {
+					expect( 1 ).toBeInRange( numericRange );
+				} );
+
+				it( "passes when value equals the end", () => {
+					expect( 10 ).toBeInRange( numericRange );
+				} );
+
+				it( "fails when value is below the range", () => {
+					expect( 0 ).notToBeInRange( numericRange );
+				} );
+
+				it( "fails when value is above the range", () => {
+					expect( 11 ).notToBeInRange( numericRange );
+				} );
+
+				it( "works with stepped ranges on step values", () => {
+					expect( 25 ).toBeInRange( steppedRange );
+				} );
+
+				it( "fails with stepped ranges for non-step values", () => {
+					expect( 3 ).notToBeInRange( steppedRange );
+				} );
+
+				it( "works with character ranges", () => {
+					expect( "m" ).toBeInRange( charRange );
+				} );
+
+				it( "works with descending ranges", () => {
+					expect( 5 ).toBeInRange( descendingRange );
+				} );
+
+				it( "works with unbounded ranges", () => {
+					expect( 99999 ).toBeInRange( unboundedRange );
+				} );
+
+				it( "works with half-bounded ranges", () => {
+					expect( 5 ).toBeInRange( halfBoundedStart );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( 99 ).notToBeInRange( numericRange, "Should be in range" );
+				} );
+			} );
+
+			describe( "toBeBeforeRange()", () => {
+				it( "passes when actual range ends before expected starts", () => {
+					expect( 1..5 ).toBeBeforeRange( 10..20 );
+				} );
+
+				it( "passes when ranges touch at boundary", () => {
+					expect( 1..10 ).toBeBeforeRange( 10..20 );
+				} );
+
+				it( "fails when ranges overlap", () => {
+					expect( 1..15 ).notToBeBeforeRange( 10..20 );
+				} );
+
+				it( "fails when actual is after expected", () => {
+					expect( 20..30 ).notToBeBeforeRange( 1..10 );
+				} );
+
+				it( "works with character ranges", () => {
+					expect( "a".."c" ).toBeBeforeRange( "x".."z" );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( 20..30 ).notToBeBeforeRange(
+						1..10,
+						"Should be before"
+					);
+				} );
+			} );
+
+			describe( "toBeAfterRange()", () => {
+				it( "passes when actual range starts after expected ends", () => {
+					expect( 15..20 ).toBeAfterRange( 1..10 );
+				} );
+
+				it( "passes when ranges touch at boundary", () => {
+					expect( 10..20 ).toBeAfterRange( 1..10 );
+				} );
+
+				it( "fails when ranges overlap", () => {
+					expect( 5..15 ).notToBeAfterRange( 10..20 );
+				} );
+
+				it( "fails when actual is before expected", () => {
+					expect( 1..5 ).notToBeAfterRange( 10..20 );
+				} );
+
+				it( "works with character ranges", () => {
+					expect( "x".."z" ).toBeAfterRange( "a".."c" );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( 1..5 ).notToBeAfterRange(
+						10..20,
+						"Should be after"
+					);
+				} );
+			} );
+
+			describe( "toBeBounded()", () => {
+				it( "passes when range has both start and end", () => {
+					expect( numericRange ).toBeBounded();
+				} );
+
+				it( "passes with a stepped bounded range", () => {
+					expect( steppedRange ).toBeBounded();
+				} );
+
+				it( "passes with a descending bounded range", () => {
+					expect( descendingRange ).toBeBounded();
+				} );
+
+				it( "passes with an empty bounded range", () => {
+					expect( emptyRange ).toBeBounded();
+				} );
+
+				it( "fails with a half-bounded-at-start range", () => {
+					expect( halfBoundedStart ).notToBeBounded();
+				} );
+
+				it( "fails with a half-bounded-at-end range", () => {
+					expect( halfBoundedEnd ).notToBeBounded();
+				} );
+
+				it( "fails when range is unbounded", () => {
+					expect( unboundedRange ).notToBeBounded();
+				} );
+
+				it( "fails when actual is not a range", () => {
+					expect( [ 1, 2 ] ).notToBeBounded();
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( unboundedRange ).notToBeBounded( "Should be bounded" );
+				} );
+			} );
+
+			describe( "toBeUnbounded()", () => {
+				it( "passes when range has no endpoints", () => {
+					expect( unboundedRange ).toBeUnbounded();
+				} );
+
+				it( "fails when range is bounded", () => {
+					expect( numericRange ).notToBeUnbounded();
+				} );
+
+				it( "fails when range is half-bounded", () => {
+					expect( halfBoundedStart ).notToBeUnbounded();
+				} );
+
+				it( "fails when actual is not a range", () => {
+					expect( 42 ).notToBeUnbounded();
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( numericRange ).notToBeUnbounded( "Should be unbounded" );
+				} );
+			} );
+
+			describe( "toBeHalfBounded()", () => {
+				it( "passes when range has exactly one endpoint (start only)", () => {
+					expect( halfBoundedStart ).toBeHalfBounded();
+				} );
+
+				it( "passes when range has exactly one endpoint (end only)", () => {
+					expect( halfBoundedEnd ).toBeHalfBounded();
+				} );
+
+				it( "fails when range is fully bounded", () => {
+					expect( numericRange ).notToBeHalfBounded();
+				} );
+
+				it( "fails when range is unbounded", () => {
+					expect( unboundedRange ).notToBeHalfBounded();
+				} );
+
+				it( "fails when actual is not a range", () => {
+					expect( "hello" ).notToBeHalfBounded();
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( numericRange ).notToBeHalfBounded( "Should be half-bounded" );
+				} );
+			} );
+
+			describe( "toBeIterable()", () => {
+				it( "passes when range can be iterated", () => {
+					expect( numericRange ).toBeIterable();
+				} );
+
+				it( "passes with a stepped range", () => {
+					expect( steppedRange ).toBeIterable();
+				} );
+
+				it( "passes with a descending range", () => {
+					expect( descendingRange ).toBeIterable();
+				} );
+
+				it( "passes with a character range", () => {
+					expect( charRange ).toBeIterable();
+				} );
+
+				it( "passes with a decimal range", () => {
+					expect( decimalRange ).toBeIterable();
+				} );
+
+				it( "passes with a date range", () => {
+					expect( dateRange ).toBeIterable();
+				} );
+
+				it( "fails with a fully unbounded range", () => {
+					expect( unboundedRange ).notToBeIterable();
+				} );
+
+				it( "passes with an end-open half-bounded range", () => {
+					expect( halfBoundedEnd ).toBeIterable();
+				} );
+
+				it( "fails when actual is not a range", () => {
+					expect( [ 1, 2 ] ).notToBeIterable();
+				} );
+
+				it( "fails when actual is a string", () => {
+					expect( "hello" ).notToBeIterable();
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( [ 1, 2 ] ).notToBeIterable( "Should be iterable" );
+				} );
+			} );
+
+			describe( "toBeAscending()", () => {
+				it( "passes when range is ascending", () => {
+					expect( numericRange ).toBeAscending();
+				} );
+
+				it( "passes with a stepped ascending range", () => {
+					expect( steppedRange ).toBeAscending();
+				} );
+
+				it( "passes with a decimal ascending range", () => {
+					expect( decimalRange ).toBeAscending();
+				} );
+
+				it( "passes with a character ascending range", () => {
+					expect( charRange ).toBeAscending();
+				} );
+
+				it( "passes with a date ascending range", () => {
+					expect( dateRange ).toBeAscending();
+				} );
+
+				it( "fails with a fully unbounded range", () => {
+					expect( unboundedRange ).notToBeAscending();
+				} );
+
+				it( "passes with a half-bounded-at-end ascending range", () => {
+					expect( halfBoundedEnd ).toBeAscending();
+				} );
+
+				it( "fails when range is descending", () => {
+					expect( descendingRange ).notToBeAscending();
+				} );
+
+				it( "fails when actual is not a range", () => {
+					expect( 42 ).notToBeAscending();
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( descendingRange ).notToBeAscending( "Should be ascending" );
+				} );
+			} );
+
+			describe( "toBeDescending()", () => {
+				it( "passes when range is descending", () => {
+					expect( descendingRange ).toBeDescending();
+				} );
+
+				it( "fails when range is ascending", () => {
+					expect( numericRange ).notToBeDescending();
+				} );
+
+				it( "fails when range is unbounded", () => {
+					expect( unboundedRange ).notToBeDescending();
+				} );
+
+				it( "fails when actual is not a range", () => {
+					expect( "hello" ).notToBeDescending();
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( numericRange ).notToBeDescending( "Should be descending" );
+				} );
+			} );
+
+			describe( "toBeEmpty()", () => {
+				it( "passes when range is empty", () => {
+					expect( emptyRange ).toBeEmpty();
+				} );
+
+				it( "fails when range has values", () => {
+					expect( numericRange ).notToBeEmpty();
+				} );
+
+				it( "fails when range is stepped but has values", () => {
+					expect( steppedRange ).notToBeEmpty();
+				} );
+
+				it( "passes when range is unbounded", () => {
+					expect( unboundedRange ).toBeEmpty();
+				} );
+
+				it( "fails when actual is not a range", () => {
+					expect( [ 1, 2 ] ).notToBeEmpty();
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( numericRange ).notToBeEmpty( "Should be empty" );
+				} );
+			} );
+
+			describe( "toHaveStep()", () => {
+				it( "passes when range has the specified step", () => {
+					expect( steppedRange ).toHaveStep( 5 );
+				} );
+
+				it( "passes when range has default step of 1", () => {
+					expect( numericRange ).toHaveStep( 1 );
+				} );
+
+				it( "passes with decimal step", () => {
+					expect( decimalRange ).toHaveStep( 0.5 );
+				} );
+
+				it( "fails when range has different step", () => {
+					expect( numericRange ).notToHaveStep( 5 );
+				} );
+
+				it( "fails when range has default step but expects different", () => {
+					expect( steppedRange ).notToHaveStep( 1 );
+				} );
+
+				it( "fails when actual is not a range", () => {
+					expect( 42 ).notToHaveStep( 1 );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( numericRange ).notToHaveStep( 5, "Should have step" );
+				} );
+			} );
+
+			describe( "toClampTo()", () => {
+				it( "passes when value is within range (clamped to itself)", () => {
+					expect( numericRange ).toClampTo( 5, 5 );
+				} );
+
+				it( "passes when value is below range (clamped to start)", () => {
+					expect( numericRange ).toClampTo( 0, 1 );
+				} );
+
+				it( "passes when value is above range (clamped to end)", () => {
+					expect( numericRange ).toClampTo( 15, 10 );
+				} );
+
+				it( "passes when value equals start", () => {
+					expect( numericRange ).toClampTo( 1, 1 );
+				} );
+
+				it( "passes when value equals end", () => {
+					expect( numericRange ).toClampTo( 10, 10 );
+				} );
+
+				it( "works with descending ranges", () => {
+					expect( descendingRange ).toClampTo( 15, 10 );
+				} );
+
+				it( "works with descending ranges (below)", () => {
+					expect( descendingRange ).toClampTo( 0, 1 );
+				} );
+
+				it( "works with descending ranges (within)", () => {
+					expect( descendingRange ).toClampTo( 5, 5 );
+				} );
+
+				it( "works with half-bounded ranges", () => {
+					expect( halfBoundedStart ).toClampTo( 5, 5 );
+				} );
+
+				it( "works with character ranges", () => {
+					expect( charRange ).toClampTo( "m", "m" );
+				} );
+
+				it( "works with character ranges (below)", () => {
+					expect( charRange ).toClampTo( "a", "a" );
+				} );
+
+				it( "works with character ranges (above)", () => {
+					expect( charRange ).toClampTo( "z", "z" );
+				} );
+
+				it( "works with decimal ranges", () => {
+					expect( decimalRange ).toClampTo( 3.0, 3.0 );
+				} );
+
+				it( "works with unbounded ranges", () => {
+					expect( unboundedRange ).toClampTo( 999, 999 );
+				} );
+
+				it( "fails when clamped value doesn't match expected", () => {
+					expect( numericRange ).notToClampTo( 0, 5 );
+				} );
+
+				it( "fails when actual is not a range", () => {
+					expect( 42 ).notToClampTo( 5, 5 );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( numericRange ).notToClampTo( 0, 99, "Should clamp correctly" );
+				} );
+			} );
+
+			describe( "Integration Tests", () => {
+				it( "can chain multiple range expectations", () => {
+					var base = 1..100;
+					var sub = 10..50;
+
+					expect( base ).toBeRange();
+					expect( base ).toContainRange( sub );
+					expect( base ).toBeBounded();
+					expect( base ).toBeAscending();
+				} );
+
+				it( "can test range properties in sequence", () => {
+					var stepped = (0..100).step( 5 );
+
+					expect( stepped ).toBeRange();
+					expect( stepped ).toHaveStep( 5 );
+					expect( stepped ).toBeBounded();
+					expect( stepped ).toBeAscending();
+					expect( stepped ).toContainValue( 50 );
+				} );
+
+				it( "works with descending ranges", () => {
+					var desc = 100..1;
+
+					expect( desc ).toBeRange();
+					expect( desc ).toBeDescending();
+					expect( desc ).toBeBounded();
+					expect( desc ).toContainValue( 50 );
+				} );
+
+				it( "works with character ranges", () => {
+					var chars = "a".."z";
+
+					expect( chars ).toBeRange();
+					expect( chars ).toBeAscending();
+					expect( chars ).toContainValue( "m" );
+					expect( "c" ).toBeInRange( chars );
+				} );
+
+				it( "works with mixed bounded/unbounded ranges", () => {
+					var startBounded = ..50;
+					var endBounded = 10..;
+
+					expect( startBounded ).toBeRange();
+					expect( startBounded ).toBeHalfBounded();
+					expect( startBounded ).notToBeIterable();
+
+					expect( endBounded ).toBeRange();
+					expect( endBounded ).toBeHalfBounded();
+					expect( endBounded ).toBeIterable();
+				} );
+
+				it( "can test empty ranges", () => {
+					var empty = 1>..<1;
+
+					expect( empty ).toBeRange();
+					expect( empty ).toBeEmpty();
+					expect( empty ).notToBeUnbounded();
+				} );
+
+				it( "can test clamping with chained expectations", () => {
+					var base = 1..10;
+
+					expect( base ).toBeRange();
+					expect( base ).toClampTo( 0, 1 );
+					expect( base ).toClampTo( 5, 5 );
+					expect( base ).toClampTo( 20, 10 );
+				} );
+
+				it( "works with date ranges", () => {
+					var today = now();
+					var future = dateAdd( "d", 30, today );
+					var mid = dateAdd( "d", 15, today );
+
+					expect( today..future ).toBeRange();
+					expect( mid ).toBeInRange( today..future );
+				} );
+			} );
+		} );
+	}
+}

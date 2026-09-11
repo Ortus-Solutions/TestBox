@@ -116,7 +116,9 @@ component {
 			};
 		}
 
-		if ( server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" ) ) {
+		if (
+			server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion" ) && !server.keyExists( "boxlang" )
+		) {
 			return getPageContext().getResponse().getResponse();
 		} else {
 			return getPageContext().getResponse();

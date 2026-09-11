@@ -136,21 +136,21 @@ component accessors="true" {
 	 * @opts The options to default and check
 	 */
 	private function setDefaultOptions( struct opts = {} ){
-		if ( isNull( opts.enabled ) ) {
+		if ( !structKeyExists( opts, "enabled" ) || isNull( opts.enabled ) ) {
 			opts.enabled = true;
 		}
 
-		if ( isNull( opts.sonarQube ) ) {
+		if ( !structKeyExists( opts, "sonarQube" ) || isNull( opts.sonarQube ) ) {
 			opts.sonarQube = {};
 		}
-		if ( isNull( opts.sonarQube.XMLOutputPath ) ) {
+		if ( !structKeyExists( opts.sonarQube, "XMLOutputPath" ) || isNull( opts.sonarQube.XMLOutputPath ) ) {
 			opts.sonarQube.XMLOutputPath = "";
 		}
 
-		if ( isNull( opts.browser ) ) {
+		if ( !structKeyExists( opts, "browser" ) || isNull( opts.browser ) ) {
 			opts.browser = {};
 		}
-		if ( isNull( opts.browser.outputDir ) ) {
+		if ( !structKeyExists( opts.browser, "outputDir" ) || isNull( opts.browser.outputDir ) ) {
 			opts.browser.outputDir = "";
 		}
 
@@ -172,34 +172,35 @@ component accessors="true" {
 			}
 		}
 
-		if ( isNull( opts.coverageTresholds ) ) {
+		if ( !structKeyExists( opts, "coverageTresholds" ) || isNull( opts.coverageTresholds ) ) {
 			opts.coverageTresholds = {};
 		}
-		if ( isNull( opts.coverageTresholds.good ) ) {
+		if ( !structKeyExists( opts.coverageTresholds, "good" ) || isNull( opts.coverageTresholds.good ) ) {
 			opts.coverageTresholds.good = 85;
 		}
-		if ( isNull( opts.coverageTresholds.bad ) ) {
+		if ( !structKeyExists( opts.coverageTresholds, "bad" ) || isNull( opts.coverageTresholds.bad ) ) {
 			opts.coverageTresholds.bad = 50;
 		}
 
-		if ( isNull( opts.pathToCapture ) ) {
+		if ( !structKeyExists( opts, "pathToCapture" ) || isNull( opts.pathToCapture ) ) {
 			opts.pathToCapture = "";
 		}
-		if ( isNull( opts.whitelist ) ) {
+		if ( !structKeyExists( opts, "whitelist" ) || isNull( opts.whitelist ) ) {
 			opts.whitelist = "";
 		}
-		if ( isNull( opts.blacklist ) ) {
+		if ( !structKeyExists( opts, "blacklist" ) || isNull( opts.blacklist ) ) {
 			opts.blacklist = "";
 		}
-		if ( isNull( opts.isBatched ) ) {
+		if ( !structKeyExists( opts, "isBatched" ) || isNull( opts.isBatched ) ) {
 			opts.isBatched = false;
 		}
 
 		// If no path provided to capture
 		if ( !len( opts.pathToCapture ) ) {
 			// Look for a /root mapping which is a common ColdBox convention
-			if ( !isNull( getApplicationMetadata().mappings ) ) {
-				var mappings = getApplicationMetadata().mappings;
+			var appMetadata = getApplicationMetadata();
+			if ( structKeyExists( appMetadata, "mappings" ) && !isNull( appMetadata.mappings ) ) {
+				var mappings = appMetadata.mappings;
 			} else {
 				var mappings = {};
 			}

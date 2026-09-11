@@ -81,7 +81,21 @@ class{
 		// CLI Incoming variables
 		var rootPath          = server.cli.executionPath
 		var options           = server.cli.parsed.options
-		var positional         = server.cli.parsed.positionals
+		// `server.cli.parsed.positionals` can include this runner's own script path as its
+		// first entry (the engine's argv[0]-equivalent), regardless of whether it was invoked
+		// with a relative or absolute path. Strip it so only genuine user-supplied positional
+		// arguments (e.g. `run my.bundle`) remain - otherwise every invocation with no bundle
+		// argument would misread its own path as the bundle to test.
+		var currentScriptPath = getCurrentTemplatePath()
+		var invocationDir      = Paths.get( rootPath )
+		var positional         = server.cli.parsed.positionals.filter( ( p ) => {
+			try {
+				return invocationDir.resolve( p ).toRealPath().toString() != currentScriptPath
+			} catch( any e ) {
+				// If the candidate path doesn't exist on disk, it can't be this script - keep it.
+				return true
+			}
+		} )
 		var defaultReportPath = rootPath & "/tests/results"
 		var dryRunValue       = options[ "dry-run" ] ?: false
 		var isDryRun          = dryRunValue != false && dryRunValue != "false"

@@ -59,6 +59,7 @@ component
 
 		// Verify we can run this bundle
 		if (
+			!getBundleSkip( arguments.target ) &&
 			canRunBundle(
 				bundlePath  = targetMD.name,
 				testResults = arguments.testResults,
@@ -156,7 +157,7 @@ component
 						e,
 						arguments.target,
 						arguments.testResults,
-						isNull( thisSuite ) ? {} : thisSuite
+						!structKeyExists( local, "thisSuite" ) || isNull( local.thisSuite ) ? {} : local.thisSuite
 					]
 				);
 			}

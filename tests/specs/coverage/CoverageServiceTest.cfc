@@ -47,6 +47,16 @@ component extends="testbox.system.BaseSpec" {
 					expect( mockGenerator.$never( "generateData" ) ).toBeTrue();
 				} );
 			} );
+
+			it( "applies defaults when optional coverage settings are omitted", function(){
+				var options = new system.coverage.CoverageService( { "enabled" : false } ).getCoverageOptions();
+
+				expect( options.browser.outputDir ).toBe( "" );
+				expect( options.coverageTresholds ).toBe( { "good" : 85, "bad" : 50 } );
+				expect( options.sonarQube.XMLOutputPath ).toBe( "" );
+				expect( options.isBatched ).toBeFalse();
+			} );
+
 			describe( "enabled coverage, disabled coverage batching", function(){
 				beforeEach( function(){
 					if ( structKeyExists( variables, "model" ) ) {

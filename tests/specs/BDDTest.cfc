@@ -237,11 +237,12 @@ component extends="testbox.system.BaseSpec" {
 
 				it( "can fail any element of a collection", function(){
 					try {
-						// we need to verify the expectation fails
 						expectAll( [ 2, 4, 10, 8 ] ).toBeLT( 10 );
 						fail( "expectAll() failed to detect a bad element" );
 					} catch ( any e ) {
-						expect( e.message ).toBe( "The actual [10] is not less than [10]" );
+						expect( e.message ).toInclude( "expectAll() failed" );
+						expect( e.message ).toInclude( "1 of 4" );
+						expect( e.detail ).toInclude( "[3]: The actual [10] is not less than [10]" );
 					}
 				} );
 
@@ -356,6 +357,441 @@ component extends="testbox.system.BaseSpec" {
 		xdescribe( "A suite that is skipped via xdescribe()", function(){
 			it( "will never execute this", function(){
 				fail( "This should not have executed" );
+			} );
+		} );
+
+		describe( "withContext()", function(){
+			it( "prepends context to failure messages when an explicit message is given", function(){
+				try {
+					expect( 1 ).withContext( "user id" ).toBe( 2, "values should match" );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "user id" );
+					expect( e.message ).toInclude( "values should match" );
+				}
+			} );
+
+			it( "prepends context to failure messages for matchers that auto-generate messages", function(){
+				try {
+					expect( 1 ).withContext( "negation check" ).toBeNull();
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "negation check" );
+					expect( e.message ).toInclude( "null" );
+				}
+			} );
+
+			it( "does not alter passing expectations", function(){
+				expect( 1 ).withContext( "should not appear" ).toBe( 1 );
+			} );
+
+			it( "should be chainable and return the expectation", function(){
+				var result = expect( 1 ).withContext( "test" );
+				expect( result ).toBeInstanceOf( "testbox.system.Expectation" );
+			} );
+
+			it( "prepends context on negated matchers", function(){
+				try {
+					expect( 1 ).withContext( "negative check" ).notToBe( 1 );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "negative check" );
+				}
+			} );
+
+			it( "prepends context on custom matcher failures", function(){
+				addMatchers( {
+					toBeGoofy : function( expectation, args = {} ){
+						expectation.message = (
+							structKeyExists( args, "message" ) ? args.message : "[#expectation.actual#] is not goofy"
+						);
+						if ( expectation.isNot ) return ( expectation.actual != "goofy" );
+						else return ( expectation.actual == "goofy" );
+					}
+				} );
+				try {
+					expect( "serious" ).withContext( "custom matcher" ).toBeGoofy();
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "custom matcher" );
+					expect( e.message ).toInclude( "is not goofy" );
+				}
+			} );
+
+			it( "prepends context on toThrow failures with an explicit message", function(){
+				try {
+					expect( function(){
+						writeOutput( "no error" );
+					} ).withContext( "dangerous call" ).toThrow( message = "should have thrown" );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "dangerous call" );
+					expect( e.message ).toInclude( "should have thrown" );
+				}
+			} );
+
+			it( "prepends context on toSatisfy failures", function(){
+				try {
+					expect( 5 )
+						.withContext( "truth test" )
+						.toSatisfy( function( v ){
+							return v > 10;
+						} );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "truth test" );
+				}
+			} );
+		} );
+
+		describe( "expectAny()", function(){
+			it( "passes when at least one array element passes", function(){
+				expectAny( [ 1, 2, 3 ] ).toBeGT( 2 );
+			} );
+
+			it( "passes when at least one struct value passes", function(){
+				expectAny( { a : 1, b : 2, c : 3 } ).toBeGT( 2 );
+			} );
+
+			it( "fails when no elements pass, and reports all failures", function(){
+				try {
+					expectAny( [ 1, 2, 3 ] ).toBeGT( 5 );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "expectAny() failed" );
+					expect( e.message ).toInclude( "0 passed" );
+					expect( e.detail ).toInclude( "[1]" );
+					expect( e.detail ).toInclude( "[2]" );
+					expect( e.detail ).toInclude( "[3]" );
+				}
+			} );
+
+			it( "reports the failing struct key on failure", function(){
+				try {
+					expectAny( { x : 1, y : 2 } ).toBeGT( 5 );
+				} catch ( any e ) {
+					expect( e.detail ).toInclude( "[x]" );
+					expect( e.detail ).toInclude( "[y]" );
+				}
+			} );
+		} );
+
+		describe( "expectSome()", function(){
+			it( "passes when pass count is within bounded range", function(){
+				expectSome( [ 1, 2, 3 ], 2, 3 ).toBeGT( 1 );
+			} );
+
+			it( "passes when pass count is at least min with no upper bound", function(){
+				expectSome( [ 1, 2, 3 ], 2 ).toBeGT( 1 );
+			} );
+
+			it( "fails when pass count is below min", function(){
+				try {
+					expectSome( [ 1, 2, 3 ], 2, 3 ).toBeGT( 10 );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "expectSome() failed" );
+					expect( e.message ).toInclude( "between 2 and 3" );
+				}
+			} );
+
+			it( "fails when pass count is above max", function(){
+				try {
+					expectSome( [ 4, 5, 6 ], 1, 1 ).toBeGT( 2 );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "expectSome() failed" );
+					expect( e.message ).toInclude( "between 1 and 1" );
+				}
+			} );
+
+			it( "reports failure detail with pass count", function(){
+				try {
+					expectSome( [ 1, 2, 3 ], 2 ).toBeGT( 10 );
+				} catch ( any e ) {
+					expect( e.detail ).toInclude( "Passed: 0 / 3" );
+				}
+			} );
+		} );
+
+		describe( "expectNone()", function(){
+			it( "passes when zero elements pass", function(){
+				expectNone( [ 1, 2, 3 ] ).toBeGT( 5 );
+			} );
+
+			it( "passes when zero struct values pass", function(){
+				expectNone( { a : 1, b : 2 } ).toBeGT( 5 );
+			} );
+
+			it( "fails when any element passes", function(){
+				try {
+					expectNone( [ 1, 2, 8 ] ).toBeGT( 5 );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "expectNone() failed" );
+					expect( e.message ).toInclude( "1 passed" );
+				}
+			} );
+		} );
+
+		describe( "Collection expectation chainability", function(){
+			it( "supports chaining matchers on expectAny", function(){
+				expectAny( [ 3, 5, 7 ] ).toBeGT( 2 ).toBeLT( 10 );
+			} );
+
+			it( "supports chaining matchers on expectSome", function(){
+				expectSome( [ 3, 5, 7 ], 2 ).toBeGT( 2 ).toBeLT( 10 );
+			} );
+
+			it( "fails chained expectAny when the second matcher rejects all", function(){
+				try {
+					expectAny( [ 3, 5, 7 ] ).toBeGT( 2 ).toBeGT( 10 );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "expectAny() failed" );
+				}
+			} );
+		} );
+
+		describe( "assertAll() grouped assertions", function(){
+			it( "passes when all closures pass", function(){
+				$assert.all( [
+					function(){
+						$assert.isTrue( true );
+					},
+					function(){
+						$assert.isEqual( 1, 1 );
+					}
+				] );
+			} );
+
+			it( "reports all failures when multiple assertions fail", function(){
+				try {
+					$assert.all( [
+						function(){
+							$assert.isTrue( false );
+						},
+						function(){
+							$assert.isEqual( 1, 2 );
+						}
+					] );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "2 assertion(s) failed" );
+					expect( e.detail ).toInclude( "[1]" );
+					expect( e.detail ).toInclude( "[2]" );
+				}
+			} );
+
+			it( "reports a single failure correctly", function(){
+				try {
+					$assert.all( [
+						function(){
+							$assert.isTrue( true );
+						},
+						function(){
+							$assert.isTrue( false );
+						}
+					] );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "1 assertion(s) failed" );
+				}
+			} );
+
+			it( "includes the heading in the failure message", function(){
+				try {
+					$assert.all(
+						executables = [
+							function(){
+								$assert.isTrue( false );
+							}
+						],
+						heading = "user validation"
+					);
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "user validation — 1 assertion(s) failed" );
+				}
+			} );
+
+			it( "rethrows unexpected exceptions immediately", function(){
+				try {
+					$assert.all( [
+						function(){
+							throw( type = "CustomBoom", message = "unexpected" );
+						}
+					] );
+				} catch ( "CustomBoom" e ) {
+					expect( e.message ).toBe( "unexpected" );
+				}
+			} );
+
+			it( "works via the assertAll shortcut on the spec", function(){
+				try {
+					assertAll( [
+						function(){
+							$assert.isTrue( false );
+						}
+					] );
+				} catch ( any e ) {
+					expect( e.message ).toInclude( "1 assertion(s) failed" );
+				}
+			} );
+		} );
+
+		describe( "New Phase 4 matchers", function(){
+			describe( "toBeTruthy", function(){
+				it( "passes when the actual value is truthy", function(){
+					expect( true ).toBeTruthy();
+					expect( 1 ).toBeTruthy();
+					expect( "hello" ).toBeTruthy();
+					expect( [ 1 ] ).toBeTruthy();
+				} );
+
+				it( "fails when the actual value is falsy", function(){
+					try {
+						expect( false ).toBeTruthy();
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "to be truthy" );
+					}
+				} );
+
+				it( "supports negation", function(){
+					expect( false ).notToBeTruthy();
+					expect( 0 ).notToBeTruthy();
+					expect( "" ).notToBeTruthy();
+				} );
+			} );
+
+			describe( "toBeFalsy", function(){
+				it( "passes when the actual value is falsy", function(){
+					expect( false ).toBeFalsy();
+					expect( 0 ).toBeFalsy();
+					expect( "" ).toBeFalsy();
+				} );
+
+				it( "fails when the actual value is truthy", function(){
+					try {
+						expect( true ).toBeFalsy();
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "to be falsy" );
+					}
+				} );
+			} );
+
+			describe( "toBeSameInstanceAs", function(){
+				it( "passes when both references point to the same instance", function(){
+					var obj = { name : "test" };
+					expect( obj ).toBeSameInstanceAs( obj );
+				} );
+
+				it( "fails when references point to different instances", function(){
+					try {
+						expect( { name : "a" } ).toBeSameInstanceAs( { name : "a" } );
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "Expected" );
+						expect( e.message ).toInclude( "but received" );
+					}
+				} );
+
+				it( "supports negation", function(){
+					expect( { a : 1 } ).notToBeSameInstanceAs( { a : 1 } );
+				} );
+			} );
+
+			describe( "toHaveSize", function(){
+				it( "is an alias for toHaveLength", function(){
+					expect( "abc" ).toHaveSize( 3 );
+					expect( [ 1, 2 ] ).toHaveSize( 2 );
+					expect( { a : 1, b : 2 } ).toHaveSize( 2 );
+				} );
+
+				it( "supports negation", function(){
+					expect( "ab" ).notToHaveSize( 5 );
+				} );
+			} );
+
+			describe( "toThrowMatching", function(){
+				it( "passes when the thrown exception matches the predicate", function(){
+					expect( function(){
+						throw( type = "FooException", message = "bar" );
+					} ).toThrowMatching( function( e ){
+						return e.type == "FooException" && e.message == "bar";
+					} );
+				} );
+
+				it( "fails when the exception does not match the predicate", function(){
+					try {
+						expect( function(){
+							throw( type = "FooException" );
+						} ).toThrowMatching( function( e ){
+							return e.type == "BarException";
+						} );
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "did not match the predicate" );
+					}
+				} );
+
+				it( "fails when no exception is thrown", function(){
+					try {
+						expect( function(){
+						} ).toThrowMatching( function( e ){
+							return true;
+						} );
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "did not throw an exception" );
+					}
+				} );
+
+				it( "supports negation", function(){
+					expect( function(){
+						throw( "foo" );
+					} ).notToThrowMatching( function( e ){
+						return e.message == "bar";
+					} );
+				} );
+			} );
+
+			describe( "toIncludeAll", function(){
+				it( "passes when all needles are found", function(){
+					expect( "hello world" ).toIncludeAll( [ "hello", "world" ] );
+					expect( [ "a", "b", "c" ] ).toIncludeAll( [ "a", "c" ] );
+				} );
+
+				it( "fails when a needle is missing", function(){
+					try {
+						expect( "hello" ).toIncludeAll( [ "hello", "missing" ] );
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "missing" );
+					}
+				} );
+
+				it( "supports negation", function(){
+					expect( "hello" ).notToIncludeAll( [ "hello", "world" ] );
+				} );
+			} );
+
+			describe( "toIncludeAny", function(){
+				it( "passes when at least one needle is found", function(){
+					expect( "hello world" ).toIncludeAny( [ "hello", "foo" ] );
+				} );
+
+				it( "fails when no needles are found", function(){
+					try {
+						expect( "hello" ).toIncludeAny( [ "x", "y" ] );
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "None of the needles" );
+					}
+				} );
+
+				it( "supports negation", function(){
+					expect( "hello" ).notToIncludeAny( [ "x", "y" ] );
+				} );
+			} );
+
+			describe( "toIncludeNone", function(){
+				it( "passes when no needles are found", function(){
+					expect( "hello world" ).toIncludeNone( [ "foo", "bar" ] );
+				} );
+
+				it( "fails when a needle is found", function(){
+					try {
+						expect( "hello world" ).toIncludeNone( [ "hello", "bar" ] );
+					} catch ( any e ) {
+						expect( e.message ).toInclude( "hello" );
+					}
+				} );
+
+				it( "supports negation", function(){
+					expect( "hello" ).notToIncludeNone( [ "hello" ] );
+				} );
 			} );
 		} );
 

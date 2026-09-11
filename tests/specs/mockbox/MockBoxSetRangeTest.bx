@@ -1,0 +1,149 @@
+/**
+ * Tests MockBox's $args() argument matching against BoxLang's native Set and Range
+ * types (TESTBOX-448). This file is intentionally a .bx file, not a .cfc: BoxLang's
+ * `..` range operator and `set{}`/setOf()/setNew() constructs are BoxLang-only
+ * language/BIF surface that Lucee and Adobe don't have, and TestBox's own bundle
+ * discovery (getSpecPaths() in TestBox.cfc) already skips *.bx bundles entirely when
+ * not running on BoxLang - so this file is simply never compiled or run on those
+ * engines, avoiding both a parse-time failure (the `..` operator isn't valid CFML
+ * syntax at all) and a runtime one (isBoxSet()/isRange() don't exist there).
+ */
+class extends="testbox.system.BaseSpec" {
+
+	variables.mockBox = "";
+
+	function run(){
+		describe( "MockBox $args() with BoxLang Sets and Ranges", function(){
+			beforeEach( function(){
+				mockBox = getMockBox();
+			} );
+
+			it( "matches a Set argument regardless of its backing variant or insertion order", function(){
+				var service = mockBox.createStub();
+
+				service
+					.$( "save" )
+					.$args( data = setNew( type = "linked", values = [ 3, 1, 2 ] ) )
+					.$results( "matched" );
+
+				// Same elements, different variant and different insertion/iteration order
+				var actual = setNew( type = "sorted", values = [ 1, 2, 3 ] );
+
+				expect( service.save( data = actual ) ).toBe( "matched" );
+			} );
+
+			it( "does not match a Set with different elements", function(){
+				var service = mockBox.createStub();
+
+				service
+					.$( "save" )
+					.$args( data = setOf( 1, 2, 3 ) )
+					.$results( "should-not-match" );
+
+				var result = service.save( data = setOf( 1, 2, 4 ) );
+
+				expect( isNull( result ) || result != "should-not-match" ).toBeTrue();
+			} );
+
+			it( "does not match an Array holding the same elements as a Set", function(){
+				var service = mockBox.createStub();
+
+				service
+					.$( "save" )
+					.$args( data = setOf( 1, 2, 3 ) )
+					.$results( "should-not-match" );
+
+				// A Set and an Array are different types - a Set match must not leak
+				// into matching an Array with the same content
+				var result = service.save( data = [ 1, 2, 3 ] );
+
+				expect( isNull( result ) || result != "should-not-match" ).toBeTrue();
+			} );
+
+			it( "recursively normalizes and order-independently matches a Set of structs", function(){
+				var service = mockBox.createStub();
+
+				service
+					.$( "save" )
+					.$args(
+						data = setNew(
+							type   = "linked",
+							values = [ { a : 1, b : 2 }, { a : 3, b : 4 } ]
+						)
+					)
+					.$results( "matched" );
+
+				// Same struct elements, different struct key order AND different set element order
+				var actual = setNew(
+					type   = "linked",
+					values = [ { b : 4, a : 3 }, { b : 2, a : 1 } ]
+				);
+
+				expect( service.save( data = actual ) ).toBe( "matched" );
+			} );
+
+			it( "matches a Range argument built with identical bounds", function(){
+				var service = mockBox.createStub();
+
+				service
+					.$( "save" )
+					.$args( data = 1..5 )
+					.$results( "matched" );
+
+				expect( service.save( data = 1..5 ) ).toBe( "matched" );
+			} );
+
+			it( "does not match a Range with different exclusivity", function(){
+				var service = mockBox.createStub();
+
+				service
+					.$( "save" )
+					.$args( data = 1..5 )
+					.$results( "should-not-match" );
+
+				// 1>..<5 excludes both endpoints - a structurally different range
+				var result = service.save( data = 1>..<5 );
+
+				expect( isNull( result ) || result != "should-not-match" ).toBeTrue();
+			} );
+
+			it( "does not match a Range with a different step", function(){
+				var service = mockBox.createStub();
+
+				service
+					.$( "save" )
+					.$args( data = 1..10 )
+					.$results( "should-not-match" );
+
+				var result = service.save( data = ( 1..10 ).step( 3 ) );
+
+				expect( isNull( result ) || result != "should-not-match" ).toBeTrue();
+			} );
+
+			it( "does not confuse a Range with a plain string that looks like one", function(){
+				var service = mockBox.createStub();
+
+				service
+					.$( "save" )
+					.$args( data = 1..5 )
+					.$results( "should-not-match" );
+
+				var result = service.save( data = "1..5" );
+
+				expect( isNull( result ) || result != "should-not-match" ).toBeTrue();
+			} );
+
+			it( "normalizes an unbounded Range without hanging or throwing", function(){
+				var service = mockBox.createStub();
+
+				service
+					.$( "save" )
+					.$args( data = 1.. )
+					.$results( "matched" );
+
+				expect( service.save( data = 1.. ) ).toBe( "matched" );
+			} );
+		} );
+	}
+
+}

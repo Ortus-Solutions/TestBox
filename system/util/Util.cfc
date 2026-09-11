@@ -200,7 +200,7 @@ component {
 	 */
 	private function getEngineMappingHelper(){
 		// Lazy load the helper
-		if ( isNull( variables.engineMappingHelper ) ) {
+		if ( !structKeyExists( variables, "engineMappingHelper" ) || isNull( variables.engineMappingHelper ) ) {
 			if ( server.keyExists( "boxlang" ) ) {
 				variables.engineMappingHelper = new BoxLangMappingHelper();
 			} else if ( listFindNoCase( "Lucee", server.coldfusion.productname ) ) {

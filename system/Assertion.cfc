@@ -2,7 +2,7 @@
  * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * This object represents our Assertion style DSL for Unit style testing
+ * This is the TestBox Assertion class. It is used to assert test results in a BDD or TDD style.
  */
 component {
 
@@ -13,12 +13,12 @@ component {
 	 * @detail  The detail to add in the exception
 	 */
 	function fail( message = "", detail = "" ){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "A test failure occurred" );
+		arguments.message = ( len( arguments.message ) ? arguments.message : "A test failure occurred" )
 		throw(
 			type    = "TestBox.AssertionFailed",
 			message = arguments.message,
 			detail  = arguments.detail
-		);
+		)
 	}
 
 	/**
@@ -28,12 +28,12 @@ component {
 	 * @detail  The detail to add in the exception
 	 */
 	function skip( message = "", detail = "" ){
-		arguments.message = ( len( arguments.message ) ? arguments.message : "Test was skipped" );
+		arguments.message = ( len( arguments.message ) ? arguments.message : "Test was skipped" )
 		throw(
 			type    = "TestBox.SkipSpec",
 			message = arguments.message,
 			detail  = arguments.detail
-		);
+		)
 	}
 
 	/**
@@ -43,7 +43,7 @@ component {
 	 * @message    The message to send in the failure
 	 */
 	function assert( required boolean expression, message = "" ){
-		return isTrue( arguments.expression, arguments.message );
+		return isTrue( arguments.expression, arguments.message )
 	}
 
 	/**
@@ -55,11 +55,11 @@ component {
 	function isTrue( required boolean actual, message = "" ){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be true"
-		);
+		)
 		if ( NOT arguments.actual ) {
-			fail( arguments.message );
+			fail( arguments.message )
 		}
-		return this;
+		return this
 	}
 
 	/**
@@ -71,11 +71,11 @@ component {
 	function isFalse( required boolean actual, message = "" ){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be false"
-		);
+		)
 		if ( arguments.actual ) {
-			fail( arguments.message );
+			fail( arguments.message )
 		}
-		return this;
+		return this
 	}
 
 	/**
@@ -88,13 +88,13 @@ component {
 	function isEqual( any expected, any actual, message = "" ){
 		// validate equality
 		if ( equalize( argumentCollection = arguments ) ) {
-			return this;
+			return this
 		}
 		arguments.message = (
 			len( arguments.message ) ? arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" : "Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]"
-		);
+		)
 		// if we reach here, nothing is equal man!
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -107,13 +107,13 @@ component {
 	function isNotEqual( any expected, any actual, message = "" ){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message & ". Expected [#getStringName( arguments.expected )#] Actual [#getStringName( arguments.actual )#]" : "Expected [#getStringName( arguments.expected )#] to not be [#getStringName( arguments.actual )#]"
-		);
+		)
 		// validate equality
 		if ( !equalize( argumentCollection = arguments ) ) {
-			return this;
+			return this
 		}
 		// if we reach here, they are equal!
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -128,18 +128,18 @@ component {
 		required any actual,
 		message = ""
 	){
-		var expectedIdentityHashCode = getIdentityHashCode( arguments.expected );
-		var actualIdentityHashCode   = getIdentityHashCode( arguments.actual );
+		var expectedIdentityHashCode = getIdentityHashCode( arguments.expected )
+		var actualIdentityHashCode   = getIdentityHashCode( arguments.actual )
 
 		// validate same object
 		if ( expectedIdentityHashCode == actualIdentityHashCode ) {
-			return this;
+			return this
 		}
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#:#expectedIdentityHashCode#] but received [#getStringName( arguments.actual )#:#actualIdentityHashCode#]"
-		);
+		)
 		// if we reach here, the objects weren't the same
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -154,18 +154,18 @@ component {
 		required any actual,
 		message = ""
 	){
-		var expectedIdentityHashCode = getIdentityHashCode( arguments.expected );
-		var actualIdentityHashCode   = getIdentityHashCode( arguments.actual );
+		var expectedIdentityHashCode = getIdentityHashCode( arguments.expected )
+		var actualIdentityHashCode   = getIdentityHashCode( arguments.actual )
 
 		// validate not same object
 		if ( expectedIdentityHashCode != actualIdentityHashCode ) {
-			return this;
+			return this
 		}
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#:#expectedIdentityHashCode#] to not be [#getStringName( arguments.actual )#:#actualIdentityHashCode#]"
-		);
+		)
 		// if we reach here, they are equal!
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -178,20 +178,20 @@ component {
 	function isEqualWithCase( string expected, string actual, message = "" ){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]"
-		);
+		)
 		// null check
 		if ( isNull( arguments.expected ) && isNull( arguments.actual ) ) {
-			return this;
+			return this
 		}
 		if ( isNull( arguments.expected ) || isNull( arguments.actual ) ) {
-			fail( arguments.message );
+			fail( arguments.message )
 		}
 		// equalize with case
 		if ( compare( arguments.expected, arguments.actual ) eq 0 ) {
-			return this;
+			return this
 		}
 		// if we reach here, nothing is equal man!
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -203,13 +203,13 @@ component {
 	function null( any actual, message = "" ){
 		// equalize with case
 		if ( isNull( arguments.actual ) ) {
-			return this;
+			return this
 		}
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected a null value but got #getStringName( arguments.actual )#"
-		);
+		)
 		// if we reach here, nothing is equal man!
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 
@@ -222,13 +222,13 @@ component {
 	function notNull( any actual, message = "" ){
 		// equalize with case
 		if ( !isNull( arguments.actual ) ) {
-			return this;
+			return this
 		}
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected the actual value to be NOT null but it was null"
-		);
+		)
 		// if we reach here, nothing is equal man!
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -245,11 +245,11 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Actual data [#getStringName( arguments.actual )#] is not of this type: [#arguments.type#]"
-		);
+		)
 		if ( isValid( arguments.type, arguments.actual ) ) {
-			return this;
+			return this
 		}
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -266,11 +266,11 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Actual data [#getStringName( arguments.actual )#] is actually of this type: [#arguments.type#]"
-		);
+		)
 		if ( !isValid( arguments.type, arguments.actual ) ) {
-			return this;
+			return this
 		}
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -285,17 +285,17 @@ component {
 		required string typeName,
 		message = ""
 	){
-		var md            = getMetadata( arguments.actual );
-		var actualType    = isStruct( md ) && md.keyExists( "name" ) ? md.name : actual.getClass().getName();
+		var md            = getMetadata( arguments.actual )
+		var actualType    = isStruct( md ) && md.keyExists( "name" ) ? md.name : actual.getClass().getName()
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual is of type [#actualType#] which is not the expected type of [#arguments.typeName#]"
-		);
+		)
 
 		if ( isInstanceOf( arguments.actual, arguments.typeName ) ) {
-			return this;
+			return this
 		}
 
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -310,15 +310,15 @@ component {
 		required string typeName,
 		message = ""
 	){
-		var md            = getMetadata( arguments.actual );
-		var actualType    = isStruct( md ) && md.keyExists( "name" ) ? md.name : actual.getClass().getName();
+		var md            = getMetadata( arguments.actual )
+		var actualType    = isStruct( md ) && md.keyExists( "name" ) ? md.name : actual.getClass().getName()
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual is of type [#actualType#] which is the expected type of [#arguments.typeName#]"
-		);
+		)
 		if ( !isInstanceOf( arguments.actual, arguments.typeName ) ) {
-			return this;
+			return this
 		}
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -335,11 +335,11 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual.toString()#] does not match [#arguments.regex#]"
-		);
+		)
 		if ( arrayLen( reMatchNoCase( arguments.regex, arguments.actual ) ) gt 0 ) {
-			return this;
+			return this
 		}
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -356,11 +356,11 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual.toString()#] does not match [#arguments.regex#]"
-		);
+		)
 		if ( arrayLen( reMatch( arguments.regex, arguments.actual ) ) gt 0 ) {
-			return this;
+			return this
 		}
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -377,11 +377,11 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual.toString()#] does not match [#arguments.regex#]"
-		);
+		)
 		if ( arrayLen( reMatch( arguments.regex, arguments.actual ) ) eq 0 ) {
-			return this;
+			return this
 		}
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -398,11 +398,11 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual.toString()#] actually matches [#arguments.regex#]"
-		);
+		)
 		if ( arrayLen( reMatchNoCase( arguments.regex, arguments.actual ) ) eq 0 ) {
-			return this;
+			return this
 		}
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -419,11 +419,11 @@ component {
 		message               = "",
 		boolean caseSensitive = false
 	){
-		arguments.target = normalizeToStruct( arguments.target );
+		arguments.target = normalizeToStruct( arguments.target )
 
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The key(s) [#arguments.key#] does not exist in the target object. Found keys are [#structKeyArray( arguments.target ).toString()#]"
-		);
+		)
 
 		// Inflate Key and process
 		if (
@@ -431,16 +431,16 @@ component {
 				.listToArray()
 				.filter( function( thisKey ){
 					if ( caseSensitive ) {
-						return target.keyList().find( arguments.thisKey );
+						return target.keyList().find( arguments.thisKey )
 					} else {
-						return structKeyExists( target, arguments.thisKey );
+						return structKeyExists( target, arguments.thisKey )
 					}
 				} )
 				.len() != listLen( arguments.key )
 		) {
-			fail( arguments.message );
+			fail( arguments.message )
 		}
-		return this;
+		return this
 	}
 
 	/**
@@ -457,10 +457,10 @@ component {
 		message               = "",
 		boolean caseSensitive = false
 	){
-		arguments.target  = normalizeToStruct( arguments.target );
+		arguments.target  = normalizeToStruct( arguments.target )
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The key [#arguments.key#] exists in the target object. Found keys are [#structKeyArray( arguments.target ).toString()#]"
-		);
+		)
 
 		// Inflate Key and process
 		if (
@@ -468,16 +468,16 @@ component {
 				.listToArray()
 				.filter( function( thisKey ){
 					if ( caseSensitive ) {
-						return target.keyList().find( arguments.thisKey );
+						return target.keyList().find( arguments.thisKey )
 					} else {
-						return structKeyExists( target, arguments.thisKey );
+						return structKeyExists( target, arguments.thisKey )
 					}
 				} )
 				.len() > 0
 		) {
-			fail( arguments.message );
+			fail( arguments.message )
 		}
-		return this;
+		return this
 	}
 
 	/**
@@ -492,14 +492,14 @@ component {
 		required string key,
 		message = ""
 	){
-		arguments.target  = normalizeToStruct( arguments.target );
+		arguments.target  = normalizeToStruct( arguments.target )
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The key [#arguments.key#] does not exist anywhere in the target object."
-		);
+		)
 		if ( arrayLen( structFindKey( arguments.target, arguments.key ) ) GT 0 ) {
-			return this;
+			return this
 		}
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -514,17 +514,17 @@ component {
 		required string key,
 		message = ""
 	){
-		arguments.target = normalizeToStruct( arguments.target );
-		var results      = structFindKey( arguments.target, arguments.key );
+		arguments.target = normalizeToStruct( arguments.target )
+		var results      = structFindKey( arguments.target, arguments.key )
 		// check if not found?
 		if ( arrayLen( results ) EQ 0 ) {
-			return this;
+			return this
 		}
 		// found, so throw it
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The key [#arguments.key#] actually exists in the target object: #results.toString()#"
-		);
-		fail( arguments.message );
+		)
+		fail( arguments.message )
 	}
 
 	/**
@@ -539,17 +539,17 @@ component {
 		required string length,
 		message = ""
 	){
-		var aLength = getTargetLength( arguments.target );
+		var aLength = getTargetLength( arguments.target )
 		// validate it
 		if ( aLength eq arguments.length ) {
-			return this;
+			return this
 		}
 
 		// found, so throw it
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The expected length [#arguments.length#] is different than the actual length [#aLength#]"
-		);
-		fail( arguments.message );
+		)
+		fail( arguments.message )
 	}
 
 	/**
@@ -564,17 +564,17 @@ component {
 		required string length,
 		message = ""
 	){
-		var aLength = getTargetLength( arguments.target );
+		var aLength = getTargetLength( arguments.target )
 		// validate it
 		if ( aLength neq arguments.length ) {
-			return this;
+			return this
 		}
 
 		// found, so throw it
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The expected length [#arguments.length#] is equal than the actual length [#aLength#]"
-		);
-		fail( arguments.message );
+		)
+		fail( arguments.message )
 	}
 
 	/**
@@ -584,17 +584,17 @@ component {
 	 * @message The message to send in the failure
 	 */
 	function isEmpty( required any target, message = "" ){
-		var aLength = getTargetLength( arguments.target );
+		var aLength = getTargetLength( arguments.target )
 		// validate it
 		if ( aLength eq 0 ) {
-			return this;
+			return this
 		}
 
 		// found, so throw it
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The expected value is not empty, actual size [#aLength#]"
-		);
-		fail( arguments.message );
+		)
+		fail( arguments.message )
 	}
 
 	/**
@@ -604,15 +604,15 @@ component {
 	 * @message The message to send in the failure
 	 */
 	function isNotEmpty( required any target, message = "" ){
-		var aLength = getTargetLength( arguments.target );
+		var aLength = getTargetLength( arguments.target )
 		// validate it
 		if ( aLength GT 0 ) {
-			return this;
+			return this
 		}
 
 		// found, so throw it
-		arguments.message = ( len( arguments.message ) ? arguments.message : "The expected target is empty." );
-		fail( arguments.message );
+		arguments.message = ( len( arguments.message ) ? arguments.message : "The expected target is empty." )
+		fail( arguments.message )
 	}
 
 	/**
@@ -629,42 +629,42 @@ component {
 		regex   = ".*",
 		message = ""
 	){
-		var detail = "";
+		var detail = ""
 
 		try {
-			arguments.target();
+			arguments.target()
 			arguments.message = (
 				len( arguments.message ) ? arguments.message : "The incoming function did not throw an expected exception. Type=[#arguments.type#], Regex=[#arguments.regex#]"
-			);
+			)
 		} catch ( Any e ) {
 			// If no type, message expectations, just throw flag
 			if ( !len( arguments.type ) && arguments.regex eq ".*" ) {
-				return this;
+				return this
 			}
 
 			// determine if the expected 'type' matches the actual exception 'type'
-			var typeMatches = len( arguments.type ) == 0 OR e.type eq arguments.type;
+			var typeMatches = len( arguments.type ) == 0 OR e.type eq arguments.type
 
 			// determine if the expected 'regex' matches the actual exception 'message' or 'detail'
 			var regexMatches = arguments.regex eq ".*" OR (
 				arrayLen( reMatchNoCase( arguments.regex, e.message ) ) OR arrayLen(
 					reMatchNoCase( arguments.regex, e.detail )
 				)
-			);
+			)
 
 			// this assertion passes if the expected type and regex match the actual exception data
 			if ( typeMatches && regexMatches ) {
-				return this;
+				return this
 			}
 			// diff message types
 			arguments.message = (
 				len( arguments.message ) ? arguments.message : "The incoming function threw exception [type: #e.type#] [message: #e.message#] [#e.detail#] different than expected params type=[#arguments.type#], regex=[#arguments.regex#]"
-			);
-			detail = e.stackTrace;
+			)
+			detail = e.stackTrace
 		}
 
 		// found, so throw it
-		fail( arguments.message, detail );
+		fail( arguments.message, detail )
 	}
 
 	/**
@@ -682,15 +682,15 @@ component {
 		message = ""
 	){
 		try {
-			arguments.target();
+			arguments.target()
 		} catch ( Any e ) {
 			arguments.message = (
 				len( arguments.message ) ? arguments.message : "The incoming function DID throw an exception of type [#e.type#] with message [#e.message#] detail [#e.detail#]"
-			);
+			)
 
 			// If type passed and matches, then its ok
 			if ( len( arguments.type ) AND e.type neq arguments.type ) {
-				return this;
+				return this
 			}
 
 			// Message+Detail regex must not match
@@ -702,13 +702,13 @@ component {
 					)
 				)
 			) {
-				return this;
+				return this
 			}
 
-			fail( arguments.message );
+			fail( arguments.message )
 		}
 
-		return this;
+		return this
 	}
 
 	/**
@@ -729,7 +729,7 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not in range of [#arguments.expected#] by +/- [#arguments.delta#]"
-		);
+		)
 
 		if ( isNumeric( arguments.actual ) ) {
 			if (
@@ -740,11 +740,11 @@ component {
 					( arguments.expected + arguments.delta )
 				)
 			) {
-				return this;
+				return this
 			}
 		} else if ( isDate( arguments.actual ) ) {
 			if ( !listFindNoCase( "yyyy,q,m,ww,w,y,d,h,n,s,l", arguments.datePart ) ) {
-				fail( "The passed in datepart [#arguments.datepart#] is not valid." );
+				fail( "The passed in datepart [#arguments.datepart#] is not valid." )
 			}
 
 			if (
@@ -756,11 +756,11 @@ component {
 					)
 				) lt arguments.delta
 			) {
-				return this;
+				return this
 			}
 		}
 
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -779,7 +779,7 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not between [#arguments.min#] and [#arguments.max#]"
-		);
+		)
 
 		// numeric between
 		if ( isNumeric( arguments.actual ) ) {
@@ -791,12 +791,12 @@ component {
 					arguments.max
 				)
 			) {
-				return this;
+				return this
 			}
 		} else if ( isDate( arguments.actual ) ) {
 			// check min/max dates first
 			if ( dateCompare( arguments.min, arguments.max ) NEQ -1 ) {
-				fail( "The passed in min [#arguments.min#] is either equal or later than max [#arguments.max#]" );
+				fail( "The passed in min [#arguments.min#] is either equal or later than max [#arguments.max#]" )
 			}
 
 			// To pass, ( actual > min && actual < max )
@@ -804,11 +804,11 @@ component {
 				( dateCompare( arguments.actual, arguments.min ) EQ 1 ) AND
 				( dateCompare( arguments.actual, arguments.max ) EQ -1 )
 			) {
-				return this;
+				return this
 			}
 		}
 
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -825,18 +825,18 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was not found in [#arguments.target.toString()#]"
-		);
+		)
 
 		// string
 		if ( isSimpleValue( arguments.target ) AND findNoCase( arguments.needle, arguments.target ) ) {
-			return this;
+			return this
 		}
 		// array
 		if ( isArray( arguments.target ) AND arrayFindNoCase( arguments.target, arguments.needle ) ) {
-			return this;
+			return this
 		}
 
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -853,18 +853,18 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was not found in [#arguments.target.toString()#]"
-		);
+		)
 
 		// string
 		if ( isSimpleValue( arguments.target ) AND find( arguments.needle, arguments.target ) ) {
-			return this;
+			return this
 		}
 		// array
 		if ( isArray( arguments.target ) AND arrayContains( arguments.target, arguments.needle ) ) {
-			return this;
+			return this
 		}
 
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -881,18 +881,18 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was found in [#arguments.target.toString()#]"
-		);
+		)
 
 		// string
 		if ( isSimpleValue( arguments.target ) AND !find( arguments.needle, arguments.target ) ) {
-			return this;
+			return this
 		}
 		// array
 		if ( isArray( arguments.target ) AND !arrayContains( arguments.target, arguments.needle ) ) {
-			return this;
+			return this
 		}
 
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -909,24 +909,24 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The needle [#arguments.needle#] was found in [#arguments.target.toString()#]"
-		);
+		)
 
 		// string
 		if ( isSimpleValue( arguments.target ) AND !findNoCase( arguments.needle, arguments.target ) ) {
-			return this;
+			return this
 		}
 		// array
 		if ( isArray( arguments.target ) AND !arrayFindNoCase( arguments.target, arguments.needle ) ) {
-			return this;
+			return this
 		}
 
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
 	 * Assert that the given target string starts with the given needle string with no case-sensitivity
 	 *
-	 * $assert.startsWith( "hello world", "hello" );
+	 * $assert.startsWith( "hello world", "hello" )
 	 *
 	 * @target  The target string to check
 	 * @needle  The starts with string
@@ -939,19 +939,19 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't start with [#arguments.needle#]]"
-		);
+		)
 
 		if ( toString( lCase( arguments.target ) ).startsWith( lCase( arguments.needle ) ) ) {
-			return this;
+			return this
 		}
 
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
 	 * Assert that the given target string doesn't start with the given needle string with no case-sensitivity
 	 *
-	 * $assert.notStartsWith( "hello world", "hello" );
+	 * $assert.notStartsWith( "hello world", "hello" )
 	 *
 	 * @target  The target string to check
 	 * @needle  The starts with string
@@ -963,20 +963,20 @@ component {
 		message = ""
 	){
 		try {
-			startsWith( argumentCollection = arguments );
+			startsWith( argumentCollection = arguments )
 			arguments.message = (
 				len( arguments.message ) ? arguments.message : "[#arguments.target#] actually starts with [#arguments.needle#]]"
-			);
-			fail( arguments.message );
+			)
+			fail( arguments.message )
 		} catch ( "TestBox.AssertionFailed" e ) {
-			return this;
+			return this
 		}
 	}
 
 	/**
 	 * Assert that the given target string starts with the given needle string with case-sensitivity
 	 *
-	 * $assert.startsWith( "hello world", "hello" );
+	 * $assert.startsWith( "hello world", "hello" )
 	 *
 	 * @target  The target string to check
 	 * @needle  The starts with string
@@ -989,19 +989,19 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't start with [#arguments.needle#]]"
-		);
+		)
 
 		if ( toString( arguments.target ).startsWith( arguments.needle ) ) {
-			return this;
+			return this
 		}
 
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
 	 * Assert that the given target string doesn't start with the given needle string with case-sensitivity
 	 *
-	 * $assert.notStartsWith( "hello world", "hello" );
+	 * $assert.notStartsWith( "hello world", "hello" )
 	 *
 	 * @target  The target string to check
 	 * @needle  The starts with string
@@ -1013,20 +1013,20 @@ component {
 		message = ""
 	){
 		try {
-			startsWithCase( argumentCollection = arguments );
+			startsWithCase( argumentCollection = arguments )
 			arguments.message = (
 				len( arguments.message ) ? arguments.message : "[#arguments.target#] actually starts with [#arguments.needle#]]"
-			);
-			fail( arguments.message );
+			)
+			fail( arguments.message )
 		} catch ( "TestBox.AssertionFailed" e ) {
-			return this;
+			return this
 		}
 	}
 
 	/**
 	 * Assert that the given target string ends with the given needle string with no case-sensitivity
 	 *
-	 * $assert.endsWith( "hello world", "World" );
+	 * $assert.endsWith( "hello world", "World" )
 	 *
 	 * @target  The target string to check
 	 * @needle  The starts with string
@@ -1039,19 +1039,19 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't end with [#arguments.needle#]]"
-		);
+		)
 
 		if ( toString( lCase( arguments.target ) ).endsWith( lCase( arguments.needle ) ) ) {
-			return this;
+			return this
 		}
 
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
 	 * Assert that the given target string doesn't end with the given needle string with no case-sensitivity
 	 *
-	 * $assert.notEndsWith( "hello world", "peace" );
+	 * $assert.notEndsWith( "hello world", "peace" )
 	 *
 	 * @target  The target string to check
 	 * @needle  The starts with string
@@ -1063,20 +1063,20 @@ component {
 		message = ""
 	){
 		try {
-			endsWith( argumentCollection = arguments );
+			endsWith( argumentCollection = arguments )
 			arguments.message = (
 				len( arguments.message ) ? arguments.message : "[#arguments.target#] actually ends with [#arguments.needle#]]"
-			);
-			fail( arguments.message );
+			)
+			fail( arguments.message )
 		} catch ( "TestBox.AssertionFailed" e ) {
-			return this;
+			return this
 		}
 	}
 
 	/**
 	 * Assert that the given target string ends with the given needle string with case-sensitivity
 	 *
-	 * $assert.endsWith( "hello world", "ld" );
+	 * $assert.endsWith( "hello world", "ld" )
 	 *
 	 * @target  The target string to check
 	 * @needle  The starts with string
@@ -1089,19 +1089,19 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "[#arguments.target#] doesn't end with [#arguments.needle#]]"
-		);
+		)
 
 		if ( toString( arguments.target ).endsWith( arguments.needle ) ) {
-			return this;
+			return this
 		}
 
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
 	 * Assert that the given target string doesn't end with the given needle string with case-sensitivity
 	 *
-	 * $assert.notEndsWith( "hello world", "ld" );
+	 * $assert.notEndsWith( "hello world", "ld" )
 	 *
 	 * @target  The target string to check
 	 * @needle  The starts with string
@@ -1113,13 +1113,13 @@ component {
 		message = ""
 	){
 		try {
-			endsWithCase( argumentCollection = arguments );
+			endsWithCase( argumentCollection = arguments )
 			arguments.message = (
 				len( arguments.message ) ? arguments.message : "[#arguments.target#] actually ends with [#arguments.needle#]]"
-			);
-			fail( arguments.message );
+			)
+			fail( arguments.message )
 		} catch ( "TestBox.AssertionFailed" e ) {
-			return this;
+			return this
 		}
 	}
 
@@ -1137,13 +1137,13 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not greater than [#arguments.target#]"
-		);
+		)
 
 		if ( arguments.actual gt arguments.target ) {
-			return this;
+			return this
 		}
 
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -1160,13 +1160,13 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not greater than or equal to [#arguments.target#]"
-		);
+		)
 
 		if ( arguments.actual gte arguments.target ) {
-			return this;
+			return this
 		}
 
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -1183,13 +1183,13 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not less than [#arguments.target#]"
-		);
+		)
 
 		if ( arguments.actual lt arguments.target ) {
-			return this;
+			return this
 		}
 
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 	/**
@@ -1206,13 +1206,13 @@ component {
 	){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "The actual [#arguments.actual#] is not less than or equal to [#arguments.target#]"
-		);
+		)
 
 		if ( arguments.actual lte arguments.target ) {
-			return this;
+			return this
 		}
 
-		fail( arguments.message );
+		fail( arguments.message )
 	}
 
 
@@ -1221,25 +1221,25 @@ component {
 	 */
 	function getStringName( obj ){
 		if ( isNull( arguments.obj ) ) {
-			return "null";
+			return "null"
 		}
 		if ( isSimpleValue( arguments.obj ) ) {
-			return arguments.obj;
+			return arguments.obj
 		}
-		var type = "";
+		var type = ""
 		try {
-			type = "[#getMetadata( arguments.obj ).name#]: ";
+			type = "[#getMetadata( arguments.obj ).name#]: "
 		} catch ( any e ) {
-			type = "[Unknown Object]: ";
+			type = "[Unknown Object]: "
 		}
 
-		var toStringValue = "";
+		var toStringValue = ""
 		try {
-			toStringValue = limitString( arguments.obj.toString(), 200 );
+			toStringValue = limitString( arguments.obj.toString(), 200 )
 		} catch ( any e ) {
 			// do nothing
 		}
-		return type & toStringValue;
+		return type & toStringValue
 	}
 
 	/**
@@ -1251,72 +1251,835 @@ component {
 	function isJSON( required any actual, message = "" ){
 		arguments.message = (
 			len( arguments.message ) ? arguments.message : "Expected [#arguments.actual#] to be json"
-		);
+		)
 		if ( !isJSON( arguments.actual ) ) {
-			fail( arguments.message );
+			fail( arguments.message )
 		}
-		return this;
+		return this
+	}
+
+	/**
+	 * Run all given executables and report every assertion failure at once instead of stopping at the first.
+	 * Non-assertion exceptions are rethrown immediately.
+	 *
+	 * @executables An array of closures to execute
+	 * @heading     An optional heading to prepend to the aggregated failure message
+	 *
+	 * @throws TestBox.AssertionFailed — with an aggregated message and detail containing numbered failures
+	 */
+	function all( required array executables, string heading = "" ){
+		var failures = []
+		for ( var i = 1; i <= arrayLen( arguments.executables ); i++ ) {
+			try {
+				var exec = arguments.executables[ i ]
+				exec()
+			} catch ( "TestBox.AssertionFailed" e ) {
+				arrayAppend(
+					failures,
+					{
+						"index"   : i,
+						"message" : e.message,
+						"detail"  : e.detail ?: ""
+					}
+				)
+			}
+		}
+
+		if ( arrayLen( failures ) == 0 ) {
+			return this
+		}
+
+		var msg = "#arrayLen( failures )# assertion(s) failed"
+		if ( len( arguments.heading ) ) {
+			msg = arguments.heading & " — " & msg
+		}
+		var detail = buildAssertAllDetail( failures )
+		fail( msg, detail )
+	}
+
+	/**
+	 * Assert the actual value is truthy (not false, 0, empty string, or null).
+	 *
+	 * @actual  The actual data to test
+	 * @message The message to send in the failure
+	 */
+	function isTruthy( any actual, message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be truthy"
+		)
+		if ( isFalseyValue( arguments.actual ) ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert the actual value is falsy (false, 0, empty string, or null).
+	 *
+	 * @actual  The actual data to test
+	 * @message The message to send in the failure
+	 */
+	function isFalsy( any actual, message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be falsy"
+		)
+		if ( !isFalseyValue( arguments.actual ) ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert that the target contains ALL of the given needles with no case-sensitivity.
+	 *
+	 * @target  The target string or array
+	 * @needles An array of needles that MUST be found
+	 * @message The message to send in the failure
+	 */
+	function includesAll(
+		required any target,
+		required array needles,
+		message = ""
+	){
+		for ( var n in arguments.needles ) {
+			try {
+				includes( arguments.target, n )
+			} catch ( "TestBox.AssertionFailed" e ) {
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "The needle [#n#] was not found in [#arguments.target.toString()#]"
+				)
+				fail( arguments.message )
+			}
+		}
+		return this
+	}
+
+	/**
+	 * Assert that the target contains AT LEAST ONE of the given needles with no case-sensitivity.
+	 *
+	 * @target  The target string or array
+	 * @needles An array of needles, at least one MUST be found
+	 * @message The message to send in the failure
+	 */
+	function includesAny(
+		required any target,
+		required array needles,
+		message = ""
+	){
+		for ( var n in arguments.needles ) {
+			try {
+				includes( arguments.target, n )
+				return this
+			} catch ( "TestBox.AssertionFailed" e ) {
+				// keep searching
+			}
+		}
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "None of the needles [#arguments.needles.toList()#] were found in [#arguments.target.toString()#]"
+		)
+		fail( arguments.message )
+	}
+
+	/**
+	 * Assert that the target contains NONE of the given needles with no case-sensitivity.
+	 *
+	 * @target  The target string or array
+	 * @needles An array of needles that MUST NOT be found
+	 * @message The message to send in the failure
+	 */
+	function includesNone(
+		required any target,
+		required array needles,
+		message = ""
+	){
+		for ( var n in arguments.needles ) {
+			try {
+				includes( arguments.target, n )
+				arguments.message = (
+					len( arguments.message ) ? arguments.message : "The needle [#n#] was found in [#arguments.target.toString()#] but should not have been"
+				)
+				fail( arguments.message )
+			} catch ( "TestBox.AssertionFailed" e ) {
+				// good, keep looking
+			}
+		}
+		return this
+	}
+
+	/*********************************** BoxLang Set Assertions ***********************************/
+
+	/**
+	 * Assert that the actual value is a BoxLang Set type.
+	 *
+	 * @actual  The actual value to check
+	 * @message The message to send in the failure
+	 */
+	function isASet( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The actual [#getStringName( arguments.actual )#] is not a Set"
+		)
+		if ( !isThisASet( arguments.actual ) ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert that two sets are equal (contain the same elements, order-independent).
+	 *
+	 * @expected The expected set
+	 * @actual   The actual value to check
+	 * @message  The message to send in the failure
+	 */
+	function isEqualSet(
+		required any expected,
+		required any actual,
+		string message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.expected )#] but received [#getStringName( arguments.actual )#]"
+		)
+		isASet( arguments.expected, arguments.message )
+		isASet( arguments.actual, arguments.message )
+		if ( !setsAreEqual( arguments.expected, arguments.actual ) ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert that the actual set is a subset of the expected set.
+	 *
+	 * @expected The expected (parent) set
+	 * @actual   The actual value to check
+	 * @message  The message to send in the failure
+	 */
+	function isSubsetOf(
+		required any expected,
+		required any actual,
+		string message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#getStringName( arguments.actual )#] is not a subset of [#getStringName( arguments.expected )#]"
+		)
+		isASet( arguments.expected, arguments.message )
+		isASet( arguments.actual, arguments.message )
+		for ( var item in arguments.actual ) {
+			if ( !arguments.expected.contains( item ) ) {
+				fail( arguments.message )
+			}
+		}
+		return this
+	}
+
+	/**
+	 * Assert that the actual set is a superset of the expected set.
+	 *
+	 * @expected The expected (subset) set
+	 * @actual   The actual value to check
+	 * @message  The message to send in the failure
+	 */
+	function isSupersetOf(
+		required any expected,
+		required any actual,
+		string message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#getStringName( arguments.actual )#] is not a superset of [#getStringName( arguments.expected )#]"
+		)
+		isASet( arguments.expected, arguments.message )
+		isASet( arguments.actual, arguments.message )
+		for ( var item in arguments.expected ) {
+			if ( !arguments.actual.contains( item ) ) {
+				fail( arguments.message )
+			}
+		}
+		return this
+	}
+
+	/**
+	 * Assert that the actual set is disjoint from the expected set (no common elements).
+	 *
+	 * @expected The expected set to check disjointness against
+	 * @actual   The actual value to check
+	 * @message  The message to send in the failure
+	 */
+	function isDisjointFrom(
+		required any expected,
+		required any actual,
+		string message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#getStringName( arguments.actual )#] is not disjoint from [#getStringName( arguments.expected )#]"
+		)
+		isASet( arguments.expected, arguments.message )
+		isASet( arguments.actual, arguments.message )
+		for ( var item in arguments.actual ) {
+			if ( arguments.expected.contains( item ) ) {
+				fail( arguments.message )
+			}
+		}
+		return this
+	}
+
+	/**
+	 * Assert that the union of two sets equals the expected set.
+	 *
+	 * @other    The other set to union with actual
+	 * @expected The expected result of the union
+	 * @actual   The actual value to check (must be a Set)
+	 * @message  The message to send in the failure
+	 */
+	function hasUnion(
+		required any other,
+		required any expected,
+		required any actual,
+		string message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The union of [#getStringName( arguments.actual )#] and [#getStringName( arguments.other )#] is not [#getStringName( arguments.expected )#]"
+		)
+		isASet( arguments.actual, arguments.message )
+		isASet( arguments.other, arguments.message )
+		isASet( arguments.expected, arguments.message )
+		var union = arguments.actual.union( arguments.other )
+		isEqualSet( arguments.expected, union, arguments.message )
+		return this
+	}
+
+	/**
+	 * Assert that the intersection of two sets equals the expected set.
+	 *
+	 * @other    The other set to intersect with actual
+	 * @expected The expected result of the intersection
+	 * @actual   The actual value to check (must be a Set)
+	 * @message  The message to send in the failure
+	 */
+	function hasIntersection(
+		required any other,
+		required any expected,
+		required any actual,
+		string message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The intersection of [#getStringName( arguments.actual )#] and [#getStringName( arguments.other )#] is not [#getStringName( arguments.expected )#]"
+		)
+		isASet( arguments.actual, arguments.message )
+		isASet( arguments.other, arguments.message )
+		isASet( arguments.expected, arguments.message )
+		var intersection = arguments.actual.intersection( arguments.other )
+		isEqualSet(
+			arguments.expected,
+			intersection,
+			arguments.message
+		)
+		return this
+	}
+
+	/**
+	 * Assert that the difference of two sets equals the expected set.
+	 *
+	 * @other    The other set to subtract from actual
+	 * @expected The expected result of the difference
+	 * @actual   The actual value to check (must be a Set)
+	 * @message  The message to send in the failure
+	 */
+	function hasDifference(
+		required any other,
+		required any expected,
+		required any actual,
+		string message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The difference of [#getStringName( arguments.actual )#] and [#getStringName( arguments.other )#] is not [#getStringName( arguments.expected )#]"
+		)
+		isASet( arguments.actual, arguments.message )
+		isASet( arguments.other, arguments.message )
+		isASet( arguments.expected, arguments.message )
+		var difference = arguments.actual.difference( arguments.other )
+		isEqualSet(
+			arguments.expected,
+			difference,
+			arguments.message
+		)
+		return this
+	}
+
+	/**
+	 * Assert that the symmetric difference of two sets equals the expected set.
+	 *
+	 * @other    The other set to compute symmetric difference with actual
+	 * @expected The expected result of the symmetric difference
+	 * @actual   The actual value to check (must be a Set)
+	 * @message  The message to send in the failure
+	 */
+	function hasSymmetricDifference(
+		required any other,
+		required any expected,
+		required any actual,
+		string message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The symmetric difference of [#getStringName( arguments.actual )#] and [#getStringName( arguments.other )#] is not [#getStringName( arguments.expected )#]"
+		)
+		isASet( arguments.actual, arguments.message )
+		isASet( arguments.other, arguments.message )
+		isASet( arguments.expected, arguments.message )
+		var symDiff = arguments.actual.symmetricDifference( arguments.other )
+		isEqualSet( arguments.expected, symDiff, arguments.message )
+		return this
+	}
+
+	/*********************************** BoxLang Range Assertions ***********************************/
+
+	/**
+	 * Assert that the actual value is a BoxLang Range type.
+	 *
+	 * @actual  The actual value to check
+	 * @message The message to send in the failure
+	 */
+	function isRange( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The actual [#getStringName( arguments.actual )#] is not a Range"
+		)
+		if ( !isInstanceOf( arguments.actual, "Range" ) ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert that a range contains a specific value.
+	 *
+	 * @actual  The actual range to check
+	 * @value   The value to look for in the range
+	 * @message The message to send in the failure
+	 */
+	function rangeContainsValue(
+		required any actual,
+		required any value,
+		string message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to contain [#getStringName( arguments.value )#]"
+		)
+		if ( !arguments.actual.contains( arguments.value ) ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert that a range contains another range.
+	 *
+	 * @actual   The actual (parent) range to check
+	 * @expected The expected (child) range that should be contained within actual
+	 * @message  The message to send in the failure
+	 */
+	function rangeContainsRange(
+		required any actual,
+		required any expected,
+		string message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to contain [#getStringName( arguments.expected )#]"
+		)
+		if ( !isInstanceOf( arguments.actual, "Range" ) || !isInstanceOf( arguments.expected, "Range" ) ) {
+			fail( arguments.message )
+		}
+		if ( !arguments.actual.contains( arguments.expected ) ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert that a value is within a range.
+	 *
+	 * @actual  The actual value to check
+	 * @range   The range to check against
+	 * @message The message to send in the failure
+	 */
+	function valueInRange(
+		required any actual,
+		required any range,
+		string message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be in range [#getStringName( arguments.range )#]"
+		)
+		if ( !isInstanceOf( arguments.range, "Range" ) ) {
+			fail( arguments.message )
+		}
+		if ( !arguments.range.contains( arguments.actual ) ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert that a range is entirely before another range.
+	 *
+	 * @actual   The actual (first) range to check
+	 * @expected The expected (second) range that should come after actual
+	 * @message  The message to send in the failure
+	 */
+	function rangeBeforeRange(
+		required any actual,
+		required any expected,
+		string message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#getStringName( arguments.actual )#] is not before [#getStringName( arguments.expected )#]"
+		)
+		if ( !isInstanceOf( arguments.actual, "Range" ) || !isInstanceOf( arguments.expected, "Range" ) ) {
+			fail( arguments.message )
+		}
+
+		if ( !arguments.actual.hasTo() ) {
+			fail( arguments.message )
+		}
+		if ( !arguments.expected.hasFrom() ) {
+			fail( arguments.message )
+		}
+		if ( arguments.actual.getTo() GT arguments.expected.getFrom() ) {
+			fail( arguments.message )
+		}
+
+		return this
+	}
+
+	/**
+	 * Assert that a range is entirely after another range.
+	 *
+	 * @actual   The actual (second) range to check
+	 * @expected The expected (first) range that should come before actual
+	 * @message  The message to send in the failure
+	 */
+	function rangeAfterRange(
+		required any actual,
+		required any expected,
+		string message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "[#getStringName( arguments.actual )#] is not after [#getStringName( arguments.expected )#]"
+		)
+		if ( !isInstanceOf( arguments.actual, "Range" ) || !isInstanceOf( arguments.expected, "Range" ) ) {
+			fail( arguments.message )
+		}
+
+		if ( !arguments.actual.hasFrom() ) {
+			fail( arguments.message )
+		}
+		if ( !arguments.expected.hasTo() ) {
+			fail( arguments.message )
+		}
+		if ( arguments.actual.getFrom() LT arguments.expected.getTo() ) {
+			fail( arguments.message )
+		}
+
+		return this
+	}
+
+	/**
+	 * Assert that a range is bounded (has both start and end).
+	 *
+	 * @actual  The actual range to check
+	 * @message The message to send in the failure
+	 */
+	function isRangeBounded( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be bounded"
+		)
+		if ( !isInstanceOf( arguments.actual, "Range" ) || arguments.actual.isBounded() == false ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert that a range is unbounded (has no endpoints).
+	 *
+	 * @actual  The actual range to check
+	 * @message The message to send in the failure
+	 */
+	function isRangeUnbounded( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be unbounded"
+		)
+		if ( !isInstanceOf( arguments.actual, "Range" ) || arguments.actual.isUnbounded() == false ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert that a range is half-bounded (has exactly one endpoint).
+	 *
+	 * @actual  The actual range to check
+	 * @message The message to send in the failure
+	 */
+	function isRangeHalfBounded( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be half-bounded"
+		)
+		if ( !isInstanceOf( arguments.actual, "Range" ) || arguments.actual.isHalfBounded() == false ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert that a range is iterable (can be used in for/in loops).
+	 *
+	 * @actual  The actual range to check
+	 * @message The message to send in the failure
+	 */
+	function isRangeIterable( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be iterable"
+		)
+		if ( !isInstanceOf( arguments.actual, "Range" ) || arguments.actual.isIterable() == false ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert that a range is ascending (start < end).
+	 *
+	 * @actual  The actual range to check
+	 * @message The message to send in the failure
+	 */
+	function isRangeAscending( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be ascending"
+		)
+		if ( !isInstanceOf( arguments.actual, "Range" ) || arguments.actual.isAscending() == false ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert that a range is descending (start > end).
+	 *
+	 * @actual  The actual range to check
+	 * @message The message to send in the failure
+	 */
+	function isRangeDescending( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be descending"
+		)
+		if ( !isInstanceOf( arguments.actual, "Range" ) ) {
+			fail( arguments.message )
+		}
+		if ( !arguments.actual.hasFrom() || !arguments.actual.hasTo() ) {
+			fail( arguments.message )
+		}
+		if ( arguments.actual.getFrom() LTE arguments.actual.getTo() ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert that a range is empty.
+	 *
+	 * @actual  The actual range to check
+	 * @message The message to send in the failure
+	 */
+	function isRangeEmpty( required any actual, string message = "" ){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to be empty"
+		)
+		if ( !isInstanceOf( arguments.actual, "Range" ) || arguments.actual.isEmpty() == false ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert that a range has a specific step value.
+	 *
+	 * @actual  The actual range to check
+	 * @step    The expected step value
+	 * @message The message to send in the failure
+	 */
+	function rangeHasStep(
+		required any actual,
+		required any step,
+		string message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected [#getStringName( arguments.actual )#] to have step [#getStringName( arguments.step )#]"
+		)
+		if ( !isInstanceOf( arguments.actual, "Range" ) ) {
+			fail( arguments.message )
+		}
+		var actualStep = arguments.actual.getStep()
+		if ( !isNumeric( actualStep ) || !isNumeric( arguments.step ) || abs( actualStep - arguments.step ) GT 0.0001 ) {
+			fail( arguments.message )
+		}
+		return this
+	}
+
+	/**
+	 * Assert that clamping a value to the range produces the expected result.
+	 *
+	 * @actual   The actual range to clamp against
+	 * @value    The value to clamp
+	 * @expected The expected result after clamping
+	 * @message  The message to send in the failure
+	 */
+	function rangeClampTo(
+		required any actual,
+		required any value,
+		required any expected,
+		string message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "Expected clamp([#getStringName( arguments.value )#], [#getStringName( arguments.actual )#]) to be [#getStringName( arguments.expected )#]"
+		)
+		if ( !isInstanceOf( arguments.actual, "Range" ) ) {
+			fail( arguments.message )
+		}
+		var clamped = arguments.actual.clamp( arguments.value )
+		if ( !equalize( clamped, arguments.expected ) ) {
+			fail( arguments.message )
+		}
+		return this
 	}
 
 	/*********************************** PRIVATE Methods ***********************************/
 
+	/**
+	 * Build a detailed message for the assert.all() method that includes each failure's index, message, and detail.
+	 *
+	 * @failures An array of failure objects, each containing 'index', 'message', and 'detail' properties.
+	 *
+	 * @return A formatted string that lists all failures with their respective details.
+	 */
+	private string function buildAssertAllDetail( required array failures ){
+		var lines = []
+		for ( var i = 1; i <= arrayLen( arguments.failures ); i++ ) {
+			var fd = arguments.failures[ i ]
+			arrayAppend( lines, "[#fd.index#] #fd.message#" )
+			if ( len( fd.detail ) ) {
+				arrayAppend( lines, "    #fd.detail#" )
+			}
+		}
+		return arrayToList( lines, chr( 10 ) )
+	}
+
+	/**
+	 * Determine if the incoming value is falsey ( false, 0, empty string, or null )
+	 *
+	 * @value The value to evaluate
+	 *
+	 * @return True if the value is falsey, false otherwise
+	 */
+	private boolean function isFalseyValue( any value ){
+		if ( isNull( arguments.value ) ) {
+			return true
+		}
+		if ( isBoolean( arguments.value ) && !arguments.value ) {
+			return true
+		}
+		if ( isNumeric( arguments.value ) && arguments.value == 0 ) {
+			return true
+		}
+		if ( isSimpleValue( arguments.value ) && len( arguments.value ) == 0 ) {
+			return true
+		}
+		return false
+	}
+
+	/**
+	 * Temporary BoxSet detector until BoxLang ships an isBoxSet() BIF.
+	 *
+	 * @target The value to evaluate
+	 *
+	 * @return True when the value is a BoxSet instance
+	 */
+	private boolean function isThisASet( required any target ){
+		return isInstanceOf( arguments.target, "BoxSet" )
+	}
+
+	/**
+	 * Recursively compare two values for equality, with special handling for various types like queries, arrays, structs, etc.
+	 *
+	 * @expected The expected value
+	 * @actual   The actual value
+	 *
+	 * @return True if the values are considered equal, false otherwise
+	 */
 	private boolean function equalize( any expected, any actual ){
 		// Null values
 		if ( isNull( arguments.expected ) && isNull( arguments.actual ) ) {
-			return true;
+			return true
 		}
 
 		if ( isNull( arguments.expected ) || isNull( arguments.actual ) ) {
-			return false;
+			return false
 		}
 
 		// Numerics
 		if (
-			isNumeric( arguments.actual ) && isNumeric( arguments.expected ) && toString( arguments.actual ) eq toString(
-				arguments.expected
-			)
+			isNumeric( arguments.actual ) &&
+			isNumeric( arguments.expected ) &&
+			toString( arguments.actual ) eq toString( arguments.expected )
 		) {
-			return true;
+			return true
+		}
+
+		// Are they both dates?
+		if (
+			isDate( arguments.actual ) &&
+			isDate( arguments.expected ) &&
+			dateCompare( arguments.actual, arguments.expected ) eq 0
+		) {
+			return true
 		}
 
 		// Simple values
 		if (
 			isSimpleValue( arguments.actual ) && isSimpleValue( arguments.expected ) && arguments.actual eq arguments.expected
 		) {
-			return true;
+			return true
 		}
 
 		// Queries
 		if ( isQuery( arguments.actual ) && isQuery( arguments.expected ) ) {
 			// Check number of records
 			if ( arguments.actual.recordCount != arguments.expected.recordCount ) {
-				return false;
+				return false
 			}
 
 			// Get both column lists and sort them the same
-			var actualColumnList   = listSort( arguments.actual.columnList, "textNoCase" );
-			var expectedColumnList = listSort( arguments.expected.columnList, "textNoCase" );
+			var actualColumnList   = listSort( arguments.actual.columnList, "textNoCase" )
+			var expectedColumnList = listSort( arguments.expected.columnList, "textNoCase" )
 
 			// Check column lists
 			if ( actualColumnList != expectedColumnList ) {
-				return false;
+				return false
 			}
 
 			// Loop over each row
-			var i = 0;
+			var i = 0
 			while ( ++i <= arguments.actual.recordCount ) {
 				// Loop over each column
 				for ( var column in listToArray( actualColumnList ) ) {
 					// Compare each value
 					if ( arguments.actual[ column ][ i ] != arguments.expected[ column ][ i ] ) {
 						// At the first sign of trouble, bail!
-						return false;
+						return false
 					}
 				}
 			}
 
 			// We made it here so nothing looked wrong
-			return true;
+			return true
 		}
 
 		// UDFs
@@ -1324,7 +2087,7 @@ component {
 			isCustomFunction( arguments.actual ) && isCustomFunction( arguments.expected ) &&
 			arguments.actual.toString() eq arguments.expected.toString()
 		) {
-			return true;
+			return true
 		}
 
 		// XML
@@ -1332,14 +2095,19 @@ component {
 			isXMLDoc( arguments.actual ) && isXMLDoc( arguments.expected ) &&
 			toString( arguments.actual ) eq toString( arguments.expected )
 		) {
-			return true;
+			return true
+		}
+
+		// BoxLang Sets
+		if ( isThisASet( arguments.actual ) && isThisASet( arguments.expected ) ) {
+			return setsAreEqual( arguments.expected, arguments.actual )
 		}
 
 		// Arrays
 		if ( isArray( arguments.actual ) && isArray( arguments.expected ) ) {
 			// Confirm both arrays are the same length
 			if ( arrayLen( arguments.actual ) neq arrayLen( arguments.expected ) ) {
-				return false;
+				return false
 			}
 
 			for ( var i = 1; i lte arrayLen( arguments.actual ); i++ ) {
@@ -1351,11 +2119,11 @@ component {
 					}
 					// check if one is null mismatch
 					if ( isNull( arguments.actual[ i ] ) OR isNull( arguments.expected[ i ] ) ) {
-						return false;
+						return false
 					}
 					// And make sure they match
 					if ( !equalize( arguments.actual[ i ], arguments.expected[ i ] ) ) {
-						return false;
+						return false
 					}
 					continue;
 				}
@@ -1363,23 +2131,23 @@ component {
 				if ( !arrayIsDefined( arguments.actual, i ) and !arrayIsDefined( arguments.expected, i ) ) {
 					continue;
 				} else {
-					return false;
+					return false
 				}
 			}
 
 			// If we made it here, we couldn't find anything different
-			return true;
+			return true
 		}
 
 		// Structs / Object
 		if ( isStruct( arguments.actual ) && isStruct( arguments.expected ) ) {
-			var actualKeys   = listSort( structKeyList( arguments.actual ), "textNoCase" );
-			var expectedKeys = listSort( structKeyList( arguments.expected ), "textNoCase" );
-			var key          = "";
+			var actualKeys   = listSort( structKeyList( arguments.actual ), "textNoCase" )
+			var expectedKeys = listSort( structKeyList( arguments.expected ), "textNoCase" )
+			var key          = ""
 
 			// Confirm both structs have the same keys
 			if ( actualKeys neq expectedKeys ) {
-				return false;
+				return false
 			}
 
 			// Loop over each key
@@ -1390,19 +2158,19 @@ component {
 				}
 				// check if one is null mismatch
 				if ( isNull( arguments.actual[ key ] ) OR isNull( arguments.expected[ key ] ) ) {
-					return false;
+					return false
 				}
 				// And make sure they match when actual values exist
 				if ( !equalize( arguments.actual[ key ], arguments.expected[ key ] ) ) {
-					return false;
+					return false
 				}
 			}
 
 			// If we made it here, we couldn't find anything different
-			return true;
+			return true
 		}
 
-		return arguments.actual.equals( arguments.expected );
+		return arguments.actual.equals( arguments.expected )
 	}
 
 	/**
@@ -1411,28 +2179,31 @@ component {
 	 * @target The target to get the length of
 	 */
 	private function getTargetLength( required any target ){
-		var aLength = 0;
+		var aLength = 0
 
 		if ( isSimpleValue( arguments.target ) ) {
-			aLength = len( arguments.target );
+			aLength = len( arguments.target )
 		}
 		if ( isArray( arguments.target ) ) {
-			aLength = arrayLen( arguments.target );
+			aLength = arrayLen( arguments.target )
 		}
 		if ( isStruct( arguments.target ) ) {
-			aLength = structCount( arguments.target );
+			aLength = structCount( arguments.target )
 		}
 		if ( isQuery( arguments.target ) ) {
-			aLength = arguments.target.recordcount;
+			aLength = arguments.target.recordcount
+		}
+		if ( isThisASet( arguments.target ) ) {
+			aLength = arguments.target.size()
 		}
 		if ( isCustomFunction( arguments.target ) or isClosure( arguments.target ) ) {
 			throw(
 				type    = "InvalidType",
 				message = "You sent an invalid type for length checking (closure/function)"
-			);
+			)
 		}
 
-		return aLength;
+		return aLength
 	}
 
 	/**
@@ -1441,8 +2212,8 @@ component {
 	 * @target The target to get the hash code for
 	 */
 	private function getIdentityHashCode( required any target ){
-		var system = createObject( "java", "java.lang.System" );
-		return system.identityHashCode( arguments.target );
+		var system = createObject( "java", "java.lang.System" )
+		return system.identityHashCode( arguments.target )
 	}
 
 	/**
@@ -1455,11 +2226,376 @@ component {
 	private function normalizeToStruct( any target ){
 		if ( isQuery( arguments.target ) ) {
 			return getMetadata( arguments.target ).reduce( ( results, item ) => {
-				results[ item.name ] = {};
-				return results;
-			}, {} );
+				results[ item.name ] = {}
+				return results
+			}, {} )
 		}
-		return arguments.target;
+		return arguments.target
+	}
+
+	/**
+	 * Resolve a path expression in the target data structure.
+	 * Uses BoxLang's native dataNavigate() BIF.
+	 */
+	any function resolvePath( required any target, required string path ){
+		try {
+			var navigator = dataNavigate( arguments.target )
+			var results   = navigator.query( arguments.path )
+			if ( arrayLen( results ) GT 0 ) {
+				return results
+			}
+		} catch ( any e ) {
+			return []
+		}
+		return []
+	}
+
+	/**
+	 * Resolve a path after normalizing supported target types.
+	 */
+	private array function getPathResults( required any target, required string path ){
+		return this.resolvePath( normalizeToStruct( arguments.target ), arguments.path )
+	}
+
+	/**
+	 * Check if all path results satisfy a predicate.
+	 */
+	private boolean function allPathResultsMatch( required array results, required function predicate ){
+		for ( var result in arguments.results ) {
+			if ( !arguments.predicate( result ) ) {
+				return false
+			}
+		}
+
+		return true
+	}
+
+	/**
+	 * Check if any path result satisfies a predicate.
+	 */
+	private boolean function anyPathResultMatches( required array results, required function predicate ){
+		for ( var result in arguments.results ) {
+			if ( arguments.predicate( result ) ) {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	/**
+	 * Check if a path exists in the target data structure.
+	 *
+	 * @target  The target object/struct/array
+	 * @path    The path string (e.g., "a.b.c", "users[0].name")
+	 * @message The message to send on failure
+	 */
+	function toPath(
+		required any target,
+		required string path,
+		message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The path [#arguments.path#] does not exist in the target."
+		)
+
+		var results = getPathResults( arguments.target, arguments.path )
+		if ( arrayLen( results ) GT 0 ) {
+			return this
+		}
+
+		fail( arguments.message )
+	}
+
+	/**
+	 * Check if a path does NOT exist in the target data structure.
+	 *
+	 * @target  The target object/struct/array
+	 * @path    The path string (e.g., "a.b.c", "users[0].name")
+	 * @message The message to send on failure
+	 */
+	function notToPath(
+		required any target,
+		required string path,
+		message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The path [#arguments.path#] actually exists in the target."
+		)
+
+		var results = getPathResults( arguments.target, arguments.path )
+		if ( arrayLen( results ) == 0 ) {
+			return this
+		}
+
+		fail( arguments.message )
+	}
+
+	/**
+	 * Check if the value at a path equals the expected value.
+	 *
+	 * @target   The target object/struct/array
+	 * @path     The path string (e.g., "a.b.c", "users[0].name")
+	 * @expected The expected value at the path
+	 * @message  The message to send on failure
+	 */
+	function toPathValue(
+		required any target,
+		required string path,
+		required any expected,
+		message = ""
+	){
+		var results = getPathResults( arguments.target, arguments.path )
+		if ( arrayLen( results ) == 0 ) {
+			arguments.message = (
+				len( arguments.message ) ? arguments.message : "The path [#arguments.path#] does not exist in the target."
+			)
+			fail( arguments.message )
+		}
+
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is not [#getStringName( arguments.expected )#]"
+		)
+		var expectedValue = arguments.expected
+
+		if ( !allPathResultsMatch( results, ( value ) => equalize( expectedValue, value ) ) ) {
+			fail( arguments.message )
+		}
+
+		return this
+	}
+
+	/**
+	 * Check if the value at a path does NOT equal the expected value.
+	 */
+	function notToPathValue(
+		required any target,
+		required string path,
+		required any expected,
+		message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is actually [#getStringName( arguments.expected )#]"
+		)
+
+		var results = getPathResults( arguments.target, arguments.path )
+		if ( arrayLen( results ) == 0 ) {
+			return this // Path doesn't exist, so it's definitely not equal to expected
+		}
+		var expectedValue = arguments.expected
+
+		if ( anyPathResultMatches( results, ( value ) => equalize( expectedValue, value ) ) ) {
+			fail( arguments.message )
+		}
+
+		return this
+	}
+
+	/**
+	 * Check if the value at a path is of the expected type.
+	 *
+	 * @target  The target object/struct/array
+	 * @path    The path string (e.g., "a.b.c", "users[0].name")
+	 * @type    The expected type string (e.g., "string", "numeric", "array", "struct")
+	 * @message The message to send on failure
+	 */
+	function toPathType(
+		required any target,
+		required string path,
+		required string type,
+		message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is not of type [#arguments.type#]"
+		)
+
+		var results = getPathResults( arguments.target, arguments.path )
+		if ( arrayLen( results ) == 0 ) {
+			fail( arguments.message )
+		}
+
+		var actualType = this._getTypeName( results[ 1 ] )
+		if ( !this._typeMatches( actualType, arguments.type ) ) {
+			fail( arguments.message )
+		}
+
+		return this
+	}
+
+	/**
+	 * Check if the value at a path does NOT match the expected type.
+	 */
+	function notToPathType(
+		required any target,
+		required string path,
+		required string type,
+		message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] is actually of type [#arguments.type#]"
+		)
+
+		var results = getPathResults( arguments.target, arguments.path )
+		if ( arrayLen( results ) == 0 ) {
+			return this // Path doesn't exist, so it's definitely not of the specified type
+		}
+
+		var actualType = this._getTypeName( results[ 1 ] )
+		if ( this._typeMatches( actualType, arguments.type ) ) {
+			fail( arguments.message )
+		}
+
+		return this
+	}
+
+	/**
+	 * Check if the value at a path satisfies a predicate closure.
+	 *
+	 * @target    The target object/struct/array
+	 * @path      The path string (e.g., "a.b.c", "users[0].name")
+	 * @predicate A closure that takes the path value and returns true/false
+	 * @message   The message to send on failure
+	 */
+	function toPathSatisfying(
+		required any target,
+		required string path,
+		required function predicate,
+		message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] does not satisfy the predicate"
+		)
+
+		var results = getPathResults( arguments.target, arguments.path )
+		if ( arrayLen( results ) == 0 ) {
+			fail( arguments.message )
+		}
+
+		if ( !allPathResultsMatch( results, arguments.predicate ) ) {
+			fail( arguments.message )
+		}
+
+		return this
+	}
+
+	/**
+	 * Check if the value at a path does NOT satisfy a predicate closure.
+	 */
+	function notToPathSatisfying(
+		required any target,
+		required string path,
+		required function predicate,
+		message = ""
+	){
+		arguments.message = (
+			len( arguments.message ) ? arguments.message : "The value at path [#arguments.path#] should not satisfy the predicate"
+		)
+
+		var results = getPathResults( arguments.target, arguments.path )
+		if ( arrayLen( results ) == 0 ) {
+			return this // Path doesn't exist, so it can't satisfy the predicate
+		}
+
+		if ( anyPathResultMatches( results, arguments.predicate ) ) {
+			fail( arguments.message )
+		}
+
+		return this
+	}
+
+	/**
+	 * Get the type name of a value for comparison.
+	 */
+	string function _getTypeName( required any target ){
+		if ( isNull( arguments.target ) ) {
+			return "null"
+		} else if ( isSimpleValue( arguments.target ) ) {
+			if ( isNumeric( arguments.target ) ) {
+				return "numeric"
+			} else if ( isBoolean( arguments.target ) ) {
+				return "boolean"
+			} else {
+				return "string"
+			}
+		} else if ( isArray( arguments.target ) ) {
+			return "array"
+		} else if ( isStruct( arguments.target ) ) {
+			return "struct"
+		} else if ( isQuery( arguments.target ) ) {
+			return "query"
+		} else if ( isInstanceOf( arguments.target, "BoxSet" ) ) {
+			return "set"
+		} else if ( isInstanceOf( arguments.target, "Range" ) ) {
+			return "range"
+		}
+
+		return "object" // For any other types, return "object" as a generic type
+	}
+
+	/**
+	 * Check if an actual type matches the expected type (with normalization).
+	 */
+	boolean function _typeMatches( required string actualType, required string expectedType ){
+		var normalizedActual   = lCase( trim( arguments.actualType ) )
+		var normalizedExpected = lCase( trim( arguments.expectedType ) )
+
+		if ( normalizedActual eq normalizedExpected ) {
+			return true
+		}
+
+		// Handle common type aliases
+		var typeAliases = {
+			"str"      : "string",
+			"num"      : "numeric",
+			"bool"     : "boolean",
+			"int"      : "numeric",
+			"float"    : "numeric",
+			"dbl"      : "numeric",
+			"dec"      : "numeric",
+			"arr"      : "array",
+			"obj"      : "struct",
+			"map"      : "struct",
+			"dict"     : "struct",
+			"fn"       : "closure",
+			"func"     : "closure",
+			"closure"  : "closure",
+			"callback" : "closure",
+			"cfm"      : "component",
+			"cfc"      : "component",
+			"class"    : "component"
+		}
+
+		if ( structKeyExists( typeAliases, normalizedActual ) ) {
+			return typeAliases[ normalizedActual ] eq normalizedExpected
+		}
+
+		if ( structKeyExists( typeAliases, normalizedExpected ) ) {
+			return normalizedActual eq typeAliases[ normalizedExpected ]
+		}
+
+		return false
+	}
+
+	/**
+	 * Compare two BoxSet instances using BoxSet's normalized, order-independent equality rules.
+	 *
+	 * @expected The expected set
+	 * @actual   The actual set
+	 *
+	 * @return True if both sets contain the same values
+	 */
+	private boolean function setsAreEqual( required any expected, required any actual ){
+		if ( arguments.expected.size() != arguments.actual.size() ) {
+			return false
+		}
+
+		for ( var item in arguments.actual ) {
+			if ( !arguments.expected.contains( item ) ) {
+				return false
+			}
+		}
+
+		return true
 	}
 
 	private string function limitString(
@@ -1468,10 +2604,10 @@ component {
 		string end = "..."
 	){
 		if ( len( arguments.str ) <= arguments.limit ) {
-			return arguments.str;
+			return arguments.str
 		}
 
-		return left( arguments.str, arguments.limit ) & arguments.end;
+		return left( arguments.str, arguments.limit ) & arguments.end
 	}
 
 }

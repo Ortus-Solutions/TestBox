@@ -1,0 +1,396 @@
+/**
+ * Data Navigator Expectations Tests for BoxLang
+ * Phase 6: BoxLang Data Navigator Expectations
+ */
+class extends="testbox.system.BaseSpec" {
+
+	variables.config = "";
+	variables.nestedData = "";
+	variables.arrayData = "";
+	variables.filterData = "";
+	variables.recursiveData = "";
+	variables.setData = "";
+
+	function beforeAll() {
+	}
+
+	function afterAll() {
+	}
+
+	function run() {
+		describe( "Data Navigator Expectations", () => {
+			beforeEach( () => {
+				variables.config = {
+					"app" = {
+						"name" = "TestApp",
+						"version" = "2.0.0",
+						"settings" = {
+							"debug" = true,
+							"port" = 8080
+						}
+					},
+					"database" = {
+						"host" = "localhost",
+						"port" = 5432,
+						"ssl" = true
+					}
+				};
+				variables.nestedData = {
+					"level1" = {
+						"level2" = {
+							"level3" = "deep-value"
+						}
+					}
+				};
+				variables.arrayData = {
+					"users" = [
+						{ "name" = "Alice", "age" = 30 },
+						{ "name" = "Bob", "age" = 25 },
+						{ "name" = "Charlie", "age" = 35 }
+					],
+					"items" = [ "a", "b", "c", "d", "e" ]
+				};
+				variables.filterData = {
+					"products" = [
+						{ "name" = "Widget", "price" = 10, "active" = true },
+						{ "name" = "Gadget", "price" = 25, "active" = false },
+						{ "name" = "Doohickey", "price" = 15, "active" = true }
+					]
+				};
+				variables.recursiveData = {
+					"api" = {
+						"v1" = {
+							"users" = { "id" = "v1" }
+						},
+						"v2" = {
+							"users" = { "id" = "v2" }
+						}
+					}
+				};
+				variables.setData = {
+					"permissions" = setOf( "read", "write", "delete" ),
+					"nested" = {
+						"roles" = setOf( "admin", "editor" )
+					}
+				};
+			} );
+
+			afterEach( () => {
+				variables.config = "";
+				variables.nestedData = "";
+				variables.arrayData = "";
+				variables.filterData = "";
+				variables.recursiveData = "";
+				variables.setData = "";
+			} );
+
+			// ==========================================================
+			// toHavePath()
+			// ==========================================================
+			describe( "toHavePath()", () => {
+				it( "passes when a simple path exists", () => {
+					expect( config ).toHavePath( "database" );
+				} );
+
+				it( "passes when a dot-path exists", () => {
+					expect( config ).toHavePath( "app.name" );
+				} );
+
+				it( "passes when a deep dot-path exists", () => {
+					expect( config ).toHavePath( "app.settings.debug" );
+				} );
+
+				it( "passes when a deeply nested path exists", () => {
+					expect( nestedData ).toHavePath( "level1.level2.level3" );
+				} );
+
+				it( "passes when a path with array index exists", () => {
+					expect( arrayData ).toHavePath( "users[1].name" );
+				} );
+
+				it( "fails when a path does not exist", () => {
+					expect( config ).notToHavePath( "nonexistent" );
+				} );
+
+				it( "fails when a dot-path does not exist", () => {
+					expect( config ).notToHavePath( "app.nonexistent.field" );
+				} );
+
+				it( "fails when a path with invalid array index does not exist", () => {
+					expect( arrayData ).notToHavePath( "users[99].name" );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( config ).notToHavePath( "missing.path", "Should not exist" );
+				} );
+			} );
+
+			// ==========================================================
+			// toHavePathValue()
+			// ==========================================================
+			describe( "toHavePathValue()", () => {
+				it( "passes when value at path matches expected", () => {
+					expect( config ).toHavePathValue( "app.name", "TestApp" );
+				} );
+
+				it( "passes when numeric value at path matches expected", () => {
+					expect( config ).toHavePathValue( "app.settings.port", 8080 );
+				} );
+
+				it( "passes when boolean value at path matches expected", () => {
+					expect( config ).toHavePathValue( "app.settings.debug", true );
+				} );
+
+				it( "passes when string value at path matches expected", () => {
+					expect( config ).toHavePathValue( "database.host", "localhost" );
+				} );
+
+				it( "passes when deep nested value matches expected", () => {
+					expect( nestedData ).toHavePathValue( "level1.level2.level3", "deep-value" );
+				} );
+
+				it( "passes when array element value matches expected", () => {
+					expect( arrayData ).toHavePathValue( "users[1].name", "Alice" );
+				} );
+
+				it( "passes when second array element value matches expected", () => {
+					expect( arrayData ).toHavePathValue( "users[2].name", "Bob" );
+				} );
+
+				it( "passes when set value at path matches expected regardless of order", () => {
+					expect( setData ).toHavePathValue( "permissions", setOf( "delete", "write", "read" ) );
+					expect( setData ).toHavePathValue( "nested.roles", setOf( "editor", "admin" ) );
+				} );
+
+				it( "fails when value at path does not match expected", () => {
+					expect( config ).notToHavePathValue( "app.name", "WrongApp" );
+				} );
+
+				it( "fails when numeric value at path does not match", () => {
+					expect( config ).notToHavePathValue( "app.settings.port", 9999 );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( config ).notToHavePathValue( "app.name", "WrongApp", "Should not match" );
+				} );
+			} );
+
+			// ==========================================================
+			// toHavePathType()
+			// ==========================================================
+			describe( "toHavePathType()", () => {
+				it( "passes when string value is detected", () => {
+					expect( config ).toHavePathType( "app.name", "string" );
+				} );
+
+				it( "passes when numeric value is detected", () => {
+					expect( config ).toHavePathType( "app.settings.port", "numeric" );
+				} );
+
+				it( "passes when boolean value is detected", () => {
+					expect( config ).toHavePathType( "app.settings.debug", "boolean" );
+				} );
+
+				it( "passes when struct value is detected", () => {
+					expect( config ).toHavePathType( "app.settings", "struct" );
+				} );
+
+				it( "passes when array value is detected", () => {
+					expect( arrayData ).toHavePathType( "users", "array" );
+				} );
+
+				it( "passes with type alias (num for numeric)", () => {
+					expect( config ).toHavePathType( "app.settings.port", "num" );
+				} );
+
+				it( "passes with type alias (bool for boolean)", () => {
+					expect( config ).toHavePathType( "app.settings.debug", "bool" );
+				} );
+
+				it( "fails when type does not match", () => {
+					expect( config ).notToHavePathType( "app.name", "numeric" );
+				} );
+
+				it( "fails when struct is not a string", () => {
+					expect( config ).notToHavePathType( "app.settings", "string" );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( config ).notToHavePathType( "app.name", "numeric", "Should not be numeric" );
+				} );
+			} );
+
+			// ==========================================================
+			// toHavePathSatisfying()
+			// ==========================================================
+			describe( "toHavePathSatisfying()", () => {
+				it( "passes when value satisfies predicate", () => {
+					expect( config ).toHavePathSatisfying( "app.name", ( name ) -> name == "TestApp" );
+				} );
+
+				it( "passes when numeric value satisfies comparison predicate", () => {
+					expect( config ).toHavePathSatisfying( "app.settings.port", ( port ) -> port > 1000 );
+				} );
+
+				it( "passes when struct value satisfies shape predicate", () => {
+					expect( config ).toHavePathSatisfying( "app.settings", ( settings ) -> settings.keyExists( "debug" ) );
+				} );
+
+				it( "passes when array element satisfies predicate", () => {
+					expect( arrayData ).toHavePathSatisfying( "users[1].name", ( name ) -> name == "Alice" );
+				} );
+
+				it( "passes when value satisfies complex predicate", () => {
+					expect( config ).toHavePathSatisfying( "database.ssl", ( ssl ) -> ssl == true );
+				} );
+
+				it( "fails when value does not satisfy predicate", () => {
+					expect( config ).notToHavePathSatisfying( "app.name", ( name ) -> name == "WrongName" );
+				} );
+
+				it( "fails when numeric value fails comparison predicate", () => {
+					expect( config ).notToHavePathSatisfying( "app.settings.port", ( port ) -> port < 10 );
+				} );
+
+				it( "passes with custom message on failure", () => {
+					expect( config ).notToHavePathSatisfying( "app.name", ( name ) -> name == "WrongName", "Should not satisfy" );
+				} );
+			} );
+
+			// ==========================================================
+			// path() - navigate to a path and get expectation
+			// ==========================================================
+			describe( "path()", () => {
+				it( "returns an expectation on the value at a path", () => {
+					expect( config ).path( "app.name" ).toBe( "TestApp" );
+				} );
+
+				it( "allows chaining matchers on the path value", () => {
+					expect( config ).path( "app.settings.port" ).toBeGT( 8000 );
+				} );
+
+				it( "supports toBeNull when path does not exist", () => {
+					expect( config ).path( "nonexistent" ).toBeNull();
+				} );
+
+				it( "works with deep paths", () => {
+					expect( nestedData ).path( "level1.level2.level3" ).toBe( "deep-value" );
+				} );
+
+				it( "works with array index paths", () => {
+					expect( arrayData ).path( "users[1].name" ).toBe( "Alice" );
+				} );
+
+				it( "works with toHaveLength on array path", () => {
+					expect( arrayData ).path( "users" ).toHaveLength( 3 );
+				} );
+
+				it( "works with negative expectations", () => {
+					expect( config ).path( "app.name" ).notToBe( "WrongApp" );
+				} );
+			} );
+
+			// ==========================================================
+			// queryPath() - navigate and get expectation on results
+			// ==========================================================
+			describe( "queryPath()", () => {
+				it( "returns an expectation on the value at a simple path", () => {
+					expect( config ).queryPath( "app.name" ).toHaveLength( 1 );
+				} );
+
+				it( "returns array of all matching values for wildcard", () => {
+					expect( arrayData ).queryPath( "users[*].name" ).toHaveLength( 3 );
+				} );
+
+				it( "allows toInclude on wildcard results", () => {
+					expect( arrayData ).queryPath( "users[*].name" ).toInclude( "Alice" );
+				} );
+
+				it( "allows toInclude for multiple values", () => {
+					expect( arrayData ).queryPath( "users[*].name" ).toInclude( "Bob" );
+				} );
+
+				it( "supports negation on query results", () => {
+					expect( arrayData ).queryPath( "users[*].name" ).notToInclude( "Zelda" );
+				} );
+
+				it( "returns array elements via slice", () => {
+					expect( arrayData ).queryPath( "items[1:2]" ).toHaveLength( 2 );
+				} );
+
+				it( "works with filters", () => {
+					expect( filterData ).queryPath( "products[?(@.price > 20)].name" ).toHaveLength( 1 );
+				} );
+
+				it( "works with boolean filters", () => {
+					expect( filterData ).queryPath( "products[?(@.active == true)]" ).toHaveLength( 2 );
+				} );
+
+				it( "works with recursive descent", () => {
+					expect( recursiveData ).queryPath( "..users" ).toHaveLength( 2 );
+				} );
+
+				it( "returns empty array when path not found", () => {
+					expect( config ).queryPath( "nonexistent" ).toBeEmpty();
+				} );
+			} );
+
+			// ==========================================================
+			// Chaining tests
+			// ==========================================================
+			describe( "Chaining", () => {
+				it( "can chain multiple path expectations", () => {
+					expect( config )
+						.toHavePath( "app.name" )
+						.toHavePathValue( "app.name", "TestApp" )
+						.toHavePathType( "app.settings.port", "numeric" );
+				} );
+
+				it( "can chain path() with normal matchers", () => {
+					expect( config ).path( "app.name" ).toBe( "TestApp" );
+					expect( config ).path( "app.settings.port" ).toBeGT( 8000 );
+				} );
+
+				it( "can chain withContext with path matchers", () => {
+					expect( config )
+						.withContext( "Checking app config" )
+						.toHavePath( "app.name" );
+				} );
+
+				it( "can negate path matchers", () => {
+					expect( config )
+						.notToHavePath( "nonexistent" )
+						.notToHavePathValue( "app.name", "WrongApp" )
+						.notToHavePathType( "app.name", "numeric" );
+				} );
+			} );
+
+			// ==========================================================
+			// Edge cases
+			// ==========================================================
+			describe( "Edge cases", () => {
+				it( "handles empty structs gracefully", () => {
+					expect( {} ).notToHavePath( "any.key" );
+				} );
+
+				it( "handles empty arrays gracefully", () => {
+					var data = { "items" = [] };
+					expect( data ).toHavePath( "items" );
+				} );
+
+				it( "handles path with whitespace", () => {
+					expect( config ).toHavePath( "app.name" );
+				} );
+
+				it( "handles checking value at index from the end", () => {
+					expect( arrayData ).path( "items[5]" ).toBe( "e" );
+				} );
+
+				it( "returns empty for queryPath on nonexistent wildcard", () => {
+					expect( arrayData ).queryPath( "nonexistent[*]" ).toBeEmpty();
+				} );
+			} );
+		} );
+	}
+
+}

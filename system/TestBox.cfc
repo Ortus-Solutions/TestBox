@@ -256,7 +256,7 @@ component accessors="true" {
 	 */
 	function getEnv(){
 		// Lazy Load it
-		if ( isNull( variables.env ) ) {
+		if ( !structKeyExists( variables, "env" ) || isNull( variables.env ) ) {
 			variables.env = new testbox.system.util.Env();
 		}
 		return variables.env;
@@ -405,16 +405,22 @@ component accessors="true" {
 		);
 
 		// Verify URL conventions for bundle, suites and specs exclusions.
-		if ( !isNull( url.testBundles ) ) {
+		// The `url` scope only exists in a real HTTP request - it isn't registered at all when
+		// TestBox runs via the BoxLang CLI, so even a `structKeyExists( url, ... )` guard throws
+		// (resolving the bare `url` identifier is what fails, not the key lookup within it).
+		// Param it to an empty struct so it's always safe to touch below - a no-op everywhere
+		// the scope already exists (every engine, every non-CLI request).
+		param name="url" default={};
+		if ( structKeyExists( url, "testBundles" ) && !isNull( url.testBundles ) ) {
 			testBundles.append( listToArray( urlDecode( url.testBundles ) ), true );
 		}
-		if ( !isNull( url.testSuites ) ) {
+		if ( structKeyExists( url, "testSuites" ) && !isNull( url.testSuites ) ) {
 			arguments.testSuites.append( listToArray( urlDecode( url.testSuites ) ), true );
 		}
-		if ( !isNull( url.testSpecs ) ) {
+		if ( structKeyExists( url, "testSpecs" ) && !isNull( url.testSpecs ) ) {
 			arguments.testSpecs.append( listToArray( urlDecode( url.testSpecs ) ), true );
 		}
-		if ( !isNull( url.testMethod ) ) {
+		if ( structKeyExists( url, "testMethod" ) && !isNull( url.testMethod ) ) {
 			arguments.testSpecs.append( listToArray( urlDecode( url.testMethod ) ), true );
 		}
 
@@ -524,16 +530,18 @@ component accessors="true" {
 			isSimpleValue( arguments.testSpecs ) ? listToArray( arguments.testSpecs ) : arguments.testSpecs
 		);
 
-		if ( !isNull( url.testBundles ) ) {
+		// The `url` scope only exists in a real HTTP request - see the identical param in runRaw().
+		param name="url" default={};
+		if ( structKeyExists( url, "testBundles" ) && !isNull( url.testBundles ) ) {
 			arguments.testBundles.append( listToArray( urlDecode( url.testBundles ) ), true );
 		}
-		if ( !isNull( url.testSuites ) ) {
+		if ( structKeyExists( url, "testSuites" ) && !isNull( url.testSuites ) ) {
 			arguments.testSuites.append( listToArray( urlDecode( url.testSuites ) ), true );
 		}
-		if ( !isNull( url.testSpecs ) ) {
+		if ( structKeyExists( url, "testSpecs" ) && !isNull( url.testSpecs ) ) {
 			arguments.testSpecs.append( listToArray( urlDecode( url.testSpecs ) ), true );
 		}
-		if ( !isNull( url.testMethod ) ) {
+		if ( structKeyExists( url, "testMethod" ) && !isNull( url.testMethod ) ) {
 			arguments.testSpecs.append( listToArray( urlDecode( url.testMethod ) ), true );
 		}
 
@@ -1009,6 +1017,12 @@ component accessors="true" {
 			structKeyExists( targetAnnotations, "displayName" ) ? targetAnnotations.displayname : targetMD.name
 		);
 		var bundleLabels = getMetadataLabels( targetMD );
+
+		// Honor component-level `skip` annotation. If the bundle is marked
+		// as skipped, omit it from the dry-run discovery tree entirely.
+		if ( arguments.baseRunner.getBundleSkip( target ) ) {
+			return {}
+		}
 
 		if (
 			!arguments.baseRunner.canRunBundle(

@@ -77,6 +77,20 @@ component {
 	}
 
 	/**
+	 * Run all given executables and report every assertion failure at once instead of stopping at the first.
+	 * Delegates to the internal $assert.all() method.
+	 *
+	 * @executables An array of closures to execute
+	 * @heading     An optional heading to prepend to the aggregated failure message
+	 * @facade     
+	 *
+	 * @throws TestBox.AssertionFailed
+	 */
+	function assertAll( required array executables, string heading = "" ){
+		this.$assert.all( argumentCollection = arguments );
+	}
+
+	/**
 	 * Skip a test
 	 *
 	 * @message The message to send in the skip information dialog
@@ -864,6 +878,59 @@ component {
 	}
 
 	/**
+	 * Start a collection expectation expression that passes when at least one element passes the chained matcher.
+	 * Returns an instance of CollectionExpectation in "any" mode.
+	 *
+	 * @actual The actual value, it should be an array or a struct.
+	 */
+	CollectionExpectation function expectAny( required any actual ){
+		return new CollectionExpectation(
+			spec       = this,
+			assertions = this.$assert,
+			collection = arguments.actual,
+			mode       = "any"
+		);
+	}
+
+	/**
+	 * Start a collection expectation expression that passes when a bounded number of elements pass.
+	 * Returns an instance of CollectionExpectation in "some" mode.
+	 *
+	 * @actual The actual value, it should be an array or a struct.
+	 * @min    The minimum number of elements that must pass, defaults to 1
+	 * @max    The maximum number of elements that may pass, 0 means no upper bound
+	 */
+	CollectionExpectation function expectSome(
+		required any actual,
+		numeric min = 1,
+		numeric max = 0
+	){
+		return new CollectionExpectation(
+			spec       = this,
+			assertions = this.$assert,
+			collection = arguments.actual,
+			mode       = "some",
+			min        = arguments.min,
+			max        = arguments.max
+		);
+	}
+
+	/**
+	 * Start a collection expectation expression that passes when zero elements pass the chained matcher.
+	 * Returns an instance of CollectionExpectation in "none" mode.
+	 *
+	 * @actual The actual value, it should be an array or a struct.
+	 */
+	CollectionExpectation function expectNone( required any actual ){
+		return new CollectionExpectation(
+			spec       = this,
+			assertions = this.$assert,
+			collection = arguments.actual,
+			mode       = "none"
+		);
+	}
+
+	/**
 	 * Add custom matchers to your expectations
 	 *
 	 * @matchers The structure of custom matcher functions to register or a path or instance of a class containing all the matcher functions to register
@@ -1624,7 +1691,7 @@ component {
 	 */
 	function getCBMockData(){
 		// Lazy Load it
-		if ( isNull( variables.$cbMockData ) ) {
+		if ( !structKeyExists( variables, "$cbMockData" ) || isNull( variables.$cbMockData ) ) {
 			variables.$cbMockData = new testbox.system.modules.cbMockData.models.MockData();
 		}
 		return variables.$cbMockData;
@@ -1637,7 +1704,7 @@ component {
 	 */
 	function getUtility(){
 		// Lazy Load it
-		if ( isNull( variables.$utility ) ) {
+		if ( !structKeyExists( variables, "$utility" ) || isNull( variables.$utility ) ) {
 			variables.$utility = new testbox.system.util.Util();
 		}
 		return variables.$utility;
@@ -1650,7 +1717,7 @@ component {
 	 */
 	function getEnv(){
 		// Lazy Load it
-		if ( isNull( variables.$env ) ) {
+		if ( !structKeyExists( variables, "$env" ) || isNull( variables.$env ) ) {
 			variables.$env = new testbox.system.util.Env();
 		}
 		return variables.$env;
@@ -1665,7 +1732,7 @@ component {
 	 */
 	function getMockBox( string generationPath = "" ){
 		// Lazy Load it
-		if ( isNull( this.$mockbox ) ) {
+		if ( !structKeyExists( this, "$mockbox" ) || isNull( this.$mockbox ) ) {
 			variables.$mockbox = this.$mockbox = new testbox.system.MockBox( arguments.generationPath );
 		} else {
 			// Generation path updates
@@ -1811,27 +1878,27 @@ component {
 	 */
 
 	function isAdobe(){
-		return server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion Server" );
+		return server.keyExists( "coldfusion" ) && server.coldfusion.productName.findNoCase( "ColdFusion Server" )
 	}
 
 	function isLucee(){
-		return server.keyExists( "lucee" );
+		return server.keyExists( "lucee" ) && !server.keyExists( "boxlang" )
 	}
 
 	function isBoxLang(){
-		return server.keyExists( "boxlang" );
+		return server.keyExists( "boxlang" )
 	}
 
 	function isWindows(){
-		return server.keyExists( "os" ) && server.os.name.findNoCase( "windows" );
+		return server.keyExists( "os" ) && server.os.name.findNoCase( "windows" )
 	}
 
 	function isLinux(){
-		return server.keyExists( "os" ) && server.os.name.findNoCase( "unix" );
+		return server.keyExists( "os" ) && server.os.name.findNoCase( "unix" )
 	}
 
 	function isMac(){
-		return server.keyExists( "os" ) && server.os.name.findNoCase( "mac" );
+		return server.keyExists( "os" ) && server.os.name.findNoCase( "mac" )
 	}
 
 	/**

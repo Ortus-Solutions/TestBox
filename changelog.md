@@ -9,6 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+https://testbox.ortusbooks.com/readme/release-history/whats-new-with-7.1.0
+
+### Added
+
+- TESTBOX-451 BDD class `skip` annotation support for skipping entire test classes.
+- TESTBOX-457 Expectation context support via `expect( value ).withContext( message )` that prepends semantic context to all failure messages including negated matchers and custom matchers.
+- TESTBOX-458 Collection expectation modes: `expectAny()`, `expectSome()`, and `expectNone()` alongside existing `expectAll()` with detailed failure summaries including element index/key and pass count reporting.
+- TESTBOX-459 Grouped assertions via `$assert.all()`, `assertAll()` that run multiple assertion closures and report every failure at once instead of stopping at the first.
+- TESTBOX-460 New matchers: `toBeTruthy()`, `toBeFalsy()`, `toBeSameInstanceAs()`, `toHaveSize()`, `toThrowMatching()`, `toIncludeAll()`, `toIncludeAny()`, and `toIncludeNone()`.
+- TESTBOX-461 Set expectations: `toBeASet()`, `toEqualSet()`, `toBeSubsetOf()`, `toBeSupersetOf()`, `toBeDisjointFrom()`, `toHaveUnion()`, `toHaveIntersection()`, `toHaveDifference()`, and `toHaveSymmetricDifference()` for working with BoxLang Set objects.
+- TESTBOX-462 Range expectations: `toBeRange()`, `toContainValue()`, `toContainRange()`, `toBeInRange()`, `toBeBeforeRange()`, `toBeAfterRange()`, `toBeBounded()`, `toBeUnbounded()`, `toBeHalfBounded()`, `toBeIterable()`, `toBeAscending()`, `toBeDescending()`, `toHaveStep()`, and `toClampTo()` for BoxLang Range objects.
+- TESTBOX-463 Data navigator expectations: `toHavePath()`, `toHavePathValue()`, `toHavePathType()`, `toHavePathSatisfying()`, `path()`, and `queryPath()` for navigating and asserting against nested BoxLang data structures using dot-notation, array indexes, wildcards, filters, and recursive descent.
+- TESTBOX-464 New assertion BIFs: `$assert.isTruthy()`, `$assert.isFalsy()`, `$assert.includesAll()`, `$assert.includesAny()`, and `$assert.includesNone()`.
+
+### Changed
+
+- TESTBOX-466 The `coverageEnabled` URL parameter in the CFML test runner now defaults to `false` instead of `true`. Code coverage requires FusionReactor and is now opt-in. Pass `?coverageEnabled=true` to restore the previous behavior.
+
+### Improvements
+
+- TESTBOX-455 Expand the BoxLang CLI url-scope guard so it skips only when the scope truly isn't there, instead of assuming it is always absent in CLI mode.
+- Improve matcher failure messages with optional contextual prefix for distinguishing chained expectations.
+- Improve `expectAll()` failure messages to include pass/fail counts and per-element failure details with index/key context.
+- Add the [What's New With 7.1.0](https://testbox.ortusbooks.com/readme/release-history/whats-new-with-7.1.0) release page documenting all new assertion and expectation features.
+
+### Fixed
+
+- TESTBOX-448 Fix MockBox `$args()` struct-order fragility and add Set/Range support to argument matching.
+- TESTBOX-449 Encode HTML for bundle and spec names in the Simple reporter so markup in test names no longer breaks the report.
+- TESTBOX-450 Equalize assertions now handle different types of date and date/time objects for equality, instead of blindly calling `actual.equals()`.
+- TESTBOX-452 Fix `GetPageContextResponse()` error while running BoxLang in Adobe compatibility mode.
+- TESTBOX-453 Fix the BoxLang CLI runner misreading its own script path as a positional bundle argument.
+- TESTBOX-454 Fix `KeyNotFoundException [url]` crashing every CLI run on BoxLang 1.17+.
+- TESTBOX-456 Simplify the BoxLang CLI url scope guard to a plain `param`.
+- TESTBOX-465 Fix `isLucee()` returning `true` on BoxLang, which broke engine detection helpers and engine-conditional skips.
+- TESTBOX-467 Support engines running with full null support enabled.
+- TESTBOX-468 Fix custom matcher failure messages not routing through the expectation's internal fail method.
+
 ## [7.0.0] - 2026-03-17
 
 - <https://testbox.ortusbooks.com/readme/release-history/whats-new-with-7.0.0>
