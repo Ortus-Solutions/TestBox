@@ -19,7 +19,7 @@
  * --bundles-pattern: A pattern to match test bundles, defaults to `"*Spec*.cfc|*Test*.cfc|*Spec*.bx|*Test*.bx"`
  * --directory : A list of directories to look for tests to execute.  Please use dot-notation not absolute notation.
  * 		Mutually exclusive with `--bundles`. Ex: `tests.specs`.  Defaults to `tests.specs`
- * --reporter : The reporter to use.
+ * --reporter : The reporter to use. Use `agent` for compact, token-efficient JSON output designed for AI agents.
  * --labels : A list of labels to run, defaults to `*`
  * --excludes : A list of labels to exclude, defaults to empty
  * --recurse : Recurse into subdirectories, defaults to `true`
@@ -794,7 +794,7 @@ class{
 			case  "min": case "simple" :
 				reportFile &= "html";
 				break;
-			case "json":
+			case "json": case "agent":
 				reportFile &= "json";
 				break;
 			case "xml": case "ANTJunit":
