@@ -69,11 +69,10 @@ component extends="BaseReporter" {
 		// prepare incoming params
 		prepareIncomingParams();
 
-		var opts     = buildOptions( arguments.options );
-		var failures = [];
-		var specs    = [];
-		var skipped  = [];
-		var debugOut = [];
+		var opts      = buildOptions( arguments.options );
+		// Arrays are passed by value on Adobe, structs by reference: collect through a struct
+		var collector = { "failures" : [], "specs" : [], "skipped" : [] };
+		var debugOut  = [];
 
 		// Walk every bundle
 		for ( var thisBundle in arguments.results.getBundleStats() ) {
@@ -95,7 +94,7 @@ component extends="BaseReporter" {
 				if ( opts.includeStack ) {
 					bundleFailure[ "stack" ] = buildStack( thisBundle.globalException.tagContext ?: [], opts.stackDepth );
 				}
-				arrayAppend( failures, bundleFailure );
+				arrayAppend( collector.failures, bundleFailure );
 			}
 
 			if ( opts.includeDebug && arrayLen( thisBundle.debugBuffer ) ) {
@@ -106,9 +105,11 @@ component extends="BaseReporter" {
 
 			// Walk the suites recursively
 			for ( var thisSuite in thisBundle.suiteStats ) {
-				walkSuite( thisSuite, thisBundle.path, [], opts, failures, specs, skipped );
+				walkSuite( thisSuite, thisBundle.path, [], opts, collector );
 			}
 		}
+
+		var failures = collector.failures;
 
 		// Build the report, ordered keys for stable, readable output
 		var report = [
@@ -133,10 +134,10 @@ component extends="BaseReporter" {
 			report[ "truncated" ] = truncated;
 
 			if ( opts.includeSkipped ) {
-				report[ "skipped" ] = skipped;
+				report[ "skipped" ] = collector.skipped;
 			}
 			if ( opts.detail == "all" ) {
-				report[ "specs" ] = specs;
+				report[ "specs" ] = collector.specs;
 			}
 			if ( opts.includeDebug ) {
 				report[ "debug" ] = debugOut;
@@ -177,9 +178,7 @@ component extends="BaseReporter" {
 		required string bundlePath,
 		required array parents,
 		required struct opts,
-		required array failures,
-		required array specs,
-		required array skipped
+		required struct collector
 	){
 		var path = duplicate( arguments.parents );
 		arrayAppend( path, arguments.suiteStats.name );
@@ -190,7 +189,7 @@ component extends="BaseReporter" {
 
 			if ( arguments.opts.detail == "all" ) {
 				arrayAppend(
-					arguments.specs,
+					arguments.collector.specs,
 					[
 						"bundle" : arguments.bundlePath,
 						"spec"   : specPath,
@@ -202,10 +201,10 @@ component extends="BaseReporter" {
 
 			if ( status == "skipped" ) {
 				if ( arguments.opts.includeSkipped ) {
-					arrayAppend( arguments.skipped, specPath );
+					arrayAppend( arguments.collector.skipped, specPath );
 				}
 			} else if ( status == "failed" || status == "error" ) {
-				arrayAppend( arguments.failures, buildFailure( thisSpec, arguments.bundlePath, specPath, status, arguments.opts ) );
+				arrayAppend( arguments.collector.failures, buildFailure( thisSpec, arguments.bundlePath, specPath, status, arguments.opts ) );
 			}
 		}
 
@@ -215,9 +214,7 @@ component extends="BaseReporter" {
 				arguments.bundlePath,
 				path,
 				arguments.opts,
-				arguments.failures,
-				arguments.specs,
-				arguments.skipped
+				arguments.collector
 			);
 		}
 	}
@@ -297,10 +294,11 @@ component extends="BaseReporter" {
 			if ( !isStruct( thisFrame ) || !structKeyExists( thisFrame, "template" ) ) {
 				continue;
 			}
-			arrayAppend(
-				isInternalFrame( thisFrame.template ) ? internalFrames : userFrames,
-				formatFrame( thisFrame )
-			);
+			if ( isInternalFrame( thisFrame.template ) ) {
+				arrayAppend( internalFrames, formatFrame( thisFrame ) );
+			} else {
+				arrayAppend( userFrames, formatFrame( thisFrame ) );
+			}
 		}
 		var frames = userFrames;
 		for ( var thisFrame in internalFrames ) {
