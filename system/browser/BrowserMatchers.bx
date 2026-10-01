@@ -103,7 +103,7 @@ class {
 				if ( isNot ) {
 					check.not()
 				}
-				check.toHaveURL( pattern )
+				check.toHaveURL( target.regex( pattern ) )
 			}
 		)
 	}
