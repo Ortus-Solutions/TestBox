@@ -1,0 +1,87 @@
+/**
+ * testbox.system.util.FailedSpecs: the .testbox-failed.json file behind the BoxLang runner --failed option.
+ */
+class extends="testbox.system.BaseSpec" {
+
+	function beforeAll() {
+		variables.reportPath = getTempDirectory() & "testbox-failed-" & createUUID()
+	}
+
+	function afterAll() {
+		if ( directoryExists( variables.reportPath ) ) {
+			directoryDelete( variables.reportPath, true )
+		}
+	}
+
+	function run() {
+		describe( "FailedSpecs", () => {
+			beforeEach( () => {
+				variables.failedSpecs = new testbox.system.util.FailedSpecs()
+				if ( directoryExists( variables.reportPath ) ) {
+					directoryDelete( variables.reportPath, true )
+				}
+			} )
+
+			it( "collects the bundles and spec ids that failed or errored", () => {
+				var results = runFixtures( "tests.resources.failures.PlaywrightFailureFixture,tests.resources.attachments.AttachmentsXUnitFixture" )
+				var failed  = variables.failedSpecs.collect( results )
+				var specs   = results.getBundleStats()[ 1 ].suiteStats[ 1 ].specStats
+
+				expect( failed.bundles ).toBe( [ "tests.resources.failures.PlaywrightFailureFixture" ] )
+				expect( failed.specs ).toHaveLength( 2 )
+				expect( failed.specs ).toInclude( specs[ 1 ].id )
+				expect( failed.specs ).toInclude( specs[ 2 ].id )
+			} )
+
+			it( "collects empty arrays when everything passed", () => {
+				var failed = variables.failedSpecs.collect( runFixtures( "tests.resources.attachments.AttachmentsXUnitFixture" ) )
+				expect( failed ).toBe( { bundles : [], specs : [] } )
+			} )
+
+			it( "reruns whole bundles when a bundle failed outside of a spec", () => {
+				var failed = variables.failedSpecs.collect( runFixtures( "tests.specsWithFailures.BeforeAllFailures" ) )
+				expect( failed.bundles ).toBe( [ "tests.specsWithFailures.BeforeAllFailures" ] )
+				expect( failed.specs ).toBeEmpty()
+			} )
+
+			it( "writes the file into the report path and reads it back", () => {
+				var results = runFixtures( "tests.resources.failures.PlaywrightFailureFixture" )
+				var written = variables.failedSpecs.write( variables.reportPath, results )
+
+				expect( fileExists( variables.reportPath & "/.testbox-failed.json" ) ).toBeTrue()
+				expect( variables.failedSpecs.getFilePath( variables.reportPath & "/" ) ).toBe( variables.reportPath & "/.testbox-failed.json" )
+				expect( variables.failedSpecs.read( variables.reportPath ) ).toBe( written )
+			} )
+
+			it( "reads empty arrays when the file is missing or invalid", () => {
+				expect( variables.failedSpecs.read( variables.reportPath ) ).toBe( { bundles : [], specs : [] } )
+				directoryCreate( variables.reportPath )
+				fileWrite( variables.failedSpecs.getFilePath( variables.reportPath ), "not json" )
+				expect( variables.failedSpecs.read( variables.reportPath ) ).toBe( { bundles : [], specs : [] } )
+			} )
+
+			it( "selects only the failed specs when they are rerun", () => {
+				var failed  = variables.failedSpecs.collect( runFixtures( "tests.resources.failures.PlaywrightFailureFixture" ) )
+				var results = new testbox.system.TestBox(
+					bundles = failed.bundles,
+					options = { coverage : { enabled : false } }
+				).runRaw( testBundles = failed.bundles, testSpecs = [ failed.specs[ 1 ] ] )
+
+				expect( results.getTotalFail() + results.getTotalError() ).toBe( 1 )
+				expect( results.getTotalSkipped() ).toBe( 1 )
+			} )
+		} )
+	}
+
+	/**
+	 * Run fixture bundles and return their raw results.
+	 *
+	 * @bundles The fixture bundle paths, as a list
+	 *
+	 * @return The TestResult
+	 */
+	private function runFixtures( required string bundles ) {
+		return new testbox.system.TestBox( bundles = arguments.bundles, options = { coverage : { enabled : false } } ).runRaw()
+	}
+
+}

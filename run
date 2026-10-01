@@ -23,4 +23,4 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Go baby go!
-boxlang $DIR/system/runners/BoxLangRunner.bx $@
+boxlang "$DIR/system/runners/BoxLangRunner.bx" "$@"
