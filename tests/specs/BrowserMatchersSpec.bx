@@ -1,0 +1,52 @@
+/**
+ * testbox.system.browser.BrowserMatchers registered in a plain BaseSpec, as any BoxLang spec can.
+ */
+class extends="testbox.system.BaseSpec" {
+
+	function run() {
+		describe( "BrowserMatchers in any BoxLang spec", () => {
+			beforeEach( () => {
+				addMatchers( new testbox.system.browser.BrowserMatchers() )
+			} )
+
+			it( "refuses values that are not bx-playwright pages or locators", () => {
+				expect( () => expect( "plain text" ).toSee( "plain" ) ).toThrow(
+					"TestBox.AssertionFailed",
+					"toSee\(\) needs a bx-playwright page or locator"
+				)
+				expect( () => expect( { a : 1 } ).toHaveTitle( "x" ) ).toThrow( "TestBox.AssertionFailed", "needs a bx-playwright page" )
+				expect( () => expect( [] ).toBeVisible() ).toThrow( "TestBox.AssertionFailed", "needs a bx-playwright locator" )
+				expect( () => expect( nullValue() ).toHaveCount( 1 ) ).toThrow( "TestBox.AssertionFailed", "null" )
+			} )
+
+			it( "refuses them in negated matchers too", () => {
+				expect( () => expect( "plain text" ).notToSee( "other" ) ).toThrow( "TestBox.AssertionFailed", "needs a bx-playwright" )
+				expect( () => expect( "plain text" ).notToBeVisible() ).toThrow( "TestBox.AssertionFailed", "needs a bx-playwright" )
+			} )
+
+			it( "keeps toHavePath() working for Data Navigator values", () => {
+				expect( { user : { name : "Luis" } } ).toHavePath( "user.name" )
+				expect( { user : { name : "Luis" } } ).notToHavePath( "user.email" )
+				expect( () => expect( { user : {} } ).toHavePath( "user.name" ) ).toThrow( "TestBox.AssertionFailed" )
+			} )
+
+			it( "matches a bx-playwright page", () => {
+				if ( !server.keyExists( "boxlang" ) || !getModuleList().keyExists( "playwright" ) ) {
+					skip( "bx-playwright is not installed: install-bx-module bx-playwright" )
+				}
+				var support = new testbox.system.browser.BrowserSupport( this )
+				try {
+					support.browse( ( page ) => {
+						page.setContent( "<title>Plain Spec</title><h1>Matched</h1>" )
+						expect( page ).toHaveTitle( "Plain Spec" )
+						expect( page ).toSee( "Matched" )
+						expect( page.locator( "h1" ) ).toHaveText( "Matched" )
+					} )
+				} finally {
+					support.close()
+				}
+			} )
+		} )
+	}
+
+}

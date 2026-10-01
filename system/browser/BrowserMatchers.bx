@@ -1,0 +1,261 @@
+/**
+ * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * TestBox matchers for bx-playwright pages and locators. BoxLang only.
+ *
+ * testbox.system.BrowserSpec registers them for its bundles. Any other BoxLang spec can register them with:
+ *
+ * <pre>
+ * addMatchers( new testbox.system.browser.BrowserMatchers() )
+ *
+ * expect( page ).toHaveTitle( "Dashboard" )
+ * expect( page ).toHavePath( "/dashboard" )
+ * expect( page ).toSee( "Welcome" )
+ * expect( page ).notToSee( "Error" )
+ * expect( page.locator( ".todo" ) ).toHaveCount( 3 )
+ * expect( page.locator( "@error" ) ).notToBeVisible()
+ * </pre>
+ *
+ * Every matcher delegates to bx-playwright's web-first assertions, so it retries until it passes or the
+ * bx-playwright assertion timeout expires, and the `not` prefix uses bx-playwright's negated assertions,
+ * which wait too. A failure is a TestBox failure that carries bx-playwright's message (expected, received
+ * and call log). Matchers refuse values that are not bx-playwright pages or locators with a clear message,
+ * except toHavePath(), which runs the core Data Navigator matcher for other values.
+ *
+ * Every public method of this class is registered as a matcher: helpers live in BrowserMatcherSupport.
+ */
+class {
+
+	/**
+	 * The page title is exactly the given title, or matches a regex from page.regex().
+	 * Negated: notToHaveTitle( title ).
+	 *
+	 * @expectation The TestBox Expectation, its actual value must be a bx-playwright page
+	 * @args        The matcher arguments: title (position 1)
+	 *
+	 * @return True when the expectation passed, false with the failure message set on the expectation
+	 */
+	boolean function toHaveTitle( required any expectation, required struct args ) {
+		var support = new testbox.system.browser.BrowserMatcherSupport()
+		var title   = support.argument( arguments.args, "title" )
+		return support.run(
+			arguments.expectation,
+			"toHaveTitle",
+			"page",
+			( target, isNot ) => {
+				var check = target.expect()
+				if ( isNot ) {
+					check.not()
+				}
+				check.toHaveTitle( title )
+			}
+		)
+	}
+
+	/**
+	 * The full page URL is exactly the given URL, or matches a regex from page.regex().
+	 * Negated: notToHaveURL( url ).
+	 *
+	 * @expectation The TestBox Expectation, its actual value must be a bx-playwright page
+	 * @args        The matcher arguments: url (position 1)
+	 *
+	 * @return True when the expectation passed, false with the failure message set on the expectation
+	 */
+	boolean function toHaveURL( required any expectation, required struct args ) {
+		var support  = new testbox.system.browser.BrowserMatcherSupport()
+		var expected = support.argument( arguments.args, "url" )
+		return support.run(
+			arguments.expectation,
+			"toHaveURL",
+			"page",
+			( target, isNot ) => {
+				var check = target.expect()
+				if ( isNot ) {
+					check.not()
+				}
+				check.toHaveURL( expected )
+			}
+		)
+	}
+
+	/**
+	 * The page URL path is exactly the given path (case sensitive), ignoring scheme, host, query string and
+	 * hash, like bx-playwright's assertPathIs(). Negated: notToHavePath( path ).
+	 * For values that are not bx-playwright pages it runs the core Data Navigator toHavePath() matcher.
+	 *
+	 * @expectation The TestBox Expectation, its actual value is a bx-playwright page (or a Data Navigator value)
+	 * @args        The matcher arguments: path (position 1)
+	 *
+	 * @return True when the expectation passed, false with the failure message set on the expectation
+	 */
+	boolean function toHavePath( required any expectation, required struct args ) {
+		var support = new testbox.system.browser.BrowserMatcherSupport()
+		if ( !support.isPage( arguments.expectation.actual ?: nullValue() ) ) {
+			return support.runCoreMatcher( arguments.expectation, "toHavePath", arguments.args )
+		}
+		var pattern = support.pathPattern( support.argument( arguments.args, "path" ) )
+		return support.run(
+			arguments.expectation,
+			"toHavePath",
+			"page",
+			( target, isNot ) => {
+				var check = target.expect()
+				if ( isNot ) {
+					check.not()
+				}
+				check.toHaveURL( pattern )
+			}
+		)
+	}
+
+	/**
+	 * The text, or a regex from page.regex(), is visible in the page or inside the locator, like
+	 * bx-playwright's assertSee(). Negated: notToSee( text ) uses assertDontSee().
+	 *
+	 * @expectation The TestBox Expectation, its actual value must be a bx-playwright page or locator
+	 * @args        The matcher arguments: text (position 1)
+	 *
+	 * @return True when the expectation passed, false with the failure message set on the expectation
+	 */
+	boolean function toSee( required any expectation, required struct args ) {
+		var support = new testbox.system.browser.BrowserMatcherSupport()
+		var text    = support.argument( arguments.args, "text" )
+		return support.run(
+			arguments.expectation,
+			"toSee",
+			"any",
+			( target, isNot ) => {
+				if ( isNot ) {
+					target.assertDontSee( text )
+				} else {
+					target.assertSee( text )
+				}
+			}
+		)
+	}
+
+	/**
+	 * The text of the first element of the locator is exactly the given text (whitespace normalized), or
+	 * matches a regex from page.regex(). Negated: notToHaveText( text ).
+	 *
+	 * @expectation The TestBox Expectation, its actual value must be a bx-playwright locator
+	 * @args        The matcher arguments: text (position 1)
+	 *
+	 * @return True when the expectation passed, false with the failure message set on the expectation
+	 */
+	boolean function toHaveText( required any expectation, required struct args ) {
+		var support = new testbox.system.browser.BrowserMatcherSupport()
+		var text    = support.argument( arguments.args, "text" )
+		return support.run(
+			arguments.expectation,
+			"toHaveText",
+			"locator",
+			( target, isNot ) => {
+				var check = target.expect()
+				if ( isNot ) {
+					check.not()
+				}
+				check.toHaveText( text )
+			}
+		)
+	}
+
+	/**
+	 * The first element of the locator is visible. Negated: notToBeVisible().
+	 *
+	 * @expectation The TestBox Expectation, its actual value must be a bx-playwright locator
+	 * @args        The matcher arguments: none
+	 *
+	 * @return True when the expectation passed, false with the failure message set on the expectation
+	 */
+	boolean function toBeVisible( required any expectation, required struct args ) {
+		return new testbox.system.browser.BrowserMatcherSupport().run(
+			arguments.expectation,
+			"toBeVisible",
+			"locator",
+			( target, isNot ) => {
+				var check = target.expect()
+				if ( isNot ) {
+					check.not()
+				}
+				check.toBeVisible()
+			}
+		)
+	}
+
+	/**
+	 * The first element of the locator is hidden or not in the page. Negated: notToBeHidden().
+	 *
+	 * @expectation The TestBox Expectation, its actual value must be a bx-playwright locator
+	 * @args        The matcher arguments: none
+	 *
+	 * @return True when the expectation passed, false with the failure message set on the expectation
+	 */
+	boolean function toBeHidden( required any expectation, required struct args ) {
+		return new testbox.system.browser.BrowserMatcherSupport().run(
+			arguments.expectation,
+			"toBeHidden",
+			"locator",
+			( target, isNot ) => {
+				var check = target.expect()
+				if ( isNot ) {
+					check.not()
+				}
+				check.toBeHidden()
+			}
+		)
+	}
+
+	/**
+	 * The locator matches exactly the given number of elements. Negated: notToHaveCount( count ).
+	 *
+	 * @expectation The TestBox Expectation, its actual value must be a bx-playwright locator
+	 * @args        The matcher arguments: count (position 1)
+	 *
+	 * @return True when the expectation passed, false with the failure message set on the expectation
+	 */
+	boolean function toHaveCount( required any expectation, required struct args ) {
+		var support = new testbox.system.browser.BrowserMatcherSupport()
+		var count   = support.argument( arguments.args, "count" )
+		return support.run(
+			arguments.expectation,
+			"toHaveCount",
+			"locator",
+			( target, isNot ) => {
+				var check = target.expect()
+				if ( isNot ) {
+					check.not()
+				}
+				check.toHaveCount( count )
+			}
+		)
+	}
+
+	/**
+	 * The input, textarea or select of the locator has the given value, or a value matching a regex from
+	 * page.regex(). Negated: notToHaveValue( value ).
+	 *
+	 * @expectation The TestBox Expectation, its actual value must be a bx-playwright locator
+	 * @args        The matcher arguments: value (position 1)
+	 *
+	 * @return True when the expectation passed, false with the failure message set on the expectation
+	 */
+	boolean function toHaveValue( required any expectation, required struct args ) {
+		var support = new testbox.system.browser.BrowserMatcherSupport()
+		var value   = support.argument( arguments.args, "value" )
+		return support.run(
+			arguments.expectation,
+			"toHaveValue",
+			"locator",
+			( target, isNot ) => {
+				var check = target.expect()
+				if ( isNot ) {
+					check.not()
+				}
+				check.toHaveValue( value )
+			}
+		)
+	}
+
+}
