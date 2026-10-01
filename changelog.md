@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Browser testing on BoxLang with the bx-playwright module: `testbox.system.BrowserSpec` with `browse( callback, options )`, `this.playwright()` and `browserAvailable()`, the `browserProfile` and `baseURL` class annotations, one browser per bundle closed after the bundle, and the kept screenshots, trace and videos of a failed `browse()` attached to the spec. Specs skip with an install hint when bx-playwright is missing or the engine is not BoxLang. The logic lives in `testbox.system.browser.BrowserSupport`.
+- Browser matchers in `testbox.system.browser.BrowserMatchers`, registered for every `BrowserSpec` bundle and usable from any BoxLang spec with `addMatchers()`: `toHaveTitle()`, `toHaveURL()`, `toHavePath()` and `toSee()` for pages, `toHaveText()`, `toBeVisible()`, `toBeHidden()`, `toHaveCount()` and `toHaveValue()` for locators, plus their `not` forms. They delegate to the retrying bx-playwright assertions, also when negated, and fail with the bx-playwright message.
+- `attach( path, type, name )` in every spec to attach files to the running spec, kept in the new `attachments` array of the spec stats for passed and failed specs. The JSON report includes them, the Simple report links them, the JUnit and ANT JUnit reports add a `<system-out>` with one `[[ATTACHMENT|path]]` line per file, and the text, console and stream outputs list them under failed specs.
+- Spec retries: a `retries` argument on `it()`, `fit()` and `xit()`, a `retries` bundle annotation, a `retries` method annotation for xUnit tests, and a global `retries` runner option (BoxLang runner `--retries=N`). The spec value wins over the bundle annotation, which wins over the global option. A failing or erroring spec reruns its `beforeEach()`, body and `afterEach()` (or `setup()`, test and `teardown()`) up to N more times and records the final attempt. Skipped specs are never retried. The new `attempts` spec stat counts the runs and the text, console, Simple and stream outputs show "(passed after N attempts)".
+- BoxLang runner `--failed`: every run writes `{reportpath}/.testbox-failed.json` with the bundles and spec ids that failed or errored, and `./run --failed` reruns only those. When the file is missing or lists nothing, it prints a message and runs nothing.
+- BoxLang runner `--web-server`, `--web-server-url` and `--web-server-timeout`: start a web server command before the tests, wait until its URL answers, stop it and its child processes after the tests, and exit with code 1 when it does not answer in time. The URL becomes the default `baseURL` of `BrowserSpec` bundles through `server.testbox.webServerURL`.
+
+### Changed
+
+- `Playwright.AssertionFailed` exceptions now count as spec failures, like `TestBox.AssertionFailed`, in BDD specs and xUnit tests, keeping their message and detail. Other `Playwright.*` errors still count as errors.
+- xUnit failures now also record the failure detail in the spec stats.
+
+### Fixed
+
+- The `run` script now quotes its arguments, so runner options with spaces reach the BoxLang runner intact.
+
 ## [7.1.0] - 2026-09-11
 
 <https://testbox.ortusbooks.com/readme/release-history/whats-new-with-7.1.0>
