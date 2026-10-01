@@ -1,0 +1,132 @@
+/**
+ * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * Reads and writes the `.testbox-failed.json` file the BoxLang runner keeps in the report path, so
+ * `./run --failed` can rerun only what failed last time. The file looks like:
+ *
+ * <pre>
+ * { "bundles" : [ "tests.specs.LoginSpec" ], "specs" : [ "spec id", "spec id" ], "bundleErrors" : [ "tests.specs.CartSpec" ] }
+ * </pre>
+ *
+ * `bundles` and `specs` are what `--failed` reruns. A bundle that failed outside of a spec (for example
+ * in beforeAll() or afterAll()) is a broken bundle, not a failed spec: it goes to `bundleErrors` and is
+ * not rerun. Every array is empty when everything passed.
+ *
+ * BoxLang only: the BoxLang runner is the only caller.
+ */
+class {
+
+	static {
+		FILE_NAME = ".testbox-failed.json"
+	}
+
+	/**
+	 * The path of the failed specs file in a report directory.
+	 *
+	 * @reportPath The report directory
+	 *
+	 * @return The absolute path of the file
+	 */
+	string function getFilePath( required string reportPath ) {
+		return arguments.reportPath.reReplace( "[\\/]$", "" ) & "/" & static.FILE_NAME
+	}
+
+	/**
+	 * Collect the bundles and specs that failed or errored in a test run.
+	 *
+	 * @testResults The TestResult of the run
+	 *
+	 * @return A struct with `bundles` (bundle paths) and `specs` (spec ids) to rerun, and `bundleErrors`
+	 *         (paths of the bundles that failed outside of a spec, not rerun)
+	 */
+	struct function collect( required any testResults ) {
+		var bundles      = []
+		var specs        = []
+		var bundleErrors = []
+
+		for ( var bundle in arguments.testResults.getBundleStats() ) {
+			// A bundle that failed outside of a spec is broken: report it, do not rerun it
+			if ( !isSimpleValue( bundle.globalException ?: "" ) ) {
+				bundleErrors.append( bundle.path )
+				continue
+			}
+			if ( bundle.totalFail + bundle.totalError > 0 ) {
+				bundles.append( bundle.path )
+				collectSuiteSpecs( bundle.suiteStats, specs )
+			}
+		}
+
+		return {
+			"bundles"      : bundles,
+			"specs"        : specs,
+			"bundleErrors" : bundleErrors
+		}
+	}
+
+	/**
+	 * Write the failed bundles and specs of a run to the report directory.
+	 *
+	 * @reportPath  The report directory, created when missing
+	 * @testResults The TestResult of the run
+	 *
+	 * @return The struct that was written
+	 */
+	struct function write( required string reportPath, required any testResults ) {
+		var failed = collect( arguments.testResults )
+		if ( !directoryExists( arguments.reportPath ) ) {
+			directoryCreate( arguments.reportPath )
+		}
+		fileWrite( getFilePath( arguments.reportPath ), jsonSerialize( failed ) )
+		return failed
+	}
+
+	/**
+	 * Read the failed bundles and specs of the last run.
+	 *
+	 * @reportPath The report directory
+	 *
+	 * @return A struct with `bundles`, `specs` and `bundleErrors` arrays, all empty when the file is missing, invalid or empty
+	 */
+	struct function read( required string reportPath ) {
+		var empty    = { "bundles" : [], "specs" : [], "bundleErrors" : [] }
+		var filePath = getFilePath( arguments.reportPath )
+		if ( !fileExists( filePath ) ) {
+			return empty
+		}
+		var content = fileRead( filePath )
+		if ( !isJSON( content ) ) {
+			return empty
+		}
+		var data = jsonDeserialize( content )
+		if ( !isStruct( data ) ) {
+			return empty
+		}
+		return {
+			"bundles"      : isArray( data.bundles ?: "" ) ? data.bundles : [],
+			"specs"        : isArray( data.specs ?: "" ) ? data.specs : [],
+			"bundleErrors" : isArray( data.bundleErrors ?: "" ) ? data.bundleErrors : []
+		}
+	}
+
+	/**
+	 * Add the ids of failed and errored specs of the suites, and their nested suites, to an array.
+	 *
+	 * @suiteStats The suite stats to walk
+	 * @specs      The array that receives the spec ids
+	 *
+	 * @return The specs array
+	 */
+	private array function collectSuiteSpecs( required array suiteStats, required array specs ) {
+		for ( var suite in arguments.suiteStats ) {
+			for ( var spec in suite.specStats ) {
+				if ( listFindNoCase( "failed,error", spec.status ) && !arguments.specs.findNoCase( spec.id ) ) {
+					arguments.specs.append( spec.id )
+				}
+			}
+			collectSuiteSpecs( suite.suiteStats, arguments.specs )
+		}
+		return arguments.specs
+	}
+
+}

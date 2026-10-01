@@ -95,6 +95,79 @@ component {
 		);
 	}
 
+	/**
+	 * Describe how many attempts a retried spec needed, for example " (passed after 2 attempts)".
+	 *
+	 * @specStats The spec stats
+	 *
+	 * @return The note, or an empty string when the spec ran once
+	 */
+	string function getAttemptsNote( required struct specStats ){
+		var attempts = arguments.specStats.attempts ?: 1
+		if ( attempts <= 1 ) {
+			return ""
+		}
+		var outcome = arguments.specStats.status == "Error" ? "errored" : lCase( arguments.specStats.status )
+		return " (#outcome# after #attempts# attempts)"
+	}
+
+	/**
+	 * The files attached to a spec with attach().
+	 *
+	 * @specStats The spec stats
+	 *
+	 * @return An array of { path, type, name } structs, empty when there are none
+	 */
+	array function getSpecAttachments( required struct specStats ){
+		var attachments = arguments.specStats.attachments ?: []
+		return isArray( attachments ) ? attachments : []
+	}
+
+	/**
+	 * Build the JUnit system-out content that lists the attachments of a spec, one
+	 * [[ATTACHMENT|absolute path]] line per file, as understood by Jenkins and GitLab.
+	 *
+	 * @specStats The spec stats
+	 *
+	 * @return The system-out text, or an empty string when there are no attachments
+	 */
+	string function getJUnitAttachmentsOutput( required struct specStats ){
+		var lines = []
+		for ( var attachment in getSpecAttachments( arguments.specStats ) ) {
+			arrayAppend( lines, "[[ATTACHMENT|#attachment.path#]]" )
+		}
+		return arrayToList( lines, chr( 10 ) )
+	}
+
+	/**
+	 * Encode a value for use inside a double or single quoted XML attribute.
+	 * It uses the encodeForXMLAttribute() ESAPI function when the engine provides it
+	 * (Adobe, Lucee, BoxLang with bx-esapi) and an xmlFormat() based fallback otherwise,
+	 * so the XML reporters also work on a plain BoxLang runtime.
+	 *
+	 * @value The value to encode
+	 *
+	 * @return The encoded value
+	 */
+	string function encodeXMLAttribute( value ){
+		if ( isNull( arguments.value ) ) {
+			return "";
+		}
+		// structKeyExists() and not isNull(): Adobe with full null support throws on an undefined variables key
+		if ( !structKeyExists( variables, "hasXMLAttributeEncoder" ) ) {
+			variables.hasXMLAttributeEncoder = structKeyExists( getFunctionList(), "encodeForXMLAttribute" );
+		}
+		if ( variables.hasXMLAttributeEncoder ) {
+			return encodeForXMLAttribute( arguments.value );
+		}
+		// Keep tabs and line breaks, which attribute value normalization would turn into spaces
+		return replaceList(
+			xmlFormat( arguments.value ),
+			"#chr( 9 )#,#chr( 10 )#,#chr( 13 )#",
+			"&##x9;,&##xa;,&##xd;"
+		);
+	}
+
 	function space( count = 1 ){
 		return getConsoleUtil( false ).space( arguments.count );
 	}

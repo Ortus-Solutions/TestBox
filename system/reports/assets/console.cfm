@@ -75,7 +75,7 @@ Code Coverage
 
 		---><cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec"><!---
 		---><cfif variables.hideSkipped AND local.thisSpec.status eq "skipped"><cfcontinue></cfif><!---
-		--->#tabsNext##getStatusIndicator( local.thisSpec.status )# #printByStatus( local.thisSpec.status, local.thisSpec.displayName)# #color( "dim", "(#local.thisSpec.totalDuration# ms)")# #chr(13)#<!---
+		--->#tabsNext##getStatusIndicator( local.thisSpec.status )# #printByStatus( local.thisSpec.status, local.thisSpec.displayName)# #color( "dim", "(#local.thisSpec.totalDuration# ms)#getAttemptsNote( local.thisSpec )#")# #chr(13)#<!---
 
 			If Spec Failed
 
@@ -100,6 +100,11 @@ Only show non testbox template paths
 #space()#
 <!---
 ---></cfif><!---
+
+			Attachments of failed specs
+
+		---><cfif listFindNoCase( "failed,error", local.thisSpec.status )><cfloop array="#getSpecAttachments( local.thisSpec )#" index="local.thisAttachment">#tabsNext#   #color( "cyan", "📎 #local.thisAttachment.name# (#local.thisAttachment.type#) #local.thisAttachment.path#" )# #chr(13)#
+</cfloop></cfif><!---
 		---></cfloop><!---
 
 			Do we have nested suites

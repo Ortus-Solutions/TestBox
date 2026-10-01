@@ -74,7 +74,7 @@ Labels: #space( 7 )# #arrayToList( results.getLabels() )#<cfif !arrayLen( result
 			Specs
 
 		---><cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec"><!---
-		--->#tabsNext#( #getStatusIndicator( local.thisSpec.status )# ) #local.thisSpec.displayName# (#local.thisSpec.totalDuration# ms) #chr(13)#<!---
+		--->#tabsNext#( #getStatusIndicator( local.thisSpec.status )# ) #local.thisSpec.displayName# (#local.thisSpec.totalDuration# ms)#getAttemptsNote( local.thisSpec )# #chr(13)#<!---
 
 			If Spec Failed
 
@@ -99,6 +99,11 @@ Only show non testbox template paths
 #space()#
 <!---
 ---></cfif><!---
+
+			Attachments of failed specs
+
+		---><cfif listFindNoCase( "failed,error", local.thisSpec.status )><cfloop array="#getSpecAttachments( local.thisSpec )#" index="local.thisAttachment">#tabsNext#   Attachment: #local.thisAttachment.name# (#local.thisAttachment.type#) #local.thisAttachment.path# #chr(13)#
+</cfloop></cfif><!---
 		---></cfloop><!---
 
 			Do we have nested suites

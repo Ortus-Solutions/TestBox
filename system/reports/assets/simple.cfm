@@ -513,7 +513,7 @@ code {
 									class="alert-link text-#statusToBootstrapClass( local.thisSpec.status )#"
 									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( local.thisSpec.id )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
 								>
-									#statusToIcon( local.thisSpec.status )# #encodeForHtml( local.thisSpec.displayName )# (#numberFormat( local.thisSpec.totalDuration )# ms)
+									#statusToIcon( local.thisSpec.status )# #encodeForHtml( local.thisSpec.displayName )# (#numberFormat( local.thisSpec.totalDuration )# ms)#encodeForHTML( getAttemptsNote( local.thisSpec ) )#
 								</a>
 
 								<!--- Compose message according to status --->
@@ -541,6 +541,19 @@ code {
 									</button>
 								</cfif>
 							</div>
+
+							<!--- Files attached with attach() --->
+							<cfif arrayLen( getSpecAttachments( local.thisSpec ) )>
+								<ul class="spec-attachments list-unstyled small mb-1 ml-4">
+									<cfloop array="#getSpecAttachments( local.thisSpec )#" index="local.thisAttachment">
+										<li>
+											<i class="fas fa-paperclip"></i>
+											<a href="#encodeForHTMLAttribute( createObject( "java", "java.io.File" ).init( local.thisAttachment.path ).toURI().toString() )#" title="#encodeForHTMLAttribute( local.thisAttachment.path )#">#encodeForHTML( local.thisAttachment.name )#</a>
+											<span class="text-muted">(#encodeForHTML( local.thisAttachment.type )#)</span>
+										</li>
+									</cfloop>
+								</ul>
+							</cfif>
 
 							<!--- Show failed data snapshot --->
 							<cfif structKeyExists( local.thisSpec, "message" )>

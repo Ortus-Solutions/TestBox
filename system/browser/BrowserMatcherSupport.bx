@@ -1,0 +1,202 @@
+/**
+ * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * The logic behind testbox.system.browser.BrowserMatchers. Custom matcher methods run detached from their
+ * class, so the matchers call these static helpers instead of private methods:
+ * import testbox.system.browser.BrowserMatcherSupport; then BrowserMatcherSupport::run( ... ). BoxLang only.
+ */
+class {
+
+	/**
+	 * Run a bx-playwright assertion for a matcher. The assertion receives the target and whether the
+	 * expectation is negated, and must use bx-playwright's retrying (web-first) assertions for both cases.
+	 * A Playwright.AssertionFailed failure becomes the expectation message and the matcher fails.
+	 *
+	 * @expectation The TestBox Expectation the matcher runs on
+	 * @matcher     The matcher name, for failure messages
+	 * @accepts     What the matcher accepts: page, locator, or any (a page or a locator)
+	 * @assertion   A function( target, isNot ) that runs the bx-playwright assertion
+	 *
+	 * @return True when the expectation passed, false with expectation.message set when it failed
+	 */
+	static boolean function run(
+		required any expectation,
+		required string matcher,
+		required string accepts,
+		required function assertion
+	) {
+		var actual = arguments.expectation.actual ?: nullValue()
+		var kind   = static.targetKind( actual ?: nullValue() )
+		if ( !static.accepted( kind, arguments.accepts ) ) {
+			arguments.expectation.message = "#arguments.matcher#() needs a bx-playwright #static.describeAccepts( arguments.accepts )#, "
+			& "but the actual value is #static.describe( actual ?: nullValue() )#."
+			return false
+		}
+		try {
+			arguments.assertion( actual, arguments.expectation.isNot )
+			return true
+		} catch ( "Playwright.AssertionFailed" e ) {
+			arguments.expectation.message = e.message
+			return false
+		}
+	}
+
+	/**
+	 * The kind of bx-playwright object a value is.
+	 *
+	 * @target The value to inspect, may be null
+	 *
+	 * @return page, locator, or an empty string when the value is not a bx-playwright page or locator
+	 */
+	static string function targetKind( any target ) {
+		if (
+			isNull( arguments.target ) ||
+			!isObject( arguments.target ) ||
+			!structKeyExists( arguments.target, "getJava" )
+		) {
+			return ""
+		}
+		var java = arguments.target.getJava()
+		if ( isInstanceOf( java, "com.microsoft.playwright.Page" ) ) {
+			return "page"
+		}
+		if ( isInstanceOf( java, "com.microsoft.playwright.Locator" ) ) {
+			return "locator"
+		}
+		return ""
+	}
+
+	/**
+	 * Is the value a bx-playwright page?
+	 *
+	 * @target The value to inspect, may be null
+	 *
+	 * @return True for a page from browse(), newPage() or visit()
+	 */
+	static boolean function isPage( any target ) {
+		return static.targetKind( arguments.target ?: nullValue() ) == "page"
+	}
+
+	/**
+	 * Build the regex that matches a URL with the given path, ignoring scheme, host, query string and hash,
+	 * like bx-playwright's assertPathIs().
+	 *
+	 * @path The path, for example /dashboard
+	 *
+	 * @return The regex source, compile it with page.regex()
+	 */
+	static function pathPattern( required string path ) {
+		// Playwright runs regexes in the browser, so escape the path instead of using Java's \Q...\E quoting
+		var quoted = arguments.path.reReplace( "([.*+?^$\{\}()|\[\]\\/])", "\\\1", "all" )
+		return "^[a-zA-Z][a-zA-Z0-9+.-]*://[^/]*" & quoted & "(\?.*)?(##.*)?$"
+	}
+
+	/**
+	 * Run a core TestBox matcher that a browser matcher replaced on this expectation, for actual values that
+	 * are not bx-playwright objects (for example toHavePath() on a struct, the Data Navigator matcher).
+	 *
+	 * @expectation The TestBox Expectation the browser matcher runs on
+	 * @matcher     The core matcher name
+	 * @args        The matcher arguments
+	 *
+	 * @return True when the core matcher passed; a core failure throws TestBox.AssertionFailed
+	 */
+	static boolean function runCoreMatcher(
+		required any expectation,
+		required string matcher,
+		required struct args
+	) {
+		var core = new testbox.system.Expectation(
+			spec       = arguments.expectation.getSpec(),
+			assertions = arguments.expectation.getAssert()
+		)
+		core.actual  = arguments.expectation.actual ?: nullValue()
+		core.isNot   = arguments.expectation.isNot
+		core.message = arguments.expectation.message
+		core.context = arguments.expectation.context
+		invoke( core, arguments.matcher, arguments.args )
+		return true
+	}
+
+	/**
+	 * Read a matcher argument passed by position or by name.
+	 *
+	 * @args     The matcher arguments
+	 * @name     The argument name
+	 * @position The argument position
+	 *
+	 * @return The argument value
+	 *
+	 * @throws TestBox.InvalidMatcherArguments When the argument is missing
+	 */
+	static any function argument(
+		required struct args,
+		required string name,
+		numeric position = 1
+	) {
+		if ( arguments.args.keyExists( arguments.name ) && !isNull( arguments.args[ arguments.name ] ) ) {
+			return arguments.args[ arguments.name ]
+		}
+		if ( arguments.args.keyExists( arguments.position ) && !isNull( arguments.args[ arguments.position ] ) ) {
+			return arguments.args[ arguments.position ]
+		}
+		throw(
+			type    = "TestBox.InvalidMatcherArguments",
+			message = "The matcher needs the [#arguments.name#] argument."
+		)
+	}
+
+	/**
+	 * Does a target kind satisfy what a matcher accepts?
+	 *
+	 * @kind    The kind from targetKind()
+	 * @accepts page, locator or any
+	 *
+	 * @return True when the matcher can run on the target
+	 */
+	private static boolean function accepted( required string kind, required string accepts ) {
+		if ( !len( arguments.kind ) ) {
+			return false
+		}
+		return arguments.accepts == "any" || arguments.accepts == arguments.kind
+	}
+
+	/**
+	 * Describe what a matcher accepts, for failure messages.
+	 *
+	 * @accepts page, locator or any
+	 *
+	 * @return The description
+	 */
+	private static string function describeAccepts( required string accepts ) {
+		return arguments.accepts == "any" ? "page or locator" : arguments.accepts
+	}
+
+	/**
+	 * Describe an actual value that is not a bx-playwright object, for failure messages.
+	 *
+	 * @value The value, may be null
+	 *
+	 * @return The description
+	 */
+	private static string function describe( any value ) {
+		if ( isNull( arguments.value ) ) {
+			return "null"
+		}
+		if ( isSimpleValue( arguments.value ) ) {
+			return "the simple value [#left( arguments.value, 100 )#]"
+		}
+		if ( isObject( arguments.value ) ) {
+			return "an instance of [#getMetadata( arguments.value ).name ?: "unknown"#]"
+		}
+		if ( isStruct( arguments.value ) ) {
+			return "a struct"
+		}
+		if ( isArray( arguments.value ) ) {
+			return "an array"
+		}
+		return "a [#arguments.value.getClass().getName()#]"
+	}
+
+}

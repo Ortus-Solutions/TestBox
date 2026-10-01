@@ -51,7 +51,7 @@ component accessors="true" {
 	 * @reporter       The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a testbox.system.reports.IReporter
 	 * @labels         The list or array of labels that a suite or spec must have in order to execute.
 	 * @excludes       The list or array of labels that a suite or spec must not have in order to execute.
-	 * @options        A structure of configuration options that are optionally used to configure a runner.
+	 * @options        A structure of configuration options that are optionally used to configure a runner. Use `retries` (numeric) to rerun failing or erroring specs that declare no retries of their own.
 	 * @bundlesPattern A globbing pattern list to match bundles to test ONLY, matches directoryList() filters! Ex: *Spec|*Test
 	 */
 	any function init(
@@ -323,7 +323,7 @@ component accessors="true" {
 	 * @reporter     The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a testbox.system.reports.IReporter. You can also pass a struct if the reporter requires options: {type="", options={}}
 	 * @labels       The list or array of labels that a suite or spec must have in order to execute.
 	 * @excludes     The list or array of labels that a suite or spec must not have in order to execute.
-	 * @options      A structure of configuration options that are optionally used to configure a runner.
+	 * @options      A structure of configuration options that are optionally used to configure a runner. Use `retries` (numeric) to rerun failing or erroring specs that declare no retries of their own.
 	 * @testBundles  A list or array of bundle names that are the ones that will be executed ONLY!
 	 * @testSuites   A list or array of suite names that are the ones that will be executed ONLY!
 	 * @testSpecs    A list or array of test names that are the ones that will be executed ONLY!
@@ -366,7 +366,7 @@ component accessors="true" {
 	 * @directory    The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the class found, it must return true to process or false to continue process ]
 	 * @labels       The list or array of labels that a suite or spec must have in order to execute.
 	 * @excludes     The list or array of labels that a suite or spec must not have in order to execute.
-	 * @options      A structure of configuration options that are optionally used to configure a runner.
+	 * @options      A structure of configuration options that are optionally used to configure a runner. Use `retries` (numeric) to rerun failing or erroring specs that declare no retries of their own.
 	 * @testBundles  A list or array of bundle names that are the ones that will be executed ONLY!
 	 * @testSuites   A list or array of suite names that are the ones that will be executed ONLY!
 	 * @testSpecs    A list or array of test names that are the ones that will be executed ONLY!
@@ -454,40 +454,47 @@ component accessors="true" {
 
 		coverageService.beginCapture();
 
-		// iterate and run the test bundles
-		for ( var thisBundlePath in variables.bundles ) {
-			// Skip interfaces, they are not testable
-			var thisMD = server.keyExists( "boxlang" ) ? getClassMetadata( thisBundlePath ) : getComponentMetadata(
-				thisBundlePath
-			);
-			if ( thisMD.type eq "interface" ) {
-				continue;
-			}
+		// Close every browser the bundles open when the run ends: a try/finally without catch, so it also runs on abort
+		var browserRegistry = new testbox.system.browser.BrowserRegistry();
+		var browserRunId    = browserRegistry.startRun();
+		try {
+			// iterate and run the test bundles
+			for ( var thisBundlePath in variables.bundles ) {
+				// Skip interfaces, they are not testable
+				var thisMD = server.keyExists( "boxlang" ) ? getClassMetadata( thisBundlePath ) : getComponentMetadata(
+					thisBundlePath
+				);
+				if ( thisMD.type eq "interface" ) {
+					continue;
+				}
 
-			// Execute Bundle
-			testBundle(
-				bundlePath  = thisBundlePath,
-				testResults = results,
-				callbacks   = arguments.callbacks
-			);
+				// Execute Bundle
+				testBundle(
+					bundlePath  = thisBundlePath,
+					testResults = results,
+					callbacks   = arguments.callbacks
+				);
 
-			// Eager Failures on Bundle?
-			if ( arguments.eagerFailure ) {
-				var failuresDetected = results
-					.getBundleStats()
-					// Get stats for running bundle
-					.filter( function( item ){
-						return ( item.path == thisBundlePath ? true : false );
-					} )
-					.reduce( function( result, item ){
-						return ( item.totalError + item.totalFail ) > 0;
-					}, false );
+				// Eager Failures on Bundle?
+				if ( arguments.eagerFailure ) {
+					var failuresDetected = results
+						.getBundleStats()
+						// Get stats for running bundle
+						.filter( function( item ){
+							return ( item.path == thisBundlePath ? true : false );
+						} )
+						.reduce( function( result, item ){
+							return ( item.totalError + item.totalFail ) > 0;
+						}, false );
 
-				if ( failuresDetected ) {
-					// Hard skip iterations
-					break;
+					if ( failuresDetected ) {
+						// Hard skip iterations
+						break;
+					}
 				}
 			}
+		} finally {
+			browserRegistry.endRun( browserRunId );
 		}
 
 		// mark end of testing bundles
