@@ -6,11 +6,12 @@
  * `./run --failed` can rerun only what failed last time. The file looks like:
  *
  * <pre>
- * { "bundles" : [ "tests.specs.LoginSpec" ], "specs" : [ "spec id", "spec id" ] }
+ * { "bundles" : [ "tests.specs.LoginSpec" ], "specs" : [ "spec id", "spec id" ], "bundleErrors" : [ "tests.specs.CartSpec" ] }
  * </pre>
  *
- * `specs` is empty when a bundle failed outside of a spec (for example in beforeAll()), so those
- * bundles rerun completely. Both arrays are empty when everything passed.
+ * `bundles` and `specs` are what `--failed` reruns. A bundle that failed outside of a spec (for example
+ * in beforeAll() or afterAll()) is a broken bundle, not a failed spec: it goes to `bundleErrors` and is
+ * not rerun. Every array is empty when everything passed.
  *
  * BoxLang only: the BoxLang runner is the only caller.
  */
@@ -36,28 +37,30 @@ class {
 	 *
 	 * @testResults The TestResult of the run
 	 *
-	 * @return A struct with `bundles` (bundle paths) and `specs` (spec ids)
+	 * @return A struct with `bundles` (bundle paths) and `specs` (spec ids) to rerun, and `bundleErrors`
+	 *         (paths of the bundles that failed outside of a spec, not rerun)
 	 */
 	struct function collect( required any testResults ) {
-		var bundles       = []
-		var specs         = []
-		var bundleFailure = false
+		var bundles      = []
+		var specs        = []
+		var bundleErrors = []
 
 		for ( var bundle in arguments.testResults.getBundleStats() ) {
-			var hasGlobalException = !isSimpleValue( bundle.globalException ?: "" )
-			if ( bundle.totalFail + bundle.totalError > 0 || hasGlobalException ) {
+			// A bundle that failed outside of a spec is broken: report it, do not rerun it
+			if ( !isSimpleValue( bundle.globalException ?: "" ) ) {
+				bundleErrors.append( bundle.path )
+				continue
+			}
+			if ( bundle.totalFail + bundle.totalError > 0 ) {
 				bundles.append( bundle.path )
+				collectSuiteSpecs( bundle.suiteStats, specs )
 			}
-			if ( hasGlobalException ) {
-				bundleFailure = true
-			}
-			collectSuiteSpecs( bundle.suiteStats, specs )
 		}
 
 		return {
-			"bundles" : bundles,
-			// A bundle that failed outside of a spec has no failed spec ids: rerun whole bundles instead
-			"specs"   : bundleFailure ? [] : specs
+			"bundles"      : bundles,
+			"specs"        : specs,
+			"bundleErrors" : bundleErrors
 		}
 	}
 
@@ -83,10 +86,10 @@ class {
 	 *
 	 * @reportPath The report directory
 	 *
-	 * @return A struct with `bundles` and `specs` arrays, both empty when the file is missing, invalid or empty
+	 * @return A struct with `bundles`, `specs` and `bundleErrors` arrays, all empty when the file is missing, invalid or empty
 	 */
 	struct function read( required string reportPath ) {
-		var empty    = { "bundles" : [], "specs" : [] }
+		var empty    = { "bundles" : [], "specs" : [], "bundleErrors" : [] }
 		var filePath = getFilePath( arguments.reportPath )
 		if ( !fileExists( filePath ) ) {
 			return empty
@@ -100,8 +103,9 @@ class {
 			return empty
 		}
 		return {
-			"bundles" : isArray( data.bundles ?: "" ) ? data.bundles : [],
-			"specs"   : isArray( data.specs ?: "" ) ? data.specs : []
+			"bundles"      : isArray( data.bundles ?: "" ) ? data.bundles : [],
+			"specs"        : isArray( data.specs ?: "" ) ? data.specs : [],
+			"bundleErrors" : isArray( data.bundleErrors ?: "" ) ? data.bundleErrors : []
 		}
 	}
 

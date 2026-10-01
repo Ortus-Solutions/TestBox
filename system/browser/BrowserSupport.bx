@@ -30,8 +30,9 @@ class {
 	 */
 	function init( required any spec ) {
 		variables.spec    = arguments.spec
-		variables.manager = nullValue()
-		variables.lockID  = createUUID()
+		variables.manager     = nullValue()
+		variables.lockID      = createUUID()
+		variables.registryKey = ""
 		return this
 	}
 
@@ -74,6 +75,8 @@ class {
 						variables.spec.skip( getUnavailableReason() )
 					}
 					variables.manager = playwright( getProfiles(), getSettings() )
+					// The run closes it if close() never runs: a failed afterAll(), an aborted request
+					variables.registryKey = new testbox.system.browser.BrowserRegistry().register( variables.manager )
 				}
 			}
 		}
@@ -210,6 +213,8 @@ class {
 	 */
 	function close() {
 		if ( !isNull( variables.manager ) ) {
+			new testbox.system.browser.BrowserRegistry().release( variables.registryKey )
+			variables.registryKey = ""
 			try {
 				variables.manager.close()
 			} finally {

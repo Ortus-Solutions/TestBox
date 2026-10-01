@@ -51,7 +51,8 @@
  * 	and a bundle `retries` annotation take precedence. Skipped specs are never retried.
  * --failed : Run only the bundles and specs that failed or errored in the last run, read from
  * 	`{reportpath}/.testbox-failed.json`. Every run writes that file. When it is missing or lists nothing,
- * 	a message is printed and nothing runs.
+ * 	a message is printed and nothing runs. Bundles that failed outside of a spec (beforeAll(), afterAll())
+ * 	are listed, not rerun.
  * --web-server : A shell command that starts a web server before the tests run, ex: `--web-server="boxlang-miniserver --port 8080"`.
  * 	It runs with `sh -c` (`cmd /c` on Windows) from the current directory and is stopped, with its child processes, after the tests.
  * 	Launchers that split quoted arguments are supported: the words after `--web-server=` form the command until the next
@@ -228,6 +229,13 @@ class{
 		if( isBoolean( runFailedOnly ) && runFailedOnly ){
 			var failedSpecs = new testbox.system.util.FailedSpecs()
 			var lastFailed  = failedSpecs.read( afterRunArgs.reportPath )
+			// Bundles that failed outside of a spec are broken, not flaky: they are reported, never rerun
+			if( lastFailed.bundleErrors.len() ){
+				println( variables.consoleUtil.color( "bold+red", "Not rerun, #lastFailed.bundleErrors.len()# bundle(s) failed outside of a spec in the last run: fix them, then run them directly:" ) )
+				for( var bundleError in lastFailed.bundleErrors ){
+					println( "  - #bundleError#" )
+				}
+			}
 			if( !lastFailed.bundles.len() ){
 				println( "No failed tests recorded in [#failedSpecs.getFilePath( afterRunArgs.reportPath )#], nothing to run." )
 				return
