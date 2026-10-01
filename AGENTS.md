@@ -176,6 +176,7 @@ component extends="testbox.system.BaseSpec" {
 - Use 4-space indentation in CFML and BoxLang files.
 - Prefer double quotes for strings unless local code clearly uses single quotes for a reason.
 - Do not use semicolons in normal CFML/BoxLang code. Semicolons are allowed only where the language or existing convention requires them, such as property/param declarations, no-body BoxLang components, and ACF/Lucee `continue`/`break` cases.
+- Prefer the elvis operator `?:` and safe navigation `?.` over `structKeyExists()` and `isNull()` checks when they say the same thing: `var retries = arguments.spec.retries ?: 0`, `return previous ?: ""`, `user?.getName()`. They work in BoxLang, Lucee and Adobe. Keep `structKeyExists()` where it checks that a method exists before calling it.
 - Keep changes small and local. Avoid unrelated formatting churn.
 - Add focused tests for all new features and bug fixes.
 

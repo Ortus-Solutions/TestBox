@@ -1610,25 +1610,20 @@ component {
 	 * @return The number of retries, 0 for none
 	 */
 	numeric function resolveRetries( required spec, required runner ){
-		var specRetries = structKeyExists( arguments.spec, "retries" ) ? arguments.spec.retries : 0
+		var specRetries = arguments.spec.retries ?: 0
 		if ( isNumeric( specRetries ) && specRetries > 0 ) {
 			return int( specRetries )
 		}
 
 		var md          = getMetadata( this )
 		var annotations = md.keyExists( "annotations" ) ? md.annotations : md
-		if ( structKeyExists( annotations, "retries" ) && isNumeric( annotations.retries ) ) {
+		if ( isNumeric( annotations.retries ?: "" ) ) {
 			return max( 0, int( annotations.retries ) )
 		}
 
 		if ( structKeyExists( arguments.runner, "getOptions" ) ) {
-			var runnerOptions = arguments.runner.getOptions()
-			if (
-				!isNull( runnerOptions ) &&
-				isStruct( runnerOptions ) &&
-				structKeyExists( runnerOptions, "retries" ) &&
-				isNumeric( runnerOptions.retries )
-			) {
+			var runnerOptions = arguments.runner.getOptions() ?: {}
+			if ( isStruct( runnerOptions ) && isNumeric( runnerOptions.retries ?: "" ) ) {
 				return max( 0, int( runnerOptions.retries ) )
 			}
 		}
@@ -1663,7 +1658,7 @@ component {
 	any function bindSpecStats( required struct specStats ){
 		var previous = variables.$specStatsHolder.get()
 		variables.$specStatsHolder.set( arguments.specStats )
-		return isNull( previous ) ? "" : previous
+		return previous ?: ""
 	}
 
 	/**

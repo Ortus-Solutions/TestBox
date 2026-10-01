@@ -488,7 +488,7 @@ component
 					),
 					// extra runs allowed when the test fails or errors, 0 inherits the bundle annotation or global option
 					"retries" : (
-						structKeyExists( specAnnotations, "retries" ) && isNumeric( specAnnotations.retries ) ? specAnnotations.retries : 0
+						isNumeric( specAnnotations.retries ?: "" ) ? specAnnotations.retries : 0
 					)
 				};
 
