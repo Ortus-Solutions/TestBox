@@ -52,6 +52,7 @@ component accessors="true" {
 	 * @labels         The list or array of labels that a suite or spec must have in order to execute.
 	 * @excludes       The list or array of labels that a suite or spec must not have in order to execute.
 	 * @options        A structure of configuration options that are optionally used to configure a runner.
+	 *                 Use `retries` (numeric) to rerun failing or erroring specs that declare no retries of their own.
 	 * @bundlesPattern A globbing pattern list to match bundles to test ONLY, matches directoryList() filters! Ex: *Spec|*Test
 	 */
 	any function init(
@@ -324,6 +325,7 @@ component accessors="true" {
 	 * @labels       The list or array of labels that a suite or spec must have in order to execute.
 	 * @excludes     The list or array of labels that a suite or spec must not have in order to execute.
 	 * @options      A structure of configuration options that are optionally used to configure a runner.
+	 *               Use `retries` (numeric) to rerun failing or erroring specs that declare no retries of their own.
 	 * @testBundles  A list or array of bundle names that are the ones that will be executed ONLY!
 	 * @testSuites   A list or array of suite names that are the ones that will be executed ONLY!
 	 * @testSpecs    A list or array of test names that are the ones that will be executed ONLY!
@@ -367,6 +369,7 @@ component accessors="true" {
 	 * @labels       The list or array of labels that a suite or spec must have in order to execute.
 	 * @excludes     The list or array of labels that a suite or spec must not have in order to execute.
 	 * @options      A structure of configuration options that are optionally used to configure a runner.
+	 *               Use `retries` (numeric) to rerun failing or erroring specs that declare no retries of their own.
 	 * @testBundles  A list or array of bundle names that are the ones that will be executed ONLY!
 	 * @testSuites   A list or array of suite names that are the ones that will be executed ONLY!
 	 * @testSpecs    A list or array of test names that are the ones that will be executed ONLY!

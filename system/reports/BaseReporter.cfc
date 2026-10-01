@@ -95,6 +95,51 @@ component {
 		);
 	}
 
+	/**
+	 * Describe how many attempts a retried spec needed, for example " (passed after 2 attempts)".
+	 *
+	 * @specStats The spec stats
+	 *
+	 * @return The note, or an empty string when the spec ran once
+	 */
+	string function getAttemptsNote( required struct specStats ){
+		if ( !structKeyExists( arguments.specStats, "attempts" ) || arguments.specStats.attempts <= 1 ) {
+			return ""
+		}
+		var outcome = arguments.specStats.status == "Error" ? "errored" : lCase( arguments.specStats.status )
+		return " (#outcome# after #arguments.specStats.attempts# attempts)"
+	}
+
+	/**
+	 * The files attached to a spec with attach().
+	 *
+	 * @specStats The spec stats
+	 *
+	 * @return An array of { path, type, name } structs, empty when there are none
+	 */
+	array function getSpecAttachments( required struct specStats ){
+		if ( structKeyExists( arguments.specStats, "attachments" ) && isArray( arguments.specStats.attachments ) ) {
+			return arguments.specStats.attachments
+		}
+		return []
+	}
+
+	/**
+	 * Build the JUnit system-out content that lists the attachments of a spec, one
+	 * [[ATTACHMENT|absolute path]] line per file, as understood by Jenkins and GitLab.
+	 *
+	 * @specStats The spec stats
+	 *
+	 * @return The system-out text, or an empty string when there are no attachments
+	 */
+	string function getJUnitAttachmentsOutput( required struct specStats ){
+		var lines = []
+		for ( var attachment in getSpecAttachments( arguments.specStats ) ) {
+			arrayAppend( lines, "[[ATTACHMENT|#attachment.path#]]" )
+		}
+		return arrayToList( lines, chr( 10 ) )
+	}
+
 	function space( count = 1 ){
 		return getConsoleUtil( false ).space( arguments.count );
 	}

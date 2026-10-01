@@ -459,7 +459,11 @@ component accessors="true" {
 				// the failure origin
 				"failOrigin"       : {},
 				// the debug buffer
-				"debugBuffer"      : []
+				"debugBuffer"      : [],
+				// files attached to the spec via attach(): [ { path, type, name } ]
+				"attachments"      : [],
+				// how many times the spec ran, more than 1 when it was retried
+				"attempts"         : 0
 			};
 
 			// append to the parent stats
