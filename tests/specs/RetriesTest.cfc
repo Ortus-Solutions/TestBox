@@ -84,7 +84,8 @@ component extends="testbox.system.BaseSpec" {
 
 				it( "prefers the spec retries over the bundle annotation", function(){
 					var results = runFixture( "tests.resources.retries.RetriesBundleFixture" )
-					expect( findSpec( results, "uses the spec retries over the bundle retries" ).attempts ).toBe( 4 )
+					var spec    = findSpec( results, "uses the spec retries over the bundle retries" )
+					expect( spec.attempts ).toBe( 4 )
 				} )
 
 				it( "prefers the bundle annotation over the global option", function(){
@@ -154,7 +155,7 @@ component extends="testbox.system.BaseSpec" {
 	 * @return The TestResult
 	 */
 	private function runFixture( required string bundle, struct options = {} ){
-		var runnerOptions = duplicate( arguments.options )
+		var runnerOptions      = duplicate( arguments.options )
 		runnerOptions.coverage = { enabled : false }
 		return new testbox.system.TestBox( bundles = arguments.bundle, options = runnerOptions ).runRaw()
 	}

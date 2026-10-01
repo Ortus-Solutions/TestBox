@@ -77,13 +77,23 @@ component extends="testbox.system.BaseSpec" {
 			} )
 
 			it( "includes the attachments in the JSON report", function(){
-				var json = deserializeJSON( new testbox.system.reports.JSONReporter().runReport( variables.results, variables.testbox, {}, true ) )
+				var json = deserializeJSON(
+					new testbox.system.reports.JSONReporter().runReport(
+						variables.results,
+						variables.testbox,
+						{},
+						true
+					)
+				)
 				var specs = json.bundleStats[ 1 ].suiteStats[ 1 ].specStats
 				expect( specs[ 1 ].attachments[ 1 ].path ).toBe( "/tmp/testbox/passed.png" )
 			} )
 
 			it( "lists the attachments of failed specs in the text reporter", function(){
-				var report = new testbox.system.reports.TextReporter().runReport( variables.results, variables.testbox )
+				var report = new testbox.system.reports.TextReporter().runReport(
+					variables.results,
+					variables.testbox
+				)
 				expect( report ).toInclude( "Attachment: notes.txt (file) /tmp/testbox/notes.txt" )
 				expect( report ).toInclude( "Attachment: error.log (log) /tmp/testbox/error.log" )
 				expect( report ).notToInclude( "passed.png" )

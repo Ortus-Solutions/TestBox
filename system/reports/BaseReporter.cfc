@@ -140,6 +140,31 @@ component {
 		return arrayToList( lines, chr( 10 ) )
 	}
 
+	/**
+	 * Encode a value for use inside a double or single quoted XML attribute.
+	 * It uses the encodeForXMLAttribute() ESAPI function when the engine provides it
+	 * (Adobe, Lucee, BoxLang with bx-esapi) and an xmlFormat() based fallback otherwise,
+	 * so the XML reporters also work on a plain BoxLang runtime.
+	 *
+	 * @value The value to encode
+	 *
+	 * @return The encoded value
+	 */
+	string function encodeXMLAttribute( value = "" ){
+		if ( isNull( variables.hasXMLAttributeEncoder ) ) {
+			variables.hasXMLAttributeEncoder = structKeyExists( getFunctionList(), "encodeForXMLAttribute" );
+		}
+		if ( variables.hasXMLAttributeEncoder ) {
+			return encodeForXMLAttribute( arguments.value );
+		}
+		// Keep tabs and line breaks, which attribute value normalization would turn into spaces
+		return replaceList(
+			xmlFormat( arguments.value ),
+			"#chr( 9 )#,#chr( 10 )#,#chr( 13 )#",
+			"&##x9;,&##xa;,&##xd;"
+		);
+	}
+
 	function space( count = 1 ){
 		return getConsoleUtil( false ).space( arguments.count );
 	}

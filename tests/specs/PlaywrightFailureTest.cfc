@@ -44,7 +44,12 @@ component extends="testbox.system.BaseSpec" {
 
 			it( "is recognized by isAssertionFailure()", function(){
 				var outcomes = {}
-				for ( var type in [ "TestBox.AssertionFailed", "Playwright.AssertionFailed", "Playwright.Timeout" ] ) {
+				var types    = [
+					"TestBox.AssertionFailed",
+					"Playwright.AssertionFailed",
+					"Playwright.Timeout"
+				]
+				for ( var type in types ) {
 					try {
 						throw( type = type, message = "x" )
 					} catch ( any e ) {
