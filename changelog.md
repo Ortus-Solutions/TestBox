@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- New `AgentReporter` (`reporter=agent`): a compact, token-efficient JSON reporter for AI agents and automation. It emits totals plus only failed/errored specs, with options `detail`, `maxFailures`, `maxMessageLength`, `includeStack`, `stackDepth`, `includeSkipped` and `includeDebug`.
+
 ## [7.1.0] - 2026-09-11
 
 <https://testbox.ortusbooks.com/readme/release-history/whats-new-with-7.1.0>
