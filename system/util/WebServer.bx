@@ -177,10 +177,19 @@ class {
 		var TimeUnit = createObject( "java", "java.util.concurrent.TimeUnit" )
 		if ( !variables.process.waitFor( 10, TimeUnit.SECONDS ) ) {
 			variables.process.destroyForcibly()
+			variables.process.waitFor( 5, TimeUnit.SECONDS )
 		}
+		// destroyForcibly() only requests the kill: wait until every process is gone, so its port is free on return
 		for ( var handle in handles ) {
 			if ( handle.isAlive() ) {
 				handle.destroyForcibly()
+			}
+		}
+		for ( var handle in handles ) {
+			try {
+				handle.onExit().get( 5, TimeUnit.SECONDS )
+			} catch ( any e ) {
+				// Still alive after 5 seconds: nothing more can be done from here
 			}
 		}
 		variables.process = nullValue()

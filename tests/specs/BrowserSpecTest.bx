@@ -265,6 +265,19 @@ class extends="testbox.system.BrowserSpec" {
 					expect( request.browserFixture.support.hasManager() ).toBeFalse()
 				} )
 			} )
+
+			describe( "a BrowserSpec bundle whose afterAll() throws", () => {
+				it( "still closes the browser when the run ends", () => {
+					request.browserAfterAllFixture = {}
+					var results = new testbox.system.TestBox(
+						bundles = "tests.resources.browser.BrowserAfterAllErrorFixture",
+						options = { coverage : { enabled : false } }
+					).runRaw()
+
+					expect( isSimpleValue( results.getBundleStats()[ 1 ].globalException ) ).toBeFalse()
+					expect( request.browserAfterAllFixture.manager.isStarted() ).toBeFalse()
+				} )
+			} )
 		} )
 	}
 

@@ -548,7 +548,7 @@ code {
 									<cfloop array="#getSpecAttachments( local.thisSpec )#" index="local.thisAttachment">
 										<li>
 											<i class="fas fa-paperclip"></i>
-											<a href="file://#encodeForHTMLAttribute( local.thisAttachment.path )#" title="#encodeForHTMLAttribute( local.thisAttachment.path )#">#encodeForHTML( local.thisAttachment.name )#</a>
+											<a href="#encodeForHTMLAttribute( createObject( "java", "java.io.File" ).init( local.thisAttachment.path ).toURI().toString() )#" title="#encodeForHTMLAttribute( local.thisAttachment.path )#">#encodeForHTML( local.thisAttachment.name )#</a>
 											<span class="text-muted">(#encodeForHTML( local.thisAttachment.type )#)</span>
 										</li>
 									</cfloop>
