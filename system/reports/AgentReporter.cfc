@@ -79,10 +79,10 @@ component extends="BaseReporter" {
 			// Global bundle exceptions (compile errors, beforeAll failures, etc)
 			if ( !isSimpleValue( thisBundle.globalException ) ) {
 				var bundleFailure = [
-					"bundle"  : thisBundle.path,
-					"spec"    : "",
-					"status"  : "error",
-					"message" : cleanMessage(
+					"bundle" : thisBundle.path,
+					"spec"   : "",
+					"status" : "error",
+					"message": cleanMessage(
 						( thisBundle.globalException.type ?: "" ) & ": " & ( thisBundle.globalException.message ?: "" ),
 						opts.maxMessageLength
 					)
@@ -92,7 +92,10 @@ component extends="BaseReporter" {
 					bundleFailure[ "at" ] = bundleAt;
 				}
 				if ( opts.includeStack ) {
-					bundleFailure[ "stack" ] = buildStack( thisBundle.globalException.tagContext ?: [], opts.stackDepth );
+					bundleFailure[ "stack" ] = buildStack(
+						thisBundle.globalException.tagContext ?: [],
+						opts.stackDepth
+					);
 				}
 				arrayAppend( collector.failures, bundleFailure );
 			}
@@ -105,7 +108,13 @@ component extends="BaseReporter" {
 
 			// Walk the suites recursively
 			for ( var thisSuite in thisBundle.suiteStats ) {
-				walkSuite( thisSuite, thisBundle.path, [], opts, collector );
+				walkSuite(
+					thisSuite,
+					thisBundle.path,
+					[],
+					opts,
+					collector
+				);
 			}
 		}
 
@@ -113,14 +122,14 @@ component extends="BaseReporter" {
 
 		// Build the report, ordered keys for stable, readable output
 		var report = [
-			"ok"     : ( results.getTotalFail() + results.getTotalError() == 0 && !arrayLen( failures ) ),
-			"totals" : [
-				"pass"    : results.getTotalPass(),
-				"fail"    : results.getTotalFail(),
-				"error"   : results.getTotalError(),
-				"skipped" : results.getTotalSkipped(),
-				"specs"   : results.getTotalSpecs(),
-				"ms"      : results.getTotalDuration()
+			"ok"    : ( results.getTotalFail() + results.getTotalError() == 0 && !arrayLen( failures ) ),
+			"totals": [
+				"pass"   : results.getTotalPass(),
+				"fail"   : results.getTotalFail(),
+				"error"  : results.getTotalError(),
+				"skipped": results.getTotalSkipped(),
+				"specs"  : results.getTotalSpecs(),
+				"ms"     : results.getTotalDuration()
 			]
 		];
 
@@ -191,10 +200,10 @@ component extends="BaseReporter" {
 				arrayAppend(
 					arguments.collector.specs,
 					[
-						"bundle" : arguments.bundlePath,
-						"spec"   : specPath,
-						"status" : status,
-						"ms"     : thisSpec.totalDuration
+						"bundle": arguments.bundlePath,
+						"spec"  : specPath,
+						"status": status,
+						"ms"    : thisSpec.totalDuration
 					]
 				);
 			}
@@ -204,7 +213,16 @@ component extends="BaseReporter" {
 					arrayAppend( arguments.collector.skipped, specPath );
 				}
 			} else if ( status == "failed" || status == "error" ) {
-				arrayAppend( arguments.collector.failures, buildFailure( thisSpec, arguments.bundlePath, specPath, status, arguments.opts ) );
+				arrayAppend(
+					arguments.collector.failures,
+					buildFailure(
+						thisSpec,
+						arguments.bundlePath,
+						specPath,
+						status,
+						arguments.opts
+					)
+				);
 			}
 		}
 
@@ -230,15 +248,20 @@ component extends="BaseReporter" {
 		required struct opts
 	){
 		var message = arguments.specStats.failMessage;
-		if ( !len( message ) && isStruct( arguments.specStats.error ) && structKeyExists( arguments.specStats.error, "message" ) ) {
+		if (
+			!len( message ) && isStruct( arguments.specStats.error ) && structKeyExists(
+				arguments.specStats.error,
+				"message"
+			)
+		) {
 			message = arguments.specStats.error.message;
 		}
 
 		var failure = [
-			"bundle"  : arguments.bundlePath,
-			"spec"    : arguments.specPath,
-			"status"  : arguments.status,
-			"message" : cleanMessage( message, arguments.opts.maxMessageLength )
+			"bundle" : arguments.bundlePath,
+			"spec"   : arguments.specPath,
+			"status" : arguments.status,
+			"message": cleanMessage( message, arguments.opts.maxMessageLength )
 		];
 
 		var origin = isArray( arguments.specStats.failOrigin ) ? arguments.specStats.failOrigin : [];
@@ -257,7 +280,14 @@ component extends="BaseReporter" {
 	 * Collapse whitespace and truncate a message
 	 */
 	private string function cleanMessage( required any message, required numeric maxLength ){
-		var clean = trim( reReplace( toString( arguments.message ), "\s+", " ", "all" ) );
+		var clean = trim(
+			reReplace(
+				toString( arguments.message ),
+				"\s+",
+				" ",
+				"all"
+			)
+		);
 		if ( arguments.maxLength > 0 && len( clean ) > arguments.maxLength ) {
 			clean = left( clean, arguments.maxLength ) & "...";
 		}
@@ -304,7 +334,11 @@ component extends="BaseReporter" {
 		for ( var thisFrame in internalFrames ) {
 			arrayAppend( frames, thisFrame );
 		}
-		return arraySlice( frames, 1, min( arguments.depth, arrayLen( frames ) ) );
+		return arraySlice(
+			frames,
+			1,
+			min( arguments.depth, arrayLen( frames ) )
+		);
 	}
 
 	/**
@@ -339,7 +373,11 @@ component extends="BaseReporter" {
 			}
 		}
 		if ( len( variables.rootPath ) > 1 && left( normalized, len( variables.rootPath ) ) == variables.rootPath ) {
-			return mid( normalized, len( variables.rootPath ) + 1, len( normalized ) );
+			return mid(
+				normalized,
+				len( variables.rootPath ) + 1,
+				len( normalized )
+			);
 		}
 		return normalized;
 	}

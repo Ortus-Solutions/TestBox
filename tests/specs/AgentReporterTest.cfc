@@ -12,7 +12,10 @@ component extends="testbox.system.BaseSpec" {
 	private string function runAgent( required string bundle, struct options = {} ){
 		return new testbox.system.TestBox(
 			bundles  = arguments.bundle,
-			reporter = { type : "testbox.system.reports.AgentReporter", options : arguments.options }
+			reporter = {
+				type    : "testbox.system.reports.AgentReporter",
+				options : arguments.options
+			}
 		).run();
 	}
 
@@ -144,7 +147,9 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "includeStack adds a bounded stack array", function(){
-					var report = deserializeJSON( runAgent( variables.mixed, { includeStack : true, stackDepth : 2 } ) );
+					var report = deserializeJSON(
+						runAgent( variables.mixed, { includeStack : true, stackDepth : 2 } )
+					);
 					for ( var thisFailure in report.failures ) {
 						expect( thisFailure ).toHaveKey( "stack" );
 						expect( arrayLen( thisFailure.stack ) ).toBeLTE( 2 );
@@ -179,10 +184,7 @@ component extends="testbox.system.BaseSpec" {
 
 			it( "is far smaller than the JSON reporter", function(){
 				var agent = runAgent( variables.mixed );
-				var full  = new testbox.system.TestBox(
-					bundles  = variables.mixed,
-					reporter = "json"
-				).run();
+				var full  = new testbox.system.TestBox( bundles = variables.mixed, reporter = "json" ).run();
 				expect( len( agent ) ).toBeLT( len( full ) / 4 );
 			} );
 		} );
