@@ -217,7 +217,7 @@ return;
 			}
 			case "error": {
 				out.append(
-					"<error type=""#encodeXMLAttribute( !isNull( stats.error.type ) ? stats.error.type : '' )#"" message=""#encodeXMLAttribute( stats.error.message )#""><![CDATA[
+					"<error type=""#encodeXMLAttribute( stats.error.type ?: '' )#"" message=""#encodeXMLAttribute( stats.error.message )#""><![CDATA[
 					#stats.error.stackTrace.toString()#
 					]]></error>"
 				);
