@@ -1,0 +1,114 @@
+/**
+ * testbox.system.util.WebServer: the web server behind the BoxLang runner --web-server options.
+ * Uses `python3 -m http.server` as a tiny server and skips when python3 is not on the PATH.
+ */
+class extends="testbox.system.BaseSpec" {
+
+	function run() {
+		describe( "WebServer", () => {
+			it( "starts a server, waits until it answers and stops it", () => {
+				requirePython()
+				var port      = freePort()
+				var webServer = new testbox.system.util.WebServer(
+					command : "python3 -m http.server #port# --bind 127.0.0.1",
+					url     : "http://127.0.0.1:#port#/",
+					timeout : 30
+				)
+				try {
+					webServer.start()
+					expect( webServer.isRunning() ).toBeTrue()
+					expect( webServer.isResponding() ).toBeTrue()
+				} finally {
+					webServer.stop()
+				}
+				expect( webServer.isRunning() ).toBeFalse()
+				expect( webServer.isResponding() ).toBeFalse()
+			} )
+
+			it( "fails, with the command output, when the command exits before answering", () => {
+				requireUnix()
+				var webServer = new testbox.system.util.WebServer(
+					command : "echo cannot start; exit 3",
+					url     : "http://127.0.0.1:#freePort()#/",
+					timeout : 10
+				)
+				expect( () => webServer.start() ).toThrow( "TestBox.WebServerFailed", "exited with code 3" )
+				expect( webServer.isRunning() ).toBeFalse()
+			} )
+
+			it( "fails and stops the process tree when the URL does not answer in time", () => {
+				requireUnix()
+				var marker    = "testbox-web-server-#createUUID()#"
+				var webServer = new testbox.system.util.WebServer(
+					// A child shell carries the marker, so the check below also covers descendants
+					command : "sh -c 'sleep 30; echo done' #marker#",
+					url     : "http://127.0.0.1:#freePort()#/",
+					timeout : 1
+				)
+				expect( () => webServer.start() ).toThrow( "TestBox.WebServerFailed", "within 1 seconds" )
+				expect( webServer.isRunning() ).toBeFalse()
+				expect( countProcesses( marker ) ).toBe( 0 )
+			} )
+
+			it( "stops safely when it never started", () => {
+				var webServer = new testbox.system.util.WebServer( command : "true" )
+				expect( () => webServer.stop() ).notToThrow()
+			} )
+		} )
+	}
+
+	/**
+	 * Skip the spec when python3 is not on the PATH.
+	 */
+	private function requirePython() {
+		requireUnix()
+		var path = server.system.environment.PATH ?: ""
+		for ( var dir in listToArray( path, ":" ) ) {
+			if ( fileExists( dir & "/python3" ) ) {
+				return
+			}
+		}
+		skip( "python3 is not on the PATH" )
+	}
+
+	/**
+	 * Skip the spec on Windows, where the shell commands of these specs do not exist.
+	 */
+	private function requireUnix() {
+		if ( isWindows() ) {
+			skip( "needs a unix shell" )
+		}
+	}
+
+	/**
+	 * Count the running processes whose command line contains a marker.
+	 *
+	 * @marker The text to look for
+	 *
+	 * @return The number of matching processes
+	 */
+	private numeric function countProcesses( required string marker ) {
+		var count = 0
+		for ( var handle in createObject( "java", "java.lang.ProcessHandle" ).allProcesses().toList() ) {
+			if ( handle.isAlive() && handle.info().commandLine().orElse( "" ).find( arguments.marker ) ) {
+				count++
+			}
+		}
+		return count
+	}
+
+	/**
+	 * Find a free local TCP port.
+	 *
+	 * @return The port number
+	 */
+	private numeric function freePort() {
+		var socket = createObject( "java", "java.net.ServerSocket" ).init( javacast( "int", 0 ) )
+		try {
+			return socket.getLocalPort()
+		} finally {
+			socket.close()
+		}
+	}
+
+}
