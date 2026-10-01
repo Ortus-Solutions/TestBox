@@ -84,14 +84,12 @@ class {
 	 *
 	 * @path The path, for example /dashboard
 	 *
-	 * @return A java.util.regex.Pattern
+	 * @return The regex source, compile it with page.regex()
 	 */
 	static function pathPattern( required string path ) {
 		// Playwright runs regexes in the browser, so escape the path instead of using Java's \Q...\E quoting
 		var quoted = arguments.path.reReplace( "([.*+?^$\{\}()|\[\]\\/])", "\\\1", "all" )
-		return createObject( "java", "java.util.regex.Pattern" ).compile(
-			"^[a-zA-Z][a-zA-Z0-9+.-]*://[^/]*" & quoted & "(\?.*)?(##.*)?$"
-		)
+		return "^[a-zA-Z][a-zA-Z0-9+.-]*://[^/]*" & quoted & "(\?.*)?(##.*)?$"
 	}
 
 	/**
