@@ -175,6 +175,12 @@ component extends="BaseReporter" {
 		}
 		// cfformat-ignore-end
 
+		// Files attached with attach(), in the [[ATTACHMENT|path]] format of the JUnit attachments plugin
+		var attachmentsOutput = getJUnitAttachmentsOutput( stats )
+		if ( len( attachmentsOutput ) ) {
+			out.append( "<system-out>#xmlFormat( attachmentsOutput )#</system-out>" )
+		}
+
 		out.append( "</testcase>" );
 	}
 

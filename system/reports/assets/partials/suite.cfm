@@ -31,12 +31,27 @@
 						href="#variables.helper.href( variables.helper.runURL( bundle = local.bundle.path, spec = thisSpec.id ) )#"
 						title="Run only this spec"
 					>#encodeForHtml( thisSpec.displayName )#</a>
-					<span class="tb-spec__ms tb-num">#encodeForHtml( variables.helper.duration( thisSpec.totalDuration ) )#</span>
+					<span class="tb-spec__ms tb-num">#encodeForHtml( variables.helper.duration( thisSpec.totalDuration ) )##encodeForHtml( getAttemptsNote( thisSpec ) )#</span>
 					<cfif len( local.message )>
 						<p class="tb-spec__message">
 							#encodeForHtml( local.message )#
 							<a href="##failure-#encodeForHtml( thisSpec.id )#">Details</a>
 						</p>
+					</cfif>
+					<!--- Files attached with attach(): screenshots, traces, videos --->
+					<cfset local.attachments = getSpecAttachments( thisSpec )>
+					<cfif arrayLen( local.attachments )>
+						<ul class="tb-spec__attachments">
+							<cfloop array="#local.attachments#" item="thisAttachment">
+								<li>
+									<a
+										href="#encodeForHtmlAttribute( createObject( "java", "java.io.File" ).init( thisAttachment.path ).toURI().toString() )#"
+										title="#encodeForHtmlAttribute( thisAttachment.path )#"
+									>#encodeForHtml( thisAttachment.name )#</a>
+									<span class="tb-spec__ms">(#encodeForHtml( thisAttachment.type )#)</span>
+								</li>
+							</cfloop>
+						</ul>
 					</cfif>
 				</li>
 			</cfloop>
