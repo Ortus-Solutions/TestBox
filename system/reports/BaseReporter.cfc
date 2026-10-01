@@ -150,8 +150,12 @@ component {
 	 *
 	 * @return The encoded value
 	 */
-	string function encodeXMLAttribute( value = "" ){
-		if ( isNull( variables.hasXMLAttributeEncoder ) ) {
+	string function encodeXMLAttribute( value ){
+		if ( isNull( arguments.value ) ) {
+			return "";
+		}
+		// structKeyExists() and not isNull(): Adobe with full null support throws on an undefined variables key
+		if ( !structKeyExists( variables, "hasXMLAttributeEncoder" ) ) {
 			variables.hasXMLAttributeEncoder = structKeyExists( getFunctionList(), "encodeForXMLAttribute" );
 		}
 		if ( variables.hasXMLAttributeEncoder ) {
