@@ -2,7 +2,8 @@
  * Fixture for BrowserSpecTest: a BrowserSpec bundle with its own afterAll(), a passing browser spec and
  * two failing ones. Run it only when bx-playwright is available.
  */
-class extends="testbox.system.BrowserSpec" baseURL="http://fixture.testbox.test" {
+@baseURL( "http://fixture.testbox.test" )
+class extends="testbox.system.BrowserSpec" {
 
 	function afterAll() {
 		request.browserFixture.afterAll = true
