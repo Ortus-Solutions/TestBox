@@ -114,7 +114,11 @@ component {
 	 *
 	 * @throws TestBox.InvalidContext When no spec is running on the current thread
 	 */
-	function attach( required string path, string type = "file", string name = "" ){
+	function attach(
+		required string path,
+		string type = "file",
+		string name = ""
+	){
 		var specStats = variables.$specStatsHolder.get()
 		if ( isNull( specStats ) ) {
 			throw(
