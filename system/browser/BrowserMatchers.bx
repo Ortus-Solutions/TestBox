@@ -23,8 +23,10 @@
  * and call log). Matchers refuse values that are not bx-playwright pages or locators with a clear message,
  * except toHavePath(), which runs the core Data Navigator matcher for other values.
  *
- * Every public method of this class is registered as a matcher: helpers live in BrowserMatcherSupport.
+ * Every public method of this class is registered as a matcher: helpers are the static methods of BrowserMatcherSupport.
  */
+import testbox.system.browser.BrowserMatcherSupport
+
 class {
 
 	/**
@@ -37,9 +39,8 @@ class {
 	 * @return True when the expectation passed, false with the failure message set on the expectation
 	 */
 	boolean function toHaveTitle( required any expectation, required struct args ) {
-		var support = new testbox.system.browser.BrowserMatcherSupport()
-		var title   = support.argument( arguments.args, "title" )
-		return support.run(
+		var title = BrowserMatcherSupport::argument( arguments.args, "title" )
+		return BrowserMatcherSupport::run(
 			arguments.expectation,
 			"toHaveTitle",
 			"page",
@@ -63,9 +64,8 @@ class {
 	 * @return True when the expectation passed, false with the failure message set on the expectation
 	 */
 	boolean function toHaveURL( required any expectation, required struct args ) {
-		var support  = new testbox.system.browser.BrowserMatcherSupport()
-		var expected = support.argument( arguments.args, "url" )
-		return support.run(
+		var expected = BrowserMatcherSupport::argument( arguments.args, "url" )
+		return BrowserMatcherSupport::run(
 			arguments.expectation,
 			"toHaveURL",
 			"page",
@@ -90,12 +90,11 @@ class {
 	 * @return True when the expectation passed, false with the failure message set on the expectation
 	 */
 	boolean function toHavePath( required any expectation, required struct args ) {
-		var support = new testbox.system.browser.BrowserMatcherSupport()
-		if ( !support.isPage( arguments.expectation.actual ?: nullValue() ) ) {
-			return support.runCoreMatcher( arguments.expectation, "toHavePath", arguments.args )
+		if ( !BrowserMatcherSupport::isPage( arguments.expectation.actual ?: nullValue() ) ) {
+			return BrowserMatcherSupport::runCoreMatcher( arguments.expectation, "toHavePath", arguments.args )
 		}
-		var pattern = support.pathPattern( support.argument( arguments.args, "path" ) )
-		return support.run(
+		var pattern = BrowserMatcherSupport::pathPattern( BrowserMatcherSupport::argument( arguments.args, "path" ) )
+		return BrowserMatcherSupport::run(
 			arguments.expectation,
 			"toHavePath",
 			"page",
@@ -119,9 +118,8 @@ class {
 	 * @return True when the expectation passed, false with the failure message set on the expectation
 	 */
 	boolean function toSee( required any expectation, required struct args ) {
-		var support = new testbox.system.browser.BrowserMatcherSupport()
-		var text    = support.argument( arguments.args, "text" )
-		return support.run(
+		var text = BrowserMatcherSupport::argument( arguments.args, "text" )
+		return BrowserMatcherSupport::run(
 			arguments.expectation,
 			"toSee",
 			"any",
@@ -145,9 +143,8 @@ class {
 	 * @return True when the expectation passed, false with the failure message set on the expectation
 	 */
 	boolean function toHaveText( required any expectation, required struct args ) {
-		var support = new testbox.system.browser.BrowserMatcherSupport()
-		var text    = support.argument( arguments.args, "text" )
-		return support.run(
+		var text = BrowserMatcherSupport::argument( arguments.args, "text" )
+		return BrowserMatcherSupport::run(
 			arguments.expectation,
 			"toHaveText",
 			"locator",
@@ -170,7 +167,7 @@ class {
 	 * @return True when the expectation passed, false with the failure message set on the expectation
 	 */
 	boolean function toBeVisible( required any expectation, required struct args ) {
-		return new testbox.system.browser.BrowserMatcherSupport().run(
+		return BrowserMatcherSupport::run(
 			arguments.expectation,
 			"toBeVisible",
 			"locator",
@@ -193,7 +190,7 @@ class {
 	 * @return True when the expectation passed, false with the failure message set on the expectation
 	 */
 	boolean function toBeHidden( required any expectation, required struct args ) {
-		return new testbox.system.browser.BrowserMatcherSupport().run(
+		return BrowserMatcherSupport::run(
 			arguments.expectation,
 			"toBeHidden",
 			"locator",
@@ -216,9 +213,8 @@ class {
 	 * @return True when the expectation passed, false with the failure message set on the expectation
 	 */
 	boolean function toHaveCount( required any expectation, required struct args ) {
-		var support = new testbox.system.browser.BrowserMatcherSupport()
-		var count   = support.argument( arguments.args, "count" )
-		return support.run(
+		var count = BrowserMatcherSupport::argument( arguments.args, "count" )
+		return BrowserMatcherSupport::run(
 			arguments.expectation,
 			"toHaveCount",
 			"locator",
@@ -242,9 +238,8 @@ class {
 	 * @return True when the expectation passed, false with the failure message set on the expectation
 	 */
 	boolean function toHaveValue( required any expectation, required struct args ) {
-		var support = new testbox.system.browser.BrowserMatcherSupport()
-		var value   = support.argument( arguments.args, "value" )
-		return support.run(
+		var value = BrowserMatcherSupport::argument( arguments.args, "value" )
+		return BrowserMatcherSupport::run(
 			arguments.expectation,
 			"toHaveValue",
 			"locator",

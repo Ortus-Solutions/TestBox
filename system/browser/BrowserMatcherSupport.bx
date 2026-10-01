@@ -3,7 +3,8 @@
  * www.ortussolutions.com
  * ---
  * The logic behind testbox.system.browser.BrowserMatchers. Custom matcher methods run detached from their
- * class, so the matchers create this helper instead of calling private methods. BoxLang only.
+ * class, so the matchers call these static helpers instead of private methods:
+ * import testbox.system.browser.BrowserMatcherSupport; then BrowserMatcherSupport::run( ... ). BoxLang only.
  */
 class {
 
@@ -19,17 +20,17 @@ class {
 	 *
 	 * @return True when the expectation passed, false with expectation.message set when it failed
 	 */
-	boolean function run(
+	static boolean function run(
 		required any expectation,
 		required string matcher,
 		required string accepts,
 		required function assertion
 	) {
 		var actual = arguments.expectation.actual ?: nullValue()
-		var kind   = targetKind( actual ?: nullValue() )
-		if ( !accepted( kind, arguments.accepts ) ) {
-			arguments.expectation.message = "#arguments.matcher#() needs a bx-playwright #describeAccepts( arguments.accepts )#, "
-			& "but the actual value is #describe( actual ?: nullValue() )#."
+		var kind   = static.targetKind( actual ?: nullValue() )
+		if ( !static.accepted( kind, arguments.accepts ) ) {
+			arguments.expectation.message = "#arguments.matcher#() needs a bx-playwright #static.describeAccepts( arguments.accepts )#, "
+			& "but the actual value is #static.describe( actual ?: nullValue() )#."
 			return false
 		}
 		try {
@@ -48,7 +49,7 @@ class {
 	 *
 	 * @return page, locator, or an empty string when the value is not a bx-playwright page or locator
 	 */
-	string function targetKind( any target ) {
+	static string function targetKind( any target ) {
 		if (
 			isNull( arguments.target ) ||
 			!isObject( arguments.target ) ||
@@ -73,8 +74,8 @@ class {
 	 *
 	 * @return True for a page from browse(), newPage() or visit()
 	 */
-	boolean function isPage( any target ) {
-		return targetKind( arguments.target ?: nullValue() ) == "page"
+	static boolean function isPage( any target ) {
+		return static.targetKind( arguments.target ?: nullValue() ) == "page"
 	}
 
 	/**
@@ -85,7 +86,7 @@ class {
 	 *
 	 * @return A java.util.regex.Pattern
 	 */
-	function pathPattern( required string path ) {
+	static function pathPattern( required string path ) {
 		// Playwright runs regexes in the browser, so escape the path instead of using Java's \Q...\E quoting
 		var quoted = arguments.path.reReplace( "([.*+?^$\{\}()|\[\]\\/])", "\\\1", "all" )
 		return createObject( "java", "java.util.regex.Pattern" ).compile(
@@ -103,7 +104,7 @@ class {
 	 *
 	 * @return True when the core matcher passed; a core failure throws TestBox.AssertionFailed
 	 */
-	boolean function runCoreMatcher(
+	static boolean function runCoreMatcher(
 		required any expectation,
 		required string matcher,
 		required struct args
@@ -131,7 +132,7 @@ class {
 	 *
 	 * @throws TestBox.InvalidMatcherArguments When the argument is missing
 	 */
-	any function argument(
+	static any function argument(
 		required struct args,
 		required string name,
 		numeric position = 1
@@ -156,7 +157,7 @@ class {
 	 *
 	 * @return True when the matcher can run on the target
 	 */
-	private boolean function accepted( required string kind, required string accepts ) {
+	private static boolean function accepted( required string kind, required string accepts ) {
 		if ( !len( arguments.kind ) ) {
 			return false
 		}
@@ -170,7 +171,7 @@ class {
 	 *
 	 * @return The description
 	 */
-	private string function describeAccepts( required string accepts ) {
+	private static string function describeAccepts( required string accepts ) {
 		return arguments.accepts == "any" ? "page or locator" : arguments.accepts
 	}
 
@@ -181,7 +182,7 @@ class {
 	 *
 	 * @return The description
 	 */
-	private string function describe( any value ) {
+	private static string function describe( any value ) {
 		if ( isNull( arguments.value ) ) {
 			return "null"
 		}
