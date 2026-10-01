@@ -22,7 +22,8 @@
  *
  * BoxLang only: the BoxLang runner is the only caller.
  */
-class accessors="true" {
+@accessors( true )
+class {
 
 	/**
 	 * The shell command that starts the web server

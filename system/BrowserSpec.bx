@@ -5,7 +5,7 @@
  * Base spec for browser tests, built on the bx-playwright module. BoxLang only.
  *
  * <pre>
- * class extends="testbox.system.BrowserSpec" baseURL="http://localhost:8080" browserProfile="ci" {
+ * class extends="testbox.system.BrowserSpec" {
  *     function run() {
  *         describe( "Login", () => {
  *             it( "signs in", () => {
@@ -22,10 +22,11 @@
  * }
  * </pre>
  *
- * Class annotations:
- * - `browserProfile`: bx-playwright profiles for the bundle browser, a list such as `ci,mobile`
- * - `baseURL`: the URL relative visits resolve against. Defaults to the `--web-server-url` of the BoxLang
- *   runner when it started a web server, else bx-playwright's own setting or `BX_PLAYWRIGHT_BASEURL`
+ * Class annotations, written as BoxLang annotations above `class`:
+ * - `@browserProfile( "ci" )`: bx-playwright profiles for the bundle browser, a list such as `ci,mobile`
+ * - `@baseURL( "http://localhost:8080" )`: the URL relative visits resolve against. Defaults to the
+ *   `--web-server-url` of the BoxLang runner when it started a web server, else bx-playwright's own
+ *   setting or `BX_PLAYWRIGHT_BASEURL`
  *
  * The bundle shares one browser, started on first use, and every browse() call gets fresh, isolated pages.
  * `this.playwright()` returns the bundle manager; an unqualified `playwright()` still calls the bx-playwright BIF.
