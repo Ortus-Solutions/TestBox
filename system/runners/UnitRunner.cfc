@@ -487,9 +487,7 @@ component
 						) : false
 					),
 					// extra runs allowed when the test fails or errors, 0 inherits the bundle annotation or global option
-					"retries" : (
-						isNumeric( specAnnotations.retries ?: "" ) ? specAnnotations.retries : 0
-					)
+					"retries" : ( isNumeric( specAnnotations.retries ?: "" ) ? specAnnotations.retries : 0 )
 				};
 
 				// skip constraint?
