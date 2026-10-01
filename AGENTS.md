@@ -33,7 +33,7 @@ This repository ships domain skills in `.agents/skills`. Before implementing, re
 - **testbox-assertions**: `$assert` methods, dynamic assertion aliases, custom assertion registration, equality, type, collection, exception, and numeric assertions.
 - **testbox-mockbox**: MockBox mocks, stubs, spies, `$()` stubbing, `$args()`, `$results()`, `$throws()`, `$callLog()`, verification counts, property injection, `querySim()`, and spying.
 - **testbox-cbmockdata**: Realistic mock data generation through cbMockData, including primitive values, nested objects, arrays, and custom suppliers.
-- **testbox-reporters**: Reporter selection and authoring, including ANTJUnit, Console, Doc, JSON, JUnit, Min, MinText, Simple, Text, XML, Streaming, reporter options, and `IReporter` implementations.
+- **testbox-reporters**: Reporter selection and authoring, including Agent, ANTJUnit, Console, Doc, JSON, JUnit, Min, MinText, Simple, Text, XML, Streaming, reporter options, and `IReporter` implementations.
 - **testbox-listeners**: Test run listeners/callbacks such as `onBundleStart`, `onBundleEnd`, `onSuiteStart`, `onSuiteEnd`, `onSpecStart`, and `onSpecEnd`.
 
 ### Testing Support Skills

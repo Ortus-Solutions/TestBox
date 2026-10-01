@@ -757,6 +757,9 @@ component accessors="true" {
 			case "json": {
 				return new "testbox.system.reports.JSONReporter"( );
 			}
+			case "agent": {
+				return new "testbox.system.reports.AgentReporter"( );
+			}
 			case "xml": {
 				return new "testbox.system.reports.XMLReporter"( );
 			}
