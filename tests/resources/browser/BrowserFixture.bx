@@ -1,0 +1,46 @@
+/**
+ * Fixture for BrowserSpecTest: a BrowserSpec bundle with its own afterAll(), a passing browser spec and
+ * two failing ones. Run it only when bx-playwright is available.
+ */
+class extends="testbox.system.BrowserSpec" baseURL="http://fixture.testbox.test" {
+
+	function afterAll() {
+		request.browserFixture.afterAll = true
+	}
+
+	function run() {
+		describe( "Browser Fixture", () => {
+			it( "browses a page", () => {
+				request.browserFixture.support = getBrowserSupport()
+				browse( ( page ) => {
+					page.setContent( "<h1>Hello</h1>" )
+					expect( page ).toSee( "Hello" )
+				} )
+				request.browserFixture.hadManager = getBrowserSupport().hasManager()
+			} )
+
+			it( "fails with a browser matcher and keeps a screenshot", () => {
+				browse(
+					( page ) => {
+						page.setContent( "<h1>Hello</h1>" )
+						expect( page ).toSee( "Goodbye" )
+					},
+					{
+						timeouts  : { assertion : 300 },
+						artifacts : {
+							screenshot : "only-on-failure",
+							directory  : request.browserFixture.artifactsDirectory
+						}
+					}
+				)
+			} )
+
+			it( "fails with a bx-playwright assertion", () => {
+				browse( ( page ) => {
+					page.setContent( "<h1>Hello</h1>" ).assertSee( "Goodbye" )
+				}, { timeouts : { assertion : 300 } } )
+			} )
+		} )
+	}
+
+}

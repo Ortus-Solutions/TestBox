@@ -1,0 +1,271 @@
+/**
+ * testbox.system.BrowserSpec end to end against pages built with setContent() and file URLs: no web server.
+ * Skipped when bx-playwright is not installed.
+ */
+class extends="testbox.system.BrowserSpec" {
+
+	function beforeAll() {
+		variables.artifactsDirectory = getTempDirectory() & "testbox-browser-" & createUUID()
+	}
+
+	// A user afterAll(): the BrowserSpec closeBrowser() afterAll method still runs without a super call
+	function afterAll() {
+		if ( directoryExists( variables.artifactsDirectory ) ) {
+			directoryDelete( variables.artifactsDirectory, true )
+		}
+	}
+
+	function run() {
+		describe( "BrowserSpec without a browser", () => {
+			it( "skips the spec when bx-playwright is not available", () => {
+				var support = new tests.resources.browser.UnavailableBrowserSupport( this )
+				expect( () => support.browse( ( page ) => {} ) ).toThrow( "TestBox.SkipSpec", "install-bx-module bx-playwright" )
+			} )
+
+			it( "uses the baseURL annotation", () => {
+				var support = new testbox.system.browser.BrowserSupport( new tests.resources.browser.BrowserFixture() )
+				expect( support.getBaseURL() ).toBe( "http://fixture.testbox.test" )
+				expect( support.getSettings() ).toBe( { baseURL : "http://fixture.testbox.test" } )
+			} )
+
+			it( "defaults the base URL to the web server of the BoxLang runner", () => {
+				var hadTestBox = server.keyExists( "testbox" )
+				var previous   = hadTestBox ? duplicate( server.testbox ) : {}
+				try {
+					server.testbox = { webServerURL : "http://localhost:9999" }
+					expect( getBrowserSupport().getBaseURL() ).toBe( "http://localhost:9999" )
+					expect( getBrowserSupport().getSettings().baseURL ).toBe( "http://localhost:9999" )
+				} finally {
+					if ( hadTestBox ) {
+						server.testbox = previous
+					} else {
+						server.delete( "testbox" )
+					}
+				}
+			} )
+
+			it( "has no base URL without the annotation or a runner web server", () => {
+				if ( server.keyExists( "testbox" ) && ( server.testbox.webServerURL ?: "" ).len() ) {
+					skip( "the runner started a web server" )
+				}
+				expect( getBrowserSupport().getBaseURL() ).toBe( "" )
+				expect( getBrowserSupport().getSettings() ).toBeEmpty()
+			} )
+
+			it( "registers the browser matchers for the bundle", () => {
+				expect( this.$customMatchers ).toHaveKey( "toSee" )
+				expect( this.$customMatchers ).toHaveKey( "toHaveCount" )
+			} )
+		} )
+
+		describe( title = "BrowserSpec with a browser", skip = !browserAvailable(), body = () => {
+			describe( "browse()", () => {
+				it( "runs the callback with a page and returns its result", () => {
+					var title = browse( ( page ) => {
+						page.setContent( "<title>Browse Result</title><h1>Hi</h1>" )
+						return page.title()
+					} )
+					expect( title ).toBe( "Browse Result" )
+				} )
+
+				it( "gives every declared argument its own isolated page", () => {
+					browse( ( first, second ) => {
+						first.setContent( "<p>first page</p>" )
+						second.setContent( "<p>second page</p>" )
+						expect( first ).toSee( "first page" )
+						expect( second ).notToSee( "first page" )
+						expect( first.getJava().context().equals( second.getJava().context() ) ).toBeFalse()
+					} )
+				} )
+
+				it( "passes a page to a callback without declared arguments", () => {
+					var title = browse( function() {
+						arguments[ 1 ].setContent( "<title>Positional</title>" )
+						return arguments[ 1 ].title()
+					} )
+					expect( title ).toBe( "Positional" )
+				} )
+
+				it( "shares one manager per bundle through this.playwright()", () => {
+					expect( this.playwright() ).toBeSameInstanceAs( this.playwright() )
+					expect( this.playwright() ).toBeSameInstanceAs( getBrowserSupport().getManager() )
+					expect( getBrowserSupport().hasManager() ).toBeTrue()
+				} )
+
+				it( "attaches the kept artifacts and rethrows when the callback throws", () => {
+					var specStats = variables.$specStatsHolder.get()
+					var before    = specStats.attachments.len()
+					expect( () => {
+						browse(
+							( page ) => {
+								page.setContent( "<p>about to fail</p>" )
+								throw( type = "BrowserSpecTest.Boom", message = "callback failed" )
+							},
+							{
+								artifacts : {
+									screenshot : "only-on-failure",
+									directory  : variables.artifactsDirectory
+								}
+							}
+						)
+					} ).toThrow( "BrowserSpecTest.Boom" )
+					expect( specStats.attachments.len() ).toBe( before + 1 )
+					expect( specStats.attachments.last().type ).toBe( "screenshot" )
+					expect( fileExists( specStats.attachments.last().path ) ).toBeTrue()
+				} )
+
+				it( "keeps nothing when the callback passes", () => {
+					var specStats = variables.$specStatsHolder.get()
+					browse(
+						( page ) => page.setContent( "<p>fine</p>" ),
+						{
+							artifacts : {
+								screenshot : "only-on-failure",
+								directory  : variables.artifactsDirectory
+							}
+						}
+					)
+					expect( specStats.attachments ).toBeEmpty()
+				} )
+			} )
+
+			describe( "page matchers", () => {
+				it( "match the title, URL and path of a page", () => {
+					var file = variables.artifactsDirectory & "/page.html"
+					directoryCreate( variables.artifactsDirectory, true, true )
+					fileWrite( file, "<title>File Page</title><h1>From a file</h1>" )
+					browse( ( page ) => {
+						page.visit( "file://" & file )
+						expect( page ).toHaveTitle( "File Page" )
+						expect( page ).notToHaveTitle( "Other" )
+						expect( page ).toHaveURL( page.url() )
+						expect( page ).notToHaveURL( "http://localhost/elsewhere" )
+						expect( page ).toHavePath( file )
+						expect( page ).notToHavePath( "/elsewhere" )
+						expect( page ).toHaveTitle( page.regex( "^File" ) )
+					} )
+				} )
+
+				it( "see text in the page and wait for it to appear or go away", () => {
+					browse( ( page ) => {
+						page.setContent(
+							"<p id='message'>Loading</p>
+							<script>setTimeout( () => document.getElementById( 'message' ).textContent = 'Ready', 400 )</script>"
+						)
+						expect( page ).toSee( "Ready" )
+						expect( page ).notToSee( "Loading" )
+					} )
+				} )
+
+				it( "fail with the bx-playwright message", () => {
+					browse(
+						( page ) => {
+							page.setContent( "<title>Real</title><h1>Hello</h1>" )
+							expect( () => expect( page ).toSee( "Goodbye" ) ).toThrow( "TestBox.AssertionFailed", "Goodbye" )
+							expect( () => expect( page ).notToSee( "Hello" ) ).toThrow( "TestBox.AssertionFailed", "Hello" )
+							expect( () => expect( page ).toHaveTitle( "Fake" ) ).toThrow( "TestBox.AssertionFailed", "Fake" )
+							expect( () => expect( page ).notToHaveTitle( "Real" ) ).toThrow( "TestBox.AssertionFailed", "Real" )
+						},
+						{ timeouts : { assertion : 300 } }
+					)
+				} )
+
+				it( "refuse locators in page matchers", () => {
+					browse( ( page ) => {
+						page.setContent( "<h1>Hello</h1>" )
+						expect( () => expect( page.locator( "h1" ) ).toHaveTitle( "Hello" ) ).toThrow(
+							"TestBox.AssertionFailed",
+							"needs a bx-playwright page"
+						)
+					} )
+				} )
+			} )
+
+			describe( "locator matchers", () => {
+				it( "match text, visibility, count and value", () => {
+					browse( ( page ) => {
+						page.setContent(
+							"<h1>Hello</h1>
+							<ul><li>one</li><li>two</li></ul>
+							<input id='name' value='Luis'>
+							<p id='secret' style='display:none'>secret</p>"
+						)
+						expect( page.locator( "h1" ) ).toHaveText( "Hello" )
+						expect( page.locator( "h1" ) ).notToHaveText( "Bye" )
+						expect( page.locator( "h1" ) ).toBeVisible()
+						expect( page.locator( "h1" ) ).notToBeHidden()
+						expect( page.locator( "##secret" ) ).toBeHidden()
+						expect( page.locator( "##secret" ) ).notToBeVisible()
+						expect( page.locator( "li" ) ).toHaveCount( 2 )
+						expect( page.locator( "li" ) ).notToHaveCount( 3 )
+						expect( page.locator( "##name" ) ).toHaveValue( "Luis" )
+						expect( page.locator( "##name" ) ).notToHaveValue( "Brad" )
+						expect( page.locator( "ul" ) ).toSee( "two" )
+						expect( page.locator( "ul" ) ).notToSee( "Hello" )
+					} )
+				} )
+
+				it( "wait for elements that appear later", () => {
+					browse( ( page ) => {
+						page.setContent(
+							"<ul id='list'></ul>
+							<script>setTimeout( () => document.getElementById( 'list' ).innerHTML = '<li>a</li><li>b</li><li>c</li>', 400 )</script>"
+						)
+						expect( page.locator( "##list li" ) ).toHaveCount( 3 )
+					} )
+				} )
+
+				it( "fail with the bx-playwright message", () => {
+					browse(
+						( page ) => {
+							page.setContent( "<ul><li>one</li></ul>" )
+							expect( () => expect( page.locator( "li" ) ).toHaveCount( 5 ) ).toThrow( "TestBox.AssertionFailed", "expected to have count" )
+							expect( () => expect( page.locator( "li" ) ).notToBeVisible() ).toThrow( "TestBox.AssertionFailed" )
+						},
+						{ timeouts : { assertion : 300 } }
+					)
+				} )
+
+				it( "refuse pages in locator matchers", () => {
+					browse( ( page ) => {
+						page.setContent( "<h1>Hello</h1>" )
+						expect( () => expect( page ).toHaveCount( 1 ) ).toThrow( "TestBox.AssertionFailed", "needs a bx-playwright locator" )
+					} )
+				} )
+			} )
+
+			describe( "a BrowserSpec bundle", () => {
+				beforeEach( () => {
+					request.browserFixture = { artifactsDirectory : variables.artifactsDirectory }
+					variables.results = new testbox.system.TestBox(
+						bundles = "tests.resources.browser.BrowserFixture",
+						options = { coverage : { enabled : false } }
+					).runRaw()
+					variables.fixtureSpecs = variables.results.getBundleStats()[ 1 ].suiteStats[ 1 ].specStats
+				} )
+
+				it( "counts browser assertion failures as failures", () => {
+					expect( variables.results.getTotalPass() ).toBe( 1 )
+					expect( variables.results.getTotalFail() ).toBe( 2 )
+					expect( variables.results.getTotalError() ).toBe( 0 )
+					expect( variables.fixtureSpecs[ 2 ].failMessage ).toInclude( "Goodbye" )
+					expect( variables.fixtureSpecs[ 3 ].failMessage ).toInclude( "Goodbye" )
+				} )
+
+				it( "attaches the screenshot of a failed spec", () => {
+					var attachments = variables.fixtureSpecs[ 2 ].attachments
+					expect( attachments ).toHaveLength( 1 )
+					expect( attachments[ 1 ].type ).toBe( "screenshot" )
+					expect( fileExists( attachments[ 1 ].path ) ).toBeTrue()
+				} )
+
+				it( "runs the bundle afterAll() and closes the browser afterwards", () => {
+					expect( request.browserFixture.afterAll ).toBeTrue()
+					expect( request.browserFixture.hadManager ).toBeTrue()
+					expect( request.browserFixture.support.hasManager() ).toBeFalse()
+				} )
+			} )
+		} )
+	}
+
+}

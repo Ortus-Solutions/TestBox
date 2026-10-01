@@ -1,0 +1,24 @@
+/**
+ * Fixture for BrowserSpecTest: browser support that reports bx-playwright as missing.
+ */
+class extends="testbox.system.browser.BrowserSupport" {
+
+	/**
+	 * Pretend bx-playwright is not installed.
+	 *
+	 * @return False
+	 */
+	boolean function isAvailable() {
+		return false
+	}
+
+	/**
+	 * The reason a missing bx-playwright gives.
+	 *
+	 * @return The missing module reason
+	 */
+	string function getUnavailableReason() {
+		return "bx-playwright is not installed: install-bx-module bx-playwright"
+	}
+
+}
