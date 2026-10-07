@@ -5,7 +5,7 @@
  * Presentation logic shared by the HTML reporters (Simple, Min, Dot, Doc).
  *
  * Templates stay markup only: anything that needs a function lives here, because the BoxLang
- * transpiler drops tag-form <cffunction> declarations from .cfm templates (BL-2736).
+ * transpiler drops tag-form cffunction declarations from .cfm templates (BL-2736).
  */
 component accessors="true" {
 
