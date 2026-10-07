@@ -24,7 +24,7 @@ component extends="testbox.system.BaseSpec" {
 	 * @cfc     The reporter class
 	 * @options The reporter options
 	 */
-	private string function render(
+	private string function runReporter(
 		required string bundle,
 		required string cfc,
 		struct options = {}
@@ -46,7 +46,7 @@ component extends="testbox.system.BaseSpec" {
 	){
 		var merged       = duplicate( arguments.options );
 		merged.urlParams = arguments.params;
-		return render( arguments.bundle, arguments.cfc, merged );
+		return runReporter( arguments.bundle, arguments.cfc, merged );
 	}
 
 	/**
@@ -74,7 +74,7 @@ component extends="testbox.system.BaseSpec" {
 					function( reporter ){
 						describe( "#reporter.name# reporter", function(){
 							it( "returns one complete html page", function(){
-								var html = render( variables.mixed, reporter.cfc );
+								var html = runReporter( variables.mixed, reporter.cfc );
 								expect( trim( html ) ).toStartWith( "<!DOCTYPE html>" );
 								expect( html ).toInclude( "<html lang=""en""" );
 								expect( html ).toInclude( "name=""viewport""" );
@@ -92,7 +92,7 @@ component extends="testbox.system.BaseSpec" {
 							} );
 
 							it( "is airgapped: nothing is loaded from the network", function(){
-								var html = render( variables.mixed, reporter.cfc );
+								var html = runReporter( variables.mixed, reporter.cfc );
 								expect( reFindNoCase( "<link[^>]+href=""(?!data:)", html ) ).toBe(
 									0,
 									"no stylesheet or icon links to the network"
@@ -106,7 +106,7 @@ component extends="testbox.system.BaseSpec" {
 							} );
 
 							it( "inlines Bootstrap, Alpine and the TestBox styles", function(){
-								var html = render( variables.mixed, reporter.cfc );
+								var html = runReporter( variables.mixed, reporter.cfc );
 								expect( reFindNoCase( "Bootstrap\s+v5", html ) ).toBeGT( 0 );
 								expect( html ).toInclude( "tbReport" );
 								expect( html ).toInclude( "--tb-cyan" );
@@ -114,7 +114,7 @@ component extends="testbox.system.BaseSpec" {
 							} );
 
 							it( "supports light and dark themes", function(){
-								var html = render( variables.mixed, reporter.cfc );
+								var html = runReporter( variables.mixed, reporter.cfc );
 								expect( html ).toInclude( "data-bs-theme=""light""" );
 								expect( html ).toInclude( "data-bs-theme=""dark""" );
 								expect( html ).toInclude( "testbox-theme" );
@@ -124,14 +124,14 @@ component extends="testbox.system.BaseSpec" {
 							} );
 
 							it( "shows a red verdict with the counts when something failed", function(){
-								var html = render( variables.mixed, reporter.cfc );
+								var html = runReporter( variables.mixed, reporter.cfc );
 								expect( html ).toInclude( "class=""tb-verdict tb-verdict--bad""" );
 								expect( html ).toInclude( "2 failures, 1 error" );
 								expect( html ).toInclude( "FAILED 3" );
 							} );
 
 							it( "shows a green verdict when everything passed", function(){
-								var html = render( variables.passing, reporter.cfc );
+								var html = runReporter( variables.passing, reporter.cfc );
 								expect( html ).toInclude( "class=""tb-verdict tb-verdict--good""" );
 								expect( html ).toInclude( "All 1 spec passed" );
 								expect( html ).toInclude( "PASSED 1" );
@@ -139,14 +139,14 @@ component extends="testbox.system.BaseSpec" {
 							} );
 
 							it( "offers filters by status in the verdict", function(){
-								var html = render( variables.mixed, reporter.cfc );
+								var html = runReporter( variables.mixed, reporter.cfc );
 								for ( var thisStatus in [ "passed", "failed", "error", "skipped" ] ) {
 									expect( html ).toInclude( "toggleStatus( '#thisStatus#' )" );
 								}
 							} );
 
 							it( "escapes everything that comes from a spec", function(){
-								var html = render( "tests.resources.reporters.EscapingBundle", reporter.cfc );
+								var html = runReporter( "tests.resources.reporters.EscapingBundle", reporter.cfc );
 								expect( html ).notToInclude( "<img src=x onerror=alert(1)>" );
 								expect( html ).notToInclude( "<script>alert('xss')</script>" );
 								expect( html ).notToInclude( "<b>Suite</b>" );
@@ -154,7 +154,7 @@ component extends="testbox.system.BaseSpec" {
 							} );
 
 							it( "says a bundle exception happened and turns the verdict red", function(){
-								var html = render( "tests.specsWithFailures.BeforeAllFailures", reporter.cfc );
+								var html = runReporter( "tests.specsWithFailures.BeforeAllFailures", reporter.cfc );
 								expect( html ).toInclude( "class=""alert tb-exception" );
 								expect( html ).toInclude( "could not run" );
 								expect( html ).toInclude( "class=""tb-verdict tb-verdict--bad""" );
@@ -178,7 +178,7 @@ component extends="testbox.system.BaseSpec" {
 							} );
 
 							it( "puts the Ask AI payloads and providers on the page by default", function(){
-								var html = render( variables.mixed, reporter.cfc );
+								var html = runReporter( variables.mixed, reporter.cfc );
 								expect( html ).toInclude( "Copy all failures for AI" );
 								expect( occurrences( html, "<template data-prompt=" ) ).toBe( 3 );
 								expect( occurrences( html, "<template data-agent=" ) ).toBe( 3 );
@@ -187,7 +187,7 @@ component extends="testbox.system.BaseSpec" {
 							} );
 
 							it( "removes Ask AI with aiAssist=false", function(){
-								var html = render(
+								var html = runReporter(
 									variables.mixed,
 									reporter.cfc,
 									{ aiAssist : false }
@@ -199,7 +199,7 @@ component extends="testbox.system.BaseSpec" {
 							} );
 
 							it( "uses your own AI providers", function(){
-								var html = render(
+								var html = runReporter(
 									variables.mixed,
 									reporter.cfc,
 									{
@@ -222,7 +222,7 @@ component extends="testbox.system.BaseSpec" {
 
 			describe( "Simple reporter", function(){
 				it( "lists failures first, then every bundle with its suites and specs", function(){
-					var html = render( variables.mixed, "testbox.system.reports.SimpleReporter" );
+					var html = runReporter( variables.mixed, "testbox.system.reports.SimpleReporter" );
 					expect( html ).toInclude( "Needs attention" );
 					expect( occurrences( html, "class=""card tb-failure""" ) ).toBe( 3 );
 					expect( occurrences( html, "data-spec data-status=" ) ).toBe( 0 );
@@ -232,7 +232,7 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "starts bundles with trouble open and the others collapsed", function(){
-					var html = render(
+					var html = runReporter(
 						"tests.resources.reporters.MixedBundle,tests.resources.reporters.PassingBundle",
 						"testbox.system.reports.SimpleReporter"
 					);
@@ -253,7 +253,7 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "uses semantic landmarks and aria", function(){
-					var html = render( variables.mixed, "testbox.system.reports.SimpleReporter" );
+					var html = runReporter( variables.mixed, "testbox.system.reports.SimpleReporter" );
 					expect( html ).toInclude( "<main>" );
 					expect( html ).toInclude( "<header" );
 					expect( html ).toInclude( "role=""status""" );
@@ -263,7 +263,7 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "shows the debug stream of a bundle", function(){
-					var html = render(
+					var html = runReporter(
 						"tests.resources.reporters.DebugBundle",
 						"testbox.system.reports.SimpleReporter"
 					);
@@ -283,7 +283,7 @@ component extends="testbox.system.BaseSpec" {
 
 			describe( "Min reporter", function(){
 				it( "lists one line per failure and leaves out the specs that passed", function(){
-					var html = render( variables.mixed, "testbox.system.reports.MinReporter" );
+					var html = runReporter( variables.mixed, "testbox.system.reports.MinReporter" );
 					expect( html ).toInclude( "class=""list-group tb-min-failures""" );
 					expect( html ).notToInclude( "class=""tb-spec""" );
 				} );
@@ -291,7 +291,7 @@ component extends="testbox.system.BaseSpec" {
 
 			describe( "Dot reporter", function(){
 				it( "draws a dot per spec and a drawer for the details", function(){
-					var html = render( variables.mixed, "testbox.system.reports.DotReporter" );
+					var html = runReporter( variables.mixed, "testbox.system.reports.DotReporter" );
 					expect( occurrences( html, "class=""tb-dot""" ) ).toBe( 6 );
 					expect( html ).toInclude( "class=""offcanvas offcanvas-end tb-drawer""" );
 					expect( html ).toInclude( "role=""dialog""" );
@@ -299,7 +299,7 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "marks each dot with its status and a run link", function(){
-					var html = render( variables.mixed, "testbox.system.reports.DotReporter" );
+					var html = runReporter( variables.mixed, "testbox.system.reports.DotReporter" );
 					expect( html ).toInclude( "data-status=""failed""" );
 					expect( html ).toInclude( "data-status=""error""" );
 					expect( html ).toInclude( "data-status=""skipped""" );
@@ -309,7 +309,7 @@ component extends="testbox.system.BaseSpec" {
 
 			describe( "Doc reporter", function(){
 				it( "reads as a document: sections, headings and description lists", function(){
-					var html = render( variables.mixed, "testbox.system.reports.DocReporter" );
+					var html = runReporter( variables.mixed, "testbox.system.reports.DocReporter" );
 					expect( html ).toInclude( "<article>" );
 					expect( html ).toInclude( "<dl>" );
 					expect( html ).toInclude( "<dt>" );
@@ -319,7 +319,7 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "nests headings with the nesting of the suites", function(){
-					var html = render( variables.mixed, "testbox.system.reports.DocReporter" );
+					var html = runReporter( variables.mixed, "testbox.system.reports.DocReporter" );
 					expect( html ).toInclude( "<h4 id=""suite-" );
 				} );
 			} );
