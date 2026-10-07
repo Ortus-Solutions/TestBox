@@ -60,7 +60,7 @@
 		</div>
 
 		<cfif local.aiOn>
-			<cfif arguments.data.payloads ?: true>
+			<cfif !structKeyExists( arguments.data, "payloads" ) || arguments.data.payloads>
 				#renderPartial( "ask-payloads", { failure : local.failure } )#
 			</cfif>
 			#renderPartial( "ai-preview", { id : local.spec.id } )#

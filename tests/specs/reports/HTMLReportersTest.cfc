@@ -248,8 +248,12 @@ component extends="testbox.system.BaseSpec" {
 						.map( function( id ){
 							return config.bundles[ id ];
 						} );
-					expect( states ).toInclude( true );
-					expect( states ).toInclude( false );
+					var opened = states.filter( function( state ){
+						return state;
+					} );
+					// at least one bundle starts open and at least one starts collapsed
+					expect( arrayLen( opened ) ).toBeGT( 0 );
+					expect( arrayLen( opened ) ).toBeLT( arrayLen( states ) );
 				} );
 
 				it( "uses semantic landmarks and aria", function(){
@@ -277,7 +281,8 @@ component extends="testbox.system.BaseSpec" {
 						"testbox.system.reports.SimpleReporter",
 						{ editor : "idea" }
 					);
-					expect( html ).toInclude( "idea://open?file=" );
+					// some engines entity-encode the url characters inside the attribute, the browser decodes them
+					expect( reFindNoCase( "idea(://|&##x3a;&##x2f;&##x2f;)open", html ) ).toBeGT( 0 );
 				} );
 			} );
 

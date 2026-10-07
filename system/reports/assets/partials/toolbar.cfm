@@ -12,7 +12,7 @@
 			x-model.debounce.100ms="q"
 		>
 	</div>
-	<cfif arguments.data.expand ?: true>
+	<cfif !structKeyExists( arguments.data, "expand" ) || arguments.data.expand>
 		<button type="button" class="btn btn-sm btn-outline-secondary" @click="setAll( true )">
 			<svg class="tb-icon" aria-hidden="true"><use href="##i-arrows-expand"/></svg> Expand all
 		</button>
