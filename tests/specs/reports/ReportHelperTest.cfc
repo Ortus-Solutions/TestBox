@@ -107,40 +107,40 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "scopes to a bundle and skips coverage", function(){
-					var url = newHelper().runURL( bundle = "tests.specs.FooTest" );
-					expect( url ).toInclude( "testBundles=tests.specs.FooTest" );
-					expect( url ).toInclude( "opt_run=true" );
-					expect( url ).toInclude( "coverageEnabled=false" );
+					var link = newHelper().runURL( bundle = "tests.specs.FooTest" );
+					expect( link ).toInclude( "testBundles=tests.specs.FooTest" );
+					expect( link ).toInclude( "opt_run=true" );
+					expect( link ).toInclude( "coverageEnabled=false" );
 				} );
 
 				it( "scopes to a suite and a spec", function(){
-					var url = newHelper().runURL(
+					var link = newHelper().runURL(
 						bundle = "tests.specs.FooTest",
 						suite  = "my suite",
 						spec   = "abc123"
 					);
-					expect( url ).toInclude( "testSuites=my%20suite" );
-					expect( url ).toInclude( "testSpecs=abc123" );
+					expect( link ).toInclude( "testSuites=my%20suite" );
+					expect( link ).toInclude( "testSpecs=abc123" );
 				} );
 
 				it( "carries over what shaped the original run", function(){
-					var url = newHelper( {
+					var link = newHelper( {
 						directory : "tests.specs",
 						labels    : "smoke,api",
 						excludes  : "slow",
 						reporter  : "dot",
 						recurse   : "true"
 					} ).runURL( bundle = "a.b" );
-					expect( url ).toInclude( "directory=tests.specs" );
-					expect( url ).toInclude( "labels=smoke%2Capi" );
-					expect( url ).toInclude( "excludes=slow" );
-					expect( url ).toInclude( "reporter=dot" );
-					expect( url ).toInclude( "recurse=true" );
+					expect( link ).toInclude( "directory=tests.specs" );
+					expect( link ).toInclude( "labels=smoke%2Capi" );
+					expect( link ).toInclude( "excludes=slow" );
+					expect( link ).toInclude( "reporter=dot" );
+					expect( link ).toInclude( "recurse=true" );
 				} );
 
 				it( "leaves out empty params and the default editor", function(){
-					var url = newHelper( { directory : "", labels : "", editor : "vscode" } ).runURL();
-					expect( url ).toBe( "?opt_run=true" );
+					var link = newHelper( { directory : "", labels : "", editor : "vscode" } ).runURL();
+					expect( link ).toBe( "?opt_run=true" );
 				} );
 
 				it( "keeps a non default editor", function(){
@@ -148,8 +148,8 @@ component extends="testbox.system.BaseSpec" {
 				} );
 
 				it( "encodes values so they can not break out of the query", function(){
-					var url = newHelper( { labels : "a&b=c" } ).runURL();
-					expect( url ).toInclude( "labels=a%26b%3Dc" );
+					var link = newHelper( { labels : "a&b=c" } ).runURL();
+					expect( link ).toInclude( "labels=a%26b%3Dc" );
 				} );
 
 				it( "prepares a url for an html attribute", function(){

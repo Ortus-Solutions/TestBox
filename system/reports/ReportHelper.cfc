@@ -366,18 +366,18 @@ component accessors="true" {
 				&& len( variables.urlScope[ thisKey ] )
 				&& !( thisKey == "editor" && variables.urlScope[ thisKey ] == "vscode" )
 			) {
-				params.append( "#thisKey#=#urlEncodedFormat( variables.urlScope[ thisKey ] )#" );
+				params.append( "#thisKey#=#encodeQuery( variables.urlScope[ thisKey ] )#" );
 			}
 		}
 
 		if ( len( arguments.bundle ) ) {
-			params.append( "testBundles=#urlEncodedFormat( arguments.bundle )#" );
+			params.append( "testBundles=#encodeQuery( arguments.bundle )#" );
 		}
 		if ( len( arguments.suite ) ) {
-			params.append( "testSuites=#urlEncodedFormat( arguments.suite )#" );
+			params.append( "testSuites=#encodeQuery( arguments.suite )#" );
 		}
 		if ( len( arguments.spec ) ) {
-			params.append( "testSpecs=#urlEncodedFormat( arguments.spec )#" );
+			params.append( "testSpecs=#encodeQuery( arguments.spec )#" );
 		}
 
 		params.append( "opt_run=true" );
@@ -448,11 +448,17 @@ component accessors="true" {
 	 * @bundles The bundle stats
 	 */
 	array function failures( required array bundles ){
-		var found = [];
+		// Adobe passes arrays by value, so the recursion collects into a struct, which is shared by reference
+		var collector = { "items" : [] };
 		for ( var thisBundle in arguments.bundles ) {
-			collectFailures( thisBundle, thisBundle.suiteStats, [], found );
+			collectFailures(
+				thisBundle,
+				thisBundle.suiteStats,
+				[],
+				collector
+			);
 		}
-		return found;
+		return collector.items;
 	}
 
 	/**
@@ -462,14 +468,14 @@ component accessors="true" {
 		required struct bundle,
 		required array suites,
 		required array parents,
-		required array found
+		required struct collector
 	){
 		for ( var thisSuite in arguments.suites ) {
 			var path = duplicate( arguments.parents );
 			path.append( thisSuite.name );
 			for ( var thisSpec in thisSuite.specStats ) {
 				if ( isProblem( thisSpec ) ) {
-					arguments.found.append( {
+					arguments.collector.items.append( {
 						"bundle"  : arguments.bundle,
 						"suites"  : path,
 						"crumb"   : arrayToList( path, " > " ),
@@ -482,9 +488,23 @@ component accessors="true" {
 				arguments.bundle,
 				thisSuite.suiteStats,
 				path,
-				arguments.found
+				arguments.collector
 			);
 		}
+	}
+
+	/**
+	 * URL-encode a query string value the same way on every engine. Adobe and Lucee also escape the
+	 * unreserved characters . - _ ~ which only makes links noisier, so those are put back.
+	 *
+	 * @value The value to encode
+	 */
+	private string function encodeQuery( required string value ){
+		var encoded = urlEncodedFormat( arguments.value );
+		encoded     = replace( encoded, "%2E", ".", "all" );
+		encoded     = replace( encoded, "%2D", "-", "all" );
+		encoded     = replace( encoded, "%5F", "_", "all" );
+		return replace( encoded, "%7E", "~", "all" );
 	}
 
 	/**
@@ -493,9 +513,9 @@ component accessors="true" {
 	 * @bundle The bundle stats
 	 */
 	array function specs( required struct bundle ){
-		var found = [];
-		collectSpecs( arguments.bundle.suiteStats, [], found );
-		return found;
+		var collector = { "items" : [] };
+		collectSpecs( arguments.bundle.suiteStats, [], collector );
+		return collector.items;
 	}
 
 	/**
@@ -504,15 +524,19 @@ component accessors="true" {
 	private void function collectSpecs(
 		required array suites,
 		required array parents,
-		required array found
+		required struct collector
 	){
 		for ( var thisSuite in arguments.suites ) {
 			var path = duplicate( arguments.parents );
 			path.append( thisSuite.name );
 			for ( var thisSpec in thisSuite.specStats ) {
-				arguments.found.append( { "crumb" : arrayToList( path, " > " ), "spec" : thisSpec } );
+				arguments.collector.items.append( { "crumb" : arrayToList( path, " > " ), "spec" : thisSpec } );
 			}
-			collectSpecs( thisSuite.suiteStats, path, arguments.found );
+			collectSpecs(
+				thisSuite.suiteStats,
+				path,
+				arguments.collector
+			);
 		}
 	}
 

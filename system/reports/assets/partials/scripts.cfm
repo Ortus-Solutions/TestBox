@@ -13,7 +13,11 @@
 	</cfif>
 </cfloop>
 <cfloop array="#variables.bundleStats#" item="thisBundle">
-	<cfset local.config.bundles[ thisBundle.id ] = local.anyProblem ? variables.helper.bundleHasProblems( thisBundle ) : arrayLen( variables.bundleStats ) <= 5>
+	<cfif local.anyProblem>
+		<cfset local.config.bundles[ thisBundle.id ] = variables.helper.bundleHasProblems( thisBundle )>
+	<cfelse>
+		<cfset local.config.bundles[ thisBundle.id ] = ( arrayLen( variables.bundleStats ) lte 5 )>
+	</cfif>
 </cfloop>
 <cfoutput>
 <script type="application/json" id="tb-config">#variables.helper.jsonForHtml( local.config )#</script>
