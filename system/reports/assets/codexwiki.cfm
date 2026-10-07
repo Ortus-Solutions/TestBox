@@ -44,42 +44,50 @@
 </cfloop>
 
 <!--- Recursive Output --->
-<cffunction name="genSuiteReport" output="false">
-<cfargument name="suiteStats">
-<cfargument name="bundleStats">
-<cfargument name="level" default=2>
+<cfscript>
+function genSuiteReport( suiteStats, bundleStats, level = 2 ) output="false" {
+    var headings = repeatString( "=", arguments.level );
+    var nl       = chr( 10 );
 
-<cfset var headings = repeatString( "=", arguments.level )>
+    savecontent variable="local.report" {
+        writeOutput( nl & nl & nl );
+        writeOutput( headings & " " & arguments.suiteStats.name & " (" & arguments.suiteStats.totalDuration & " ms) " & headings & " " & nl & nl );
+        arguments.level++;
+        writeOutput( nl & nl );
 
-<cfsavecontent variable="local.report">
-<cfoutput>#chr(10)#
-#headings# #arguments.suiteStats.name# (#arguments.suiteStats.totalDuration# ms) #headings# #chr(10)#
-<cfset arguments.level++>
+        for ( local.thisSpec in arguments.suiteStats.specStats ) {
+            writeOutput( nl );
+            writeOutput( "<p>" & local.thisSpec.displayName & " (" & local.thisSpec.totalDuration & " ms)</p>" & nl & nl );
 
-<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
-<p>#local.thisSpec.displayName# (#local.thisSpec.totalDuration# ms)</p>
+            if ( local.thisSpec.status == "failed" ) {
+                writeOutput( nl );
+                writeOutput( "* '''" & encodeForHTML( local.thisSpec.failMessage ) & "'''" & nl );
+                writeOutput( "<pre>" & local.thisSpec.failOrigin.toString() & "</pre>" & nl );
+            }
+            writeOutput( nl & nl );
 
-<cfif local.thisSpec.status eq "failed">
-* '''#encodeForHTML( local.thisSpec.failMessage )#'''
-<pre>#local.thisSpec.failOrigin.toString()#</pre>
-</cfif>
+            if ( local.thisSpec.status == "error" ) {
+                writeOutput( nl );
+                writeOutput( "* '''" & encodeForHTML( local.thisSpec.error.message ) & "'''" & nl );
+                writeOutput( "<pre>" & local.thisSpec.error.stacktrace & "</pre>" & nl );
+            }
+            writeOutput( nl );
+        }
+        writeOutput( nl & nl & nl );
 
-<cfif local.thisSpec.status eq "error">
-* '''#encodeForHTML( local.thisSpec.error.message )#'''
-<pre>#local.thisSpec.error.stacktrace#</pre>
-</cfif>
-</cfloop>
+        // Do we have nested suites
+        if ( arrayLen( arguments.suiteStats.suiteStats ) ) {
+            writeOutput( nl );
+            for ( local.nestedSuite in arguments.suiteStats.suiteStats ) {
+                writeOutput( nl );
+                writeOutput( genSuiteReport( local.nestedSuite, arguments.bundleStats, arguments.level ) & nl );
+            }
+            writeOutput( nl );
+        }
+        writeOutput( nl & nl & nl );
+    }
 
-<!--- Do we have nested suites --->
-<cfif arrayLen( arguments.suiteStats.suiteStats )>
-<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
-#genSuiteReport( local.nestedSuite, arguments.bundleStats, arguments.level )#
-</cfloop>
-</cfif>
-
-</cfoutput>
-</cfsavecontent>
-
-<cfreturn local.report>
-</cffunction>
+    return local.report;
+}
+</cfscript>
 </cfoutput>
