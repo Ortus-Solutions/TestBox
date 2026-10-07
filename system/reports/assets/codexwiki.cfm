@@ -1,4 +1,4 @@
-<cfoutput>
+<cfparam name="url" default="#structNew()#"><cfparam name="url.testBundles" default=""><cfoutput>
 = Stats (#results.getTotalDuration()# ms) =
 
 * '''Bundles/Suites/Specs:''' #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#

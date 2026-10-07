@@ -1998,23 +1998,19 @@ component {
 			// If no type, message expectations
 			if ( !len( this.$expectedException.type ) && this.$expectedException.regex eq ".*" ) {
 				results = true;
-			}
-			// Type expectation then
-			else if (
+			} else if (
 				len( this.$expectedException.type ) &&
 				arguments.exception.type eq this.$expectedException.type &&
 				(
 					this.$expectedException.regex == ".*"
 					|| arrayLen( reMatchNoCase( this.$expectedException.regex, arguments.exception.message ) )
 				)
-			) {
+			) { // Type expectation then
 				results = true;
-			}
-			// Message regex then only
-			else if (
+			} else if (
 				this.$expectedException.regex neq ".*" &&
 				arrayLen( reMatchNoCase( this.$expectedException.regex, arguments.exception.message ) )
-			) {
+			) { // Message regex then only
 				results = true;
 			}
 		}
