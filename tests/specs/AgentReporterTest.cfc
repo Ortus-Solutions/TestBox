@@ -3,8 +3,8 @@
  */
 component extends="testbox.system.BaseSpec" {
 
-	variables.mixed   = "tests.resources.agentreporter.MixedBundle";
-	variables.passing = "tests.resources.agentreporter.PassingBundle";
+	variables.mixed   = "tests.resources.reporters.MixedBundle";
+	variables.passing = "tests.resources.reporters.PassingBundle";
 
 	/**
 	 * Run a fixture bundle with the agent reporter and return the raw report string

@@ -2,9 +2,10 @@
  * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * A simple Documentation style reporter
+ * The run as a document: bundles as sections, suites as nested sections, specs as a description list.
+ * See BaseHTMLReporter for the options.
  */
-component extends="BaseReporter" {
+component extends="BaseHTMLReporter" {
 
 	/**
 	 * Get the name of the reporter
@@ -29,31 +30,13 @@ component extends="BaseReporter" {
 		struct options     = {},
 		boolean justReturn = false
 	){
-		if ( !arguments.justReturn ) {
-			// content type
-			getPageContextResponse().setContentType( "text/html" );
-		}
-
-		// bundle stats
-		variables.bundleStats = arguments.results.getBundleStats();
-
-		// prepare base links
-		variables.baseURL = "?";
-		if ( structKeyExists( url, "method" ) ) {
-			variables.baseURL &= "method=#urlEncodedFormat( url.method )#";
-		}
-		if ( structKeyExists( url, "output" ) ) {
-			variables.baseURL &= "output=#urlEncodedFormat( url.output )#";
-		}
-
-		// prepare incoming params
-		prepareIncomingParams();
-
-		// prepare the report
-		savecontent variable="local.report" {
-			include "assets/doc.cfm";
-		}
-		return local.report;
+		return renderReport(
+			layout     = "doc",
+			results    = arguments.results,
+			testbox    = arguments.testbox,
+			options    = arguments.options,
+			justReturn = arguments.justReturn
+		);
 	}
 
 }

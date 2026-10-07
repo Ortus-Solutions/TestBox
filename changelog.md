@@ -9,9 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- TESTBOX-471 The HTML reporters (`Simple`, `Min`, `Dot`, `Doc`) are rebuilt on Bootstrap 5.3, Bootstrap Icons, Alpine and Prism, with light and dark themes and the new TestBox logos. Everything is still inlined so reports run airgapped, and a page went from about 1.4 MB to about 0.45 MB.
+- TESTBOX-471 The verdict is the first thing in every HTML report: a sticky green or red banner with the counts, a proportion bar and status filters, and bundle exceptions get their own alert.
+- TESTBOX-471 Re-run links (run bundle, suite or spec) now carry `labels`, `excludes`, `directory`, `reporter` and the other params of the original run.
+- TESTBOX-471 `Dot` opens a spec's details in a drawer instead of `alert()`, `Doc` is a styled page with a bundle navigation, and the status chips of `Min` and `Dot` now filter.
+- TESTBOX-471 Report templates keep only markup. Their logic moved to `system/reports/ReportHelper.cfc` and `BaseHTMLReporter.cfc`.
+
 ### Added
 
-- New `AgentReporter` (`reporter=agent`): a compact, token-efficient JSON reporter for AI agents and automation. It emits totals plus only failed/errored specs, with options `detail`, `maxFailures`, `maxMessageLength`, `includeStack`, `stackDepth`, `includeSkipped` and `includeDebug`.
+- TESTBOX-471 Ask AI on failures: copy a ready-made prompt, preview it, open it in ChatGPT or Claude, or copy it as JSON for a coding agent. It is on by default with a first-use notice and is controlled by the `aiAssist`, `aiProviders`, `aiContextLines`, `aiStackFrames` and `aiPrompt` reporter options.
+- TESTBOX-471 The `urlParams` reporter option sets the run params the re-run links carry when a report is produced from code and there is no url scope.
+- TESTBOX-471 `build/vendor` rebuilds the inlined front-end libraries with one command (`box run-script assets:update`) and CI keeps them honest.
+- TESTBOX-469 New `AgentReporter` (`reporter=agent`): a compact, token-efficient JSON reporter for AI agents and automation. It emits totals plus only failed/errored specs, with options `detail`, `maxFailures`, `maxMessageLength`, `includeStack`, `stackDepth`, `includeSkipped` and `includeDebug`.
+
+### Removed
+
+- TESTBOX-471 The `url.fullPage` switch of the HTML reporters. A report is always a complete page.
 
 ## [7.1.0] - 2026-09-11
 
