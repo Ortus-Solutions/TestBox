@@ -57,66 +57,76 @@
 	</section>
 </cfloop>
 
-<cffunction name="statusToBootstrapClass" output="false">
-	<cfargument name="status">
+<cfscript>
+function statusToBootstrapClass( status ) output="false" {
+    if ( lcase( arguments.status ) == "failed" ) {
+        bootstrapClass = "text-warning";
+    } else if ( lcase( arguments.status ) == "error" ) {
+        bootstrapClass = "text-danger";
+    } else if ( lcase( arguments.status ) == "passed" ) {
+        bootstrapClass = "text-success";
+    } else if ( lcase( arguments.status ) == "skipped" ) {
+        bootstrapClass = "text-secondary";
+    }
 
-	<cfif lcase( arguments.status ) eq "failed">
-		<cfset bootstrapClass = "text-warning">
-	<cfelseif lcase( arguments.status ) eq "error">
-		<cfset bootstrapClass = "text-danger">
-	<cfelseif lcase( arguments.status ) eq "passed">
-		<cfset bootstrapClass = "text-success">
-	<cfelseif lcase( arguments.status ) eq "skipped">
-		<cfset bootstrapClass = "text-secondary">
-	</cfif>
-
-	<cfreturn bootstrapClass>
-</cffunction>
+    return bootstrapClass;
+}
+</cfscript>
 
 <!--- Recursive Output --->
-<cffunction name="genSuiteReport" output="false">
-	<cfargument name="suiteStats">
-	<cfargument name="bundleStats">
+<cfscript>
+function genSuiteReport( suiteStats, bundleStats ) output="false" {
+    var nl = chr( 10 );
+    var t1 = chr( 9 );
+    var t2 = repeatString( t1, 2 );
+    var t3 = repeatString( t1, 3 );
+    var t4 = repeatString( t1, 4 );
+    var t5 = repeatString( t1, 5 );
+    var t6 = repeatString( t1, 6 );
 
-	<cfsavecontent variable="local.report">
-		<cfoutput>
-		<!--- Suite Results --->
-		<h2>+#arguments.suiteStats.name# (#arguments.suiteStats.totalDuration# ms)</h2>
-		<dl>
-			<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
-				<!--- Spec Results --->
-				<cfset thisSpecStatusClass = statusToBootstrapClass(local.thisSpec.status)>
+    savecontent variable="local.report" {
+        // Suite Results
+        writeOutput( nl & t2 & nl & t2 & nl & t2 );
+        writeOutput( "<h2>+" & arguments.suiteStats.name & " (" & arguments.suiteStats.totalDuration & " ms)</h2>" & nl & t2 & "<dl>" & nl & t3 );
+        for ( local.thisSpec in arguments.suiteStats.specStats ) {
+            // Spec Results
+            writeOutput( nl & t4 & nl & t4 );
+            thisSpecStatusClass = statusToBootstrapClass( local.thisSpec.status );
+            writeOutput( nl & nl & t4 );
+            writeOutput( '<dt class="spec ' & thisSpecStatusClass & '" data-bundleid="' & arguments.bundleStats.id & '" data-specid="' & local.thisSpec.id & '">' & nl & t5 );
+            writeOutput( local.thisSpec.displayName & " (" & local.thisSpec.totalDuration & " ms)" & nl & t4 & "</dt>" & nl & nl & t4 );
 
-				<dt class="spec #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
-					#local.thisSpec.displayName# (#local.thisSpec.totalDuration# ms)
-				</dt>
+            if ( local.thisSpec.status == "failed" ) {
+                writeOutput( nl & t5 & "<dd>" & encodeForHTML( local.thisSpec.failMessage ) & "</dd>" & nl & t5 );
+                writeOutput( '<dd><textarea cols="100" rows="20">' & local.thisSpec.failOrigin.toString() & "</textarea></dd>" & nl & t4 );
+            }
+            writeOutput( nl & nl & t4 );
 
-				<cfif local.thisSpec.status eq "failed">
-					<dd>#encodeForHTML( local.thisSpec.failMessage )#</dd>
-					<dd><textarea cols="100" rows="20">#local.thisSpec.failOrigin.toString()#</textarea></dd>
-				</cfif>
+            if ( local.thisSpec.status == "error" ) {
+                writeOutput( nl & t5 & "<dd>" & encodeForHTML( local.thisSpec.error.message ) & "</dd>" & nl & t5 );
+                writeOutput( '<dd><textarea cols="100" rows="20">' & local.thisSpec.error.stacktrace & "</textarea></dd>" & nl & t4 );
+            }
+            writeOutput( nl & t3 );
+        }
 
-				<cfif local.thisSpec.status eq "error">
-					<dd>#encodeForHTML( local.thisSpec.error.message )#</dd>
-					<dd><textarea cols="100" rows="20">#local.thisSpec.error.stacktrace#</textarea></dd>
-				</cfif>
-			</cfloop>
+        // Do we have nested suites
+        writeOutput( nl & nl & t3 & nl & t3 );
+        if ( arrayLen( arguments.suiteStats.suiteStats ) ) {
+            writeOutput( nl & t4 );
+            for ( local.nestedSuite in arguments.suiteStats.suiteStats ) {
+                writeOutput( nl & t5 );
+                writeOutput( '<section class="suite ' & statusToBootstrapClass( arguments.suiteStats.status ) & '" data-bundleid="' & arguments.bundleStats.id & '">' & nl & t5 );
+                writeOutput( "<dl>" & nl & t6 );
+                writeOutput( genSuiteReport( local.nestedSuite, arguments.bundleStats ) );
+                writeOutput( nl & t5 & "</dl>" & nl & t5 & "</section>" & nl & t4 );
+            }
+            writeOutput( nl & t3 );
+        }
+        writeOutput( nl & nl & t2 & "</dl>" & nl & t2 );
+        writeOutput( nl & t1 );
+    }
 
-			<!--- Do we have nested suites --->
-			<cfif arrayLen( arguments.suiteStats.suiteStats )>
-				<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
-					<section class="suite #statusToBootstrapClass(arguments.suiteStats.status)#" data-bundleid="#arguments.bundleStats.id#">
-					<dl>
-						#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
-					</dl>
-					</section>
-				</cfloop>
-			</cfif>
-
-		</dl>
-		</cfoutput>
-	</cfsavecontent>
-
-	<cfreturn local.report>
-</cffunction>
+    return local.report;
+}
+</cfscript>
 </cfoutput>

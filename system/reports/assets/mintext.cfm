@@ -60,66 +60,57 @@ Labels: #space( 7 )# #arrayToList( results.getLabels() )#<cfif !arrayLen( result
 <!--- Legend --->
 √ Passed #space( 2 )# - Skipped #space( 2 )# !! Exception/Error #space( 2 )# X Failure
 <!--- Recursive Output --->
-<cffunction name="genSuiteReport" output="false">
-	<cfargument name="suiteStats">
-	<cfargument name="bundleStats">
-	<cfargument name="level" default=0>
+<cfscript>
+function genSuiteReport( suiteStats, bundleStats, level = 0 ) output="false" {
+    // Only show suites that have failed and errors
+    if ( !listFindNocase( "failed,error", arguments.suiteStats.status ) ) {
+        return;
+    }
 
-	<!--- Only show suites that have failed and errors --->
-	<cfif !listFindNocase( "failed,error", arguments.suiteStats.status )>
-		<cfreturn>
-	</cfif>
+    var tabs     = repeatString( tab(), arguments.level );
+    var tabsNext = repeatString( tab(), arguments.level + 1 );
+    arguments.level++;
 
-	<cfset var tabs = repeatString( tab(), arguments.level )>
-	<cfset var tabsNext = repeatString( tab(), arguments.level + 1 )>
-	<cfset arguments.level++>
-
-	<cfsavecontent variable="local.report"><!---
-
-		Suite Name
-
-	--->#tabs#( #getStatusIndicator( arguments.suiteStats.status )# ) #arguments.suiteStats.name# #chr(13)#<!---
-
-	 Specs
-
-	 ---><cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec"><!---
-	 	---><cfif !listFindNoCase( "failed,error", local.thisSpec.status )><cfcontinue></cfif><!---
-		--->#tabsNext# ( #getStatusIndicator( local.thisSpec.status )# ) #local.thisSpec.displayName# (#local.thisSpec.totalDuration# ms) #chr(13)#<!---
-
-			If Spec Failed
-
-		---><cfif local.thisSpec.status eq "failed"><!---
-			--->#space()##chr(13)#<!---
-			--->#tabsNext#  ! Failure: #local.thisSpec.failMessage# #local.thisSpec.failDetail# #chr(13)#<!---
-			--->#space()##chr(13)#<!---
-		---></cfif><!---
-
-		 	If Spec Errored Out
-
-		---><cfif local.thisSpec.status eq "error"><!---
-			--->#space()##chr(13)#<!---
-			--->#tabsNext#  X Error: #local.thisSpec.error.message# #local.thisSpec.error.detail# #chr(13)#<!---
-			--->#space()##chr(13)#<!---
-			---><cfloop array="#local.thisSpec.error.tagContext#" index="thisStack"><!---
-
-				Only show non testbox template paths
-
-				 ---><cfif !reFindNoCase( "testbox(\/|\\)system(\/|\\)", thisStack.template )>#tabsNext# -> #thisStack.template#:#thisStack.line##chr(13)#</cfif><!---
-			---></cfloop><!---
-			--->#space()##chr(13)#<!---
-			--->#tabsNext# #left( local.thisSpec.error.stackTrace, 1500 )# #chr(13)##chr(10)#<!---
-			--->#space()##chr(13)#<!---
-		---></cfif><!---
-	---></cfloop><!---
-
-		Do we have nested suites
-
-	---><cfif arrayLen( arguments.suiteStats.suiteStats )><!---
-		---><cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite"><!---
-		--->#genSuiteReport( local.nestedSuite, arguments.bundleStats, arguments.level + 1 )#<!---
-		---></cfloop><!---
-	---></cfif>
-	</cfsavecontent>
-	<cfreturn local.report>
-</cffunction>
+    savecontent variable="local.report" {
+        // Suite Name
+        writeOutput( tabs & "( " & getStatusIndicator( arguments.suiteStats.status ) & " ) " & arguments.suiteStats.name & " " & chr( 13 ) );
+        // Specs
+        for ( local.thisSpec in arguments.suiteStats.specStats ) {
+            if ( !listFindNoCase( "failed,error", local.thisSpec.status ) ) {
+                continue;
+            }
+            writeOutput( tabsNext & " ( " & getStatusIndicator( local.thisSpec.status ) & " ) " & local.thisSpec.displayName & " (" & local.thisSpec.totalDuration & " ms) " & chr( 13 ) );
+            // If Spec Failed
+            if ( local.thisSpec.status == "failed" ) {
+                writeOutput( space() & chr( 13 ) );
+                writeOutput( tabsNext & "  ! Failure: " & local.thisSpec.failMessage & " " & local.thisSpec.failDetail & " " & chr( 13 ) );
+                writeOutput( space() & chr( 13 ) );
+            }
+            // If Spec Errored Out
+            if ( local.thisSpec.status == "error" ) {
+                writeOutput( space() & chr( 13 ) );
+                writeOutput( tabsNext & "  X Error: " & local.thisSpec.error.message & " " & local.thisSpec.error.detail & " " & chr( 13 ) );
+                writeOutput( space() & chr( 13 ) );
+                for ( thisStack in local.thisSpec.error.tagContext ) {
+                    // Only show non testbox template paths
+                    if ( !reFindNoCase( "testbox(\/|\\)system(\/|\\)", thisStack.template ) ) {
+                        writeOutput( tabsNext & " -> " & thisStack.template & ":" & thisStack.line & chr( 13 ) );
+                    }
+                }
+                writeOutput( space() & chr( 13 ) );
+                writeOutput( tabsNext & " " & left( local.thisSpec.error.stackTrace, 1500 ) & " " & chr( 13 ) & chr( 10 ) );
+                writeOutput( space() & chr( 13 ) );
+            }
+        }
+        // Do we have nested suites
+        if ( arrayLen( arguments.suiteStats.suiteStats ) ) {
+            for ( local.nestedSuite in arguments.suiteStats.suiteStats ) {
+                writeOutput( genSuiteReport( local.nestedSuite, arguments.bundleStats, arguments.level + 1 ) );
+            }
+        }
+        writeOutput( chr( 10 ) & chr( 9 ) );
+    }
+    return local.report;
+}
+</cfscript>
 </cfoutput>

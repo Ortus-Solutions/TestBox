@@ -201,49 +201,72 @@ function toggleDebug( specid ) {
 </cfif>
 </cfoutput>
 
-<cffunction name="statusPlusBootstrapClass" output="false">
-	<cfargument name="status">
-	<cfif lcase( arguments.status ) eq "failed">
-		<cfset bootstrapClass = "text-warning failed">
-	<cfelseif lcase( arguments.status ) eq "error">
-		<cfset bootstrapClass = "text-danger error">
-	<cfelseif lcase( arguments.status ) eq "passed">
-		<cfset bootstrapClass = "text-success passed">
-	<cfelseif lcase( arguments.status ) eq "skipped">
-		<cfset bootstrapClass = "text-secondary skipped">
-	</cfif>
-	<cfreturn bootstrapClass>
-</cffunction>
+<cfscript>
+function statusPlusBootstrapClass( status ) output="false" {
+    if ( lcase( arguments.status ) == "failed" ) {
+        bootstrapClass = "text-warning failed";
+    } else if ( lcase( arguments.status ) == "error" ) {
+        bootstrapClass = "text-danger error";
+    } else if ( lcase( arguments.status ) == "passed" ) {
+        bootstrapClass = "text-success passed";
+    } else if ( lcase( arguments.status ) == "skipped" ) {
+        bootstrapClass = "text-secondary skipped";
+    }
+    return bootstrapClass;
+}
+</cfscript>
 
 <!--- Recursive Output --->
-<cffunction name="genSuiteReport" output="false">
-	<cfargument name="suiteStats">
-	<cfargument name="bundleStats">
-	<cfset var thisSpec = "">
-	<cfsavecontent variable="local.report">
-		<cfoutput>
-			<!--- Iterate over suite specs --->
-			<cfloop array="#arguments.suiteStats.specStats#" index="thisSpec">
-				<a href="javascript:
-						<cfif len( thisSpec.failMessage ) OR NOT structIsEmpty( thisSpec.error )>
+<cfscript>
+function genSuiteReport( suiteStats, bundleStats ) output="false" {
+    var thisSpec = "";
+    savecontent variable="local.report" {
+        writeOutput( chr( 10 ) & chr( 9 ) & chr( 9 ) );
+        writeOutput( "
+			
+			" );
+        for ( thisSpec in arguments.suiteStats.specStats ) {
+            writeOutput( "
+				<a href=""javascript:
+						" );
+            if ( len( thisSpec.failMessage ) || !structIsEmpty( thisSpec.error ) ) {
+                writeOutput( "
 							showInfo( '#JSStringFormat( thisSpec.failMessage )#', '#thisSpec.id#', '#lcase( NOT structIsEmpty( thisSpec.error ) )#' )
-						<cfelse>
+						" );
+            } else {
+                writeOutput( "
 							void( 0 )
-						</cfif>
-						" title="#encodeForHTML( thisSpec.displayname )# (#thisSpec.totalDuration# ms)" data-info="#encodeForHTML( thisSpec.failMessage )#">
-					<span class="#statusPlusBootstrapClass( thisSpec.status )#">&middot;</span>
+						" );
+            }
+            writeOutput( "
+						"" title=""#encodeForHTML( thisSpec.displayname )# (#thisSpec.totalDuration# ms)"" data-info=""#encodeForHTML( thisSpec.failMessage )#"">
+					<span class=""#statusPlusBootstrapClass( thisSpec.status )#"">&middot;</span>
 				</a>
-				<div style="display:none;" id="error_#thisSpec.id#">
-					<cfdump var="#thisSpec.error#">
+				<div style=""display:none;"" id=""error_#thisSpec.id#"">
+					" );
+            writeDump( var = thisSpec.error );
+            writeOutput( "
 				</div>
-			</cfloop>
-			<!--- Do we have nested suites --->
-			<cfif arrayLen( arguments.suiteStats.suiteStats )>
-				<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
+			" );
+        }
+        writeOutput( "
+			
+			" );
+        if ( arrayLen( arguments.suiteStats.suiteStats ) ) {
+            writeOutput( "
+				" );
+            for ( local.nestedSuite in arguments.suiteStats.suiteStats ) {
+                writeOutput( "
 					#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
-				</cfloop>
-			</cfif>
-		</cfoutput>
-	</cfsavecontent>
-	<cfreturn local.report>
-</cffunction>
+				" );
+            }
+            writeOutput( "
+			" );
+        }
+        writeOutput( "
+		" );
+        writeOutput( chr( 10 ) & chr( 9 ) );
+    }
+    return local.report;
+}
+</cfscript>

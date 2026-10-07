@@ -453,192 +453,282 @@ code {
 </cfif>
 </cfoutput>
 
-<cffunction name="statusToBootstrapClass" output="false">
-	<cfargument name="status">
-	<cfset bootstrapClass = "">
-	<cfif lcase( arguments.status ) eq "failed">
-		<cfset bootstrapClass = "warning">
-	<cfelseif lcase( arguments.status ) eq "error">
-		<cfset bootstrapClass = "danger">
-	<cfelseif lcase( arguments.status ) eq "passed">
-		<cfset bootstrapClass = "success">
-	<cfelseif lcase( arguments.status ) eq "skipped">
-		<cfset bootstrapClass = "secondary">
-	</cfif>
-	<cfreturn bootstrapClass>
-</cffunction>
+<cfscript>
+function statusToBootstrapClass( status ) output="false" {
+    bootstrapClass = "";
+    if ( lcase( arguments.status ) == "failed" ) {
+        bootstrapClass = "warning";
+    } else if ( lcase( arguments.status ) == "error" ) {
+        bootstrapClass = "danger";
+    } else if ( lcase( arguments.status ) == "passed" ) {
+        bootstrapClass = "success";
+    } else if ( lcase( arguments.status ) == "skipped" ) {
+        bootstrapClass = "secondary";
+    }
+    return bootstrapClass;
+}
+</cfscript>
 
-<cffunction name="statusToIcon" output="false">
-	<cfargument name="status">
-	<cfset icon = "">
-	<cfif lcase( arguments.status ) eq "failed">
-		<cfset icon = '<i class="fas fa-exclamation-triangle"></i>'>
-	<cfelseif lcase( arguments.status ) eq "error">
-		<cfset icon = '<i class="fas fa-times"></i>'>
-	<cfelseif lcase( arguments.status ) eq "passed">
-		<cfset icon = '<i class="fas fa-check"></i>'>
-	<cfelseif lcase( arguments.status ) eq "skipped">
-		<cfset icon = '<i class="fas fa-minus-circle"></i>'>
-	</cfif>
-	<cfreturn icon>
-</cffunction>
+<cfscript>
+function statusToIcon( status ) output="false" {
+    icon = "";
+    if ( lcase( arguments.status ) == "failed" ) {
+        icon = '<i class="fas fa-exclamation-triangle"></i>';
+    } else if ( lcase( arguments.status ) == "error" ) {
+        icon = '<i class="fas fa-times"></i>';
+    } else if ( lcase( arguments.status ) == "passed" ) {
+        icon = '<i class="fas fa-check"></i>';
+    } else if ( lcase( arguments.status ) == "skipped" ) {
+        icon = '<i class="fas fa-minus-circle"></i>';
+    }
+    return icon;
+}
+</cfscript>
 
 <!--- Recursive Output --->
-<cffunction name="genSuiteReport" output="false">
-	<cfargument name="suiteStats">
-	<cfargument name="bundleStats">
-	<cfsavecontent variable="local.report">
-		<cfoutput>
-			<li class="list-group-item #suiteStats.status#" data-bundleid="#suiteStats.bundleID#">
-				<!--- Suite Results --->
+<cfscript>
+function genSuiteReport( suiteStats, bundleStats ) output="false" {
+    savecontent variable="local.report" {
+        writeOutput( chr( 10 ) & chr( 9 ) & chr( 9 ) );
+        writeOutput( "
+			<li class=""list-group-item #suiteStats.status#"" data-bundleid=""#suiteStats.bundleID#"">
+				
 				<a
-					class="alert-link text-#statusToBootstrapClass( suiteStats.status )#"
-					title="Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#"
-					href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
+					class=""alert-link text-#statusToBootstrapClass( suiteStats.status )#""
+					title=""Total: #arguments.suiteStats.totalSpecs# Passed:#arguments.suiteStats.totalPass# Failed:#arguments.suiteStats.totalFail# Errors:#arguments.suiteStats.totalError# Skipped:#arguments.suiteStats.totalSkipped#""
+					href=""#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSuites=#URLEncodedFormat( arguments.suiteStats.name )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false""
 				>
 					#statusToIcon( arguments.suiteStats.status )# <strong>#encodeForHtml( arguments.suiteStats.name )#</strong>
 					(#numberFormat( arguments.suiteStats.totalDuration )# ms)
 				</a>
-				<ul class="list-group">
-					<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
-						<!--- Spec Results --->
+				<ul class=""list-group"">
+					" );
+        for ( local.thisSpec in arguments.suiteStats.specStats ) {
+            writeOutput( "
+						
 
 						<li
-							class="spec list-group-item #local.thisSpec.status#"
-							data-bundleid="#arguments.bundleStats.id#"
-							data-specid="#local.thisSpec.id#"
+							class=""spec list-group-item #local.thisSpec.status#""
+							data-bundleid=""#arguments.bundleStats.id#""
+							data-specid=""#local.thisSpec.id#""
 						>
-							<div class="clearfix">
+							<div class=""clearfix"">
 								<a
-									class="alert-link text-#statusToBootstrapClass( local.thisSpec.status )#"
-									href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( local.thisSpec.id )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false"
+									class=""alert-link text-#statusToBootstrapClass( local.thisSpec.status )#""
+									href=""#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&testSpecs=#URLEncodedFormat( local.thisSpec.id )#&testBundles=#URLEncodedFormat( arguments.bundleStats.path )#&opt_run=true&coverageEnabled=false""
 								>
 									#statusToIcon( local.thisSpec.status )# #encodeForHtml( local.thisSpec.displayName )# (#numberFormat( local.thisSpec.totalDuration )# ms)
 								</a>
 
-								<!--- Compose message according to status --->
-								<cfif local.thisSpec.status eq "failed">
-									<cfset local.thisSpec.message = local.thisSpec.failMessage>
-								</cfif>
-								<cfif local.thisSpec.status eq "error">
-									<cfset local.thisSpec.message = local.thisSpec.error.message & local.thisSpec.error.detail>
-								</cfif>
+								
+								" );
+            if ( local.thisSpec.status == "failed" ) {
+                writeOutput( "
+									" );
+                local.thisSpec.message = local.thisSpec.failMessage;
+                writeOutput( "
+								" );
+            }
+            writeOutput( "
+								" );
+            if ( local.thisSpec.status == "error" ) {
+                writeOutput( "
+									" );
+                local.thisSpec.message = local.thisSpec.error.message & local.thisSpec.error.detail;
+                writeOutput( "
+								" );
+            }
+            writeOutput( "
 
-								<!--- Show it with expanding button --->
-								<cfif structKeyExists( local.thisSpec, "message" )>
+								
+								" );
+            if ( structKeyExists( local.thisSpec, "message" ) ) {
+                writeOutput( "
 									- <strong>#encodeForHTML( local.thisSpec.message )#</strong></a>
 									<button
-										class="btn btn-link float-right py-0 expand-collapse"
-										data-toggle="collapse"
-										data-target="##failure_error_#local.thisSpec.id#"
-										aria-expanded="false"
-										aria-controls="failure_error_#local.thisSpec.id#"
-										style="text-decoration: none;"
-										id="btn_#local.thisSpec.id#"
-										title="Show more information"
+										class=""btn btn-link float-right py-0 expand-collapse""
+										data-toggle=""collapse""
+										data-target=""##failure_error_#local.thisSpec.id#""
+										aria-expanded=""false""
+										aria-controls=""failure_error_#local.thisSpec.id#""
+										style=""text-decoration: none;""
+										id=""btn_#local.thisSpec.id#""
+										title=""Show more information""
 									>
-										<i class="fas fa-plus-square plus-minus"></i>
+										<i class=""fas fa-plus-square plus-minus""></i>
 									</button>
-								</cfif>
+								" );
+            }
+            writeOutput( "
 							</div>
 
-							<!--- Show failed data snapshot --->
-							<cfif structKeyExists( local.thisSpec, "message" )>
+							
+							" );
+            if ( structKeyExists( local.thisSpec, "message" ) ) {
+                writeOutput( "
 								<div>
 
-									<!--- Failure Snapshot --->
-									<cfif local.thisSpec.status eq "failed" && isArray( local.thisSpec.failOrigin ) && arrayLen( local.thisSpec.failOrigin )>
-										<cfloop array="#local.thisSpec.failOrigin#" item="thisContext">
-											<cfif findNoCase( arguments.bundleStats.path, reReplace( thisContext.template, "(/|\\)", ".", "all" ) )>
-												<!--- Template --->
-												<div style="margin-bottom: 5px">
-													<a href="#openInEditorURL( thisContext.template, thisContext.line, url.editor )#">
+									
+									" );
+                if ( local.thisSpec.status == "failed" && isArray( local.thisSpec.failOrigin ) && arrayLen( local.thisSpec.failOrigin ) ) {
+                    writeOutput( "
+										" );
+                    for ( thisContext in local.thisSpec.failOrigin ) {
+                        writeOutput( "
+											" );
+                        if ( findNoCase( arguments.bundleStats.path, reReplace( thisContext.template, "(/|\\)", ".", "all" ) ) ) {
+                            writeOutput( "
+												
+												<div style=""margin-bottom: 5px"">
+													<a href=""#openInEditorURL( thisContext.template, thisContext.line, url.editor )#"">
 														#thisContext.template#:#thisContext.line#
 													</a>
 												</div>
-												<!--- Lucee Nice Code Print --->
-												<cfif structKeyExists( thisContext, "codePrintHTML" )>
-													<div class="pl-5 mb-2 bg-light">
+												
+												" );
+                            if ( structKeyExists( thisContext, "codePrintHTML" ) ) {
+                                writeOutput( "
+													<div class=""pl-5 mb-2 bg-light"">
 														<code>#thisContext.codePrintHTML#</code>
 													</div>
-												</cfif>
-											</cfif>
-										</cfloop>
-									</cfif>
+												" );
+                            }
+                            writeOutput( "
+											" );
+                        }
+                        writeOutput( "
+										" );
+                    }
+                    writeOutput( "
+									" );
+                }
+                writeOutput( "
 
-									<!--- If it's an error, show the last snapshot --->
-									<cfif !isNull( local.thisSpec.error.tagContext ) && arrayLen( local.thisSpec.error.tagContext ) >
-										<cfset var thisContext = local.thisSpec.error.tagContext[ 1 ]>
-										<!--- Template --->
-										<div style="margin-bottom: 5px">
-											<a href="#openInEditorURL( thisContext.template, thisContext.line, url.editor )#">
+									
+									" );
+                if ( !isNull( local.thisSpec.error.tagContext ) && arrayLen( local.thisSpec.error.tagContext ) ) {
+                    writeOutput( "
+										" );
+                    var thisContext = local.thisSpec.error.tagContext[ 1 ];
+                    writeOutput( "
+										
+										<div style=""margin-bottom: 5px"">
+											<a href=""#openInEditorURL( thisContext.template, thisContext.line, url.editor )#"">
 												#thisContext.template#:#thisContext.line#
 											</a>
 										</div>
-										<!--- Lucee Nice Code Print --->
-										<cfif structKeyExists( thisContext, "codePrintHTML" )>
-											<div class="pl-5 mb-2 bg-light">
+										
+										" );
+                    if ( structKeyExists( thisContext, "codePrintHTML" ) ) {
+                        writeOutput( "
+											<div class=""pl-5 mb-2 bg-light"">
 												<code>#thisContext.codePrintHTML#</code>
 											</div>
-										</cfif>
-										<!--- Stacktrace mini snapshot --->
-										<div class="pl-5 mb-2 bg-light">
+										" );
+                    }
+                    writeOutput( "
+										
+										<div class=""pl-5 mb-2 bg-light"">
 											<pre>#left( local.thisSpec.error.stackTrace, 1000 )#</pre>
 										</div>
-									</cfif>
+									" );
+                }
+                writeOutput( "
 
-									<!--- Deep Insights into failures, hidden by default --->
-									<div id="failure_error_#local.thisSpec.id#" class="my-2 collapse" data-specid="#local.thisSpec.id#">
-										<!--- Origin --->
+									
+									<div id=""failure_error_#local.thisSpec.id#"" class=""my-2 collapse"" data-specid=""#local.thisSpec.id#"">
+										
 										<h4>Failure Origin</h4>
-										<cfloop array="#local.thisSpec.failOrigin#" index="thisStack">
+										" );
+                for ( thisStack in local.thisSpec.failOrigin ) {
+                    writeOutput( "
 											<div
-												style="border: 1px solid blue; padding: 5px; margin: 5px 0px; border-radius: 5px; cursor: pointer"
-												title="Open in Editor"
-												onClick="window.location='#openInEditorURL( thisStack.template, thisStack.line, url.editor )#'"
+												style=""border: 1px solid blue; padding: 5px; margin: 5px 0px; border-radius: 5px; cursor: pointer""
+												title=""Open in Editor""
+												onClick=""window.location='#openInEditorURL( thisStack.template, thisStack.line, url.editor )#'""
 											>
 												#thisStack.template#:#thisStack.line#
-												<cfif !isNull( thisStack.codePrintPlain )>
+												" );
+                    if ( !isNull( thisStack.codePrintPlain ) ) {
+                        writeOutput( "
 													<pre>#thisStack.codePrintPlain#</pre>
-												</cfif>
+												" );
+                    }
+                    writeOutput( "
 											</div>
-										</cfloop>
+										" );
+                }
+                writeOutput( "
 
-										<!--- Fail Detail --->
-										<cfif len( local.thisSpec.failDetail )>
+										
+										" );
+                if ( len( local.thisSpec.failDetail ) ) {
+                    writeOutput( "
 											<h4>Failure Details</h4>
-											<cfdump var="#local.thisSpec.failDetail#">
-										</cfif>
+											" );
+                    writeDump( var = local.thisSpec.failDetail );
+                    writeOutput( "
+										" );
+                }
+                writeOutput( "
 
-										<!--- StackTrace --->
+										
 										<h4>Failure StackTrace</h4>
-										<cfif len( local.thisSpec.failStackTrace )>
+										" );
+                if ( len( local.thisSpec.failStackTrace ) ) {
+                    writeOutput( "
 											<pre>#encodeForHTML( local.thisSpec.failStackTrace )#</pre>
-										</cfif>
-										<cfif !isNull( local.thisSpec.error.stackTrace )>
+										" );
+                }
+                writeOutput( "
+										" );
+                if ( !isNull( local.thisSpec.error.stackTrace ) ) {
+                    writeOutput( "
 											<pre>#encodeForHTML( local.thisSpec.error.stackTrace )#</pre>
-										</cfif>
+										" );
+                }
+                writeOutput( "
 
-										<!--- Extended Info --->
-										<cfif len( local.thisSpec.failExtendedInfo )>
+										
+										" );
+                if ( len( local.thisSpec.failExtendedInfo ) ) {
+                    writeOutput( "
 											<h4>Failure Extended Info</h4>
-											<cfdump var="#local.thisSpec.failExtendedInfo#">
-										</cfif>
+											" );
+                    writeDump( var = local.thisSpec.failExtendedInfo );
+                    writeOutput( "
+										" );
+                }
+                writeOutput( "
 									</div>
 								</div>
-							</cfif>
+							" );
+            }
+            writeOutput( "
 						</li>
-					</cfloop>
+					" );
+        }
+        writeOutput( "
 
-					<!--- Do we have nested suites --->
-					<cfif arrayLen( arguments.suiteStats.suiteStats )>
-						<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
+					
+					" );
+        if ( arrayLen( arguments.suiteStats.suiteStats ) ) {
+            writeOutput( "
+						" );
+            for ( local.nestedSuite in arguments.suiteStats.suiteStats ) {
+                writeOutput( "
 							#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
-						</cfloop>
-					</cfif>
+						" );
+            }
+            writeOutput( "
+					" );
+        }
+        writeOutput( "
 				</ul>
 			</li>
-		</cfoutput>
-	</cfsavecontent>
-	<cfreturn local.report>
-</cffunction>
+		" );
+        writeOutput( chr( 10 ) & chr( 9 ) );
+    }
+    return local.report;
+}
+</cfscript>
