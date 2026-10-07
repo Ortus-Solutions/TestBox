@@ -135,7 +135,7 @@ component extends="testbox.system.BaseSpec" {
 								expect( html ).toInclude( "class=""tb-verdict tb-verdict--good""" );
 								expect( html ).toInclude( "All 1 spec passed" );
 								expect( html ).toInclude( "PASSED 1" );
-								expect( html ).notToInclude( "class=""tb-verdict tb-verdict--bad""" );
+								expect( html ).notToInclude( "class=""tb-verdict" & " tb-verdict--bad""" );
 							} );
 
 							it( "offers filters by status in the verdict", function(){
@@ -147,9 +147,9 @@ component extends="testbox.system.BaseSpec" {
 
 							it( "escapes everything that comes from a spec", function(){
 								var html = runReporter( "tests.resources.reporters.EscapingBundle", reporter.cfc );
-								expect( html ).notToInclude( "<img src=x onerror=alert(1)>" );
-								expect( html ).notToInclude( "<script>alert('xss')</script>" );
-								expect( html ).notToInclude( "<b>Suite</b>" );
+								expect( html ).notToInclude( "<img src=x one" & "rror=alert(1)>" );
+								expect( html ).notToInclude( "<script>alert(" & "'xss')</script>" );
+								expect( html ).notToInclude( "<b>Sui" & "te</b>" );
 								expect( html ).toInclude( "&lt;img" );
 							} );
 
@@ -192,10 +192,11 @@ component extends="testbox.system.BaseSpec" {
 									reporter.cfc,
 									{ aiAssist : false }
 								);
-								expect( html ).notToInclude( "aria-haspopup=""menu""" );
-								expect( html ).notToInclude( "<template data-prompt=" );
-								expect( html ).notToInclude( "Copy all failures for AI" );
-								expect( html ).notToInclude( "chatgpt.com" );
+								expect( html ).notToInclude( "aria-haspop" & "up=""menu""" );
+								expect( html ).notToInclude( "<template d" & "ata-prompt=" );
+								expect( html ).notToInclude( "Copy all fai" & "lures for AI" );
+								// built from parts: on Lucee the page quotes source lines of the stack frames, which include this file
+								expect( html ).notToInclude( "chat" & "gpt.com" );
 							} );
 
 							it( "uses your own AI providers", function(){
@@ -213,7 +214,8 @@ component extends="testbox.system.BaseSpec" {
 									}
 								);
 								expect( html ).toInclude( "ai.acme.test" );
-								expect( html ).notToInclude( "chatgpt.com" );
+								// built from parts: on Lucee the page quotes source lines of the stack frames, which include this file
+								expect( html ).notToInclude( "chat" & "gpt.com" );
 							} );
 						} );
 					}
@@ -290,7 +292,7 @@ component extends="testbox.system.BaseSpec" {
 				it( "lists one line per failure and leaves out the specs that passed", function(){
 					var html = runReporter( variables.mixed, "testbox.system.reports.MinReporter" );
 					expect( html ).toInclude( "class=""list-group tb-min-failures""" );
-					expect( html ).notToInclude( "class=""tb-spec""" );
+					expect( html ).notToInclude( "class=""" & "tb-spec""" );
 				} );
 			} );
 
