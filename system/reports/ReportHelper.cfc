@@ -399,6 +399,16 @@ component accessors="true" {
 	}
 
 	/**
+	 * Is this bundle explicitly selected by the current run scope?
+	 *
+	 * @bundle The bundle stats
+	 */
+	boolean function isBundleScoped( required struct bundle ){
+		var only = structKeyExists( variables.urlScope, "testBundles" ) ? variables.urlScope.testBundles : "";
+		return len( only ) > 0 && listFindNoCase( only, arguments.bundle.path ) > 0;
+	}
+
+	/**
 	 * Link that opens a file in the editor chosen with url.editor
 	 */
 	string function editorURL( required string template, required numeric line ){

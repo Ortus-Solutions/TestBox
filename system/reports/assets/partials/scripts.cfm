@@ -14,9 +14,9 @@
 </cfloop>
 <cfloop array="#variables.bundleStats#" item="thisBundle">
 	<cfif local.anyProblem>
-		<cfset local.config.bundles[ thisBundle.id ] = variables.helper.bundleHasProblems( thisBundle )>
+		<cfset local.config.bundles[ thisBundle.id ] = variables.helper.isBundleScoped( thisBundle ) || variables.helper.bundleHasProblems( thisBundle )>
 	<cfelse>
-		<cfset local.config.bundles[ thisBundle.id ] = ( arrayLen( variables.bundleStats ) lte 5 )>
+		<cfset local.config.bundles[ thisBundle.id ] = variables.helper.isBundleScoped( thisBundle ) || ( arrayLen( variables.bundleStats ) lte 5 )>
 	</cfif>
 </cfloop>
 <cfoutput>
