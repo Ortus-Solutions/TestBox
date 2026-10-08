@@ -29,6 +29,11 @@
 				#arguments.data.content#
 			</main>
 
+			<!--- Full size view of a screenshot thumbnail: click anywhere or press Escape to close --->
+			<dialog class="tb-zoom" x-ref="zoom" @click="$refs.zoom.close()" aria-label="Screenshot">
+				<img x-ref="zoomImg" src="" alt="">
+			</dialog>
+
 			<div class="tb-toast" x-show="toast" x-cloak role="status" aria-live="polite">
 				<span x-html="toast"></span>
 			</div>

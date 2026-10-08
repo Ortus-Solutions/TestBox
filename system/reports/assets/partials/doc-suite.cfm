@@ -37,6 +37,7 @@
 					<cfset local.code    = variables.helper.codeFor( thisSpec, 3 )>
 					<dd x-data="{ previewOpen: false }">
 						<p class="mb-2 text-break">#encodeForHtml( local.failure.message )#</p>
+						#renderPartial( "attachments", { spec : thisSpec } )#
 						<div class="d-flex flex-wrap align-items-center gap-2">
 							<a class="btn btn-sm btn-outline-secondary" href="#variables.helper.href( variables.helper.runURL( bundle = local.bundle.path, spec = thisSpec.id ) )#">
 								<svg class="tb-icon" aria-hidden="true"><use href="##i-play-fill"/></svg> Run this spec
@@ -57,6 +58,8 @@
 							<pre class="tb-pre mt-2">#encodeForHtml( local.stack )#</pre>
 						</details>
 					</dd>
+				<cfelseif arrayLen( getSpecAttachments( thisSpec ) )>
+					<dd>#renderPartial( "attachments", { spec : thisSpec } )#</dd>
 				</cfif>
 			</div>
 		</cfloop>

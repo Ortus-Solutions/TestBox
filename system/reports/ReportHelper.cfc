@@ -39,9 +39,20 @@ component accessors="true" {
 				"url"  : "https://claude.ai/new?q={prompt}"
 			}
 		],
-		"aiContextLines" : 5,
-		"aiStackFrames"  : 8,
-		"aiPrompt"       : ""
+		"aiContextLines"   : 5,
+		"aiStackFrames"    : 8,
+		"aiPrompt"         : "",
+		// image attachments up to this size are embedded in the report, 0 turns it off
+		"inlineImageMaxKB" : 2048
+	};
+
+	// Attachment file extension to the mime type of an image the report can embed
+	variables.IMAGE_TYPES = {
+		"png"  : "image/png",
+		"jpg"  : "image/jpeg",
+		"jpeg" : "image/jpeg",
+		"gif"  : "image/gif",
+		"webp" : "image/webp"
 	};
 
 	// Status presentation. The keys are the lowercased spec/suite/bundle statuses TestBox reports.
@@ -117,9 +128,10 @@ component accessors="true" {
 		if ( structKeyExists( variables.urlScope, "aiAssist" ) && isBoolean( variables.urlScope.aiAssist ) ) {
 			merged.aiAssist = variables.urlScope.aiAssist;
 		}
-		merged.aiAssist       = isBoolean( merged.aiAssist ) && merged.aiAssist;
-		merged.aiContextLines = max( 0, val( merged.aiContextLines ) );
-		merged.aiStackFrames  = max( 1, val( merged.aiStackFrames ) );
+		merged.aiAssist         = isBoolean( merged.aiAssist ) && merged.aiAssist;
+		merged.aiContextLines   = max( 0, val( merged.aiContextLines ) );
+		merged.aiStackFrames    = max( 1, val( merged.aiStackFrames ) );
+		merged.inlineImageMaxKB = max( 0, val( merged.inlineImageMaxKB ) );
 		return merged;
 	}
 
@@ -842,6 +854,85 @@ component accessors="true" {
 		return new testbox.system.coverage.browser.CodeBrowser( tresholds ).percentToContextualClass(
 			arguments.percent
 		);
+	}
+
+	/************************************** ATTACHMENTS ****************************************/
+
+	/**
+	 * The files attached to a spec, ready to render. Images up to the inlineImageMaxKB option are
+	 * embedded as data URIs: a page served over http cannot open file:// links, and a saved report
+	 * keeps its screenshots.
+	 *
+	 * @spec The spec stats
+	 *
+	 * @return An array of { name, type, path, kind, href, src, command } structs. kind is image, video,
+	 *         trace or file. src is the data URI of an embedded image, or an empty string. command is the
+	 *         command that opens a trace, or an empty string.
+	 */
+	array function attachments( required struct spec ){
+		var views = [];
+		var list  = arguments.spec.attachments ?: [];
+		if ( !isArray( list ) ) {
+			return views;
+		}
+		for ( var thisAttachment in list ) {
+			arrayAppend( views, attachmentView( thisAttachment ) );
+		}
+		return views;
+	}
+
+	/**
+	 * Describe one attachment for the report
+	 *
+	 * @attachment The { path, type, name } attachment
+	 */
+	struct function attachmentView( required struct attachment ){
+		var path      = arguments.attachment.path ?: "";
+		var type      = lCase( arguments.attachment.type ?: "" );
+		var extension = lCase( listLast( getFileFromPath( path ), "." ) );
+		var href      = len( path ) ? createObject( "java", "java.io.File" ).init( path ).toURI().toString() : "";
+		var view      = {
+			"name"    : arguments.attachment.name ?: getFileFromPath( path ),
+			"type"    : type,
+			"path"    : path,
+			"kind"    : "file",
+			"href"    : href,
+			"src"     : "",
+			"command" : ""
+		};
+		if ( structKeyExists( variables.IMAGE_TYPES, extension ) ) {
+			view.kind = "image";
+			view.src  = imageDataURI( path, variables.IMAGE_TYPES[ extension ] );
+		} else if ( type == "video" || listFindNoCase( "webm,mp4", extension ) ) {
+			view.kind = "video";
+		} else if ( type == "trace" ) {
+			view.kind    = "trace";
+			view.command = "bxPlaywright show-trace ""#path#""";
+		}
+		return view;
+	}
+
+	/**
+	 * An image file as a data URI, or an empty string when it is missing, unreadable or larger than
+	 * the inlineImageMaxKB option
+	 *
+	 * @path The absolute path of the image
+	 * @mime The mime type of the image
+	 */
+	string function imageDataURI( required string path, required string mime ){
+		var maxBytes = variables.options.inlineImageMaxKB * 1024;
+		if ( maxBytes <= 0 || !len( arguments.path ) || !fileExists( arguments.path ) ) {
+			return "";
+		}
+		try {
+			var file = createObject( "java", "java.io.File" ).init( arguments.path );
+			if ( file.length() > maxBytes ) {
+				return "";
+			}
+			return "data:#arguments.mime#;base64,#toBase64( fileReadBinary( arguments.path ) )#";
+		} catch ( any e ) {
+			return "";
+		}
 	}
 
 	/************************************** PATHS ****************************************/

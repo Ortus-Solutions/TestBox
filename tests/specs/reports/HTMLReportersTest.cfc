@@ -6,6 +6,7 @@ component extends="testbox.system.BaseSpec" {
 
 	variables.mixed   = "tests.resources.reporters.MixedBundle";
 	variables.passing = "tests.resources.reporters.PassingBundle";
+	variables.shots   = "tests.resources.reporters.ScreenshotBundle";
 
 	variables.reporters = [
 		{
@@ -80,6 +81,24 @@ component extends="testbox.system.BaseSpec" {
 								expect( html ).toInclude( "name=""viewport""" );
 								expect( html ).toInclude( "</html>" );
 								expect( occurrences( html, "<!DOCTYPE" ) ).toBe( 1 );
+							} );
+
+							it( "embeds the screenshots of a failed spec once, as thumbnails that open full size", function(){
+								var html = runReporter( variables.shots, reporter.cfc );
+								expect( html ).toInclude( "class=""tb-shot__open""" );
+								expect( html ).toInclude( "<dialog class=""tb-zoom""" );
+								expect( occurrences( html, "data:image/png;base64,iVBORw0KGgo" ) ).toBe( 1 );
+								expect( html ).toInclude( "Copy show-trace command" );
+							} );
+
+							it( "links the screenshots instead when inlineImageMaxKB is 0", function(){
+								var html = runReporter(
+									variables.shots,
+									reporter.cfc,
+									{ inlineImageMaxKB : 0 }
+								);
+								expect( html ).notToInclude( "data:image/png;base64,iVBORw0KGgo" );
+								expect( html ).toInclude( "screenshot-1.png" );
 							} );
 
 							it( "ignores the old fullPage switch, a report is always a full page", function(){

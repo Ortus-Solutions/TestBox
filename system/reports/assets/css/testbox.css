@@ -826,13 +826,84 @@ body {
 	overflow-wrap: anywhere;
 }
 
-.tb-spec__attachments {
+.tb-attachments {
+	margin: 0.5rem 0;
+}
+
+/* in a spec row the attachments take a line of their own, under the spec name */
+.tb-spec > .tb-attachments {
 	flex: 1 1 100%;
 	margin: 0 0 0.2rem 1.6rem;
+}
+
+.tb-spec__attachments {
+	margin: 0;
 	padding: 0;
 	list-style: none;
 	font-size: 0.84rem;
 	overflow-wrap: anywhere;
+}
+
+.tb-shots {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 0.75rem;
+	max-width: 960px;
+	margin-bottom: 0.4rem;
+}
+
+.tb-shot {
+	margin: 0;
+}
+
+.tb-shot__open {
+	display: block;
+	width: 100%;
+	padding: 0;
+	border: 1px solid var(--bs-border-color);
+	border-radius: 0.4rem;
+	background: var(--bs-body-bg);
+	overflow: hidden;
+	cursor: zoom-in;
+}
+
+.tb-shot__open:hover,
+.tb-shot__open:focus-visible {
+	border-color: var(--bs-primary);
+}
+
+.tb-shot img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.tb-shot figcaption {
+	margin-top: 0.2rem;
+	font-size: 0.78rem;
+	color: var(--bs-secondary-color);
+	overflow-wrap: anywhere;
+}
+
+.tb-zoom {
+	max-width: 95vw;
+	max-height: 95vh;
+	padding: 0;
+	border: 0;
+	border-radius: 0.4rem;
+	background: transparent;
+	cursor: zoom-out;
+}
+
+.tb-zoom::backdrop {
+	background: rgba(0, 0, 0, 0.75);
+}
+
+.tb-zoom img {
+	display: block;
+	max-width: 95vw;
+	max-height: 95vh;
+	height: auto;
 }
 
 .tb-empty {

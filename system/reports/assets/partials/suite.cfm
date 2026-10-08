@@ -38,21 +38,8 @@
 							<a href="##failure-#encodeForHtml( thisSpec.id )#">Details</a>
 						</p>
 					</cfif>
-					<!--- Files attached with attach(): screenshots, traces, videos --->
-					<cfset local.attachments = getSpecAttachments( thisSpec )>
-					<cfif arrayLen( local.attachments )>
-						<ul class="tb-spec__attachments">
-							<cfloop array="#local.attachments#" item="thisAttachment">
-								<li>
-									<a
-										href="#encodeForHtmlAttribute( createObject( "java", "java.io.File" ).init( thisAttachment.path ).toURI().toString() )#"
-										title="#encodeForHtmlAttribute( thisAttachment.path )#"
-									>#encodeForHtml( thisAttachment.name )#</a>
-									<span class="tb-spec__ms">(#encodeForHtml( thisAttachment.type )#)</span>
-								</li>
-							</cfloop>
-						</ul>
-					</cfif>
+					<!--- Files attached with attach(): a failed spec shows its screenshots in its failure card above --->
+					#renderPartial( "attachments", { spec : thisSpec, inline : !variables.helper.isProblem( thisSpec ) } )#
 				</li>
 			</cfloop>
 		</ul>
