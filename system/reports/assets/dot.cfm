@@ -21,7 +21,10 @@
 		>
 			<header class="card-header d-flex flex-wrap align-items-center gap-2">
 				<h3 class="h6 m-0" id="bundle-title-#local.bundleId#">
-					#encodeForHtml( thisBundle.name )# <span class="tb-bundle__path">#encodeForHtml( thisBundle.path )#</span>
+					#encodeForHtml( thisBundle.name )#
+					<cfif thisBundle.name != thisBundle.path>
+						<span class="tb-bundle__path">#encodeForHtml( thisBundle.path )#</span>
+					</cfif>
 				</h3>
 				<span class="ms-auto d-flex flex-wrap gap-2">
 					<cfloop array="#variables.helper.statusList()#" item="thisStatus">

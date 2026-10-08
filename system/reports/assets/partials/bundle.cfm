@@ -27,7 +27,9 @@
 			>
 				<svg class="tb-icon tb-chevron" :class="{ 'tb-chevron--open': isOpen( '#local.jsId#' ) }" aria-hidden="true"><use href="##i-chevron-right"/></svg>
 				<span>#encodeForHtml( local.bundle.name )#</span>
-				<span class="tb-bundle__path">#encodeForHtml( local.bundle.path )#</span>
+				<cfif local.bundle.name != local.bundle.path>
+					<span class="tb-bundle__path">#encodeForHtml( local.bundle.path )#</span>
+				</cfif>
 			</button>
 		</h3>
 
