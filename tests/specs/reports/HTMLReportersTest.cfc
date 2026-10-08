@@ -4,9 +4,9 @@
  */
 component extends="testbox.system.BaseSpec" {
 
-	variables.mixed   = "tests.resources.reporters.MixedBundle";
-	variables.passing = "tests.resources.reporters.PassingBundle";
-	variables.shots   = "tests.resources.reporters.ScreenshotBundle";
+	variables.mixed    = "tests.resources.reporters.MixedBundle";
+	variables.passing  = "tests.resources.reporters.PassingBundle";
+	variables.shots    = "tests.resources.reporters.ScreenshotBundle";
 	// built in two parts: the reports show the source around a failure, and must not show this needle
 	variables.pixelURI = "data:image/png;base64," & "iVBORw0KGgo";
 
