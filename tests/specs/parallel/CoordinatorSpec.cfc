@@ -3,9 +3,10 @@ component extends="testbox.system.BaseSpec" {
 	function run(){
 		describe( "Parallel coordinator contract", function(){
 			it( "attributes interleaved events and emits one final result after cleanup", function(){
-				var provider = new tests.parallel.FakeWorkers();
-				var events   = [];
-				var result   = new testbox.system.parallel.Coordinator( provider ).run(
+				var provider    = new tests.parallel.FakeWorkers();
+				var events      = [];
+				var coordinator = new testbox.system.parallel.Coordinator( provider )
+				var result      = coordinator.run(
 					[ "tests.One", "tests.Two" ],
 					2,
 					{},
@@ -40,8 +41,9 @@ component extends="testbox.system.BaseSpec" {
 				}
 			} );
 			it( "still cleans up owned workers after an observer disconnects", function(){
-				var provider = new tests.parallel.FakeWorkers();
-				var result   = new testbox.system.parallel.Coordinator( provider ).run(
+				var provider    = new tests.parallel.FakeWorkers();
+				var coordinator = new testbox.system.parallel.Coordinator( provider )
+				var result      = coordinator.run(
 					[ "tests.One", "tests.Two" ],
 					2,
 					{},

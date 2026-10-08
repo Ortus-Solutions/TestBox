@@ -217,7 +217,8 @@ component {
 		}
 		var stream = new testbox.system.util.StreamingService();
 		stream.initializeStream();
-		var result = new testbox.system.parallel.Coordinator( variables.provider ).run(
+		var coordinator = new testbox.system.parallel.Coordinator( variables.provider )
+		var result      = coordinator.run(
 			selected.bundles,
 			selected.workers,
 			context,

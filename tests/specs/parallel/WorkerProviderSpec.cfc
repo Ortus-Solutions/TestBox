@@ -4,18 +4,19 @@ component extends="testbox.system.BaseSpec" {
 		describe( "Worker provider integration", function(){
 			it( "adapts an existing environment helper using three functions", function(){
 				var helper   = new tests.parallel.FakeWorkers()
-				var provider = new testbox.system.parallel.WorkerProvider(
-					start = function( context ){
+				var adapters = {
+					"start" : function( context ){
 						return helper.startWorker( context )
 					},
-					poll = function( handle ){
+					"poll" : function( handle ){
 						return helper.pollWorker( handle )
 					},
-					stop = function( handle ){
+					"stop" : function( handle ){
 						helper.stopWorker( handle )
 					}
-				)
-				var result = new testbox.system.parallel.Coordinator( provider ).run(
+				}
+				var provider = new testbox.system.parallel.WorkerProvider( argumentCollection = adapters )
+				var result   = new testbox.system.parallel.Coordinator( provider ).run(
 					[ "tests.One", "tests.Two" ],
 					2
 				)
@@ -34,19 +35,20 @@ component extends="testbox.system.BaseSpec" {
 			it( "forwards configured labels and excludes through the programmatic entry point", function(){
 				var helper   = new tests.parallel.FakeWorkers()
 				var filters  = {}
-				var provider = new testbox.system.parallel.WorkerProvider(
-					start = function( context ){
+				var adapters = {
+					"start" : function( context ){
 						filters = context.run.filters;
 						return helper.startWorker( context )
 					},
-					poll = function( handle ){
+					"poll" : function( handle ){
 						return helper.pollWorker( handle )
 					},
-					stop = function( handle ){
+					"stop" : function( handle ){
 						helper.stopWorker( handle )
 					}
-				)
-				var result = new testbox.system.TestBox(
+				}
+				var provider = new testbox.system.parallel.WorkerProvider( argumentCollection = adapters )
+				var result   = new testbox.system.TestBox(
 					bundles  = "tests.One",
 					labels   = "unit",
 					excludes = "slow"
