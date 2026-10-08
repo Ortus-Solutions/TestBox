@@ -380,9 +380,12 @@ component accessors="true" {
 			params.append( "testSpecs=#encodeQuery( arguments.spec )#" );
 		}
 
-		params.append( "opt_run=true" );
 		if ( len( arguments.bundle ) ) {
 			params.append( "coverageEnabled=false" );
+		}
+
+		if ( !arrayLen( params ) ) {
+			return "";
 		}
 
 		return "?" & arrayToList( params, "&" );

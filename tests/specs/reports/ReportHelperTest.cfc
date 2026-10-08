@@ -103,13 +103,12 @@ component extends="testbox.system.BaseSpec" {
 
 			describe( "run links", function(){
 				it( "re-runs everything with no scope", function(){
-					expect( newHelper().runURL() ).toBe( "?opt_run=true" );
+						expect( newHelper().runURL() ).toBe( "" );
 				} );
 
 				it( "scopes to a bundle and skips coverage", function(){
 					var link = newHelper().runURL( bundle = "tests.specs.FooTest" );
 					expect( link ).toInclude( "testBundles=tests.specs.FooTest" );
-					expect( link ).toInclude( "opt_run=true" );
 					expect( link ).toInclude( "coverageEnabled=false" );
 				} );
 
@@ -140,7 +139,7 @@ component extends="testbox.system.BaseSpec" {
 
 				it( "leaves out empty params and the default editor", function(){
 					var link = newHelper( { directory : "", labels : "", editor : "vscode" } ).runURL();
-					expect( link ).toBe( "?opt_run=true" );
+					expect( link ).toBe( "" );
 				} );
 
 				it( "keeps a non default editor", function(){
