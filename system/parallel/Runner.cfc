@@ -113,7 +113,13 @@ component {
 	struct function claim( required string runId ){
 		var directory = runDirectory( arguments.runId );
 		if ( !directoryExists( variables.storageRoot ) ) {
-			directoryCreate( variables.storageRoot, true, true );
+			var root = createObject( "java", "java.io.File" ).init( variables.storageRoot )
+			if ( !root.mkdirs() && !root.isDirectory() ) {
+				throw(
+					type    = "TestBox.Parallel.InvalidStorage",
+					message = "Cannot create the parallel runner's storage directory."
+				)
+			}
 		}
 		lock name="testbox-parallel-#hash( directory )#" type="exclusive" timeout=10 {
 			if ( directoryExists( directory ) || fileExists( directory ) ) {
