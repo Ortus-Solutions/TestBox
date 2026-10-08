@@ -238,7 +238,8 @@ component accessors="true" {
 			case "failed":
 				return arguments.bundle.totalFail;
 			case "error":
-				return arguments.bundle.totalError;
+				// a bundle that threw outside a spec can report a negative total, never show it
+				return max( 0, arguments.bundle.totalError );
 			default:
 				return arguments.bundle.totalSkipped;
 		}

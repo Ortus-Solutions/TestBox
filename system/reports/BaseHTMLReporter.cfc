@@ -11,8 +11,9 @@
  * - aiContextLines : lines of code before and after the failing line in the prompt, default 5
  * - aiStackFrames  : stack frames in the prompt, default 8
  * - aiPrompt       : custom prompt template using {intro} {spec} {status} {message} {code} {stack} {rerun}
- * - urlParams      : struct of request params (directory, labels, excludes, reporter...) that overrides the url scope.
- *                    The re-run links carry them, so set it when you run reports from code instead of a web request.
+ * - urlParams      : struct of request params (editor, aiAssist...) that overrides the url scope.
+ *                    Set it when you run reports from code instead of a web request, where there is no url scope.
+ *                    The re-run links do not carry it, they only carry the bundle, suite or spec to run.
  */
 component extends="BaseReporter" {
 

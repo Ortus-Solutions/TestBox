@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - TESTBOX-471 Ask AI on failures: copy a ready-made prompt, preview it, open it in ChatGPT or Claude, or copy it as JSON for a coding agent. It is on by default with a first-use notice and is controlled by the `aiAssist`, `aiProviders`, `aiContextLines`, `aiStackFrames` and `aiPrompt` reporter options.
-- TESTBOX-471 The `urlParams` reporter option sets the run params the re-run links carry when a report is produced from code and there is no url scope.
+- TESTBOX-471 The `urlParams` reporter option sets request params such as `editor` and `aiAssist` when a report is produced from code and there is no url scope.
 - TESTBOX-471 `build/vendor` rebuilds the inlined front-end libraries with one command (`box run-script assets:update`) and CI keeps them honest.
 - TESTBOX-469 New `AgentReporter` (`reporter=agent`): a compact, token-efficient JSON reporter for AI agents and automation. It emits totals plus only failed/errored specs, with options `detail`, `maxFailures`, `maxMessageLength`, `includeStack`, `stackDepth`, `includeSkipped` and `includeDebug`.
 - Browser testing on BoxLang with the bx-playwright module: `testbox.system.BrowserSpec` with `browse( callback, options )`, `this.playwright()` and `browserAvailable()`, the `browserProfile` and `baseURL` class annotations, one browser per bundle closed after the bundle (when an `afterAll()` throws or a spec aborts the request, the next run that opens a browser closes the one left behind), and the kept screenshots, trace and videos of a failed `browse()` attached to the spec. Specs skip with an install hint when bx-playwright is missing or the engine is not BoxLang. The logic lives in `testbox.system.browser.BrowserSupport`.
@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - TESTBOX-471 The HTML reporters (`Simple`, `Min`, `Dot`, `Doc`) are rebuilt on Bootstrap 5.3, Bootstrap Icons, Alpine and Prism, with light and dark themes and the new TestBox logos. Everything is still inlined so reports run airgapped, and a page went from about 1.4 MB to about 0.45 MB.
 - TESTBOX-471 The verdict is the first thing in every HTML report: a sticky green or red banner with the counts, a proportion bar and status filters, and bundle exceptions get their own alert.
-- TESTBOX-471 Re-run links (run bundle, suite or spec) now carry `labels`, `excludes`, `directory`, `reporter` and the other params of the original run.
+- TESTBOX-471 Re-run links (run bundle, suite or spec) are plain links to the runner that carry only the requested `testBundles`, `testSuites` or `testSpecs`, so a refresh runs it again. Every other runner option falls back to its default.
 - TESTBOX-471 `Dot` opens a spec's details in a drawer instead of `alert()`, `Doc` is a styled page with a bundle navigation, and the status chips of `Min` and `Dot` now filter.
 - TESTBOX-471 Report templates keep only markup. Their logic moved to `system/reports/ReportHelper.cfc` and `BaseHTMLReporter.cfc`.
 - `Playwright.AssertionFailed` exceptions now count as spec failures, like `TestBox.AssertionFailed`, in BDD specs and xUnit tests, keeping their message and detail. Other `Playwright.*` errors still count as errors.
@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- TESTBOX-471 The bundle badge of the HTML reporters showed a negative error count (`-1 error`) when a bundle threw outside a spec, for example in `beforeAll()`. It now shows none.
 - The `run` script now quotes its arguments, so runner options with spaces reach the BoxLang runner intact.
 - The `JUnit` and `ANTJunit` reporters failed on BoxLang without the `bx-esapi` module (`encodeForXMLAttribute()`). They now fall back to `xmlFormat()`, also on Adobe with full null support.
 
