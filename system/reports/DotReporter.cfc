@@ -2,13 +2,10 @@
  * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * A dot matrix reporter
+ * A dot per spec, grouped by bundle. Click a dot for its details in a drawer, filters dim what does not match.
+ * See BaseHTMLReporter for the options.
  */
-component extends="BaseReporter" {
-
-	function init(){
-		return this;
-	}
+component extends="BaseHTMLReporter" {
 
 	/**
 	 * Get the name of the reporter
@@ -33,30 +30,13 @@ component extends="BaseReporter" {
 		struct options     = {},
 		boolean justReturn = false
 	){
-		// bundle stats
-		variables.bundleStats = arguments.results.getBundleStats();
-
-		// prepare base links
-		variables.baseURL = "?";
-		if ( structKeyExists( url, "method" ) ) {
-			variables.baseURL &= "method=#urlEncodedFormat( url.method )#";
-		}
-		if ( structKeyExists( url, "output" ) ) {
-			variables.baseURL &= "output=#urlEncodedFormat( url.output )#";
-		}
-		if ( !structKeyExists( url, "directory" ) ) {
-			url.directory = "";
-		}
-
-		// prepare incoming params
-		prepareIncomingParams();
-
-		// prepare the report
-		savecontent variable="local.report" {
-			include "assets/dot.cfm";
-		}
-
-		return local.report;
+		return renderReport(
+			layout     = "dot",
+			results    = arguments.results,
+			testbox    = arguments.testbox,
+			options    = arguments.options,
+			justReturn = arguments.justReturn
+		);
 	}
 
 }

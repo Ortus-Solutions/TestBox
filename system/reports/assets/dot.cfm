@@ -1,272 +1,108 @@
-<cfparam name="url.fullPage" default="true">
-<cfset ASSETS_DIR = expandPath( "/testbox/system/reports/assets" )>
+<!---
+	Dot reporter layout: one dot per spec, grouped by bundle. A click opens the details in a drawer.
+	Filters dim the dots that do not match instead of removing them, so the shape of the run stays put.
+--->
+<cfsavecontent variable="local.content">
 <cfoutput>
-	<cfif url.fullPage>
-		<!DOCTYPE html>
-		<html>
-			<head>
-				<meta charset="utf-8">
-				<meta name="generator" content="TestBox v#testbox.getVersion()#">
-				<title>Pass: #results.getTotalPass()# Fail: #results.getTotalFail()# Errors: #results.getTotalError()#</title>
-				<style>#fileRead(  "#ASSETS_DIR#/css/main.css" )#</style>
-				<script>#fileRead(  "#ASSETS_DIR#/js/jquery-3.3.1.min.js" )#</script>
-				<script>#fileRead(  "#ASSETS_DIR#/js/bootstrap.min.js" )#</script>
-				<script>#fileRead( "#ASSETS_DIR#/js/fontawesome.js" )#</script>
-			</head>
-			<body>
-	</cfif>
-				<div class="container-fluid my-3">
-					<!--- Header --->
-					<div class="d-flex justify-content-between align-items-end">
-						<div>
-							<img src="data:image/png;base64, #toBase64( fileReadBinary( '#ASSETS_DIR#/images/TestBoxLogo125.png' ) )#" height="75">
-							<span class="badge badge-info">v#testbox.getVersion()#</span>
-						</div>
-						<div class="buttonBar mt-1 float-right mb-1">
-							<a 	class="ml-1 btn btn-sm btn-primary float-right"
-								href="#variables.baseURL#&directory=#URLEncodedFormat( URL.directory )#&opt_run=true"
-								title="Run all tests"
-							>
-								<i class="fas fa-running"></i> Run All Tests
-							</a>
-						</div>
-					</div>
-					<!--- Code Coverage Stats --->
-					<cfif results.getCoverageEnabled()>
-						#testbox.getCoverageService().renderStats( results.getCoverageData(), false )#
-					</cfif>
-					<div class="list-group">
-						<!--- Test Results Stats --->
-						<div class="list-group-item list-group-item-info p-2 d-flex justify-content-between align-items-end" id="globalStats">
-							<div>
-								<h3><i class="fas fa-chart-line"></i> Test Results Stats (#numberFormat( results.getTotalDuration() )# ms)</h3>
-								<div>
-									<h5 class="mt-2">
-										<span>Bundles:<span class="badge badge-info ml-1">#results.getTotalBundles()#</span></span>
-										<span class="ml-3">Suites:<span class="badge badge-info ml-1">#results.getTotalSuites()#</span></span>
-										<span class="ml-3">Specs:<span class="badge badge-info ml-1">#results.getTotalSpecs()#</span></span>
-									</h5>
-									<cfif arrayLen( results.getLabels() )>
-										<h5 class="mt-2 mb-0">
-											<span>Labels Applied: <span class="badge badge-info ml-1">#arrayToList( results.getLabels() )#</u></span>
-										</h5>
-									</cfif>
-									<cfif arrayLen( results.getExcludes() )>
-										<h5 class="mt-2 mb-0">
-											<span>Excludes Applied: <span class="badge badge-info ml-1">#arrayToList( results.getExcludes() )#</u></span>
-										</h5>
-									</cfif>
-								</div>
-							</div>
+#renderPartial( "toolbar", { expand : false } )#
 
-							<div>
-								<span
-									class="specStatus badge badge-success passed"
-									data-status="passed"
-								>
-									<i class="fas fa-check"></i> Pass: #results.getTotalPass()#
-								</span>
-								<span
-									class="specStatus badge badge-warning failed"
-									data-status="failed"
-								>
-									<i class="fas fa-exclamation-triangle"></i> Failures: #results.getTotalFail()#
-								</span>
-								<span
-									class="specStatus badge badge-danger error"
-									data-status="error"
-								>
-									<i class="fas fa-times"></i> Errors: #results.getTotalError()#
-								</span>
-								<span
-									class="specStatus badge badge-secondary skipped"
-									data-status="skipped"
-								>
-									<i class="fas fa-minus-circle"></i> Skipped: #results.getTotalSkipped()#
-								</span>
-								<span
-									class="reset badge badge-dark"
-									title="Clear status filters"
-								>
-									<i class="fas fa-broom"></i> Reset
-								</span>
-							</div>
-						</div>
-					</div>
-					<!--- Dots --->
-					<div class="dots pb-2">
-						<!--- Iterate over bundles --->
-						<cfloop array="#variables.bundleStats#" index="thisBundle">
-							<!-- Iterate over suites -->
-							<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
-								#genSuiteReport( suiteStats, thisBundle )#
-							</cfloop>
-						</cfloop>
-					</div>
-					<!--- Debug Panel --->
-					<cfloop array="#variables.bundleStats#" index="thisBundle">
-						<cfif !isSimpleValue( thisBundle.globalException ) OR arrayLen( thisBundle.debugBuffer )>
-							<div class="my-2">
-								<div class="card-body p-0">
-									<ul class="list-group">
-										<!--- Global Error --->
-										<cfif !isSimpleValue( thisBundle.globalException )>
-											<li class="list-group-item list-group-item-danger">
-												<span class="h5">
-													<strong>Global Bundle Exception</strong>
-												</span>
-												<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_globalException_#thisBundle.id#" onclick="toggleDebug( 'globalException_#thisBundle.id#' )" title="Show more information">
-													<i class="fas fa-plus-square"></i>
-												</button>
-												<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="globalException_#thisBundle.id#">
-													<cfdump var="#thisBundle.globalException#" />
-												</div>
-											</li>
-										</cfif>
-										<!--- Debug Panel --->
-										<cfif arrayLen( thisBundle.debugBuffer )>
-											<li class="list-group-item list-group-item-info">
-												<span class="alert-link h5">
-													<strong>Debug Stream: #thisBundle.name#</strong>
-												</span>
-												<button class="btn btn-link float-right py-0 expand-collapse collapsed" id="btn_#thisBundle.id#" onclick="toggleDebug( '#thisBundle.id#' )" title="Toggle the test debug stream">
-													<i class="fas fa-plus-square"></i>
-												</button>
-												<div class="my-2 pl-4 debugdata" style="display:none;" data-specid="#thisBundle.id#">
-													<p>The following data was collected in order as your tests ran via the <em>debug()</em> method:</p>
-													<cfloop array="#thisBundle.debugBuffer#" index="thisDebug">
-														<cfif !IsNull( thisDebug )>
-															<h6>#thisDebug.label#</h6>
-															<cfdump
-																var="#thisDebug.data#"
-																label="#thisDebug.label# - #dateFormat( thisDebug.timestamp, " short" )# at #timeFormat( thisDebug.timestamp, "full" )#"
-																top="#thisDebug.top#"
-																showUDfs="#thisDebug.showUDFs#"
-																/>
-														</cfif>
-													</cfloop>
-												</div>
-											</li>
-										</cfif>
-									</ul>
-								</div>
-							</div>
+<section aria-labelledby="tb-bundles-title">
+	<h2 id="tb-bundles-title" class="tb-section-title">Specs</h2>
+	<cfloop array="#variables.bundleStats#" item="thisBundle">
+		<cfif !variables.helper.includesBundle( thisBundle )>
+			<cfcontinue>
+		</cfif>
+		<cfset local.bundleId = variables.helper.safeId( thisBundle.id )>
+		<section
+			class="card tb-bundle mb-3#( variables.helper.bundleHasProblems( thisBundle ) ? " tb-bundle--problem" : "" )#"
+			id="bundle-#local.bundleId#"
+			data-bundle="#local.bundleId#"
+			aria-labelledby="bundle-title-#local.bundleId#"
+		>
+			<header class="card-header d-flex flex-wrap align-items-center gap-2">
+				<h3 class="h6 m-0" id="bundle-title-#local.bundleId#">
+					#encodeForHtml( thisBundle.name )# <span class="tb-bundle__path">#encodeForHtml( thisBundle.path )#</span>
+				</h3>
+				<span class="ms-auto d-flex flex-wrap gap-2">
+					<cfloop array="#variables.helper.statusList()#" item="thisStatus">
+						<cfset local.count = variables.helper.countOf( thisBundle, thisStatus.key )>
+						<cfif local.count>
+							<span class="tb-badge tb-num" data-status="#thisStatus.key#">#local.count# #thisStatus.short#</span>
 						</cfif>
 					</cfloop>
-				</div>
-<style>
-.dots {
-	font-size: 60px;
-	line-height: 40px;
-}
-</style>
-<script>
-	$( document ).ready( function() {
-		$(".expand-collapse").click(function (event) {
-			let icon = $(this).children(".svg-inline--fa");
-			var icon_fa_icon = icon.attr('data-icon');
+				</span>
+			</header>
 
-			if (icon_fa_icon === "minus-square") {
-					icon.attr('data-icon', 'plus-square');
-			} else if (icon_fa_icon === "plus-square") {
-					icon.attr('data-icon', 'minus-square');
-			}
-		});
-	} );
+			<cfif !isSimpleValue( thisBundle.globalException )>
+				#renderPartial( "exception", { bundle : thisBundle } )#
+			</cfif>
 
-function showInfo( failMessage, specID, isError ) {
-	if ( failMessage.length ) {
-		alert( "Failure Message: " + failMessage );
-	} else if ( isError || isError == 'yes' || isError == 'true' ) {
-		$( "##error_" + specID ).slideToggle();
-	}
-}
+			<!--- no whitespace between the dots: they flow like text --->
+			<div class="tb-dots" role="group" aria-label="Specs of #encodeForHtml( thisBundle.name )#" @click="dotClick( $event )"><cfloop array="#variables.helper.specs( thisBundle )#" item="thisEntry"><cfset local.s = thisEntry.spec><cfset local.st = variables.helper.status( local.s.status )><button
+				type="button"
+				class="tb-dot"
+				data-spec
+				data-dim
+				data-status="#local.st.key#"
+				data-bundle="#local.bundleId#"
+				data-bundle-name="#encodeForHtml( thisBundle.path )#"
+				data-spec-id="#encodeForHtml( local.s.id )#"
+				data-name="#encodeForHtml( local.s.displayName )#"
+				data-crumb="#encodeForHtml( thisEntry.crumb )#"
+				data-ms="#local.s.totalDuration#"
+				data-run-url="#variables.helper.href( variables.helper.runURL( bundle = thisBundle.path, spec = local.s.id ) )#"
+				data-search="#encodeForHtml( lCase( "#local.s.displayName# #thisEntry.crumb# #thisBundle.path#" ) )#"
+				title="#encodeForHtml( local.s.displayName )# (#local.s.totalDuration# ms)"
+				aria-label="#encodeForHtml( local.s.displayName )#, #local.st.label#"
+			></button></cfloop></div>
 
-function toggleDebug( specid ) {
-	$( `##btn_${specid}` ).toggleClass( "collapsed" );
-	$( "div.debugdata" ).each( function() {
-		var $this = $( this );
-		// if bundleid passed and not the same bundle
-		if ( specid != undefined && $this.attr("data-specid") != specid ) {
-			return;
-		}
-		// toggle.
-		$this.slideToggle();
-	});
-}
-</script>
-<cfif url.fullPage>
-		</body>
-	</html>
+			<cfif structKeyExists( thisBundle, "debugBuffer" ) && arrayLen( thisBundle.debugBuffer )>
+				#renderPartial( "debug", { bundle : thisBundle } )#
+			</cfif>
+		</section>
+	</cfloop>
+	<p id="tb-no-matches" class="tb-empty" hidden>No bundles match the current filters.</p>
+</section>
+
+<!--- payloads for Ask AI live at the top level, the drawer panels are cloned from the templates below --->
+<cfif variables.helper.getOptions().aiAssist>
+	<cfloop array="#variables.failureList#" item="thisFailure">
+		#renderPartial( "ask-payloads", { failure : thisFailure } )#
+	</cfloop>
 </cfif>
+<cfloop array="#variables.failureList#" item="thisFailure">
+	<template data-panel="#encodeForHtml( thisFailure.spec.id )#">#renderPartial( "failure", { failure : thisFailure, payloads : false } )#</template>
+</cfloop>
+
+<div class="offcanvas-backdrop show" x-show="drawer" x-cloak @click="closeSpec()"></div>
+<aside
+	class="offcanvas offcanvas-end tb-drawer"
+	:class="{ show: drawer }"
+	tabindex="-1"
+	role="dialog"
+	aria-labelledby="tb-drawer-title"
+	:aria-hidden="!drawer"
+>
+	<div class="offcanvas-header align-items-start gap-3">
+		<div class="min-w-0">
+			<span class="tb-badge mb-1" :data-status="drawer ? drawer.status : ''">
+				<span x-text="drawer ? drawer.status : ''"></span>
+			</span>
+			<h2 id="tb-drawer-title" class="offcanvas-title h5 text-break" x-text="drawer ? drawer.name : ''"></h2>
+			<div class="tb-crumb" x-text="drawer ? drawer.bundle + ' > ' + drawer.crumb : ''"></div>
+		</div>
+		<button type="button" class="btn-close" aria-label="Close" @click="closeSpec()"></button>
+	</div>
+	<div class="offcanvas-body">
+		<div class="d-flex flex-wrap align-items-center gap-3 mb-3" x-show="drawer" x-cloak>
+			<span class="tb-num text-body-secondary" x-text="drawer ? drawer.ms + ' ms' : ''"></span>
+			<a class="btn btn-sm btn-primary" :href="drawer ? drawer.runUrl : '##'">
+				<svg class="tb-icon" aria-hidden="true"><use href="##i-play-fill"/></svg> Run this spec
+			</a>
+		</div>
+		<div id="tb-drawer-body"></div>
+	</div>
+</aside>
 </cfoutput>
-
-<cfscript>
-function statusPlusBootstrapClass( status ) output="false" {
-    if ( lcase( arguments.status ) == "failed" ) {
-        bootstrapClass = "text-warning failed";
-    } else if ( lcase( arguments.status ) == "error" ) {
-        bootstrapClass = "text-danger error";
-    } else if ( lcase( arguments.status ) == "passed" ) {
-        bootstrapClass = "text-success passed";
-    } else if ( lcase( arguments.status ) == "skipped" ) {
-        bootstrapClass = "text-secondary skipped";
-    }
-    return bootstrapClass;
-}
-</cfscript>
-
-<!--- Recursive Output --->
-<cfscript>
-function genSuiteReport( suiteStats, bundleStats ) output="false" {
-    var thisSpec = "";
-    savecontent variable="local.report" {
-        writeOutput( chr( 10 ) & chr( 9 ) & chr( 9 ) );
-        writeOutput( "
-			
-			" );
-        for ( thisSpec in arguments.suiteStats.specStats ) {
-            writeOutput( "
-				<a href=""javascript:
-						" );
-            if ( len( thisSpec.failMessage ) || !structIsEmpty( thisSpec.error ) ) {
-                writeOutput( "
-							showInfo( '#JSStringFormat( thisSpec.failMessage )#', '#thisSpec.id#', '#lcase( NOT structIsEmpty( thisSpec.error ) )#' )
-						" );
-            } else {
-                writeOutput( "
-							void( 0 )
-						" );
-            }
-            writeOutput( "
-						"" title=""#encodeForHTML( thisSpec.displayname )# (#thisSpec.totalDuration# ms)"" data-info=""#encodeForHTML( thisSpec.failMessage )#"">
-					<span class=""#statusPlusBootstrapClass( thisSpec.status )#"">&middot;</span>
-				</a>
-				<div style=""display:none;"" id=""error_#thisSpec.id#"">
-					" );
-            writeDump( var = thisSpec.error );
-            writeOutput( "
-				</div>
-			" );
-        }
-        writeOutput( "
-			
-			" );
-        if ( arrayLen( arguments.suiteStats.suiteStats ) ) {
-            writeOutput( "
-				" );
-            for ( local.nestedSuite in arguments.suiteStats.suiteStats ) {
-                writeOutput( "
-					#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
-				" );
-            }
-            writeOutput( "
-			" );
-        }
-        writeOutput( "
-		" );
-        writeOutput( chr( 10 ) & chr( 9 ) );
-    }
-    return local.report;
-}
-</cfscript>
+</cfsavecontent>
+<cfoutput>#renderPartial( "page", { content : local.content } )#</cfoutput>

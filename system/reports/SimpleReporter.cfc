@@ -2,9 +2,11 @@
  * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
  * www.ortussolutions.com
  * ---
- * A simple HTML reporter
+ * A reactive HTML reporter: a verdict banner, failures first, then every bundle with filters,
+ * run links, code snippets and an Ask AI menu. Everything is inlined so it works airgapped.
+ * See BaseHTMLReporter for the options.
  */
-component extends="BaseReporter" {
+component extends="BaseHTMLReporter" {
 
 	/**
 	 * Get the name of the reporter
@@ -29,32 +31,13 @@ component extends="BaseReporter" {
 		struct options     = {},
 		boolean justReturn = false
 	){
-		if ( !arguments.justReturn ) {
-			// content type
-			getPageContextResponse().setContentType( "text/html" );
-		}
-
-		// bundle stats
-		variables.bundleStats = arguments.results.getBundleStats();
-
-		// prepare base links
-		variables.baseURL = "?";
-		if ( structKeyExists( url, "method" ) ) {
-			variables.baseURL &= "method=#urlEncodedFormat( url.method )#";
-		}
-		if ( structKeyExists( url, "output" ) ) {
-			variables.baseURL &= "output=#urlEncodedFormat( url.output )#";
-		}
-
-		// prepare incoming params
-		prepareIncomingParams();
-
-		// prepare the report
-		savecontent variable="local.report" {
-			include "assets/simple.cfm";
-		}
-
-		return local.report;
+		return renderReport(
+			layout     = "simple",
+			results    = arguments.results,
+			testbox    = arguments.testbox,
+			options    = arguments.options,
+			justReturn = arguments.justReturn
+		);
 	}
 
 }

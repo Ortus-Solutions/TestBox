@@ -1,0 +1,61 @@
+name: Report Assets
+
+# The HTML reporters inline Bootstrap, Alpine, Bootstrap Icons and Prism. See build/vendor/README.md.
+on:
+  pull_request:
+    branches:
+      - development
+      - "releases/**"
+    paths:
+      - "build/vendor/**"
+      - "system/reports/assets/vendor/**"
+  schedule:
+    - cron: "0 6 1 * *" # the first of every month
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Vendored Assets Are Up To Date
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Rebuild And Compare
+        working-directory: build/vendor
+        run: |
+          npm ci
+          npm run check
+
+  update:
+    name: Update Vendored Assets
+    if: github.event_name != 'pull_request' && github.repository == 'Ortus-Solutions/TestBox'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+        with:
+          ref: development
+
+      - name: Bump And Rebuild
+        working-directory: build/vendor
+        run: |
+          npm ci
+          npm run update
+
+      - name: Open Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/update-report-assets
+          base: development
+          commit-message: "Update vendored report assets"
+          title: "Update vendored report assets"
+          body: |
+            Monthly bump of the libraries inlined into the HTML reporters, rebuilt with `npm run update` in `build/vendor`.
+
+            Before merging, look at `system/reports/assets/vendor/VERSIONS.json` and open a report in light and dark mode.
+          delete-branch: true
