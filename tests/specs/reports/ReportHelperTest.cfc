@@ -103,7 +103,7 @@ component extends="testbox.system.BaseSpec" {
 
 			describe( "run links", function(){
 				it( "re-runs everything with no scope", function(){
-						expect( newHelper().runURL() ).toBe( "" );
+					expect( newHelper().runURL() ).toBe( "" );
 				} );
 
 				it( "scopes to a bundle and skips coverage", function(){
@@ -156,17 +156,17 @@ component extends="testbox.system.BaseSpec" {
 				} );
 			} );
 
-				describe( "bundle run scope", function(){
-					it( "identifies bundles selected for the current run", function(){
-						var helper = newHelper( { testBundles : "tests.specs.FooTest,tests.specs.BarTest" } );
-						expect( helper.isBundleScoped( { path : "tests.specs.FooTest" } ) ).toBeTrue();
-						expect( helper.isBundleScoped( { path : "tests.specs.OtherTest" } ) ).toBeFalse();
-					} );
-
-					it( "does not treat an unscoped report as a targeted bundle run", function(){
-						expect( newHelper().isBundleScoped( { path : "tests.specs.FooTest" } ) ).toBeFalse();
-					} );
+			describe( "bundle run scope", function(){
+				it( "identifies bundles selected for the current run", function(){
+					var helper = newHelper( { testBundles : "tests.specs.FooTest,tests.specs.BarTest" } );
+					expect( helper.isBundleScoped( { path : "tests.specs.FooTest" } ) ).toBeTrue();
+					expect( helper.isBundleScoped( { path : "tests.specs.OtherTest" } ) ).toBeFalse();
 				} );
+
+				it( "does not treat an unscoped report as a targeted bundle run", function(){
+					expect( newHelper().isBundleScoped( { path : "tests.specs.FooTest" } ) ).toBeFalse();
+				} );
+			} );
 
 			describe( "failures", function(){
 				it( "flattens failed and errored specs with their suite path", function(){
