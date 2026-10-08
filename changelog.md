@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - The `run` script now quotes its arguments, so runner options with spaces reach the BoxLang runner intact.
+- The `JUnit` and `ANTJunit` reporters failed on BoxLang without the `bx-esapi` module (`encodeForXMLAttribute()`). They now fall back to `xmlFormat()`, also on Adobe with full null support.
 
 ### Removed
 
