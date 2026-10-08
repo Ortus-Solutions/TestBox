@@ -48,7 +48,7 @@
 		</div>
 
 		<a class="btn btn-primary btn-sm" href="#variables.helper.href( variables.helper.runURL() )#" title="Run all tests">
-			<svg class="tb-icon" aria-hidden="true"><use href="##i-play-fill"/></svg> Run all tests
+			<svg class="tb-icon" aria-hidden="true"><use href="##i-play-fill"/></svg> Run All
 		</a>
 	</div>
 </header>
