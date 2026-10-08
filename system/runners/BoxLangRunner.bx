@@ -47,12 +47,27 @@
  * --slow-threshold-ms : Show specs at or above this duration in summary, defaults to `0` (disabled).
  * --top-slowest : Show top N slowest specs in summary, defaults to `0` (disabled).
  * --stacktrace : Stacktrace detail level for stream failures/errors: `short` or `full`, defaults to `short`.
+ * --retries : How many extra times to run a failing or erroring spec, defaults to `0`. A spec `retries` argument
+ * 	and a bundle `retries` annotation take precedence. Skipped specs are never retried.
+ * --failed : Run only the bundles and specs that failed or errored in the last run, read from
+ * 	`{reportpath}/.testbox-failed.json`. Every run writes that file. When it is missing or lists nothing,
+ * 	a message is printed and nothing runs. Bundles that failed outside of a spec (beforeAll(), afterAll())
+ * 	are listed, not rerun.
+ * --web-server : A shell command that starts a web server before the tests run, ex: `--web-server="boxlang-miniserver --port 8080"`.
+ * 	It runs with `sh -c` (`cmd /c` on Windows) from the current directory and is stopped, with its child processes, after the tests.
+ * 	Launchers that split quoted arguments are supported: the words after `--web-server=` form the command until the next
+ * 	runner option, so a command whose own flags share a runner option name (ex: `--directory`) belongs in a script.
+ * --web-server-url : The URL polled until the web server answers with a status below 500, defaults to `http://localhost:8080`.
+ * 	It is also stored in `server.testbox.webServerURL`, which `testbox.system.BrowserSpec` uses as its default `baseURL`.
+ * --web-server-timeout : How long to wait for the web server to answer, in seconds, defaults to `60`.
+ * 	When it does not answer in time the runner stops the server, prints the reason and exits with code 1.
  *
  * Runner Options:
  * To create runner options just prefix it with the prefix `runner-{optionName}`
  * For example, to pass a `skip` option to the runner, you would do `--runner-skip=true`
  */
 import java.nio.file.Paths
+import testbox.system.util.FailedSpecs
 
 class{
 
@@ -62,6 +77,8 @@ class{
 		final DEFAULT_REPORTER = "console"
 		final DEFAULT_PROPERTIES_FILENAME = "TEST.properties"
 		final DEFAULT_PROPERTIES_SUMMARY = true
+		final DEFAULT_WEB_SERVER_URL = "http://localhost:8080"
+		final DEFAULT_WEB_SERVER_TIMEOUT = 60
 	}
 
 	// Seed the location of testbox just in case
@@ -96,6 +113,17 @@ class{
 				return true
 			}
 		} )
+		// Rebuild a --web-server command the shell launcher split at its spaces, and drop its words from the positionals
+		var webServerCommand = resolveWebServerCommand( server.cli.args )
+		if( webServerCommand.words.len() ){
+			options[ "web-server" ] = webServerCommand.command
+			for( var word in webServerCommand.words ){
+				var position = positional.find( word )
+				if( position ){
+					positional.deleteAt( position )
+				}
+			}
+		}
 		var defaultReportPath = rootPath & "/tests/results"
 		var dryRunValue       = options[ "dry-run" ] ?: false
 		var isDryRun          = dryRunValue != false && dryRunValue != "false"
@@ -146,7 +174,8 @@ class{
 				maxFailures    : options[ "max-failures" ] ?: 0,
 				slowThresholdMS : options[ "slow-threshold-ms" ] ?: 0,
 				topSlowest     : options[ "top-slowest" ] ?: 0,
-				stacktrace     : options[ "stacktrace" ] ?: "short"
+				stacktrace     : options[ "stacktrace" ] ?: "short",
+				retries        : options[ "retries" ] ?: 0
 			}
 		};
 
@@ -196,6 +225,28 @@ class{
 			initArgs.directory = {}
 		}
 
+		// --failed: only run what failed or errored in the last run
+		var runFailedOnly = options[ "failed" ] ?: false
+		if( isBoolean( runFailedOnly ) && runFailedOnly ){
+			var lastFailed = FailedSpecs::read( afterRunArgs.reportPath )
+			// Bundles that failed outside of a spec are broken, not flaky: they are reported, never rerun
+			if( lastFailed.bundleErrors.len() ){
+				println( variables.consoleUtil.color( "bold+red", "Not rerun, #lastFailed.bundleErrors.len()# bundle(s) failed outside of a spec in the last run: fix them, then run them directly:" ) )
+				for( var bundleError in lastFailed.bundleErrors ){
+					println( "  - #bundleError#" )
+				}
+			}
+			if( !lastFailed.bundles.len() ){
+				println( "No failed tests recorded in [#FailedSpecs::getFilePath( afterRunArgs.reportPath )#], nothing to run." )
+				return
+			}
+			println( "Running the #lastFailed.bundles.len()# bundle(s) that failed in the last run." )
+			initArgs.bundles     = lastFailed.bundles
+			initArgs.directory   = {}
+			runArgs.testBundles  = lastFailed.bundles
+			runArgs.testSpecs    = lastFailed.specs
+		}
+
 		if( runArgs.verbose ){
 			startTime = getTickCount()
 			println( "Starting TestBox Runner with the following init arguments" )
@@ -229,8 +280,15 @@ class{
 			println( "" )
 		}
 
+		// Start the web server the tests need, if any
+		var webServer = startWebServer( options, rootPath )
+
 		// RUN BABY RUN
-		var report = testbox.run( argumentCollection = runArgs )
+		try {
+			var report = testbox.run( argumentCollection = runArgs )
+		} finally {
+			stopWebServer( webServer )
+		}
 		var testResults = testbox.getResult()
 		var testResultsAsJson = jsonSerialize( testResults.getMemento( includeDebugBuffer = true ) )
 
@@ -248,6 +306,9 @@ class{
 			directoryDelete( afterRunArgs.reportPath, true );
 			directoryCreate( afterRunArgs.reportPath );
 		}
+
+		// Remember what failed, for --failed
+		FailedSpecs::write( afterRunArgs.reportPath, testResults )
 
 		// WRITE THE REPORTS
 		if( afterRunArgs.writeReport ){
@@ -267,6 +328,103 @@ class{
 		// WRITE THE ANT JUNIT REPORTS
 		if( initArgs.reporter eq "ANTJunit" ){
 			generateAntReports( report, afterRunArgs );
+		}
+	}
+
+	/**
+	 * Start the web server requested with --web-server and wait until --web-server-url answers.
+	 * The URL is stored in server.testbox.webServerURL for BrowserSpec. When the server does not
+	 * answer in time, the reason is printed and the runner exits with code 1.
+	 *
+	 * @options  The parsed CLI options
+	 * @rootPath The directory the runner was invoked from, used as the working directory of the command
+	 *
+	 * @return The started testbox.system.util.WebServer, or null when no --web-server was given
+	 */
+	private function startWebServer( required struct options, required string rootPath ){
+		var command = arguments.options[ "web-server" ] ?: ""
+		if( !isSimpleValue( command ) || !len( trim( command ) ) || isBoolean( command ) ){
+			return
+		}
+		var serverURL = arguments.options[ "web-server-url" ] ?: static.DEFAULT_WEB_SERVER_URL
+		var timeout   = arguments.options[ "web-server-timeout" ] ?: static.DEFAULT_WEB_SERVER_TIMEOUT
+		if( !isNumeric( timeout ) || timeout <= 0 ){
+			timeout = static.DEFAULT_WEB_SERVER_TIMEOUT
+		}
+
+		var webServer = new testbox.system.util.WebServer(
+			command          : command,
+			url              : serverURL,
+			timeout          : timeout,
+			workingDirectory : arguments.rootPath
+		)
+		println( variables.consoleUtil.color( "bold+cyan", "Starting web server: #command#" ) )
+		try {
+			webServer.start()
+		} catch( "TestBox.WebServerFailed" e ){
+			println( variables.consoleUtil.color( "bold+red", e.message ) )
+			println( e.detail )
+			createObject( "java", "java.lang.System" ).exit( 1 )
+		}
+		println( variables.consoleUtil.color( "bold+cyan", "Web server is up at #serverURL#" ) )
+
+		if( !server.keyExists( "testbox" ) || !isStruct( server.testbox ) ){
+			server.testbox = {}
+		}
+		server.testbox.webServerURL = serverURL
+		return webServer
+	}
+
+	/**
+	 * Rebuild the --web-server command from the raw CLI arguments. Some BoxLang launchers split quoted
+	 * arguments at their spaces, so `--web-server="python3 -m http.server 8080"` arrives as several
+	 * arguments. The words after `--web-server=` belong to the command until the next TestBox runner option.
+	 *
+	 * @args The raw CLI arguments (server.cli.args)
+	 *
+	 * @return A struct with `command` (the rebuilt command, empty when there is no --web-server) and `words`
+	 * 	(the extra arguments that were joined into it)
+	 */
+	private struct function resolveWebServerCommand( required array args ){
+		var result = { command : "", words : [] }
+		var runnerOptions = "bundles,bundles-pattern,directory,reporter,labels,excludes,recurse,filter-bundles,filter-suites,filter-specs,"
+			& "dry-run,eager-failure,verbose,stream,properties-summary,properties-filename,reportpath,write-report,write-json-report,"
+			& "write-visualizer,hide-skipped,show-failed-only,show-passed,show-skipped,max-failures,slow-threshold-ms,top-slowest,"
+			& "stacktrace,retries,failed,web-server,web-server-url,web-server-timeout"
+		var collecting = false
+		for( var arg in arguments.args ){
+			if( collecting ){
+				var optionName = arg.reFind( "^--" ) ? arg.reReplace( "^--([^=]+).*$", "\1" ) : ""
+				if( len( optionName ) && ( listFindNoCase( runnerOptions, optionName ) || optionName.startsWith( "runner-" ) ) ){
+					collecting = false
+				} else {
+					result.words.append( arg )
+					result.command &= " " & arg
+					continue
+				}
+			}
+			if( arg.startsWith( "--web-server=" ) ){
+				result.command = arg.replace( "--web-server=", "" ).reReplace( "^[""']|[""']$", "", "all" )
+				collecting     = true
+			}
+		}
+		// Quotes the launcher kept around the split command
+		result.command = result.command.reReplace( "^[""']|[""']$", "", "all" )
+		return result
+	}
+
+	/**
+	 * Stop the web server started by startWebServer(), with its child processes, and forget its URL.
+	 *
+	 * @webServer The value returned by startWebServer(), or null
+	 */
+	private function stopWebServer( webServer ){
+		if( isNull( arguments.webServer ) ){
+			return
+		}
+		arguments.webServer.stop()
+		if( server.keyExists( "testbox" ) && isStruct( server.testbox ) ){
+			server.testbox.delete( "webServerURL" )
 		}
 	}
 
@@ -417,12 +575,19 @@ class{
 
 					var specStats  = testResults.findSpecStats( spec )
 					var duration   = !structIsEmpty( specStats ) && isNumeric( specStats.totalDuration ) ? " (#specStats.totalDuration# ms)" : ""
-					var lineText   = "#variables.consoleUtil.getStatusIndicator( specStatus )# #getStreamSpecName( spec )##duration#"
+					var outcome    = specStatus == "error" ? "errored" : lCase( specStatus )
+					var attempts   = ( specStats.attempts ?: 0 ) > 1 ? " (#outcome# after #specStats.attempts# attempts)" : ""
+					var lineText   = "#variables.consoleUtil.getStatusIndicator( specStatus )# #getStreamSpecName( spec )##duration##attempts#"
 					println( "    #variables.consoleUtil.printByStatus( specStatus, lineText )#" )
 
 					var detailText = getSpecDetailText( specStats, specStatus, stacktraceMode )
 					if( detailText.len() ){
 						println( "      " & variables.consoleUtil.printByStatus( specStatus, detailText ) )
+					}
+					if( listFindNoCase( "failed,error", specStatus ) ){
+						for( var attachment in specStats.attachments ?: [] ){
+							println( "      📎 #attachment.name# (#attachment.type#) #attachment.path#" )
+						}
 					}
 				}
 

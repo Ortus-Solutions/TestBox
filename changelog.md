@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- TESTBOX-471 Ask AI on failures: copy a ready-made prompt, preview it, open it in ChatGPT or Claude, or copy it as JSON for a coding agent. It is on by default with a first-use notice and is controlled by the `aiAssist`, `aiProviders`, `aiContextLines`, `aiStackFrames` and `aiPrompt` reporter options.
+- TESTBOX-471 The `urlParams` reporter option sets the run params the re-run links carry when a report is produced from code and there is no url scope.
+- TESTBOX-471 `build/vendor` rebuilds the inlined front-end libraries with one command (`box run-script assets:update`) and CI keeps them honest.
+- TESTBOX-469 New `AgentReporter` (`reporter=agent`): a compact, token-efficient JSON reporter for AI agents and automation. It emits totals plus only failed/errored specs, with options `detail`, `maxFailures`, `maxMessageLength`, `includeStack`, `stackDepth`, `includeSkipped` and `includeDebug`.
+- Browser testing on BoxLang with the bx-playwright module: `testbox.system.BrowserSpec` with `browse( callback, options )`, `this.playwright()` and `browserAvailable()`, the `browserProfile` and `baseURL` class annotations, one browser per bundle closed after the bundle (when an `afterAll()` throws or a spec aborts the request, the next run that opens a browser closes the one left behind), and the kept screenshots, trace and videos of a failed `browse()` attached to the spec. Specs skip with an install hint when bx-playwright is missing or the engine is not BoxLang. The logic lives in `testbox.system.browser.BrowserSupport`.
+- Browser matchers in `testbox.system.browser.BrowserMatchers`, registered for every `BrowserSpec` bundle and usable from any BoxLang spec with `addMatchers()`: `toHaveTitle()`, `toHaveURL()`, `toHavePath()` and `toSee()` for pages, `toHaveText()`, `toBeVisible()`, `toBeHidden()`, `toHaveCount()` and `toHaveValue()` for locators, plus their `not` forms. They delegate to the retrying bx-playwright assertions, also when negated, and fail with the bx-playwright message.
+- `attach( path, type, name )` in every spec to attach files to the running spec, kept in the new `attachments` array of the spec stats for passed and failed specs. The JSON report includes them, the Simple report links them, the JUnit and ANT JUnit reports add a `<system-out>` with one `[[ATTACHMENT|path]]` line per file, and the text, console and stream outputs list them under failed specs.
+- Spec retries: a `retries` argument on `it()`, `fit()` and `xit()`, a `retries` bundle annotation, a `retries` method annotation for xUnit tests, and a global `retries` runner option (BoxLang runner `--retries=N`). The spec value wins over the bundle annotation, which wins over the global option. A failing or erroring spec reruns its `beforeEach()`, body and `afterEach()` (or `setup()`, test and `teardown()`) up to N more times and records the final attempt. Skipped specs are never retried. The new `attempts` spec stat counts the runs and the text, console, Simple and stream outputs show "(passed after N attempts)".
+- Run only what failed: `TestResult.getFailedTargets()` returns the bundles and spec ids that failed or errored in a run (bundles that failed outside of a spec go to `bundleErrors` and are not rerun). The Simple, Min, Dot and Doc reports show a **Run Failed** button next to **Run All**, a link built from the report itself, so web runners keep no state. The BoxLang runner writes `{reportpath}/.testbox-failed.json` on every run and `./run --failed` reruns only those; when the file is missing or lists nothing, it prints a message and runs nothing.
+- BoxLang runner `--web-server`, `--web-server-url` and `--web-server-timeout`: start a web server command before the tests, wait until its URL answers, stop it and its child processes after the tests, and exit with code 1 when it does not answer in time. The URL becomes the default `baseURL` of `BrowserSpec` bundles through `server.testbox.webServerURL`.
+
 ### Changed
 
 - TESTBOX-471 The HTML reporters (`Simple`, `Min`, `Dot`, `Doc`) are rebuilt on Bootstrap 5.3, Bootstrap Icons, Alpine and Prism, with light and dark themes and the new TestBox logos. Everything is still inlined so reports run airgapped, and a page went from about 1.4 MB to about 0.45 MB.
@@ -16,13 +29,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - TESTBOX-471 Re-run links (run bundle, suite or spec) now carry `labels`, `excludes`, `directory`, `reporter` and the other params of the original run.
 - TESTBOX-471 `Dot` opens a spec's details in a drawer instead of `alert()`, `Doc` is a styled page with a bundle navigation, and the status chips of `Min` and `Dot` now filter.
 - TESTBOX-471 Report templates keep only markup. Their logic moved to `system/reports/ReportHelper.cfc` and `BaseHTMLReporter.cfc`.
+- `Playwright.AssertionFailed` exceptions now count as spec failures, like `TestBox.AssertionFailed`, in BDD specs and xUnit tests, keeping their message and detail. Other `Playwright.*` errors still count as errors.
+- xUnit failures now also record the failure detail in the spec stats.
 
-### Added
+### Fixed
 
-- TESTBOX-471 Ask AI on failures: copy a ready-made prompt, preview it, open it in ChatGPT or Claude, or copy it as JSON for a coding agent. It is on by default with a first-use notice and is controlled by the `aiAssist`, `aiProviders`, `aiContextLines`, `aiStackFrames` and `aiPrompt` reporter options.
-- TESTBOX-471 The `urlParams` reporter option sets the run params the re-run links carry when a report is produced from code and there is no url scope.
-- TESTBOX-471 `build/vendor` rebuilds the inlined front-end libraries with one command (`box run-script assets:update`) and CI keeps them honest.
-- TESTBOX-469 New `AgentReporter` (`reporter=agent`): a compact, token-efficient JSON reporter for AI agents and automation. It emits totals plus only failed/errored specs, with options `detail`, `maxFailures`, `maxMessageLength`, `includeStack`, `stackDepth`, `includeSkipped` and `includeDebug`.
+- The `run` script now quotes its arguments, so runner options with spaces reach the BoxLang runner intact.
 
 ### Removed
 

@@ -1,0 +1,220 @@
+/**
+ * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * Starts a web server command as a child process for a test run, waits until its URL answers and
+ * stops the whole process tree afterwards. Used by the BoxLang runner options `--web-server`,
+ * `--web-server-url` and `--web-server-timeout`.
+ *
+ * <pre>
+ * server = new testbox.system.util.WebServer(
+ *     command : "boxlang-miniserver --port 8080",
+ *     url     : "http://localhost:8080",
+ *     timeout : 60
+ * )
+ * try {
+ *     server.start()
+ *     // run the tests
+ * } finally {
+ *     server.stop()
+ * }
+ * </pre>
+ *
+ * BoxLang only: the BoxLang runner is the only caller.
+ */
+@accessors( true )
+class {
+
+	/**
+	 * The shell command that starts the web server
+	 */
+	property name="command" type="string";
+
+	/**
+	 * The URL polled until the server answers
+	 */
+	property name="serverURL" type="string";
+
+	/**
+	 * How long to wait for the server to answer, in seconds
+	 */
+	property name="timeout" type="numeric";
+
+	/**
+	 * The working directory of the command
+	 */
+	property name="workingDirectory" type="string";
+
+	/**
+	 * The file that receives the standard output and error of the command
+	 */
+	property name="logPath" type="string";
+
+	/**
+	 * Constructor
+	 *
+	 * @command          The shell command that starts the web server, run with `sh -c` (or `cmd /c` on Windows)
+	 * @url              The URL to poll until the server answers with a status below 500
+	 * @timeout          How long to wait for the server to answer, in seconds
+	 * @workingDirectory The working directory of the command, defaults to the current directory
+	 *
+	 * @return The web server helper
+	 */
+	function init(
+		required string command,
+		string url              = "http://localhost:8080",
+		numeric timeout         = 60,
+		string workingDirectory = ""
+	) {
+		variables.command          = arguments.command
+		variables.serverURL        = arguments.url
+		variables.timeout          = arguments.timeout
+		variables.workingDirectory = arguments.workingDirectory
+		variables.logPath          = ""
+		variables.process          = nullValue()
+		return this
+	}
+
+	/**
+	 * Start the command as a child process and wait until the URL answers. When the URL does not answer in
+	 * time, or the process exits first, the process tree is stopped and TestBox.WebServerFailed is thrown.
+	 *
+	 * @return This helper
+	 *
+	 * @throws TestBox.WebServerFailed When the server does not answer before the timeout or exits early
+	 */
+	function start() {
+		var isWindows = server.os.name.findNoCase( "windows" ) > 0
+		var shell     = isWindows ? [ "cmd", "/c", variables.command ] : [ "sh", "-c", variables.command ]
+		var builder   = createObject( "java", "java.lang.ProcessBuilder" ).init( shell )
+
+		if ( len( variables.workingDirectory ) ) {
+			builder.directory( createObject( "java", "java.io.File" ).init( variables.workingDirectory ) )
+		}
+
+		variables.logPath = getTempFile( getTempDirectory(), "testbox-web-server" )
+		builder.redirectErrorStream( true )
+		builder.redirectOutput( createObject( "java", "java.io.File" ).init( variables.logPath ) )
+
+		variables.process = builder.start()
+
+		var deadline = getTickCount() + ( variables.timeout * 1000 )
+		while ( getTickCount() < deadline ) {
+			if ( !variables.process.isAlive() ) {
+				var exitCode = variables.process.exitValue()
+				var output   = getLogTail()
+				stop()
+				throw(
+					type    = "TestBox.WebServerFailed",
+					message = "The web server command exited with code #exitCode# before [#variables.serverURL#] answered.",
+					detail  = "Command: #variables.command##char( 10 )#Output:#char( 10 )##output#"
+				)
+			}
+			if ( isResponding() ) {
+				return this
+			}
+			sleep( 250 )
+		}
+
+		var output = getLogTail()
+		stop()
+		throw(
+			type    = "TestBox.WebServerFailed",
+			message = "The web server did not answer at [#variables.serverURL#] within #variables.timeout# seconds.",
+			detail  = "Command: #variables.command##char( 10 )#Check --web-server-url, or raise --web-server-timeout."
+			& "#char( 10 )#Output:#char( 10 )##output#"
+		)
+	}
+
+	/**
+	 * Does the URL answer with an HTTP status below 500?
+	 *
+	 * @return True when the server answered, false when the connection failed or the status was 500 or more
+	 */
+	boolean function isResponding() {
+		try {
+			var connection = createObject( "java", "java.net.URI" )
+				.init( variables.serverURL )
+				.toURL()
+				.openConnection()
+			connection.setConnectTimeout( 1000 )
+			connection.setReadTimeout( 2000 )
+			connection.setInstanceFollowRedirects( false )
+			var status = connection.getResponseCode()
+			connection.disconnect()
+			return status > 0 && status < 500
+		} catch ( any e ) {
+			return false
+		}
+	}
+
+	/**
+	 * Is the web server process running?
+	 *
+	 * @return True when the process was started and has not exited
+	 */
+	boolean function isRunning() {
+		return !isNull( variables.process ) && variables.process.isAlive()
+	}
+
+	/**
+	 * Stop the web server: its descendant processes first, then the process itself. Processes that do
+	 * not exit within 10 seconds are killed forcibly, and the output log is deleted. Safe to call more than once.
+	 *
+	 * @return This helper
+	 */
+	function stop() {
+		if ( isNull( variables.process ) ) {
+			return this
+		}
+		// Capture the tree before stopping the parent, children get re-parented once it exits
+		var handles = variables.process.descendants().toList()
+		for ( var handle in handles ) {
+			handle.destroy()
+		}
+		variables.process.destroy()
+
+		var TimeUnit = createObject( "java", "java.util.concurrent.TimeUnit" )
+		if ( !variables.process.waitFor( 10, TimeUnit.SECONDS ) ) {
+			variables.process.destroyForcibly()
+			variables.process.waitFor( 5, TimeUnit.SECONDS )
+		}
+		// destroyForcibly() only requests the kill: wait until every process is gone, so its port is free on return
+		for ( var handle in handles ) {
+			if ( handle.isAlive() ) {
+				handle.destroyForcibly()
+			}
+		}
+		for ( var handle in handles ) {
+			try {
+				handle.onExit().get( 5, TimeUnit.SECONDS )
+			} catch ( any e ) {
+				// Still alive after 5 seconds: nothing more can be done from here
+			}
+		}
+		variables.process = nullValue()
+		if ( len( variables.logPath ) && fileExists( variables.logPath ) ) {
+			fileDelete( variables.logPath )
+		}
+		return this
+	}
+
+	/**
+	 * The last lines the web server command printed, for failure messages.
+	 *
+	 * @lines How many lines to return
+	 *
+	 * @return The last lines of the command output, or an empty string when there is none
+	 */
+	string function getLogTail( numeric lines = 20 ) {
+		if ( !len( variables.logPath ) || !fileExists( variables.logPath ) ) {
+			return ""
+		}
+		var all = listToArray( fileRead( variables.logPath ), char( 10 ) )
+		if ( all.len() <= arguments.lines ) {
+			return all.toList( char( 10 ) )
+		}
+		return all.slice( all.len() - arguments.lines + 1, arguments.lines ).toList( char( 10 ) )
+	}
+
+}

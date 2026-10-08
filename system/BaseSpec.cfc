@@ -31,6 +31,8 @@ component {
 	this.$currentExecutingSpec = "";
 	// Focused Structures
 	this.$focusedTargets       = { "suites" : [], "specs" : [] };
+	// The stats of the spec running on the current thread, used by attach()
+	variables.$specStatsHolder = createObject( "java", "java.lang.ThreadLocal" ).init();
 	// Setup Request Utilities struct
 	if ( !request.keyExists( "testbox" ) ) {
 		request.testbox = {};
@@ -98,6 +100,42 @@ component {
 	 */
 	function skip( message = "", detail = "" ){
 		this.$assert.skip( argumentCollection = arguments );
+	}
+
+	/**
+	 * Attach a file to the spec that is running, for example a screenshot, a trace or a log.
+	 * Attachments are kept for passed and failed specs and reporters list them under the spec.
+	 *
+	 * @path The absolute path of the file
+	 * @type The kind of file, for example: file, screenshot, trace, video or log
+	 * @name The display name, defaults to the file name of the path
+	 *
+	 * @return This spec, for chaining
+	 *
+	 * @throws TestBox.InvalidContext When no spec is running on the current thread
+	 */
+	function attach(
+		required string path,
+		string type = "file",
+		string name = ""
+	){
+		var specStats = variables.$specStatsHolder.get()
+		if ( isNull( specStats ) ) {
+			throw(
+				type    = "TestBox.InvalidContext",
+				message = "attach() can only be called while a spec is running.",
+				detail  = "Call attach() from a spec body or from a beforeEach(), afterEach() or aroundEach() closure."
+			)
+		}
+		arrayAppend(
+			specStats.attachments,
+			{
+				"path" : arguments.path,
+				"type" : arguments.type,
+				"name" : len( arguments.name ) ? arguments.name : getFileFromPath( arguments.path )
+			}
+		)
+		return this
 	}
 
 
@@ -479,18 +517,20 @@ component {
 	/**
 	 * A focused `it` where only focused it's are executed
 	 *
-	 * @title  The title of this spec
-	 * @body   The closure that represents the test
-	 * @labels The list or array of labels this spec belongs to
-	 * @skip   A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
-	 * @data   A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @title   The title of this spec
+	 * @body    The closure that represents the test
+	 * @labels  The list or array of labels this spec belongs to
+	 * @skip    A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
+	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @retries How many extra times to run the spec when it fails or errors, 0 inherits the bundle `retries` annotation or the global `retries` option
 	 */
 	any function fit(
 		required string title,
 		required any body,
-		any labels  = [],
-		any skip    = false,
-		struct data = {}
+		any labels      = [],
+		any skip        = false,
+		struct data     = {},
+		numeric retries = 0
 	){
 		arguments.focused = true;
 		return this.it( argumentCollection = arguments );
@@ -506,6 +546,7 @@ component {
 	 * @skip    A flag or a closure that tells TestBox to skip this spec test from testing if true. If this is a closure it must return boolean.
 	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
 	 * @focused A flag that tells TestBox to only run this spec and no other
+	 * @retries How many extra times to run the spec when it fails or errors, 0 inherits the bundle `retries` annotation or the global `retries` option
 	 *
 	 * @throws TestBox.InvalidBody    If the body is not a closure
 	 * @throws TestBox.InvalidContext If the spec is not defined within a suite
@@ -516,7 +557,8 @@ component {
 		any labels      = [],
 		any skip        = false,
 		struct data     = {},
-		boolean focused = false
+		boolean focused = false,
+		numeric retries = 0
 	){
 		// closure checks
 		if ( !isClosure( arguments.body ) && !isCustomFunction( arguments.body ) ) {
@@ -553,7 +595,9 @@ component {
 			// the order of execution
 			"order"       : this.$specOrderIndex++,
 			// skip spec testing
-			"skip"        : arguments.skip
+			"skip"        : arguments.skip,
+			// extra runs allowed when the spec fails or errors
+			"retries"     : arguments.retries
 		};
 
 		// Executes the skip constraint for the spec and stores it's value
@@ -684,16 +728,18 @@ component {
 	/**
 	 * This is a convenience method that makes sure the test spec is skipped from execution
 	 *
-	 * @title  The title of this spec
-	 * @body   The closure that represents the test
-	 * @labels The list or array of labels this spec belongs to
-	 * @data   A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @title   The title of this spec
+	 * @body    The closure that represents the test
+	 * @labels  The list or array of labels this spec belongs to
+	 * @data    A struct of data you would like to bind into the spec so it can be later passed into the executing body function
+	 * @retries Accepted for parity with it(), skipped specs are never retried
 	 */
 	any function xit(
 		required string title,
 		required any body,
-		any labels  = [],
-		struct data = {}
+		any labels      = [],
+		struct data     = {},
+		numeric retries = 0
 	){
 		arguments.skip = true;
 		return this.it( argumentCollection = arguments );
@@ -1095,15 +1141,29 @@ component {
 			) {
 				// setup the current executing spec for debug purposes
 				this.$currentExecutingSpec = arguments.suite.slug & "/" & arguments.suite.name & "/" & arguments.spec.name;
-				// Run beforeEach closures
-				runBeforeEachClosures( arguments.suite, arguments.spec );
-
+				// Make the spec stats available to attach() while the spec runs
+				var previousSpecStats      = bindSpecStats( specStats )
 				try {
-					runAroundEachClosures( arguments.suite, arguments.spec );
-				} catch ( any e ) {
-					rethrow;
+					var maxAttempts = 1 + resolveRetries( arguments.spec, arguments.runner )
+					for ( var attempt = 1; attempt <= maxAttempts; attempt++ ) {
+						specStats.attempts = attempt
+						try {
+							// Run beforeEach closures
+							runBeforeEachClosures( arguments.suite, arguments.spec );
+							try {
+								runAroundEachClosures( arguments.suite, arguments.spec );
+							} finally {
+								runAfterEachClosures( arguments.suite, arguments.spec );
+							}
+							break;
+						} catch ( any e ) {
+							if ( !canRetry( e, attempt, maxAttempts ) ) {
+								rethrow;
+							}
+						}
+					}
 				} finally {
-					runAfterEachClosures( arguments.suite, arguments.spec );
+					restoreSpecStats( previousSpecStats )
 				}
 
 				// store spec status
@@ -1139,39 +1199,11 @@ component {
 					]
 				);
 		}
-		// Catch Fail() calls
-		catch ( "TestBox.AssertionFailed" e ) {
-			// store spec status and debug data
-			specStats.status           = "Failed";
-			specStats.failMessage      = e.message;
-			specStats.error            = e;
-			specStats.failDetail       = e.detail;
-			specStats.failExtendedInfo = e.extendedInfo;
-			specStats.failStacktrace   = e.stackTrace;
-			specStats.failOrigin       = e.tagContext;
-			specStats.debugBuffer      = duplicate( this.$debugBuffer );
-
-			// Increment recursive pass stats
-			arguments.testResults.incrementSpecStat( type = "fail", stats = specStats );
-			// Module call backs
-			arguments.runner
-				.getTestBox()
-				.announceToModules(
-					"onSpecFailure",
-					[
-						e,
-						arguments.spec,
-						specStats,
-						arguments.suite,
-						arguments.suiteStats,
-						arguments.testResults
-					]
-				);
-		}
-		// Catch errors
+		// Catch Fail() calls (TestBox and bx-playwright assertion failures) and errors
 		catch ( any e ) {
+			var isFailure              = isAssertionFailure( e )
 			// store spec status and debug data
-			specStats.status           = "Error";
+			specStats.status           = isFailure ? "Failed" : "Error";
 			specStats.error            = e;
 			specStats.failOrigin       = e.tagContext;
 			specStats.failMessage      = e.message;
@@ -1181,13 +1213,13 @@ component {
 			specStats.debugBuffer      = duplicate( this.$debugBuffer );
 
 			// Increment recursive pass stats
-			arguments.testResults.incrementSpecStat( type = "error", stats = specStats );
+			arguments.testResults.incrementSpecStat( type = isFailure ? "fail" : "error", stats = specStats );
 
 			// Module call backs
 			arguments.runner
 				.getTestBox()
 				.announceToModules(
-					"onSpecError",
+					isFailure ? "onSpecFailure" : "onSpecError",
 					[
 						e,
 						arguments.spec,
@@ -1438,42 +1470,25 @@ component {
 				arguments.runner.canRunLabel( arguments.spec.labels, arguments.testResults ) &&
 				arguments.runner.canRunSpec( arguments.spec, arguments.testResults )
 			) {
-				// Reset expected exceptions: Only works on synchronous testing.
-				this.$expectedException    = {};
 				// setup the current executing spec for debug purposes
 				this.$currentExecutingSpec = arguments.spec.name;
-
-				// execute setup()
-				if ( structKeyExists( this, "setup" ) ) {
-					this.setup( currentMethod = arguments.spec.name );
-				}
-
-				// Execute Spec
+				// Make the spec stats available to attach() while the test runs
+				var previousSpecStats      = bindSpecStats( specStats )
 				try {
-					invoke( this, arguments.spec.name );
-					// Where we expecting an exception and it did not throw?
-					if ( hasExpectedException( arguments.spec.name, arguments.runner ) ) {
-						$assert.fail(
-							"Method did not throw expected exception: [#this.$expectedException.toString()#]"
-						);
-					}
-					// else all good.
-				} catch ( Any e ) {
-					// do we have expected exception? else rethrow it
-					if ( !hasExpectedException( arguments.spec.name, arguments.runner ) ) {
-						rethrow;
-					}
-					// if not the expected exception, then fail it
-					if ( !isExpectedException( e, arguments.spec.name, arguments.runner ) ) {
-						$assert.fail(
-							"Method did not throw expected exception: [#this.$expectedException.toString()#], actual exception [type:#e.type#][message:#e.message#]"
-						);
+					var maxAttempts = 1 + resolveRetries( arguments.spec, arguments.runner )
+					for ( var attempt = 1; attempt <= maxAttempts; attempt++ ) {
+						specStats.attempts = attempt
+						try {
+							runTestMethodAttempt( arguments.spec, arguments.runner )
+							break;
+						} catch ( any e ) {
+							if ( !canRetry( e, attempt, maxAttempts ) ) {
+								rethrow;
+							}
+						}
 					}
 				} finally {
-					// execute teardown()
-					if ( structKeyExists( this, "teardown" ) ) {
-						this.teardown( currentMethod = arguments.spec.name );
-					}
+					restoreSpecStats( previousSpecStats )
 				}
 
 				// store spec status
@@ -1496,34 +1511,170 @@ component {
 			// Increment recursive pass stats
 			arguments.testResults.incrementSpecStat( type = "skipped", stats = specStats );
 		}
-		// Catch Fail() calls
-		catch ( "TestBox.AssertionFailed" e ) {
-			// store spec status and debug data
-			specStats.status           = "Failed";
-			specStats.failMessage      = e.message;
-			specStats.error            = e;
-			specStats.failExtendedInfo = e.extendedInfo;
-			specStats.failStacktrace   = e.stackTrace;
-			specStats.failOrigin       = e.tagContext;
-			specStats.debugBuffer      = duplicate( this.$debugBuffer );
-
-			// Increment recursive pass stats
-			arguments.testResults.incrementSpecStat( type = "fail", stats = specStats );
-		}
-		// Catch errors
+		// Catch Fail() calls (TestBox and bx-playwright assertion failures) and errors
 		catch ( any e ) {
-			// store spec status and debug data
-			specStats.status     = "Error";
-			specStats.error      = e;
-			specStats.failOrigin = e.tagContext;
-			// Increment recursive pass stats
-			arguments.testResults.incrementSpecStat( type = "error", stats = specStats );
+			if ( isAssertionFailure( e ) ) {
+				// store spec status and debug data
+				specStats.status           = "Failed";
+				specStats.failMessage      = e.message;
+				specStats.failDetail       = e.detail;
+				specStats.error            = e;
+				specStats.failExtendedInfo = e.extendedInfo;
+				specStats.failStacktrace   = e.stackTrace;
+				specStats.failOrigin       = e.tagContext;
+				specStats.debugBuffer      = duplicate( this.$debugBuffer );
+
+				// Increment recursive pass stats
+				arguments.testResults.incrementSpecStat( type = "fail", stats = specStats );
+			} else {
+				// store spec status and debug data
+				specStats.status     = "Error";
+				specStats.error      = e;
+				specStats.failOrigin = e.tagContext;
+				// Increment recursive pass stats
+				arguments.testResults.incrementSpecStat( type = "error", stats = specStats );
+			}
 		} finally {
 			// Complete spec testing
 			arguments.testResults.endStats( specStats );
 		}
 
 		return this;
+	}
+
+	/**
+	 * Run one attempt of a xUnit test method: setup(), the method with its expected exception checks, and teardown().
+	 *
+	 * @spec   The spec definition of the test method
+	 * @runner The runner calling this xUnit test
+	 *
+	 * @return This spec
+	 */
+	function runTestMethodAttempt( required spec, required runner ){
+		// Reset expected exceptions: Only works on synchronous testing.
+		this.$expectedException = {};
+
+		// execute setup()
+		if ( structKeyExists( this, "setup" ) ) {
+			this.setup( currentMethod = arguments.spec.name );
+		}
+
+		// Execute Spec
+		try {
+			invoke( this, arguments.spec.name );
+			// Where we expecting an exception and it did not throw?
+			if ( hasExpectedException( arguments.spec.name, arguments.runner ) ) {
+				$assert.fail( "Method did not throw expected exception: [#this.$expectedException.toString()#]" );
+			}
+			// else all good.
+		} catch ( Any e ) {
+			// do we have expected exception? else rethrow it
+			if ( !hasExpectedException( arguments.spec.name, arguments.runner ) ) {
+				rethrow;
+			}
+			// if not the expected exception, then fail it
+			if ( !isExpectedException( e, arguments.spec.name, arguments.runner ) ) {
+				$assert.fail(
+					"Method did not throw expected exception: [#this.$expectedException.toString()#], actual exception [type:#e.type#][message:#e.message#]"
+				);
+			}
+		} finally {
+			// execute teardown()
+			if ( structKeyExists( this, "teardown" ) ) {
+				this.teardown( currentMethod = arguments.spec.name );
+			}
+		}
+
+		return this
+	}
+
+	/**
+	 * Is the exception an assertion failure? TestBox and bx-playwright assertion failures count as spec
+	 * failures, every other exception counts as an error.
+	 *
+	 * @exception The caught exception
+	 *
+	 * @return True when the exception type is TestBox.AssertionFailed or Playwright.AssertionFailed
+	 */
+	boolean function isAssertionFailure( required any exception ){
+		return listFindNoCase( "TestBox.AssertionFailed,Playwright.AssertionFailed", arguments.exception.type ) > 0
+	}
+
+	/**
+	 * Resolve how many extra times a spec may run when it fails or errors.
+	 * Precedence: the spec `retries` value, then the bundle `retries` annotation, then the runner `retries` option.
+	 *
+	 * @spec   The spec definition
+	 * @runner The runner executing the spec
+	 *
+	 * @return The number of retries, 0 for none
+	 */
+	numeric function resolveRetries( required spec, required runner ){
+		var specRetries = arguments.spec.retries ?: 0
+		if ( isNumeric( specRetries ) && specRetries > 0 ) {
+			return int( specRetries )
+		}
+
+		var md          = getMetadata( this )
+		var annotations = md.keyExists( "annotations" ) ? md.annotations : md
+		if ( isNumeric( annotations.retries ?: "" ) ) {
+			return max( 0, int( annotations.retries ) )
+		}
+
+		if ( structKeyExists( arguments.runner, "getOptions" ) ) {
+			var runnerOptions = arguments.runner.getOptions() ?: {}
+			if ( isStruct( runnerOptions ) && isNumeric( runnerOptions.retries ?: "" ) ) {
+				return max( 0, int( runnerOptions.retries ) )
+			}
+		}
+
+		return 0
+	}
+
+	/**
+	 * Can a spec run again after this exception? Skips are never retried.
+	 *
+	 * @exception   The exception the attempt threw
+	 * @attempt     The attempt that threw, starting at 1
+	 * @maxAttempts The total number of attempts allowed
+	 *
+	 * @return True when another attempt should run
+	 */
+	boolean function canRetry(
+		required any exception,
+		required numeric attempt,
+		required numeric maxAttempts
+	){
+		return arguments.attempt < arguments.maxAttempts && arguments.exception.type != "TestBox.SkipSpec"
+	}
+
+	/**
+	 * Make the stats of the spec that starts running available to attach() on the current thread.
+	 *
+	 * @specStats The stats of the spec that starts running
+	 *
+	 * @return The stats that were bound before, or an empty string when none, to pass to restoreSpecStats()
+	 */
+	any function bindSpecStats( required struct specStats ){
+		var previous = variables.$specStatsHolder.get()
+		variables.$specStatsHolder.set( arguments.specStats )
+		return previous ?: ""
+	}
+
+	/**
+	 * Restore the spec stats bound before the current spec ran, so nested TestBox runs do not lose the outer spec.
+	 *
+	 * @previous The value returned by bindSpecStats(): the previous stats, or an empty string when none
+	 *
+	 * @return This spec
+	 */
+	function restoreSpecStats( required any previous ){
+		if ( isSimpleValue( arguments.previous ) ) {
+			variables.$specStatsHolder.remove()
+		} else {
+			variables.$specStatsHolder.set( arguments.previous )
+		}
+		return this
 	}
 
 	/************************************** UTILITY METHODS *********************************************/

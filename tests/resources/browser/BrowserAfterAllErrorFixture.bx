@@ -1,0 +1,22 @@
+/**
+ * Fixture for BrowserSpecTest: a BrowserSpec bundle whose afterAll() throws after a spec opened the browser,
+ * so the BrowserSpec closeBrowser() afterAll method never runs. The next run must close the browser.
+ */
+class extends="testbox.system.BrowserSpec" {
+
+	function afterAll() {
+		throw( type = "Fixture.AfterAllFailed", message = "afterAll() failed on purpose" )
+	}
+
+	function run() {
+		describe( "Browser afterAll() error fixture", () => {
+			it( "opens the browser", () => {
+				browse( ( page ) => {
+					page.setContent( "<h1>Hello</h1>" )
+				} )
+				request.browserAfterAllFixture.manager = this.playwright()
+			} )
+		} )
+	}
+
+}

@@ -1,0 +1,369 @@
+/**
+ * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * Browser testing support for one test bundle, built on the public API of the bx-playwright module.
+ * testbox.system.BrowserSpec delegates to it, and any BoxLang spec can use it directly:
+ *
+ * <pre>
+ * browser = new testbox.system.browser.BrowserSupport( this )
+ * browser.browse( ( page ) => {
+ *     page.visit( "/login" ).assertSee( "Sign in" )
+ * } )
+ * browser.close()
+ * </pre>
+ *
+ * It owns one bx-playwright manager per bundle, created on first use with the bundle `browserProfile`
+ * and `baseURL` annotations, and a fresh browser context for every page of every browse() call.
+ *
+ * BoxLang only: bx-playwright runs on BoxLang. When the engine is not BoxLang or the module is not
+ * installed, browse() skips the running spec with the reason.
+ *
+ * Cleanup: close() (BrowserSpec runs it after the bundle) closes the bundle browser. When it never runs, because
+ * an afterAll() threw or the request aborted, the browser stays in a static ledger, and the next browser opened
+ * by a later run closes it. A run is a request: nested TestBox runs in the same request share it. bx-playwright
+ * closes whatever is left when the module unloads or the JVM stops.
+ */
+class {
+
+	// Open bundle managers, by key: { manager, runId, ownerThread }
+	static {
+		ledger = {}
+	}
+
+	/**
+	 * Constructor
+	 *
+	 * @spec The spec (a testbox.system.BaseSpec) this support works for: it provides the annotations, attach() and skip()
+	 *
+	 * @return The browser support
+	 */
+	function init( required any spec ) {
+		variables.spec    = arguments.spec
+		variables.manager     = nullValue()
+		variables.lockID      = createUUID()
+		variables.ledgerKey   = ""
+		return this
+	}
+
+	/**
+	 * Can browser specs run here? True on BoxLang with the bx-playwright module (registered as `playwright`) loaded.
+	 *
+	 * @return True when browser testing is available
+	 */
+	boolean function isAvailable() {
+		return server.keyExists( "boxlang" ) && getModuleList().keyExists( "playwright" )
+	}
+
+	/**
+	 * Why browser specs cannot run here.
+	 *
+	 * @return The reason, or an empty string when browser testing is available
+	 */
+	string function getUnavailableReason() {
+		if ( !server.keyExists( "boxlang" ) ) {
+			return "Browser specs need the BoxLang engine: bx-playwright only runs on BoxLang"
+		}
+		if ( !getModuleList().keyExists( "playwright" ) ) {
+			return "bx-playwright is not installed: install-bx-module bx-playwright"
+		}
+		return ""
+	}
+
+	/**
+	 * The bx-playwright manager of the bundle, created on first use with playwright( profiles, settings ).
+	 *
+	 * @return The bx-playwright manager (models.Playwright@playwright)
+	 *
+	 * @throws TestBox.SkipSpec When browser testing is not available, so the running spec is skipped
+	 */
+	function getManager() {
+		if ( isNull( variables.manager ) ) {
+			lock name="testbox-browser-#variables.lockID#" type="exclusive" timeout="60" {
+				if ( isNull( variables.manager ) ) {
+					if ( !isAvailable() ) {
+						variables.spec.skip( getUnavailableReason() )
+					}
+					// Browsers an earlier run left open (a failed afterAll(), an aborted request) close first
+					static.closeStale()
+					variables.manager   = playwright( getProfiles(), getSettings() )
+					variables.ledgerKey = static.track( variables.manager )
+				}
+			}
+		}
+		return variables.manager
+	}
+
+	/**
+	 * Has the manager been created?
+	 *
+	 * @return True when a browse() or getManager() call created the bundle manager
+	 */
+	boolean function hasManager() {
+		return !isNull( variables.manager )
+	}
+
+	/**
+	 * The bx-playwright profiles of the bundle, from the `browserProfile` annotation (a list such as `ci,mobile`).
+	 *
+	 * @return The profile list, or an empty string for the bx-playwright default profile
+	 */
+	string function getProfiles() {
+		return trim( findAnnotation( "browserProfile" ) )
+	}
+
+	/**
+	 * The base URL relative visits resolve against: the bundle `baseURL` annotation, else the URL of the
+	 * web server the BoxLang runner started (`--web-server-url`, kept in `server.testbox.webServerURL`).
+	 * When both are empty, bx-playwright uses its own setting or `BX_PLAYWRIGHT_BASEURL`.
+	 *
+	 * @return The base URL, or an empty string when none is set
+	 */
+	string function getBaseURL() {
+		var baseURL = trim( findAnnotation( "baseURL" ) )
+		if ( len( baseURL ) ) {
+			return baseURL
+		}
+		if ( server.keyExists( "testbox" ) && isStruct( server.testbox ) ) {
+			return server.testbox.webServerURL ?: ""
+		}
+		return ""
+	}
+
+	/**
+	 * The settings passed as the second argument of playwright(): the base URL when there is one.
+	 *
+	 * @return The settings struct
+	 */
+	struct function getSettings() {
+		var settings = {}
+		var baseURL  = getBaseURL()
+		if ( len( baseURL ) ) {
+			settings.baseURL = baseURL
+		}
+		return settings
+	}
+
+	/**
+	 * Run a callback with fresh browser pages. Every declared callback argument gets its own page in its own
+	 * browser context (isolated cookies and storage), like bx-playwright's browse(); a callback without
+	 * arguments gets one page as its first argument. The contexts close when the callback ends. When the
+	 * callback throws they close with failed = true, so the artifact policies keep their files, the kept
+	 * screenshots, trace and videos are attached to the spec, and the exception is rethrown unchanged.
+	 *
+	 * <pre>
+	 * browse( ( page ) => page.visit( "/" ).assertSee( "Welcome" ) )
+	 * browse( ( admin, guest ) => { ... } )   // two isolated pages
+	 * </pre>
+	 *
+	 * @callback The function to run, receiving one page per declared argument
+	 * @options  Context options for bx-playwright newContext(), for example { viewport : { width : 390, height : 844 } }
+	 *
+	 * @return The callback result, or null when it returns nothing
+	 *
+	 * @throws TestBox.SkipSpec When browser testing is not available, so the running spec is skipped
+	 */
+	function browse( required function callback, struct options = {} ) {
+		var manager    = getManager()
+		var params     = getMetadata( arguments.callback ).parameters ?: []
+		var contexts   = []
+		var pages      = []
+		var failed     = true
+		var closeError = nullValue()
+		try {
+			for ( var i = 1; i <= max( 1, params.len() ); i++ ) {
+				var context = manager.newContext( arguments.options )
+				contexts.append( context )
+				pages.append( context.newPage() )
+			}
+			var result = arguments.callback( argumentCollection = pageArguments( params, pages ) )
+			failed     = false
+			return isNull( result ) ? nullValue() : result
+		} finally {
+			for ( var context in contexts ) {
+				try {
+					attachArtifacts( context.close( failed ) )
+				} catch ( any e ) {
+					// Close every context, and never hide the error of the callback
+					if ( isNull( closeError ) ) {
+						closeError = e
+					}
+				}
+			}
+			if ( !failed && !isNull( closeError ) ) {
+				throw( object = closeError )
+			}
+		}
+	}
+
+	/**
+	 * Attach the files a closed context kept to the running spec.
+	 *
+	 * @artifacts The struct returned by context.close(): { screenshots, trace, videos, directory }
+	 *
+	 * @return This support
+	 */
+	function attachArtifacts( required struct artifacts ) {
+		for ( var screenshot in arguments.artifacts.screenshots ?: [] ) {
+			variables.spec.attach( screenshot, "screenshot" )
+		}
+		var trace = arguments.artifacts.trace ?: ""
+		if ( isSimpleValue( trace ) && len( trace ) ) {
+			variables.spec.attach( trace, "trace" )
+		}
+		for ( var video in arguments.artifacts.videos ?: [] ) {
+			variables.spec.attach( video, "video" )
+		}
+		return this
+	}
+
+	/**
+	 * Close the bundle manager and every browser it started. Safe to call more than once.
+	 *
+	 * @return This support
+	 */
+	function close() {
+		if ( !isNull( variables.manager ) ) {
+			static.untrack( variables.ledgerKey )
+			variables.ledgerKey = ""
+			try {
+				variables.manager.close()
+			} finally {
+				variables.manager = nullValue()
+			}
+		}
+		return this
+	}
+
+	/**
+	 * Track an open manager in the ledger.
+	 *
+	 * @manager     The bx-playwright manager
+	 * @runId       The run that opened it, the current run by default
+	 * @ownerThread The thread of that run, the current thread by default
+	 *
+	 * @return The ledger key, to pass to untrack()
+	 */
+	static string function track(
+		required any manager,
+		string runId     = static.currentRunId(),
+		any ownerThread  = threadCurrent()
+	) {
+		var key = createUUID()
+		lock name="testbox-browser-ledger" type="exclusive" timeout="30" {
+			static.ledger[ key ] = {
+				"manager"     : arguments.manager,
+				"runId"       : arguments.runId,
+				"ownerThread" : arguments.ownerThread
+			}
+		}
+		return key
+	}
+
+	/**
+	 * Stop tracking a manager its owner closed.
+	 *
+	 * @key The key returned by track()
+	 */
+	static function untrack( required string key ) {
+		if ( len( arguments.key ) ) {
+			lock name="testbox-browser-ledger" type="exclusive" timeout="30" {
+				static.ledger.delete( arguments.key )
+			}
+		}
+	}
+
+	/**
+	 * Close the managers whose run is over: their thread ended, or it is the current thread and it now runs
+	 * another request. Managers of the current run, and of other threads still alive, are kept.
+	 *
+	 * @return The number of managers closed
+	 */
+	static numeric function closeStale() {
+		var runId         = static.currentRunId()
+		var currentThread = threadCurrent()
+		var stale         = []
+		lock name="testbox-browser-ledger" type="exclusive" timeout="30" {
+			for ( var key in static.ledger.keyArray() ) {
+				var entry = static.ledger[ key ]
+				if (
+					!entry.ownerThread.isAlive() ||
+					( entry.ownerThread.equals( currentThread ) && entry.runId != runId )
+				) {
+					stale.append( entry.manager )
+					static.ledger.delete( key )
+				}
+			}
+		}
+		for ( var manager in stale ) {
+			try {
+				manager.close()
+			} catch ( any e ) {
+				// Already closed or its driver is gone: keep closing the rest
+			}
+		}
+		return stale.len()
+	}
+
+	/**
+	 * How many managers the ledger tracks, for all runs.
+	 *
+	 * @return The number of open managers tracked
+	 */
+	static numeric function trackedCount() {
+		return static.ledger.count()
+	}
+
+	/**
+	 * The id of the current run: one per request, shared by nested TestBox runs.
+	 *
+	 * @return The run id
+	 */
+	static string function currentRunId() {
+		if ( !request.keyExists( "testboxBrowserRunId" ) ) {
+			request.testboxBrowserRunId = createUUID()
+		}
+		return request.testboxBrowserRunId
+	}
+
+	/**
+	 * Find an annotation on the spec class or the classes it extends.
+	 *
+	 * @name The annotation name
+	 *
+	 * @return The annotation value, or an empty string when no class in the hierarchy has it
+	 */
+	private string function findAnnotation( required string name ) {
+		var md = getMetadata( variables.spec )
+		while ( !isNull( md ) && isStruct( md ) ) {
+			var annotations = md.annotations ?: md
+			if ( annotations.keyExists( arguments.name ) && isSimpleValue( annotations[ arguments.name ] ) ) {
+				return annotations[ arguments.name ]
+			}
+			md = md.extends ?: nullValue()
+		}
+		return ""
+	}
+
+	/**
+	 * Map the pages to the callback arguments by name, or pass the single page positionally when the
+	 * callback declares no arguments.
+	 *
+	 * @params The callback parameter metadata
+	 * @pages  The pages, one per parameter
+	 *
+	 * @return The argument collection for the callback
+	 */
+	private struct function pageArguments( required array params, required array pages ) {
+		var args = {}
+		if ( arguments.params.isEmpty() ) {
+			args[ "1" ] = arguments.pages[ 1 ]
+			return args
+		}
+		for ( var i = 1; i <= arguments.params.len(); i++ ) {
+			args[ arguments.params[ i ].name ] = arguments.pages[ i ]
+		}
+		return args
+	}
+
+}

@@ -50,6 +50,16 @@
 		<a class="btn btn-primary btn-sm" href="#variables.helper.href( variables.helper.runURL() )#" title="Run all tests">
 			<svg class="tb-icon" aria-hidden="true"><use href="##i-play-fill"/></svg> Run All
 		</a>
+		<cfset local.failedTargets = variables.results.getFailedTargets()>
+		<cfif arrayLen( local.failedTargets.bundles )>
+			<a
+				class="btn btn-danger btn-sm"
+				href="#variables.helper.href( variables.helper.failedRunURL( local.failedTargets ) )#"
+				title="Run only the specs that failed or errored in this run"
+			>
+				<svg class="tb-icon" aria-hidden="true"><use href="##i-arrow-repeat"/></svg> Run Failed (#arrayLen( local.failedTargets.specs )#)
+			</a>
+		</cfif>
 	</div>
 </header>
 </cfoutput>

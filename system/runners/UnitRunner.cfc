@@ -485,7 +485,9 @@ component
 						structKeyExists( specAnnotations, "expectedException" ) ? (
 							len( specAnnotations.expectedException ) ? specAnnotations.expectedException : true
 						) : false
-					)
+					),
+					// extra runs allowed when the test fails or errors, 0 inherits the bundle annotation or global option
+					"retries" : ( isNumeric( specAnnotations.retries ?: "" ) ? specAnnotations.retries : 0 )
 				};
 
 				// skip constraint?

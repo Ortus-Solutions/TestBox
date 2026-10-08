@@ -68,7 +68,7 @@ function genSuiteReport( suiteStats, bundleStats, level = 0 ) output="false" {
         writeOutput( tabs & "( " & getStatusIndicator( arguments.suiteStats.status ) & " ) " & arguments.suiteStats.name & " " & chr( 13 ) );
         // Specs
         for ( local.thisSpec in arguments.suiteStats.specStats ) {
-            writeOutput( tabsNext & "( " & getStatusIndicator( local.thisSpec.status ) & " ) " & local.thisSpec.displayName & " (" & local.thisSpec.totalDuration & " ms) " & chr( 13 ) );
+            writeOutput( tabsNext & "( " & getStatusIndicator( local.thisSpec.status ) & " ) " & local.thisSpec.displayName & " (" & local.thisSpec.totalDuration & " ms)" & getAttemptsNote( local.thisSpec ) & " " & chr( 13 ) );
             // If Spec Failed
             if ( local.thisSpec.status == "failed" ) {
                 writeOutput( space() & tabsNext & " ! Failure: " & local.thisSpec.failMessage & " " & local.thisSpec.failDetail & " " & chr( 13 ) & chr( 10 ) & chr( 9 ) & chr( 9 ) & "   " & space() & chr( 10 ) );
@@ -83,6 +83,12 @@ function genSuiteReport( suiteStats, bundleStats, level = 0 ) output="false" {
                     }
                 }
                 writeOutput( chr( 10 ) & space() & chr( 10 ) & left( local.thisSpec.error.stackTrace, 1500 ) & " " & chr( 13 ) & chr( 13 ) & chr( 10 ) & space() & chr( 10 ) );
+            }
+            // Attachments of failed specs
+            if ( listFindNoCase( "failed,error", local.thisSpec.status ) ) {
+                for ( local.thisAttachment in getSpecAttachments( local.thisSpec ) ) {
+                    writeOutput( tabsNext & "   Attachment: " & local.thisAttachment.name & " (" & local.thisAttachment.type & ") " & local.thisAttachment.path & " " & chr( 13 ) & chr( 10 ) );
+                }
             }
         }
         // Do we have nested suites

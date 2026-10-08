@@ -826,6 +826,15 @@ body {
 	overflow-wrap: anywhere;
 }
 
+.tb-spec__attachments {
+	flex: 1 1 100%;
+	margin: 0 0 0.2rem 1.6rem;
+	padding: 0;
+	list-style: none;
+	font-size: 0.84rem;
+	overflow-wrap: anywhere;
+}
+
 .tb-empty {
 	padding: 0.9rem 1rem;
 	color: var(--bs-secondary-color);
