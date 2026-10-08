@@ -59,13 +59,13 @@
 				<button
 					type="button"
 					class="tb-chip tb-chip--plain"
-					:aria-pressed="bundleStatus[ '#local.jsId#' ] === '#thisStatus.key#'"
-					@click="toggleBundleStatus( '#local.jsId#', '#thisStatus.key#' )"
+					:aria-pressed="bundleStatus[ $el.closest( '.tb-bundle' ).dataset.bundle ] === '#thisStatus.key#'"
+					@click="toggleBundleStatus( $el.closest( '.tb-bundle' ).dataset.bundle, '#thisStatus.key#' )"
 				>
 					<svg class="tb-icon" aria-hidden="true"><use href="##i-#thisStatus.icon#"/></svg> #thisStatus.label#
 				</button>
 			</cfloop>
-			<button type="button" class="btn btn-sm btn-link py-0" x-show="bundleStatus[ '#local.jsId#' ]" x-cloak @click="bundleStatus[ '#local.jsId#' ] = null">Reset</button>
+			<button type="button" class="btn btn-sm btn-link py-0" x-show="bundleStatus[ $el.closest( '.tb-bundle' ).dataset.bundle ]" x-cloak @click="bundleStatus[ $el.closest( '.tb-bundle' ).dataset.bundle ] = null">Reset</button>
 			<a
 				class="btn btn-sm btn-outline-secondary ms-auto"
 				href="#variables.helper.href( variables.helper.runURL( bundle = local.bundle.path ) )#"

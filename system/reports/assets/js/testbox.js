@@ -90,7 +90,6 @@ document.addEventListener( "alpine:init", function () {
 			},
 			toggleBundleStatus( bundle, status ) {
 				this.bundleStatus[ bundle ] = this.bundleStatus[ bundle ] === status ? null : status;
-				this.open[ bundle ] = true;
 			},
 			resetFilters() {
 				this.q = "";
@@ -110,14 +109,15 @@ document.addEventListener( "alpine:init", function () {
 				var q = this.q.trim().toLowerCase();
 				var statuses = this.statuses.slice();
 				var perBundle = Object.assign( {}, this.bundleStatus );
-				var active = q !== "" || statuses.length > 0 || Object.values( perBundle ).some( Boolean );
+				var globalActive = q !== "" || statuses.length > 0;
 				var shown = "[data-spec]:not([hidden]):not(.tb-dim)";
 
 				document.querySelectorAll( "[data-spec]" ).forEach( function ( spec ) {
 					var show = true;
 					if ( q && ( spec.dataset.search || "" ).indexOf( q ) < 0 ) show = false;
 					if ( show && statuses.length && statuses.indexOf( spec.dataset.status ) < 0 ) show = false;
-					var own = perBundle[ spec.dataset.bundle ];
+					var bundle = spec.closest( ".tb-bundle" );
+					var own = perBundle[ bundle ? bundle.dataset.bundle : spec.dataset.bundle ];
 					if ( show && own && own !== spec.dataset.status ) show = false;
 					if ( spec.hasAttribute( "data-dim" ) ) {
 						spec.classList.toggle( "tb-dim", !show );
@@ -130,23 +130,25 @@ document.addEventListener( "alpine:init", function () {
 				Array.from( document.querySelectorAll( ".tb-suite" ) )
 					.reverse()
 					.forEach( function ( suite ) {
-						suite.hidden = active && !suite.querySelector( shown );
+						var bundle = suite.closest( ".tb-bundle" );
+						var own = bundle && perBundle[ bundle.dataset.bundle ];
+						suite.hidden = ( globalActive || own ) && !suite.querySelector( shown );
 					} );
 
 				document.querySelectorAll( "[data-bundle].tb-bundle" ).forEach( function ( bundle ) {
 					var hasMatch = !!bundle.querySelector( shown );
-					bundle.hidden = active && !hasMatch;
+					bundle.hidden = globalActive && !hasMatch;
 					var empty = bundle.querySelector( ".tb-empty" );
-					if ( empty ) empty.hidden = !( active && !hasMatch );
+					if ( empty ) empty.hidden = !( ( globalActive || perBundle[ bundle.dataset.bundle ] ) && !hasMatch );
 				} );
 
 				document.querySelectorAll( ".tb-doc-nav a[data-bundle]" ).forEach( function ( link ) {
 					var target = document.querySelector( ".tb-bundle[data-bundle='" + link.dataset.bundle + "']" );
-					link.hidden = !!( target && target.hidden );
+					link.hidden = globalActive && !!( target && target.hidden );
 				} );
 
 				var none = document.getElementById( "tb-no-matches" );
-				if ( none ) none.hidden = !( active && !document.querySelector( ".tb-bundle:not([hidden])" ) );
+				if ( none ) none.hidden = !( globalActive && !document.querySelector( ".tb-bundle:not([hidden])" ) );
 			},
 
 			// ---- failures
