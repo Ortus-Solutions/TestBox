@@ -42,11 +42,11 @@
 	<cfif local.hasException || local.hasDebug>
 		<section class="card tb-bundle mt-3" aria-labelledby="bundle-title-#variables.helper.safeId( thisBundle.id )#">
 			<header class="card-header">
-				<h3 class="h6 m-0" id="bundle-title-#variables.helper.safeId( thisBundle.id )#">
+				<h3 class="h6 m-0"
+					id="bundle-title-#variables.helper.safeId( thisBundle.id )#"
+					title="Bundle #encodeForHtml( thisBundle.path )#"
+				>
 					#encodeForHtml( thisBundle.name )#
-					<cfif thisBundle.name != thisBundle.path>
-						<span class="tb-bundle__path">#encodeForHtml( thisBundle.path )#</span>
-					</cfif>
 				</h3>
 			</header>
 			<cfif local.hasException>

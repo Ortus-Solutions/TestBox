@@ -24,12 +24,10 @@
 				@click="toggle( '#local.jsId#' )"
 				:aria-expanded="isOpen( '#local.jsId#' )"
 				aria-controls="bundle-body-#local.id#"
+				title="Toggle bundle #encodeForHtml( local.bundle.path )#"
 			>
 				<svg class="tb-icon tb-chevron" :class="{ 'tb-chevron--open': isOpen( '#local.jsId#' ) }" aria-hidden="true"><use href="##i-chevron-right"/></svg>
 				<span>#encodeForHtml( local.bundle.name )#</span>
-				<cfif local.bundle.name != local.bundle.path>
-					<span class="tb-bundle__path">#encodeForHtml( local.bundle.path )#</span>
-				</cfif>
 			</button>
 		</h3>
 

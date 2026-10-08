@@ -716,12 +716,6 @@ body {
 	text-underline-offset: 3px;
 }
 
-.tb-bundle__path {
-	font: 400 0.76rem var(--bs-font-monospace);
-	color: var(--bs-secondary-color);
-	overflow-wrap: anywhere;
-}
-
 .tb-bundle__stats {
 	display: flex;
 	flex-wrap: wrap;
