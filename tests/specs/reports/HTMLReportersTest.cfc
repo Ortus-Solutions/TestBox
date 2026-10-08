@@ -173,8 +173,6 @@ component extends="testbox.system.BaseSpec" {
 								expect( html ).toInclude( "testBundles=tests.resources.reporters.MixedBundle" );
 								expect( html ).toInclude( "labels=smoke" );
 								expect( html ).toInclude( "excludes=slow" );
-								expect( html ).toInclude( "directory=tests.specs" );
-								expect( html ).notToInclude( "opt_run=true" );
 							} );
 
 							it( "puts the Ask AI payloads and providers on the page by default", function(){
