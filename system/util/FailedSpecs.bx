@@ -13,6 +13,9 @@
  * in beforeAll() or afterAll()) is a broken bundle, not a failed spec: it goes to `bundleErrors` and is
  * not rerun. Every array is empty when everything passed.
  *
+ * What failed comes from TestResult.getFailedTargets(), which every runner can use; this class only keeps it
+ * between two CLI runs. The web reporters need no file: their Run Failed link is built from the report.
+ *
  * BoxLang only: the BoxLang runner is the only caller.
  */
 class {
@@ -28,69 +31,37 @@ class {
 	 *
 	 * @return The absolute path of the file
 	 */
-	string function getFilePath( required string reportPath ) {
+	static string function getFilePath( required string reportPath ) {
 		return arguments.reportPath.reReplace( "[\\/]$", "" ) & "/" & static.FILE_NAME
 	}
 
 	/**
-	 * Collect the bundles and specs that failed or errored in a test run.
-	 *
-	 * @testResults The TestResult of the run
-	 *
-	 * @return A struct with `bundles` (bundle paths) and `specs` (spec ids) to rerun, and `bundleErrors`
-	 *         (paths of the bundles that failed outside of a spec, not rerun)
-	 */
-	struct function collect( required any testResults ) {
-		var bundles      = []
-		var specs        = []
-		var bundleErrors = []
-
-		for ( var bundle in arguments.testResults.getBundleStats() ) {
-			// A bundle that failed outside of a spec is broken: report it, do not rerun it
-			if ( !isSimpleValue( bundle.globalException ?: "" ) ) {
-				bundleErrors.append( bundle.path )
-				continue
-			}
-			if ( bundle.totalFail + bundle.totalError > 0 ) {
-				bundles.append( bundle.path )
-				collectSuiteSpecs( bundle.suiteStats, specs )
-			}
-		}
-
-		return {
-			"bundles"      : bundles,
-			"specs"        : specs,
-			"bundleErrors" : bundleErrors
-		}
-	}
-
-	/**
-	 * Write the failed bundles and specs of a run to the report directory.
+	 * Write what failed in a run to the report directory.
 	 *
 	 * @reportPath  The report directory, created when missing
 	 * @testResults The TestResult of the run
 	 *
-	 * @return The struct that was written
+	 * @return The struct that was written: `bundles`, `specs` and `bundleErrors`
 	 */
-	struct function write( required string reportPath, required any testResults ) {
-		var failed = collect( arguments.testResults )
+	static struct function write( required string reportPath, required any testResults ) {
+		var failed = arguments.testResults.getFailedTargets()
 		if ( !directoryExists( arguments.reportPath ) ) {
 			directoryCreate( arguments.reportPath )
 		}
-		fileWrite( getFilePath( arguments.reportPath ), jsonSerialize( failed ) )
+		fileWrite( static.getFilePath( arguments.reportPath ), jsonSerialize( failed ) )
 		return failed
 	}
 
 	/**
-	 * Read the failed bundles and specs of the last run.
+	 * Read what failed in the last run.
 	 *
 	 * @reportPath The report directory
 	 *
 	 * @return A struct with `bundles`, `specs` and `bundleErrors` arrays, all empty when the file is missing, invalid or empty
 	 */
-	struct function read( required string reportPath ) {
+	static struct function read( required string reportPath ) {
 		var empty    = { "bundles" : [], "specs" : [], "bundleErrors" : [] }
-		var filePath = getFilePath( arguments.reportPath )
+		var filePath = static.getFilePath( arguments.reportPath )
 		if ( !fileExists( filePath ) ) {
 			return empty
 		}
@@ -107,26 +78,6 @@ class {
 			"specs"        : isArray( data.specs ?: "" ) ? data.specs : [],
 			"bundleErrors" : isArray( data.bundleErrors ?: "" ) ? data.bundleErrors : []
 		}
-	}
-
-	/**
-	 * Add the ids of failed and errored specs of the suites, and their nested suites, to an array.
-	 *
-	 * @suiteStats The suite stats to walk
-	 * @specs      The array that receives the spec ids
-	 *
-	 * @return The specs array
-	 */
-	private array function collectSuiteSpecs( required array suiteStats, required array specs ) {
-		for ( var suite in arguments.suiteStats ) {
-			for ( var spec in suite.specStats ) {
-				if ( listFindNoCase( "failed,error", spec.status ) && !arguments.specs.findNoCase( spec.id ) ) {
-					arguments.specs.append( spec.id )
-				}
-			}
-			collectSuiteSpecs( suite.suiteStats, arguments.specs )
-		}
-		return arguments.specs
 	}
 
 }

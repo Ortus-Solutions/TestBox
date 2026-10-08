@@ -154,6 +154,31 @@ component extends="testbox.system.BaseSpec" {
 					expect( link ).toBe( "?testBundles=a%26b%3Dc" );
 				} );
 
+				it( "re-runs only the failed bundles and specs", function(){
+					var link = newHelper().failedRunURL( {
+						bundles      : [ "a.b", "c.d" ],
+						specs        : [ "id1", "id2" ],
+						bundleErrors : [ "e.f" ]
+					} );
+					expect( link ).toBe( "?testBundles=a.b%2Cc.d&testSpecs=id1%2Cid2" );
+				} );
+
+				it( "re-runs the failed bundles whole when the spec ids make the url too long", function(){
+					var link = newHelper().failedRunURL(
+						{
+							bundles      : [ "a.b" ],
+							specs        : [ "id1", "id2" ],
+							bundleErrors : []
+						},
+						20
+					);
+					expect( link ).toBe( "?testBundles=a.b" );
+				} );
+
+				it( "has no failed run url when nothing failed", function(){
+					expect( newHelper().failedRunURL( { bundles : [], specs : [], bundleErrors : [ "e.f" ] } ) ).toBe( "" );
+				} );
+
 				it( "prepares a url for an html attribute", function(){
 					expect( newHelper().href( "?a=1&b=2" ) ).toBe( "?a=1&amp;b=2" );
 				} );

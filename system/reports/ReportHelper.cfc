@@ -364,6 +364,26 @@ component accessors="true" {
 	}
 
 	/**
+	 * Build the url that re-runs only what failed or errored in this run, from TestResult.getFailedTargets().
+	 * The report is the state: no file is kept between runs. When the spec ids would make the url longer than
+	 * maxLength, the url runs the failed bundles whole instead. Bundles that failed outside of a spec are not
+	 * included: they are broken, not failed.
+	 *
+	 * @targets   The struct returned by TestResult.getFailedTargets()
+	 * @maxLength The longest url that still lists the spec ids
+	 *
+	 * @return The url, or an empty string when nothing failed
+	 */
+	string function failedRunURL( required struct targets, numeric maxLength = 2000 ){
+		if ( !arrayLen( arguments.targets.bundles ) ) {
+			return "";
+		}
+		var bundles   = "testBundles=#encodeQuery( arrayToList( arguments.targets.bundles ) )#";
+		var withSpecs = "?#bundles#&testSpecs=#encodeQuery( arrayToList( arguments.targets.specs ) )#";
+		return len( withSpecs ) <= arguments.maxLength ? withSpecs : "?#bundles#";
+	}
+
+	/**
 	 * Should a bundle be shown? A ?testBundles= list narrows the report to those bundles.
 	 *
 	 * @bundle The bundle stats

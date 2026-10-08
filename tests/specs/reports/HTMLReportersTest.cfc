@@ -138,6 +138,19 @@ component extends="testbox.system.BaseSpec" {
 								expect( html ).notToInclude( "class=""tb-verdict" & " tb-verdict--bad""" );
 							} );
 
+							it( "offers Run All and Run Failed when something failed", function(){
+								var html = runReporter( variables.mixed, reporter.cfc );
+								expect( html ).toInclude( "Run All" );
+								expect( html ).toInclude( "Run Failed (3)" );
+								expect( html ).toInclude( "testBundles=tests.resources.reporters.MixedBundle&amp;testSpecs=" );
+							} );
+
+							it( "offers only Run All when everything passed", function(){
+								var html = runReporter( variables.passing, reporter.cfc );
+								expect( html ).toInclude( "Run All" );
+								expect( html ).notToInclude( "Run Failed" );
+							} );
+
 							it( "offers filters by status in the verdict", function(){
 								var html = runReporter( variables.mixed, reporter.cfc );
 								for ( var thisStatus in [ "passed", "failed", "error", "skipped" ] ) {

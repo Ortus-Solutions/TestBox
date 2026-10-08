@@ -496,6 +496,56 @@ component accessors="true" {
 	}
 
 	/**
+	 * What failed in this run, to run only that again: the bundles and spec ids of failed or errored specs.
+	 * A bundle that failed outside of a spec (beforeAll(), afterAll(), a compile error) is broken, not
+	 * failed: it goes to `bundleErrors`, not to `bundles`. Every array is empty when everything passed.
+	 *
+	 * <pre>
+	 * var targets = results.getFailedTargets()
+	 * new testbox.system.TestBox( bundles = targets.bundles ).run( testBundles = targets.bundles, testSpecs = targets.specs )
+	 * </pre>
+	 *
+	 * @return A struct with `bundles` (bundle paths), `specs` (spec ids) and `bundleErrors` (bundle paths)
+	 */
+	struct function getFailedTargets(){
+		// Adobe passes arrays by value, so the recursion collects into a struct, which is shared by reference
+		var targets = { "bundles" : [], "specs" : [], "bundleErrors" : [] };
+		for ( var thisBundle in getBundleStats() ) {
+			if ( !isSimpleValue( thisBundle.globalException ?: "" ) ) {
+				arrayAppend( targets.bundleErrors, thisBundle.path );
+				continue;
+			}
+			if ( thisBundle.totalFail + thisBundle.totalError > 0 ) {
+				arrayAppend( targets.bundles, thisBundle.path );
+				collectFailedSpecs( thisBundle.suiteStats, targets );
+			}
+		}
+		return targets;
+	}
+
+	/**
+	 * Add the ids of the failed and errored specs of the suites, and of their nested suites, to targets.specs.
+	 *
+	 * @suiteStats The suite stats to walk
+	 * @targets    The struct whose specs array receives the ids
+	 */
+	private void function collectFailedSpecs( required array suiteStats, required struct targets ){
+		for ( var thisSuite in arguments.suiteStats ) {
+			for ( var thisSpec in thisSuite.specStats ) {
+				if (
+					listFindNoCase( "failed,error", thisSpec.status ) && !arrayFindNoCase(
+						arguments.targets.specs,
+						thisSpec.id
+					)
+				) {
+					arrayAppend( arguments.targets.specs, thisSpec.id );
+				}
+			}
+			collectFailedSpecs( thisSuite.suiteStats, arguments.targets );
+		}
+	}
+
+	/**
 	 * Get a flat representation of this result.
 	 *
 	 * @includeDebugBuffer Include the debug buffer or not, by default we strip it out

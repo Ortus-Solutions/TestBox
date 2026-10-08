@@ -67,6 +67,7 @@
  * For example, to pass a `skip` option to the runner, you would do `--runner-skip=true`
  */
 import java.nio.file.Paths
+import testbox.system.util.FailedSpecs
 
 class{
 
@@ -227,8 +228,7 @@ class{
 		// --failed: only run what failed or errored in the last run
 		var runFailedOnly = options[ "failed" ] ?: false
 		if( isBoolean( runFailedOnly ) && runFailedOnly ){
-			var failedSpecs = new testbox.system.util.FailedSpecs()
-			var lastFailed  = failedSpecs.read( afterRunArgs.reportPath )
+			var lastFailed = FailedSpecs::read( afterRunArgs.reportPath )
 			// Bundles that failed outside of a spec are broken, not flaky: they are reported, never rerun
 			if( lastFailed.bundleErrors.len() ){
 				println( variables.consoleUtil.color( "bold+red", "Not rerun, #lastFailed.bundleErrors.len()# bundle(s) failed outside of a spec in the last run: fix them, then run them directly:" ) )
@@ -237,7 +237,7 @@ class{
 				}
 			}
 			if( !lastFailed.bundles.len() ){
-				println( "No failed tests recorded in [#failedSpecs.getFilePath( afterRunArgs.reportPath )#], nothing to run." )
+				println( "No failed tests recorded in [#FailedSpecs::getFilePath( afterRunArgs.reportPath )#], nothing to run." )
 				return
 			}
 			println( "Running the #lastFailed.bundles.len()# bundle(s) that failed in the last run." )
@@ -308,7 +308,7 @@ class{
 		}
 
 		// Remember what failed, for --failed
-		new testbox.system.util.FailedSpecs().write( afterRunArgs.reportPath, testResults )
+		FailedSpecs::write( afterRunArgs.reportPath, testResults )
 
 		// WRITE THE REPORTS
 		if( afterRunArgs.writeReport ){
