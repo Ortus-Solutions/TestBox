@@ -23,9 +23,9 @@
 							type="button"
 							class="tb-shot__open"
 							@click="zoom( $event )"
-							title="View #encodeForHtmlAttribute( thisView.name )# full size"
+							title="View #encodeForHtml( thisView.name )# full size"
 						>
-							<img src="#thisView.src#" alt="#encodeForHtmlAttribute( thisView.name )#" loading="lazy">
+							<img src="#thisView.src#" alt="#encodeForHtml( thisView.name )#" loading="lazy">
 						</button>
 						<figcaption>#encodeForHtml( thisView.name )#</figcaption>
 					</figure>
@@ -38,16 +38,16 @@
 				<cfif !( local.inline && len( thisView.src ) )>
 				<li>
 					<cfif thisView.kind == "image" && len( thisView.src ) && !local.inline>
-						<a href="##failure-#encodeForHtmlAttribute( arguments.data.spec.id )#" title="#encodeForHtmlAttribute( thisView.path )#">#encodeForHtml( thisView.name )#</a>
+						<a href="##failure-#encodeForHtml( arguments.data.spec.id )#" title="#encodeForHtml( thisView.path )#">#encodeForHtml( thisView.name )#</a>
 					<cfelse>
-						<a href="#encodeForHtmlAttribute( thisView.href )#" title="#encodeForHtmlAttribute( thisView.path )#">#encodeForHtml( thisView.name )#</a>
+						<a href="#encodeForHtml( thisView.href )#" title="#encodeForHtml( thisView.path )#">#encodeForHtml( thisView.name )#</a>
 					</cfif>
 					<span class="tb-spec__ms">(#encodeForHtml( thisView.type )#)</span>
 					<cfif len( thisView.command )>
 						<button
 							type="button"
 							class="btn btn-link btn-sm p-0 align-baseline"
-							@click="copy( #encodeForHtmlAttribute( serializeJSON( thisView.command ) )#, 'Command copied: run it to open the trace.' )"
+							@click="copy( #encodeForHtml( serializeJSON( thisView.command ) )#, 'Command copied: run it to open the trace.' )"
 						>Copy show-trace command</button>
 					</cfif>
 				</li>
