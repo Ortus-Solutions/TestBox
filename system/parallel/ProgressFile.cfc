@@ -66,7 +66,7 @@ component extends="testbox.system.util.StreamingService" {
 	numeric function countSpecs( required array suites ){
 		var total = 0;
 		for ( var suite in arguments.suites ) {
-			total += ( suite.specs ?: [] ).len() + countSpecs( suite.suites ?: [] );
+			total += arrayLen( suite.specs ?: [] ) + countSpecs( suite.suites ?: [] );
 		}
 		return total;
 	}

@@ -6,7 +6,7 @@ component {
 		variables.fileSystemUtil.createMapping( "/testbox", root )
 		variables.fileSystemUtil.createMapping( "/tests", root & "/tests" )
 		var result = new testbox.system.TestBox(
-			bundles = "tests.parallel.CoordinatorSpec,tests.parallel.ProgressFileSpec,tests.parallel.RunnerSpec,tests.parallel.ShardPlanSpec,tests.parallel.WorkerProviderSpec"
+			bundles = "tests.specs.parallel.CoordinatorSpec,tests.specs.parallel.ProgressFileSpec,tests.specs.parallel.RunnerSpec,tests.specs.parallel.ShardPlanSpec,tests.specs.parallel.WorkerProviderSpec"
 		).runRaw()
 		variables.print
 			.line(

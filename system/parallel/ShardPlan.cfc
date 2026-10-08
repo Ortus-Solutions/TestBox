@@ -220,7 +220,8 @@ component {
 				)
 			}
 			received[ index ] = true
-			var actual        = ( report.bundleStats ?: [] ).map( function( bundle ){
+			var reportBundles = report.bundleStats ?: []
+			var actual        = reportBundles.map( function( bundle ){
 				return bundle.path
 			} )
 			actual.sort( "text" )
@@ -240,9 +241,9 @@ component {
 					message = "Coverage recording aggregation is not supported."
 				)
 			}
-			complete = complete && ( shard.complete ?: false ) && !( report.parallel.cancelled ?: false ) && !(
+			complete = complete && ( shard.complete ?: false ) && !( report.parallel.cancelled ?: false ) && !arrayLen(
 				report.parallel.errors ?: []
-			).len()
+			)
 			for (
 				var key in [
 					"totalBundles",

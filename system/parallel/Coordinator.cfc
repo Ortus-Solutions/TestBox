@@ -172,7 +172,7 @@ component {
 							"totalPass"    : result.report.totalPass ?: 0,
 							"totalFail"    : result.report.totalFail ?: 0,
 							"totalError"   : result.report.totalError ?: 0,
-							"totalBundles" : ( result.report.bundleStats ?: [] ).len(),
+							"totalBundles" : arrayLen( result.report.bundleStats ?: [] ),
 							"totalSkipped" : result.report.totalSkipped ?: 0,
 							"hasReport"    : result.report.keyExists( "bundleStats" ),
 							"seconds"      : result.seconds ?: 0
