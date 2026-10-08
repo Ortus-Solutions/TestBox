@@ -72,14 +72,15 @@ if( len( url.directory ) ){
 
 // Parallel workers write existing lifecycle callbacks to their private event transport.
 parallelCallbacks = {}
-parallelSelection = getSystemSetting( 'TESTBOX_PARALLEL_SELECTION', '' )
+parallelEnv = new testbox.system.util.Env()
+parallelSelection = parallelEnv.getSystemSetting( 'TESTBOX_PARALLEL_SELECTION', '' )
 if ( len( parallelSelection ) ) {
     selection = deserializeJSON( fileRead( parallelSelection ) )
     for ( key in [ 'labels', 'excludes', 'testSuites', 'testSpecs' ] ) {
         url[ key ] = selection[ key ] ?: ''
     }
 }
-parallelProgress = getSystemSetting( 'TESTBOX_PARALLEL_PROGRESS', '' )
+parallelProgress = parallelEnv.getSystemSetting( 'TESTBOX_PARALLEL_PROGRESS', '' )
 if ( len( parallelProgress ) ) {
     progress = new testbox.system.parallel.ProgressFile( parallelProgress )
     parallelCallbacks = progress.createStreamingCallbacks()
