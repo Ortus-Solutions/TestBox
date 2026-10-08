@@ -1,0 +1,99 @@
+/**
+ * The static ledger of testbox.system.browser.BrowserSupport, with fake managers: no browser needed.
+ * BoxLang only, like browser specs.
+ */
+import testbox.system.browser.BrowserSupport;
+
+class extends="testbox.system.BaseSpec" {
+
+	function run() {
+		describe( "BrowserSupport ledger", () => {
+			beforeEach( () => {
+				variables.closed = { count : 0 }
+				variables.keys   = []
+			} )
+
+			afterEach( () => {
+				for ( var key in variables.keys ) {
+					BrowserSupport::untrack( key )
+				}
+			} )
+
+			it( "keeps the managers of the current run", () => {
+				track( fakeManager() )
+				BrowserSupport::closeStale()
+				expect( closed.count ).toBe( 0 )
+			} )
+
+			it( "closes the managers of an earlier run on the same thread", () => {
+				var before = BrowserSupport::trackedCount()
+				track( fakeManager(), "earlier-" & createUUID() )
+				BrowserSupport::closeStale()
+				expect( closed.count ).toBe( 1 )
+				expect( BrowserSupport::trackedCount() ).toBe( before )
+			} )
+
+			it( "closes the managers of a thread that ended", () => {
+				track( fakeManager(), "ended-" & createUUID(), createObject( "java", "java.lang.Thread" ).init() )
+				BrowserSupport::closeStale()
+				expect( closed.count ).toBe( 1 )
+			} )
+
+			it( "keeps the managers of another thread that is still alive", () => {
+				var holder = {}
+				var future = runAsync( () => {
+					holder.ownerThread = threadCurrent()
+				} )
+				future.get()
+				// A pooled thread: alive after its task, like a web server thread between requests
+				expect( holder.ownerThread.isAlive() ).toBeTrue()
+				track( fakeManager(), "other-" & createUUID(), holder.ownerThread )
+				BrowserSupport::closeStale()
+				expect( closed.count ).toBe( 0 )
+			} )
+
+			it( "does not close a manager its owner untracked", () => {
+				var key = BrowserSupport::track( fakeManager(), "earlier-" & createUUID() )
+				BrowserSupport::untrack( key )
+				BrowserSupport::closeStale()
+				expect( closed.count ).toBe( 0 )
+			} )
+
+			it( "closes the other managers when one fails to close", () => {
+				track(
+					{
+						close : () => {
+							throw( type = "FakeManager.Broken", message = "driver gone" )
+						}
+					},
+					"earlier-" & createUUID()
+				)
+				track( fakeManager(), "earlier-" & createUUID() )
+				expect( BrowserSupport::closeStale() ).toBe( 2 )
+				expect( closed.count ).toBe( 1 )
+			} )
+		} )
+	}
+
+	/**
+	 * Track a fake manager and remember its key, so afterEach() untracks it.
+	 */
+	private function track( required any manager, string runId, any ownerThread ) {
+		var key = BrowserSupport::track( argumentCollection = arguments )
+		variables.keys.append( key )
+		return key
+	}
+
+	/**
+	 * A fake manager that counts its close() calls in variables.closed.
+	 */
+	private struct function fakeManager() {
+		var counter = variables.closed
+		return {
+			close : () => {
+				counter.count++
+			}
+		}
+	}
+
+}

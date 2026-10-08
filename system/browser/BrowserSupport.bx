@@ -18,8 +18,18 @@
  *
  * BoxLang only: bx-playwright runs on BoxLang. When the engine is not BoxLang or the module is not
  * installed, browse() skips the running spec with the reason.
+ *
+ * Cleanup: close() (BrowserSpec runs it after the bundle) closes the bundle browser. When it never runs, because
+ * an afterAll() threw or the request aborted, the browser stays in a static ledger, and the next browser opened
+ * by a later run closes it. A run is a request: nested TestBox runs in the same request share it. bx-playwright
+ * closes whatever is left when the module unloads or the JVM stops.
  */
 class {
+
+	// Open bundle managers, by key: { manager, runId, ownerThread }
+	static {
+		ledger = {}
+	}
 
 	/**
 	 * Constructor
@@ -32,7 +42,7 @@ class {
 		variables.spec    = arguments.spec
 		variables.manager     = nullValue()
 		variables.lockID      = createUUID()
-		variables.registryKey = ""
+		variables.ledgerKey   = ""
 		return this
 	}
 
@@ -74,9 +84,10 @@ class {
 					if ( !isAvailable() ) {
 						variables.spec.skip( getUnavailableReason() )
 					}
-					variables.manager = playwright( getProfiles(), getSettings() )
-					// The run closes it if close() never runs: a failed afterAll(), an aborted request
-					variables.registryKey = new testbox.system.browser.BrowserRegistry().register( variables.manager )
+					// Browsers an earlier run left open (a failed afterAll(), an aborted request) close first
+					static.closeStale()
+					variables.manager   = playwright( getProfiles(), getSettings() )
+					variables.ledgerKey = static.track( variables.manager )
 				}
 			}
 		}
@@ -213,8 +224,8 @@ class {
 	 */
 	function close() {
 		if ( !isNull( variables.manager ) ) {
-			new testbox.system.browser.BrowserRegistry().release( variables.registryKey )
-			variables.registryKey = ""
+			static.untrack( variables.ledgerKey )
+			variables.ledgerKey = ""
 			try {
 				variables.manager.close()
 			} finally {
@@ -222,6 +233,97 @@ class {
 			}
 		}
 		return this
+	}
+
+	/**
+	 * Track an open manager in the ledger.
+	 *
+	 * @manager     The bx-playwright manager
+	 * @runId       The run that opened it, the current run by default
+	 * @ownerThread The thread of that run, the current thread by default
+	 *
+	 * @return The ledger key, to pass to untrack()
+	 */
+	static string function track(
+		required any manager,
+		string runId     = static.currentRunId(),
+		any ownerThread  = threadCurrent()
+	) {
+		var key = createUUID()
+		lock name="testbox-browser-ledger" type="exclusive" timeout="30" {
+			static.ledger[ key ] = {
+				"manager"     : arguments.manager,
+				"runId"       : arguments.runId,
+				"ownerThread" : arguments.ownerThread
+			}
+		}
+		return key
+	}
+
+	/**
+	 * Stop tracking a manager its owner closed.
+	 *
+	 * @key The key returned by track()
+	 */
+	static function untrack( required string key ) {
+		if ( len( arguments.key ) ) {
+			lock name="testbox-browser-ledger" type="exclusive" timeout="30" {
+				static.ledger.delete( arguments.key )
+			}
+		}
+	}
+
+	/**
+	 * Close the managers whose run is over: their thread ended, or it is the current thread and it now runs
+	 * another request. Managers of the current run, and of other threads still alive, are kept.
+	 *
+	 * @return The number of managers closed
+	 */
+	static numeric function closeStale() {
+		var runId         = static.currentRunId()
+		var currentThread = threadCurrent()
+		var stale         = []
+		lock name="testbox-browser-ledger" type="exclusive" timeout="30" {
+			for ( var key in static.ledger.keyArray() ) {
+				var entry = static.ledger[ key ]
+				if (
+					!entry.ownerThread.isAlive() ||
+					( entry.ownerThread.equals( currentThread ) && entry.runId != runId )
+				) {
+					stale.append( entry.manager )
+					static.ledger.delete( key )
+				}
+			}
+		}
+		for ( var manager in stale ) {
+			try {
+				manager.close()
+			} catch ( any e ) {
+				// Already closed or its driver is gone: keep closing the rest
+			}
+		}
+		return stale.len()
+	}
+
+	/**
+	 * How many managers the ledger tracks, for all runs.
+	 *
+	 * @return The number of open managers tracked
+	 */
+	static numeric function trackedCount() {
+		return static.ledger.count()
+	}
+
+	/**
+	 * The id of the current run: one per request, shared by nested TestBox runs.
+	 *
+	 * @return The run id
+	 */
+	static string function currentRunId() {
+		if ( !request.keyExists( "testboxBrowserRunId" ) ) {
+			request.testboxBrowserRunId = createUUID()
+		}
+		return request.testboxBrowserRunId
 	}
 
 	/**

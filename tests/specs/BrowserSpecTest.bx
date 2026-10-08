@@ -2,6 +2,8 @@
  * testbox.system.BrowserSpec end to end against pages built with setContent() and file URLs: no web server.
  * Skipped when bx-playwright is not installed.
  */
+import testbox.system.browser.BrowserSupport;
+
 class extends="testbox.system.BrowserSpec" {
 
 	function beforeAll() {
@@ -267,7 +269,7 @@ class extends="testbox.system.BrowserSpec" {
 			} )
 
 			describe( "a BrowserSpec bundle whose afterAll() throws", () => {
-				it( "still closes the browser when the run ends", () => {
+				it( "leaves the browser to the next run, which closes it", () => {
 					request.browserAfterAllFixture = {}
 					var results = new testbox.system.TestBox(
 						bundles = "tests.resources.browser.BrowserAfterAllErrorFixture",
@@ -275,7 +277,20 @@ class extends="testbox.system.BrowserSpec" {
 					).runRaw()
 
 					expect( isSimpleValue( results.getBundleStats()[ 1 ].globalException ) ).toBeFalse()
-					expect( request.browserAfterAllFixture.manager.isStarted() ).toBeFalse()
+					// Same request: the run is still this one, so the browser stays open
+					var manager = request.browserAfterAllFixture.manager
+					BrowserSupport::closeStale()
+					expect( manager.isStarted() ).toBeTrue()
+
+					// A later request on this thread is a new run: it closes the leftover browser
+					var runId = request.testboxBrowserRunId
+					try {
+						request.testboxBrowserRunId = createUUID()
+						expect( BrowserSupport::closeStale() ).toBeGTE( 1 )
+						expect( manager.isStarted() ).toBeFalse()
+					} finally {
+						request.testboxBrowserRunId = runId
+					}
 				} )
 			} )
 		} )

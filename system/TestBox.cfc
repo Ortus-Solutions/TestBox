@@ -454,47 +454,40 @@ component accessors="true" {
 
 		coverageService.beginCapture();
 
-		// Close every browser the bundles open when the run ends: a try/finally without catch, so it also runs on abort
-		var browserRegistry = new testbox.system.browser.BrowserRegistry();
-		var browserRunId    = browserRegistry.startRun();
-		try {
-			// iterate and run the test bundles
-			for ( var thisBundlePath in variables.bundles ) {
-				// Skip interfaces, they are not testable
-				var thisMD = server.keyExists( "boxlang" ) ? getClassMetadata( thisBundlePath ) : getComponentMetadata(
-					thisBundlePath
-				);
-				if ( thisMD.type eq "interface" ) {
-					continue;
-				}
+		// iterate and run the test bundles
+		for ( var thisBundlePath in variables.bundles ) {
+			// Skip interfaces, they are not testable
+			var thisMD = server.keyExists( "boxlang" ) ? getClassMetadata( thisBundlePath ) : getComponentMetadata(
+				thisBundlePath
+			);
+			if ( thisMD.type eq "interface" ) {
+				continue;
+			}
 
-				// Execute Bundle
-				testBundle(
-					bundlePath  = thisBundlePath,
-					testResults = results,
-					callbacks   = arguments.callbacks
-				);
+			// Execute Bundle
+			testBundle(
+				bundlePath  = thisBundlePath,
+				testResults = results,
+				callbacks   = arguments.callbacks
+			);
 
-				// Eager Failures on Bundle?
-				if ( arguments.eagerFailure ) {
-					var failuresDetected = results
-						.getBundleStats()
-						// Get stats for running bundle
-						.filter( function( item ){
-							return ( item.path == thisBundlePath ? true : false );
-						} )
-						.reduce( function( result, item ){
-							return ( item.totalError + item.totalFail ) > 0;
-						}, false );
+			// Eager Failures on Bundle?
+			if ( arguments.eagerFailure ) {
+				var failuresDetected = results
+					.getBundleStats()
+					// Get stats for running bundle
+					.filter( function( item ){
+						return ( item.path == thisBundlePath ? true : false );
+					} )
+					.reduce( function( result, item ){
+						return ( item.totalError + item.totalFail ) > 0;
+					}, false );
 
-					if ( failuresDetected ) {
-						// Hard skip iterations
-						break;
-					}
+				if ( failuresDetected ) {
+					// Hard skip iterations
+					break;
 				}
 			}
-		} finally {
-			browserRegistry.endRun( browserRunId );
 		}
 
 		// mark end of testing bundles

@@ -1,6 +1,6 @@
 /**
  * Fixture for BrowserSpecTest: a BrowserSpec bundle whose afterAll() throws after a spec opened the browser,
- * so the BrowserSpec closeBrowser() afterAll method never runs. The TestBox run must still close the browser.
+ * so the BrowserSpec closeBrowser() afterAll method never runs. The next run must close the browser.
  */
 class extends="testbox.system.BrowserSpec" {
 
