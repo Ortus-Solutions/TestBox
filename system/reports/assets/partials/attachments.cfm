@@ -5,7 +5,8 @@
 	failure card that already shows them)
 --->
 <cfset local.views  = variables.helper.attachments( arguments.data.spec )>
-<cfset local.inline = arguments.data.inline ?: true>
+<!--- not ?: : Adobe treats a false inline as missing --->
+<cfset local.inline = !structKeyExists( arguments.data, "inline" ) || arguments.data.inline>
 <cfset local.shots  = []>
 <cfloop array="#local.views#" item="thisView">
 	<cfif local.inline && len( thisView.src )>
