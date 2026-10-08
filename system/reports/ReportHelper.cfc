@@ -333,8 +333,8 @@ component accessors="true" {
 
 	/**
 	 * Build the url that re-runs the report scoped to a bundle, suite or spec.
-	 * It is a plain link to the runner, so the address bar always holds the run you are looking at and a refresh re-runs it.
-	 * Everything that shaped the original run (directory, labels, excludes, reporter...) is carried over.
+	 * It is a plain link to the runner, so a refresh re-runs the requested target.
+	 * Only the requested target is included; all other runner options use their defaults.
 	 *
 	 * @bundle The bundle path to run
 	 * @suite  The suite name to run
@@ -350,25 +350,6 @@ component accessors="true" {
 			return "?";
 		}
 
-		// options that still apply to a targeted rerun
-		for (
-			var thisKey in [
-				"recurse",
-				"labels",
-				"excludes",
-				"editor",
-				"bundlesPattern"
-			]
-		) {
-			if (
-				structKeyExists( variables.urlScope, thisKey )
-				&& len( variables.urlScope[ thisKey ] )
-				&& !( thisKey == "editor" && variables.urlScope[ thisKey ] == "vscode" )
-			) {
-				params.append( "#thisKey#=#encodeQuery( variables.urlScope[ thisKey ] )#" );
-			}
-		}
-
 		if ( len( arguments.bundle ) ) {
 			params.append( "testBundles=#encodeQuery( arguments.bundle )#" );
 		}
@@ -377,10 +358,6 @@ component accessors="true" {
 		}
 		if ( len( arguments.spec ) ) {
 			params.append( "testSpecs=#encodeQuery( arguments.spec )#" );
-		}
-
-		if ( len( arguments.bundle ) ) {
-			params.append( "coverageEnabled=false" );
 		}
 
 		return "?" & arrayToList( params, "&" );

@@ -160,7 +160,7 @@ component extends="testbox.system.BaseSpec" {
 								expect( html ).toInclude( "class=""tb-verdict tb-verdict--bad""" );
 							} );
 
-							it( "links back to the runner for a bundle, carrying labels and excludes", function(){
+							it( "links back to the runner for a bundle without runner options", function(){
 								var html = renderWithUrl(
 									variables.mixed,
 									reporter.cfc,
@@ -171,8 +171,10 @@ component extends="testbox.system.BaseSpec" {
 									}
 								);
 								expect( html ).toInclude( "testBundles=tests.resources.reporters.MixedBundle" );
-								expect( html ).toInclude( "labels=smoke" );
-								expect( html ).toInclude( "excludes=slow" );
+								expect( html ).notToInclude( "labels=smoke" );
+								expect( html ).notToInclude( "excludes=slow" );
+								expect( html ).notToInclude( "directory=tests.specs" );
+								expect( html ).notToInclude( "coverageEnabled=false" );
 							} );
 
 							it( "puts the Ask AI payloads and providers on the page by default", function(){

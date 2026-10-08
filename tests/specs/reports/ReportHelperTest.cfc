@@ -113,10 +113,9 @@ component extends="testbox.system.BaseSpec" {
 						expect( helper.runURL() ).toBe( "?" );
 				} );
 
-				it( "scopes to a bundle and skips coverage", function(){
+				it( "scopes to only the selected bundle", function(){
 					var link = newHelper().runURL( bundle = "tests.specs.FooTest" );
-					expect( link ).toInclude( "testBundles=tests.specs.FooTest" );
-					expect( link ).toInclude( "coverageEnabled=false" );
+					expect( link ).toBe( "?testBundles=tests.specs.FooTest" );
 				} );
 
 				it( "scopes to a suite and a spec", function(){
@@ -125,11 +124,12 @@ component extends="testbox.system.BaseSpec" {
 						suite  = "my suite",
 						spec   = "abc123"
 					);
+					expect( link ).toInclude( "testBundles=tests.specs.FooTest" );
 					expect( link ).toInclude( "testSuites=my%20suite" );
 					expect( link ).toInclude( "testSpecs=abc123" );
 				} );
 
-				it( "carries over applicable options for a targeted run", function(){
+				it( "does not carry runner options into a targeted run", function(){
 					var link = newHelper( {
 						method         : "runRemote",
 						output         : "raw",
@@ -138,16 +138,10 @@ component extends="testbox.system.BaseSpec" {
 						excludes       : "slow",
 						reporter       : "simple",
 						recurse        : "true",
-						bundlesPattern : "*Spec*.cfc|*Test*.cfc"
+						bundlesPattern : "*Spec*.cfc|*Test*.cfc",
+						coverageEnabled : "true"
 					} ).runURL( bundle = "a.b" );
-					expect( link ).notToInclude( "method=runRemote" );
-					expect( link ).notToInclude( "output=raw" );
-					expect( link ).notToInclude( "directory=tests.specs" );
-					expect( link ).notToInclude( "reporter=simple" );
-					expect( link ).toInclude( "labels=smoke%2Capi" );
-					expect( link ).toInclude( "excludes=slow" );
-					expect( link ).toInclude( "recurse=true" );
-					expect( link ).toInclude( "bundlesPattern=*Spec*.cfc%7C*Test*.cfc" );
+					expect( link ).toBe( "?testBundles=a.b" );
 				} );
 
 				it( "leaves out empty params and the default editor", function(){
@@ -155,13 +149,9 @@ component extends="testbox.system.BaseSpec" {
 					expect( link ).toBe( "?" );
 				} );
 
-				it( "keeps a non default editor", function(){
-						expect( newHelper( { editor : "sublime" } ).runURL( bundle = "a.b" ) ).toInclude( "editor=sublime" );
-				} );
-
 				it( "encodes values so they can not break out of the query", function(){
-						var link = newHelper( { labels : "a&b=c" } ).runURL( bundle = "a.b" );
-					expect( link ).toInclude( "labels=a%26b%3Dc" );
+					var link = newHelper().runURL( bundle = "a&b=c" );
+					expect( link ).toBe( "?testBundles=a%26b%3Dc" );
 				} );
 
 				it( "prepares a url for an html attribute", function(){
