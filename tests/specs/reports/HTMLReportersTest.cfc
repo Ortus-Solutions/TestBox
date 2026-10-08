@@ -171,10 +171,10 @@ component extends="testbox.system.BaseSpec" {
 									}
 								);
 								expect( html ).toInclude( "testBundles=tests.resources.reporters.MixedBundle" );
-								expect( html ).notToInclude( "labels=smoke" );
-								expect( html ).notToInclude( "excludes=slow" );
-								expect( html ).notToInclude( "directory=tests.specs" );
-								expect( html ).notToInclude( "coverageEnabled=false" );
+								expect( html ).notToInclude( "labels=" & "smoke" );
+								expect( html ).notToInclude( "excludes=" & "slow" );
+								expect( html ).notToInclude( "directory=" & "tests.specs" );
+								expect( html ).notToInclude( "coverageEnabled=" & "false" );
 							} );
 
 							it( "puts the Ask AI payloads and providers on the page by default", function(){
