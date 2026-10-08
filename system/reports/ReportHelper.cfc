@@ -861,13 +861,12 @@ component accessors="true" {
 	/**
 	 * The files attached to a spec, ready to render. Images up to the inlineImageMaxKB option are
 	 * embedded as data URIs: a page served over http cannot open file:// links, and a saved report
-	 * keeps its screenshots.
+	 * keeps its screenshots. Each view has a kind (image, video, trace or file), the src of an
+	 * embedded image and the command that opens a trace, both empty when they do not apply.
 	 *
 	 * @spec The spec stats
 	 *
-	 * @return An array of { name, type, path, kind, href, src, command } structs. kind is image, video,
-	 *         trace or file. src is the data URI of an embedded image, or an empty string. command is the
-	 *         command that opens a trace, or an empty string.
+	 * @return An array of { name, type, path, kind, href, src, command } structs
 	 */
 	array function attachments( required struct spec ){
 		var views = [];
@@ -890,8 +889,12 @@ component accessors="true" {
 		var path      = arguments.attachment.path ?: "";
 		var type      = lCase( arguments.attachment.type ?: "" );
 		var extension = lCase( listLast( getFileFromPath( path ), "." ) );
-		var href      = len( path ) ? createObject( "java", "java.io.File" ).init( path ).toURI().toString() : "";
-		var view      = {
+		var href      = "";
+		if ( len( path ) ) {
+			var file = createObject( "java", "java.io.File" ).init( path );
+			href     = file.toURI().toString();
+		}
+		var view = {
 			"name"    : arguments.attachment.name ?: getFileFromPath( path ),
 			"type"    : type,
 			"path"    : path,
