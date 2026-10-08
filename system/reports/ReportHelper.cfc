@@ -346,17 +346,16 @@ component accessors="true" {
 		string spec   = ""
 	){
 		var params = [];
+		if ( !len( arguments.bundle ) && !len( arguments.suite ) && !len( arguments.spec ) ) {
+			return "?";
+		}
 
-		// whatever shaped the current run
+		// options that still apply to a targeted rerun
 		for (
 			var thisKey in [
-				"method",
-				"output",
-				"directory",
 				"recurse",
 				"labels",
 				"excludes",
-				"reporter",
 				"editor",
 				"bundlesPattern"
 			]
@@ -382,10 +381,6 @@ component accessors="true" {
 
 		if ( len( arguments.bundle ) ) {
 			params.append( "coverageEnabled=false" );
-		}
-
-		if ( !arrayLen( params ) ) {
-			return "";
 		}
 
 		return "?" & arrayToList( params, "&" );

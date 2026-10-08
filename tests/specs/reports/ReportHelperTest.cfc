@@ -102,8 +102,15 @@ component extends="testbox.system.BaseSpec" {
 			} );
 
 			describe( "run links", function(){
-				it( "re-runs everything with no scope", function(){
-					expect( newHelper().runURL() ).toBe( "" );
+					it( "re-runs everything without carrying current runner arguments", function(){
+						var helper = newHelper( {
+							method         : "runRemote",
+							directory      : "tests.specs",
+							recurse        : "true",
+							reporter       : "simple",
+							bundlesPattern : "*Spec*.cfc|*Test*.cfc"
+						} );
+						expect( helper.runURL() ).toBe( "?" );
 				} );
 
 				it( "scopes to a bundle and skips coverage", function(){
@@ -122,32 +129,38 @@ component extends="testbox.system.BaseSpec" {
 					expect( link ).toInclude( "testSpecs=abc123" );
 				} );
 
-				it( "carries over what shaped the original run", function(){
+				it( "carries over applicable options for a targeted run", function(){
 					var link = newHelper( {
-						directory : "tests.specs",
-						labels    : "smoke,api",
-						excludes  : "slow",
-						reporter  : "dot",
-						recurse   : "true"
+						method         : "runRemote",
+						output         : "raw",
+						directory      : "tests.specs",
+						labels         : "smoke,api",
+						excludes       : "slow",
+						reporter       : "simple",
+						recurse        : "true",
+						bundlesPattern : "*Spec*.cfc|*Test*.cfc"
 					} ).runURL( bundle = "a.b" );
-					expect( link ).toInclude( "directory=tests.specs" );
+					expect( link ).notToInclude( "method=runRemote" );
+					expect( link ).notToInclude( "output=raw" );
+					expect( link ).notToInclude( "directory=tests.specs" );
+					expect( link ).notToInclude( "reporter=simple" );
 					expect( link ).toInclude( "labels=smoke%2Capi" );
 					expect( link ).toInclude( "excludes=slow" );
-					expect( link ).toInclude( "reporter=dot" );
 					expect( link ).toInclude( "recurse=true" );
+					expect( link ).toInclude( "bundlesPattern=*Spec*.cfc%7C*Test*.cfc" );
 				} );
 
 				it( "leaves out empty params and the default editor", function(){
 					var link = newHelper( { directory : "", labels : "", editor : "vscode" } ).runURL();
-					expect( link ).toBe( "" );
+					expect( link ).toBe( "?" );
 				} );
 
 				it( "keeps a non default editor", function(){
-					expect( newHelper( { editor : "sublime" } ).runURL() ).toInclude( "editor=sublime" );
+						expect( newHelper( { editor : "sublime" } ).runURL( bundle = "a.b" ) ).toInclude( "editor=sublime" );
 				} );
 
 				it( "encodes values so they can not break out of the query", function(){
-					var link = newHelper( { labels : "a&b=c" } ).runURL();
+						var link = newHelper( { labels : "a&b=c" } ).runURL( bundle = "a.b" );
 					expect( link ).toInclude( "labels=a%26b%3Dc" );
 				} );
 
