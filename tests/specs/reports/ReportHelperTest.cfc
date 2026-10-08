@@ -102,15 +102,15 @@ component extends="testbox.system.BaseSpec" {
 			} );
 
 			describe( "run links", function(){
-					it( "re-runs everything without carrying current runner arguments", function(){
-						var helper = newHelper( {
-							method         : "runRemote",
-							directory      : "tests.specs",
-							recurse        : "true",
-							reporter       : "simple",
-							bundlesPattern : "*Spec*.cfc|*Test*.cfc"
-						} );
-						expect( helper.runURL() ).toBe( "?" );
+				it( "re-runs everything without carrying current runner arguments", function(){
+					var helper = newHelper( {
+						method         : "runRemote",
+						directory      : "tests.specs",
+						recurse        : "true",
+						reporter       : "simple",
+						bundlesPattern : "*Spec*.cfc|*Test*.cfc"
+					} );
+					expect( helper.runURL() ).toBe( "?" );
 				} );
 
 				it( "scopes to only the selected bundle", function(){
@@ -131,14 +131,14 @@ component extends="testbox.system.BaseSpec" {
 
 				it( "does not carry runner options into a targeted run", function(){
 					var link = newHelper( {
-						method         : "runRemote",
-						output         : "raw",
-						directory      : "tests.specs",
-						labels         : "smoke,api",
-						excludes       : "slow",
-						reporter       : "simple",
-						recurse        : "true",
-						bundlesPattern : "*Spec*.cfc|*Test*.cfc",
+						method          : "runRemote",
+						output          : "raw",
+						directory       : "tests.specs",
+						labels          : "smoke,api",
+						excludes        : "slow",
+						reporter        : "simple",
+						recurse         : "true",
+						bundlesPattern  : "*Spec*.cfc|*Test*.cfc",
 						coverageEnabled : "true"
 					} ).runURL( bundle = "a.b" );
 					expect( link ).toBe( "?testBundles=a.b" );
