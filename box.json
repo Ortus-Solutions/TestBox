@@ -42,7 +42,8 @@
     },
     "devDependencies":{
         "commandbox-boxlang":"*",
-        "commandbox-cfformat":"*"
+        "commandbox-cfformat":"*",
+        "bx-playwright": "be"
     },
     "installPaths":{
         "cbstreams":"system/modules/cbstreams/",
