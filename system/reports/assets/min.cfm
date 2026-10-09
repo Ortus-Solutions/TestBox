@@ -23,6 +23,7 @@
 					>#encodeForHtml( thisFailure.spec.displayName )#</a>
 					<span class="tb-crumb">#encodeForHtml( thisFailure.bundle.path )# &gt; #encodeForHtml( thisFailure.crumb )#</span>
 					<span class="w-100 small text-break">#encodeForHtml( thisFailure.message )#</span>
+					<div class="w-100">#renderPartial( "attachments", { spec : thisFailure.spec } )#</div>
 				</li>
 			</cfloop>
 		</ul>

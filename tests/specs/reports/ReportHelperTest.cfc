@@ -461,6 +461,91 @@ component extends="testbox.system.BaseSpec" {
 				} );
 			} );
 
+			describe( "attachments", function(){
+				beforeEach( function(){
+					variables.folder = getTempDirectory() & "testbox-helper-attachments";
+					if ( !directoryExists( variables.folder ) ) {
+						directoryCreate( variables.folder );
+					}
+					variables.png = variables.folder & "/shot.png";
+					fileWrite(
+						variables.png,
+						toBinary( "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==" )
+					);
+				} );
+
+				it( "embeds an image as a data uri", function(){
+					var view = newHelper().attachmentView( {
+						path : variables.png,
+						type : "screenshot",
+						name : "shot.png"
+					} );
+					expect( view.kind ).toBe( "image" );
+					expect( view.src ).toStartWith( "data:image/png;base64," );
+					expect( view.href ).toStartWith( "file:" );
+				} );
+
+				it( "does not embed an image that is missing or over the size limit", function(){
+					var missing = newHelper().attachmentView( {
+						path : variables.folder & "/nope.png",
+						type : "screenshot",
+						name : "nope.png"
+					} );
+					expect( missing.kind ).toBe( "image" );
+					expect( missing.src ).toBe( "" );
+					var off = newHelper( options = { inlineImageMaxKB : 0 } ).attachmentView( {
+						path : variables.png,
+						type : "screenshot",
+						name : "shot.png"
+					} );
+					expect( off.src ).toBe( "" );
+				} );
+
+				it( "offers the command that opens a trace", function(){
+					var view = newHelper().attachmentView( {
+						path : "/tmp/run/trace.zip",
+						type : "trace",
+						name : "trace.zip"
+					} );
+					expect( view.kind ).toBe( "trace" );
+					expect( view.command ).toBe( "bxPlaywright show-trace ""/tmp/run/trace.zip""" );
+				} );
+
+				it( "knows videos and plain files", function(){
+					var helper = newHelper();
+					expect(
+						helper.attachmentView( {
+							path : "/tmp/run/page.webm",
+							type : "video",
+							name : "page.webm"
+						} ).kind
+					).toBe( "video" );
+					expect(
+						helper.attachmentView( {
+							path : "/tmp/run/notes.txt",
+							type : "file",
+							name : "notes.txt"
+						} ).kind
+					).toBe( "file" );
+				} );
+
+				it( "lists every attachment of a spec, and none when there are none", function(){
+					var helper = newHelper();
+					expect(
+						helper.attachments( {
+							attachments : [
+								{
+									path : variables.png,
+									type : "screenshot",
+									name : "shot.png"
+								}
+							]
+						} )
+					).toHaveLength( 1 );
+					expect( helper.attachments( {} ) ).toBeEmpty();
+				} );
+			} );
+
 			describe( "assets", function(){
 				it( "reads an inlined asset", function(){
 					expect( newHelper().asset( "css/testbox.css" ) ).toInclude( "--tb-cyan" );

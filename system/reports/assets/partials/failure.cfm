@@ -27,6 +27,8 @@
 			<pre class="tb-code" data-lang="#local.code.lang#"><cfloop array="#local.code.lines#" item="thisLine"><span class="tb-code__line#( thisLine.hit ? " tb-code__line--hit" : "" )#" data-n="#thisLine.n#">#encodeForHtml( thisLine.text )#</span></cfloop></pre>
 		</cfif>
 
+		#renderPartial( "attachments", { spec : local.spec } )#
+
 		<div class="d-flex flex-wrap align-items-center gap-2 mt-3">
 			<a
 				class="btn btn-sm btn-outline-secondary"

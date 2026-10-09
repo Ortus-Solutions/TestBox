@@ -242,6 +242,15 @@ document.addEventListener( "alpine:init", function () {
 			escape( text ) {
 				return String( text ).replace( /&/g, "&amp;" ).replace( /</g, "&lt;" );
 			},
+			zoom( event ) {
+				var thumb = event.currentTarget.querySelector( "img" );
+				if ( !thumb || !this.$refs.zoom || typeof this.$refs.zoom.showModal !== "function" ) {
+					return;
+				}
+				this.$refs.zoomImg.src = thumb.src;
+				this.$refs.zoomImg.alt = thumb.alt;
+				this.$refs.zoom.showModal();
+			},
 			copy( text, message ) {
 				var self = this;
 				var fallback = function () {
