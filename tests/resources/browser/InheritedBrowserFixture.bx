@@ -1,0 +1,14 @@
+/**
+ * Fixture for BrowserAnnotationSpec: the `@browser` annotation comes from the class it extends.
+ */
+class extends="tests.resources.browser.BrowserBaseFixture" {
+
+	function run() {
+		describe( "Inherited browser fixture", () => {
+			it( "has the browser methods", () => {
+				request.browserAnnotation.inherited = structKeyExists( variables, "browse" )
+			} )
+		} )
+	}
+
+}

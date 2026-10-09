@@ -10,7 +10,7 @@ class extends="testbox.system.BrowserSpec" {
 		variables.artifactsDirectory = getTempDirectory() & "testbox-browser-" & createUUID()
 	}
 
-	// A user afterAll(): the BrowserSpec closeBrowser() afterAll method still runs without a super call
+	// A user afterAll() needs no super call: the runner closes the bundle browser after it
 	function afterAll() {
 		if ( directoryExists( variables.artifactsDirectory ) ) {
 			directoryDelete( variables.artifactsDirectory, true )
@@ -285,28 +285,18 @@ class extends="testbox.system.BrowserSpec" {
 			} )
 
 			describe( "a BrowserSpec bundle whose afterAll() throws", () => {
-				it( "leaves the browser to the next run, which closes it", () => {
+				it( "still closes the browser after the bundle", () => {
 					request.browserAfterAllFixture = {}
+					var trackedBefore = BrowserSupport::trackedCount()
 					var results = new testbox.system.TestBox(
 						bundles = "tests.resources.browser.BrowserAfterAllErrorFixture",
 						options = { coverage : { enabled : false } }
 					).runRaw()
 
 					expect( isSimpleValue( results.getBundleStats()[ 1 ].globalException ) ).toBeFalse()
-					// Same request: the run is still this one, so the browser stays open
-					var manager = request.browserAfterAllFixture.manager
-					BrowserSupport::closeStale()
-					expect( manager.isStarted() ).toBeTrue()
-
-					// A later request on this thread is a new run: it closes the leftover browser
-					var runId = request.testboxBrowserRunId
-					try {
-						request.testboxBrowserRunId = createUUID()
-						expect( BrowserSupport::closeStale() ).toBeGTE( 1 )
-						expect( manager.isStarted() ).toBeFalse()
-					} finally {
-						request.testboxBrowserRunId = runId
-					}
+					// The runner closes the bundle browser in a finally, so nothing is left for a later run
+					expect( request.browserAfterAllFixture.manager.isStarted() ).toBeFalse()
+					expect( BrowserSupport::trackedCount() ).toBe( trackedBefore )
 				} )
 			} )
 		} )

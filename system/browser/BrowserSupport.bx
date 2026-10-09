@@ -3,7 +3,34 @@
  * www.ortussolutions.com
  * ---
  * Browser testing support for one test bundle, built on the public API of the bx-playwright module.
- * testbox.system.BrowserSpec delegates to it, and any BoxLang spec can use it directly:
+ *
+ * TestBox turns it on for any bundle with a browser annotation on its class or a class it extends. With the
+ * `@browser` annotation on the line above `class`:
+ *
+ * <pre>
+ * class extends="testbox.system.BaseSpec" {
+ *     function run() {
+ *         it( "signs in", () => {
+ *             browse( ( page ) => page.visit( "/login" ).assertSee( "Sign in" ) )
+ *         } )
+ *     }
+ * }
+ * </pre>
+ *
+ * Class annotations, any of which turns browser support on:
+ * - `@browser`: browser support with the bx-playwright default profile
+ * - `@browserProfile( "ci" )`: bx-playwright profiles for the bundle browser, a list such as `ci,mobile`
+ * - `@baseURL( "http://localhost:8080" )`: the URL relative visits resolve against
+ * And `@browserAutoInstall( false )` to require a pre-installed browser.
+ *
+ * The runner creates one support per bundle and calls attach(), which mixes `browse()`, `browserAvailable()`,
+ * `ensureBrowserInstalled()`, `getBrowserSupport()` and `closeBrowser()` into the spec (its `this` and
+ * `variables` scopes, so specs call them unqualified), adds `this.playwright()` and registers the browser
+ * matchers. Methods the spec declares itself are kept. After the bundle, the runner calls close().
+ *
+ * It owns one bx-playwright manager per bundle, created on first use with the bundle `browserProfile`
+ * and `baseURL` annotations, and a fresh browser context for every page of every browse() call. Any BoxLang
+ * code can also use it directly:
  *
  * <pre>
  * browser = new testbox.system.browser.BrowserSupport( this )
@@ -13,16 +40,13 @@
  * browser.close()
  * </pre>
  *
- * It owns one bx-playwright manager per bundle, created on first use with the bundle `browserProfile`
- * and `baseURL` annotations, and a fresh browser context for every page of every browse() call.
- *
  * BoxLang only: bx-playwright runs on BoxLang. When the engine is not BoxLang or the module is not
  * installed, browse() skips the running spec with the reason.
  *
- * Cleanup: close() (BrowserSpec runs it after the bundle) closes the bundle browser. When it never runs, because
- * an afterAll() threw or the request aborted, the browser stays in a static ledger, and the next browser opened
- * by a later run closes it. A run is a request: nested TestBox runs in the same request share it. bx-playwright
- * closes whatever is left when the module unloads or the JVM stops.
+ * Cleanup: close() (the runner calls it after the bundle, even when an afterAll() throws) closes the bundle
+ * browser. When it never runs, because the request aborted, the browser stays in a static ledger, and the next
+ * browser opened by a later run closes it. A run is a request: nested TestBox runs in the same request share it.
+ * bx-playwright closes whatever is left when the module unloads or the JVM stops.
  */
 class {
 
@@ -44,6 +68,72 @@ class {
 		variables.browserInstallResult = nullValue()
 		variables.lockID               = createUUID()
 		variables.ledgerKey             = ""
+		return this
+	}
+
+	/**
+	 * Does the spec ask for browser support? True when its class, or a class it extends, has the `browser`,
+	 * `browserProfile` or `baseURL` annotation.
+	 *
+	 * @return True when the runner should attach browser support to the spec
+	 */
+	boolean function isEnabled() {
+		for ( var name in [ "browser", "browserProfile", "baseURL" ] ) {
+			if ( hasAnnotation( name ) ) {
+				return true
+			}
+		}
+		return false
+	}
+
+	/**
+	 * Attach this support to the spec: mix the browser methods into its `this` and `variables` scopes, so specs
+	 * call them unqualified, add `this.playwright()` and register the browser matchers. A method the spec
+	 * declares itself is kept.
+	 *
+	 * @return This support
+	 */
+	function attach() {
+		var support = this
+		var methods = {
+			"browse" : function( required function callback, struct options = {} ) {
+				return support.browse( argumentCollection = arguments )
+			},
+			"browserAvailable" : function() {
+				return support.isAvailable()
+			},
+			"ensureBrowserInstalled" : function() {
+				return support.ensureBrowserInstalled()
+			},
+			"getBrowserSupport" : function() {
+				return support
+			},
+			"closeBrowser" : function() {
+				return support.close()
+			}
+		}
+		var mixer         = new testbox.system.util.MixerUtil()
+		var startedMixing = !structKeyExists( variables.spec, "$wbMixer" )
+		mixer.start( variables.spec )
+		try {
+			for ( var name in methods ) {
+				if ( !structKeyExists( variables.spec, name ) ) {
+					variables.spec.injectMixin( name, methods[ name ] )
+				}
+			}
+		} finally {
+			// Leave the spec as it was: only the browser methods stay
+			if ( startedMixing ) {
+				mixer.stop( variables.spec )
+			}
+		}
+		// `this` scope only: an unqualified playwright() call resolves to the bx-playwright BIF anyway
+		if ( !structKeyExists( variables.spec, "playwright" ) ) {
+			variables.spec.playwright = function() {
+				return support.getManager()
+			}
+		}
+		variables.spec.addMatchers( new testbox.system.browser.BrowserMatchers() )
 		return this
 	}
 
@@ -383,6 +473,25 @@ class {
 			request.testboxBrowserRunId = createUUID()
 		}
 		return request.testboxBrowserRunId
+	}
+
+	/**
+	 * Does the spec class, or a class it extends, have an annotation? Bare annotations such as `@browser` count.
+	 *
+	 * @name The annotation name
+	 *
+	 * @return True when a class in the hierarchy has it
+	 */
+	private boolean function hasAnnotation( required string name ) {
+		var md = getMetadata( variables.spec )
+		while ( !isNull( md ) && isStruct( md ) ) {
+			var annotations = md.annotations ?: md
+			if ( annotations.keyExists( arguments.name ) ) {
+				return true
+			}
+			md = md.extends ?: nullValue()
+		}
+		return false
 	}
 
 	/**

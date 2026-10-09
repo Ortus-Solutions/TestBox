@@ -1,0 +1,17 @@
+/**
+ * Fixture for BrowserAnnotationSpec: no browser annotation, so TestBox attaches nothing.
+ */
+class extends="testbox.system.BaseSpec" {
+
+	function run() {
+		describe( "Plain fixture", () => {
+			it( "has no browser methods", () => {
+				request.browserAnnotation.plain = {
+					"browse"     : structKeyExists( variables, "browse" ),
+					"playwright" : structKeyExists( this, "playwright" )
+				}
+			} )
+		} )
+	}
+
+}
