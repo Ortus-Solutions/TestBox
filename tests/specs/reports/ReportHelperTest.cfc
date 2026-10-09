@@ -99,6 +99,17 @@ component extends="testbox.system.BaseSpec" {
 					expect( verdict.title ).toInclude( "bundle exception" );
 					expect( helper.exceptions( run.results.getBundleStats() ) ).toHaveLength( 1 );
 				} );
+
+				it( "never counts a negative number of errors for a bundle", function(){
+					var bundle = {
+						totalPass    : 0,
+						totalFail    : 0,
+						totalError   : -1,
+						totalSkipped : 0
+					};
+					expect( newHelper().countOf( bundle, "error" ) ).toBe( 0 );
+					expect( newHelper().countOf( bundle, "passed" ) ).toBe( 0 );
+				} );
 			} );
 
 			describe( "run links", function(){
