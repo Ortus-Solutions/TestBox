@@ -90,13 +90,17 @@ Luis Majano
 		// Object Check
 		if ( isObject( arguments.data ) ) {
 			buffer.append( objectToXML( argumentCollection = arguments ) );
-		} else if ( isStruct( arguments.data ) ) { // Struct Check?
+		} else if ( isStruct( arguments.data ) ) {
+			// Struct Check?
 			buffer.append( structToXML( argumentCollection = arguments ) );
-		} else if ( isQuery( arguments.data ) ) { // Query Check?
+		} else if ( isQuery( arguments.data ) ) {
+			// Query Check?
 			buffer.append( queryToXML( argumentCollection = arguments ) );
-		} else if ( isArray( arguments.data ) ) { // Array Check?
+		} else if ( isArray( arguments.data ) ) {
+			// Array Check?
 			buffer.append( arrayToXML( argumentCollection = arguments ) );
-		} else if ( isSimpleValue( arguments.data ) ) { // Simple Value Check, treated as a simple array list?
+		} else if ( isSimpleValue( arguments.data ) ) {
+			// Simple Value Check, treated as a simple array list?
 			arguments.data = listToArray( arguments.data, arguments.delimiter );
 			buffer.append( arrayToXML( argumentCollection = arguments ) );
 		}

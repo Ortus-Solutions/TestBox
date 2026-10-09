@@ -449,7 +449,8 @@ component accessors=true {
 		// Check if the method is existent in public scope
 		if ( structKeyExists( this, arguments.method ) && !isNull( this[ arguments.method ] ) ) {
 			fncMD = getMetadata( this[ arguments.method ] );
-		} else if ( structKeyExists( variables, arguments.method ) && !isNull( variables[ arguments.method ] ) ) { // Else check in private scope
+		} else if ( structKeyExists( variables, arguments.method ) && !isNull( variables[ arguments.method ] ) ) {
+			// Else check in private scope
 			fncMD = getMetadata( variables[ arguments.method ] );
 		}
 

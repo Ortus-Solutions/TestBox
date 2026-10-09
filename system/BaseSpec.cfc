@@ -2005,12 +2005,14 @@ component {
 					this.$expectedException.regex == ".*"
 					|| arrayLen( reMatchNoCase( this.$expectedException.regex, arguments.exception.message ) )
 				)
-			) { // Type expectation then
+			) {
+				// Type expectation then
 				results = true;
 			} else if (
 				this.$expectedException.regex neq ".*" &&
 				arrayLen( reMatchNoCase( this.$expectedException.regex, arguments.exception.message ) )
-			) { // Message regex then only
+			) {
+				// Message regex then only
 				results = true;
 			}
 		}
