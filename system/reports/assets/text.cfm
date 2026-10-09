@@ -1,4 +1,4 @@
-<cfoutput>#getHeaderBanner( testbox )#
+<cfparam name="url" default="#structNew()#"><cfparam name="url.testBundles" default=""><cfoutput>#getHeaderBanner( testbox )#
 <!--- Iterate over each bundle tested --->
 <cfloop array="#variables.bundleStats#" index="thisBundle">
 <!--- Skip if not in the includes list --->

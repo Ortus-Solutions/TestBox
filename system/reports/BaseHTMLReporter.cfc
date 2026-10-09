@@ -45,6 +45,10 @@ component extends="BaseReporter" {
 		variables.bundleStats = arguments.results.getBundleStats();
 		// the request params that shaped this run, plus the urlParams option for headless runs where there is no url scope
 		var params            = {};
+
+		// the url scope only exists in web mode, so default it for CLI runs
+		param name="url" default={};
+
 		structAppend( params, url );
 		if ( structKeyExists( arguments.options, "urlParams" ) && isStruct( arguments.options.urlParams ) ) {
 			structAppend( params, arguments.options.urlParams, true );
