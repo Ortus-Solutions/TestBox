@@ -40,10 +40,11 @@ Drive a real browser (Chromium, Firefox or WebKit) right from your specs. Extend
 	<img src=".github/assets/browser-testing-demo.gif" alt="A BrowserSpec signing in to a demo shop and checking the dashboard" width="800"/>
 </p>
 
-```bash
-install-bx-module bx-playwright
-bxPlaywright install chromium
-```
+Deploy `bx-playwright` to the same BoxLang web server that runs TestBox. `BrowserSpec` installs the profile's browser
+through that deployed module the first time it is used; a separate OS-level BoxLang installation is not required.
+The first run needs network access and may take longer. Set `@browserAutoInstall( false )` to require a pre-installed
+browser, or call `ensureBrowserInstalled()` explicitly from `beforeAll()`. On Linux, install required system libraries
+in the host or container; BrowserSpec only downloads browser files.
 
 ```java
 @baseURL( "http://localhost:8090" )

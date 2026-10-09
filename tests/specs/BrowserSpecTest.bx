@@ -19,6 +19,15 @@ class extends="testbox.system.BrowserSpec" {
 
 	function run() {
 		describe( "BrowserSpec without a browser", () => {
+				it( "auto-installs browsers by default", () => {
+					expect( getBrowserSupport().shouldAutoInstallBrowser() ).toBeTrue()
+				} )
+
+				it( "allows a bundle to disable browser auto-install", () => {
+					var support = new testbox.system.browser.BrowserSupport( new tests.resources.browser.NoAutoInstallBrowserFixture() )
+					expect( support.shouldAutoInstallBrowser() ).toBeFalse()
+				} )
+
 			it( "skips the spec when bx-playwright is not available", () => {
 				var support = new tests.resources.browser.UnavailableBrowserSupport( this )
 				expect( () => support.browse( ( page ) => {} ) ).toThrow( "TestBox.SkipSpec", "install-bx-module bx-playwright" )
@@ -62,6 +71,13 @@ class extends="testbox.system.BrowserSpec" {
 
 		describe( title = "BrowserSpec with a browser", skip = !browserAvailable(), body = () => {
 			describe( "browse()", () => {
+				it( "ensures the profile browser through the deployed module", () => {
+					var first  = ensureBrowserInstalled()
+					var second = getBrowserSupport().ensureBrowserInstalled( this.playwright() )
+					expect( first.browser ).toBe( "chromium" )
+					expect( first.path ).toBe( second.path )
+				} )
+
 				it( "runs the callback with a page and returns its result", () => {
 					var title = browse( ( page ) => {
 						page.setContent( "<title>Browse Result</title><h1>Hi</h1>" )

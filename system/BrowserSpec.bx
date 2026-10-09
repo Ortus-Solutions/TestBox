@@ -24,6 +24,7 @@
  *
  * Class annotations, written as BoxLang annotations above `class`:
  * - `@browserProfile( "ci" )`: bx-playwright profiles for the bundle browser, a list such as `ci,mobile`
+ * - `@browserAutoInstall( false )`: disable the default first-use browser download when the browser is pre-installed
  * - `@baseURL( "http://localhost:8080" )`: the URL relative visits resolve against. Defaults to the
  *   `--web-server-url` of the BoxLang runner when it started a web server, else bx-playwright's own
  *   setting or `BX_PLAYWRIGHT_BASEURL`
@@ -34,6 +35,9 @@
  * annotation, so your own beforeAll() and afterAll() methods need no super calls. The browser matchers
  * of testbox.system.browser.BrowserMatchers are registered for every spec of the bundle.
  *
+ * A missing browser is installed on first use by the deployed bx-playwright module. This can make the first
+ * request slower and requires network access. Set `@browserAutoInstall( false )` to require pre-provisioning.
+ * A bundle with auto-install disabled can call `ensureBrowserInstalled()` explicitly, such as from `beforeAll()`.
  * bx-playwright assertion failures (`Playwright.AssertionFailed`) count as spec failures. When bx-playwright
  * is not installed, or the engine is not BoxLang, browse() and playwright() skip the running spec.
  * Browser specs are not thread safe: do not use `asyncAll` in suites that browse.
@@ -68,6 +72,15 @@ class extends="testbox.system.BaseSpec" {
 	 */
 	function playwright() {
 		return getBrowserSupport().getManager()
+	}
+
+	/**
+	 * Explicitly ensure the selected browser is installed, for example from beforeAll() when auto-install is disabled.
+	 *
+	 * @return Browser name, cache path and installed browser directories
+	 */
+	struct function ensureBrowserInstalled() {
+		return getBrowserSupport().ensureBrowserInstalled()
 	}
 
 	/**

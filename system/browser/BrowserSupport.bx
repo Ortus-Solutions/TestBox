@@ -39,10 +39,11 @@ class {
 	 * @return The browser support
 	 */
 	function init( required any spec ) {
-		variables.spec    = arguments.spec
-		variables.manager     = nullValue()
-		variables.lockID      = createUUID()
-		variables.ledgerKey   = ""
+		variables.spec                 = arguments.spec
+		variables.manager              = nullValue()
+		variables.browserInstallResult = nullValue()
+		variables.lockID               = createUUID()
+		variables.ledgerKey             = ""
 		return this
 	}
 
@@ -86,12 +87,70 @@ class {
 					}
 					// Browsers an earlier run left open (a failed afterAll(), an aborted request) close first
 					static.closeStale()
-					variables.manager   = playwright( getProfiles(), getSettings() )
+					var manager = playwright( getProfiles(), getSettings() )
+					if ( shouldAutoInstallBrowser() ) {
+						ensureBrowserInstalled( manager )
+					}
+					variables.manager   = manager
 					variables.ledgerKey = static.track( variables.manager )
 				}
 			}
 		}
 		return variables.manager
+	}
+
+	/**
+	 * Whether this bundle should provision a missing browser automatically. Defaults to true; the
+	 * `browserAutoInstall` annotation can disable downloads for pre-provisioned or offline environments.
+	 *
+	 * @return True when first use should install the selected browser
+	 */
+	boolean function shouldAutoInstallBrowser() {
+		var setting = trim( findAnnotation( "browserAutoInstall" ) )
+		if ( !len( setting ) ) {
+			return true
+		}
+		if ( !isBoolean( setting ) ) {
+			throw(
+				type    = "TestBox.BrowserInstallConfiguration",
+				message = "Invalid browserAutoInstall annotation [#setting#].",
+				detail  = "Set @browserAutoInstall to true or false."
+			)
+		}
+		return setting ? true : false
+	}
+
+	/**
+	 * Ask bx-playwright to ensure the browser selected by the resolved bundle profile is installed.
+	 *
+	 * @manager The resolved bx-playwright manager
+	 *
+	 * @return Browser installation details
+	 *
+	 * @throws TestBox.AssertionFailed when installation fails
+	 */
+	struct function ensureBrowserInstalled( any manager = nullValue() ) {
+		if ( !isNull( variables.browserInstallResult ) ) {
+			return variables.browserInstallResult
+		}
+		var resolvedManager = arguments.manager ?: getManager()
+		if ( !isNull( variables.browserInstallResult ) ) {
+			return variables.browserInstallResult
+		}
+		var browser = resolvedManager.getConfig().browser ?: "chromium"
+		try {
+			variables.browserInstallResult = playwrightEnsureBrowser( browser )
+			return variables.browserInstallResult
+		} catch ( any e ) {
+			var detail = e.message
+			if ( len( e.detail ?: "" ) ) {
+				detail &= " #e.detail#"
+			}
+			variables.spec.fail(
+				"Could not install Playwright browser [#browser#].",
+				detail
+			)
+		}
 	}
 
 	/**
