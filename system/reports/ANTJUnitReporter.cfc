@@ -49,6 +49,7 @@ component extends="BaseReporter" {
 
 		// the url scope only exists in web mode, so default it for CLI runs
 		param name="url" default={};
+
 		// iterate over bundles
 		var bundlestats = r.getBundleStats();
 		for ( var thisBundle in bundleStats ) {

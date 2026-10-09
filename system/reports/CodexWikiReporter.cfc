@@ -39,8 +39,10 @@ component extends="BaseReporter" {
 
 		// prepare base links
 		variables.baseURL = "?";
+
 		// the url scope only exists in web mode, so default it for CLI runs
 		param name="url" default={};
+
 		if ( structKeyExists( url, "method" ) ) {
 			variables.baseURL &= "method=#urlEncodedFormat( url.method )#";
 		}
