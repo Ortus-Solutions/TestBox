@@ -29,6 +29,58 @@ Professional BDD (Behavior-Driven Development) and TDD (Test-Driven Development)
 - **Code Coverage**: Built-in coverage analysis and reporting
 - **Flexible Discovery**: Automatic test bundle detection with customizable patterns
 - **Thread-Safe**: Concurrent test execution with proper isolation
+- **Browser Testing**: Drive a real browser from your specs with `BrowserSpec` and [bx-playwright](https://bxplaywright.boxlang.io) (BoxLang)
+- **Run Failed**: Rerun only what failed, from the CLI (`--failed`) or the web runners
+
+## 🎬 Browser Testing
+
+Drive a real browser (Chromium, Firefox or WebKit) right from your specs. Extend `BrowserSpec`, call `browse()`, and assert on what your users actually see. Powered by [bx-playwright](https://bxplaywright.boxlang.io) and BoxLang.
+
+<p align="center">
+	<img src=".github/assets/browser-testing-demo.gif" alt="A BrowserSpec signing in to a demo shop and checking the dashboard" width="800"/>
+</p>
+
+```bash
+install-bx-module bx-playwright
+bxPlaywright install chromium
+```
+
+```java
+@baseURL( "http://localhost:8090" )
+@browserProfile( "ci" )
+class extends="testbox.system.BrowserSpec" {
+
+	function run() {
+		describe( "Ortus Shop", () => {
+			it( "signs in and shows the dashboard", () => {
+				browse( ( page ) => {
+					page.visit( "/" )
+						.fill( "Email", "luis@ortus.com" )
+						.fill( "Password", "secret" )
+						.click( "Sign in" )
+					expect( page ).toHavePath( "/dashboard.html" )
+					expect( page ).toSee( "Welcome, Luis" )
+				} )
+			} )
+		} )
+	}
+
+}
+```
+
+When a browser spec fails, TestBox attaches a **screenshot**, a Playwright **trace** and a **video** right on the failing spec in your report:
+
+<p align="center">
+	<img src=".github/assets/browser-testing-report-attachments.png" alt="A failing browser spec with its screenshot, trace and video attached" width="800"/>
+</p>
+
+Open the trace with `bxPlaywright show-trace` and step through every action, the DOM, the console and the network:
+
+<p align="center">
+	<img src=".github/assets/browser-testing-trace-viewer.png" alt="The Playwright trace viewer showing the failed assertion" width="800"/>
+</p>
+
+Fix it, then rerun only what failed with `--failed` or the **Run Failed** button. Learn more in the [Browser Testing guide](https://testbox.ortusbooks.com/browser-testing).
 
 ## 💻 Requirements
 
