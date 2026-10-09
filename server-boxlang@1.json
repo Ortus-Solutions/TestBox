@@ -22,5 +22,7 @@
     "env":{
         "BOXLANG_DEBUG":true
     },
-    "scripts":{}
+    "scripts":{
+        "onServerInitialInstall":"install bx-playwright --nosave"
+    }
 }
