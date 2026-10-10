@@ -73,11 +73,16 @@ class {
 
 	/**
 	 * Does the spec ask for browser support? True when its class, or a class it extends, has the `browser`,
-	 * `browserProfile` or `baseURL` annotation.
+	 * `browserProfile` or `baseURL` annotation. A false `browser` annotation, like `@browser( false )`, turns
+	 * it off, even when a class it extends turns it on.
 	 *
 	 * @return True when the runner should attach browser support to the spec
 	 */
 	boolean function isEnabled() {
+		var browser = findAnnotation( "browser" )
+		if ( isBoolean( browser ) && !browser ) {
+			return false
+		}
 		for ( var name in [ "browser", "browserProfile", "baseURL" ] ) {
 			if ( hasAnnotation( name ) ) {
 				return true
@@ -88,8 +93,8 @@ class {
 
 	/**
 	 * Attach this support to the spec: mix the browser methods into its `this` and `variables` scopes, so specs
-	 * call them unqualified, add `this.playwright()` and register the browser matchers. A method the spec
-	 * declares itself is kept.
+	 * call them unqualified, add `this.playwright()` and register the browser matchers. A public method the spec
+	 * declares itself is kept. A private method with the same name is replaced, so make overrides public.
 	 *
 	 * @return This support
 	 */
@@ -367,19 +372,21 @@ class {
 	}
 
 	/**
-	 * Close the bundle manager and every browser it started. Safe to call more than once.
+	 * Close the bundle manager and every browser it started. Safe to call more than once. When the close fails,
+	 * the manager stays in the ledger, so a later run closes it.
 	 *
 	 * @return This support
+	 *
+	 * @throws Any error the manager throws while closing
 	 */
 	function close() {
 		if ( !isNull( variables.manager ) ) {
-			static.untrack( variables.ledgerKey )
+			var manager         = variables.manager
+			var ledgerKey       = variables.ledgerKey
+			variables.manager   = nullValue()
 			variables.ledgerKey = ""
-			try {
-				variables.manager.close()
-			} finally {
-				variables.manager = nullValue()
-			}
+			manager.close()
+			static.untrack( ledgerKey )
 		}
 		return this
 	}
