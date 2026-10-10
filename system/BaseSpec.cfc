@@ -890,7 +890,7 @@ component {
 	 */
 	Expectation function expect( any actual ){
 		// build an expectation
-		var oExpectation = new Expectation( spec = this, assertions = this.$assert );
+		var oExpectation = new testbox.system.Expectation( spec = this, assertions = this.$assert );
 
 		// Store the actual data
 		if ( !isNull( arguments.actual ) ) {
@@ -916,7 +916,7 @@ component {
 	 * @actual The actual value, it should be an array or a struct.
 	 */
 	CollectionExpectation function expectAll( required any actual ){
-		return new CollectionExpectation(
+		return new testbox.system.CollectionExpectation(
 			spec       = this,
 			assertions = this.$assert,
 			collection = arguments.actual
@@ -930,7 +930,7 @@ component {
 	 * @actual The actual value, it should be an array or a struct.
 	 */
 	CollectionExpectation function expectAny( required any actual ){
-		return new CollectionExpectation(
+		return new testbox.system.CollectionExpectation(
 			spec       = this,
 			assertions = this.$assert,
 			collection = arguments.actual,
@@ -951,7 +951,7 @@ component {
 		numeric min = 1,
 		numeric max = 0
 	){
-		return new CollectionExpectation(
+		return new testbox.system.CollectionExpectation(
 			spec       = this,
 			assertions = this.$assert,
 			collection = arguments.actual,
@@ -968,7 +968,7 @@ component {
 	 * @actual The actual value, it should be an array or a struct.
 	 */
 	CollectionExpectation function expectNone( required any actual ){
-		return new CollectionExpectation(
+		return new testbox.system.CollectionExpectation(
 			spec       = this,
 			assertions = this.$assert,
 			collection = arguments.actual,
@@ -1243,7 +1243,7 @@ component {
 	 * @suite The suite definition
 	 * @spec  The spec definition
 	 */
-	BaseSpec function runBeforeEachClosures( required suite, required spec ){
+	any function runBeforeEachClosures( required suite, required spec ){
 		// re-bind request utilities to the currently executing test before they may be invoked
 		request.testbox.console          = () => variables.console( argumentCollection = arguments );
 		request.testbox.debug            = () => variables.debug( argumentCollection = arguments );
@@ -1299,7 +1299,7 @@ component {
 	 * @suite The suite definition
 	 * @spec  The spec definition
 	 */
-	BaseSpec function runAroundEachClosures( required suite, required spec ){
+	any function runAroundEachClosures( required suite, required spec ){
 		var reverseTree = [
 			{
 				name   : arguments.suite.name,
@@ -1424,7 +1424,7 @@ component {
 	 * @suite The suite definition
 	 * @spec  The spec definition
 	 */
-	BaseSpec function runAfterEachClosures( required suite, required spec ){
+	any function runAfterEachClosures( required suite, required spec ){
 		// execute nearest afterEach()
 		arguments.suite.afterEach( currentSpec = arguments.spec.name, data = arguments.suite.afterEachData );
 

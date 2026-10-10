@@ -1,5 +1,5 @@
 /**
- * The static ledger of testbox.system.browser.BrowserSupport, with fake managers: no browser needed.
+ * The static ledger of testbox.system.browser.BrowserSupport and its browser install, with fake managers: no browser needed.
  * BoxLang only, like browser specs.
  */
 import testbox.system.browser.BrowserSupport;
@@ -72,6 +72,39 @@ class extends="testbox.system.BaseSpec" {
 				expect( BrowserSupport::closeStale() ).toBe( 2 )
 				expect( closed.count ).toBe( 1 )
 			} )
+
+			it( "untracks a bundle manager once it closes", () => {
+				var support = supportWith( fakeManager() )
+				var before  = BrowserSupport::trackedCount()
+				support.close()
+				expect( closed.count ).toBe( 1 )
+				expect( BrowserSupport::trackedCount() ).toBe( before - 1 )
+			} )
+
+			it( "keeps a bundle manager in the ledger when it fails to close", () => {
+				var support = supportWith( {
+					close : () => {
+						throw( type = "FakeManager.Broken", message = "driver gone" )
+					}
+				} )
+				var before = BrowserSupport::trackedCount()
+				expect( () => support.close() ).toThrow( "FakeManager.Broken" )
+				expect( BrowserSupport::trackedCount() ).toBe( before )
+				// Safe to call again: the manager is handed to the ledger
+				support.close()
+			} )
+		} )
+
+		describe( "BrowserSupport install", () => {
+			it( "skips the install for a profile with a branded channel", () => {
+				var result = new BrowserSupport( this ).ensureBrowserInstalled( {
+					getConfig : () => {
+						return { browser : "chromium", channel : "chrome" }
+					}
+				} )
+				expect( result.channel ).toBe( "chrome" )
+				expect( result.installed ).toBeEmpty()
+			} )
 		} )
 	}
 
@@ -82,6 +115,15 @@ class extends="testbox.system.BaseSpec" {
 		var key = BrowserSupport::track( argumentCollection = arguments )
 		variables.keys.append( key )
 		return key
+	}
+
+	/**
+	 * A BrowserSupport whose bundle manager is the given fake, tracked in the ledger like getManager() does.
+	 */
+	private function supportWith( required any manager ) {
+		return prepareMock( new BrowserSupport( this ) )
+			.$property( propertyName = "manager", mock = arguments.manager )
+			.$property( propertyName = "ledgerKey", mock = track( arguments.manager ) )
 	}
 
 	/**

@@ -37,6 +37,12 @@ class extends="testbox.system.BaseSpec" {
 				expect( request.browserAnnotation.inherited ).toBeTrue()
 			} )
 
+			it( "are turned off by a false @browser, even when a class it extends turns them on", () => {
+				runFixture( "DisabledBrowserFixture" )
+				expect( request.browserAnnotation.disabled.browse ).toBeFalse()
+				expect( request.browserAnnotation.disabled.playwright ).toBeFalse()
+			} )
+
 			it( "leave specs without them untouched", () => {
 				runFixture( "PlainSpecFixture" )
 				expect( request.browserAnnotation.plain.browse ).toBeFalse()

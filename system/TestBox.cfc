@@ -887,7 +887,12 @@ component accessors="true" {
 				try {
 					browserSupport.close();
 				} catch ( Any e ) {
-					// Already closed or its driver is gone: never hide the bundle results
+					// Never hide the bundle results: log it, the ledger closes the browser on a later run
+					writeLog(
+						type = "error",
+						text = "Error closing the browser of bundle #arguments.bundlePath#: #e.message# #e.detail#",
+						file = "testbox.log"
+					);
 				}
 			}
 		}
@@ -960,6 +965,22 @@ component accessors="true" {
 			// If target has overriden method, then don't override it with mixin, simulated inheritance
 			if ( NOT structKeyExists( bundle, key ) AND NOT listFindNoCase( excludedProperties, key ) ) {
 				bundle.injectMixin( key, baseObject[ key ] );
+			}
+		}
+
+		// Mix in the private state the methods rely on, like $assert and $specStatsHolder
+		var baseVariables = variables.utility
+			.getMixerUtil()
+			.start( baseObject )
+			.getVariablesMixin();
+		var bundleVariables = bundle.getVariablesMixin();
+		for ( var key in baseVariables ) {
+			if (
+				!listFindNoCase( "this,super", key )
+				&& !isCustomFunction( baseVariables[ key ] )
+				&& !structKeyExists( bundleVariables, key )
+			) {
+				bundleVariables[ key ] = baseVariables[ key ];
 			}
 		}
 

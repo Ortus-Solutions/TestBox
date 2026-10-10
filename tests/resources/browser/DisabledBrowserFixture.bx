@@ -1,0 +1,18 @@
+/**
+ * Fixture for BrowserAnnotationSpec: `@browser( false )` turns off the browser support the class it extends turns on.
+ */
+@browser( false )
+class extends="tests.resources.browser.BrowserBaseFixture" {
+
+	function run() {
+		describe( "Disabled browser fixture", () => {
+			it( "has no browser methods", () => {
+				request.browserAnnotation.disabled = {
+					"browse"     : structKeyExists( variables, "browse" ),
+					"playwright" : structKeyExists( this, "playwright" )
+				}
+			} )
+		} )
+	}
+
+}
