@@ -6,10 +6,10 @@ component extends="testbox.system.BaseSpec" {
 	function run(){
 		describe( "A spec that does not extend BaseSpec", function(){
 			it( "runs like one that does", function(){
-				request.virtualSpec = { ran  : false };
+				request.virtualSpec = { ran : false };
 				var results         = new testbox.system.TestBox(
 					bundles = "tests.resources.VirtualSpecFixture",
-					options = { coverage  : { enabled  : false } }
+					options = { coverage : { enabled : false } }
 				).runRaw();
 				expect( results.getTotalError() ).toBe( 0 );
 				expect( results.getTotalFail() ).toBe( 0 );

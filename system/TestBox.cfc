@@ -969,7 +969,10 @@ component accessors="true" {
 		}
 
 		// Mix in the private state the methods rely on, like $assert and $specStatsHolder
-		var baseVariables   = variables.utility.getMixerUtil().start( baseObject ).getVariablesMixin();
+		var baseVariables = variables.utility
+			.getMixerUtil()
+			.start( baseObject )
+			.getVariablesMixin();
 		var bundleVariables = bundle.getVariablesMixin();
 		for ( var key in baseVariables ) {
 			if (
