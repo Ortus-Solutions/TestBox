@@ -29,27 +29,27 @@ Professional BDD (Behavior-Driven Development) and TDD (Test-Driven Development)
 - **Code Coverage**: Built-in coverage analysis and reporting
 - **Flexible Discovery**: Automatic test bundle detection with customizable patterns
 - **Thread-Safe**: Concurrent test execution with proper isolation
-- **Browser Testing**: Drive a real browser from your specs with `BrowserSpec` and [bx-playwright](https://bxplaywright.boxlang.io) (BoxLang)
+- **Browser Testing**: Drive a real browser from any spec with the `@browser` annotation and [bx-playwright](https://bxplaywright.boxlang.io) (BoxLang)
 - **Run Failed**: Rerun only what failed, from the CLI (`--failed`) or the web runners
 
 ## 🎬 Browser Testing
 
-Drive a real browser (Chromium, Firefox or WebKit) right from your specs. Extend `BrowserSpec`, call `browse()`, and assert on what your users actually see. Powered by [bx-playwright](https://bxplaywright.boxlang.io) and BoxLang.
+Drive a real browser (Chromium, Firefox or WebKit) right from your specs. Add the `@browser` annotation (or `@browserProfile` / `@baseURL`) to any spec, or extend `BrowserSpec`, call `browse()`, and assert on what your users actually see. Powered by [bx-playwright](https://bxplaywright.boxlang.io) and BoxLang.
 
 <p align="center">
 	<img src=".github/assets/browser-testing-demo.gif" alt="A BrowserSpec signing in to a demo shop and checking the dashboard" width="800"/>
 </p>
 
-Deploy `bx-playwright` to the same BoxLang web server that runs TestBox. `BrowserSpec` installs the profile's browser
+Deploy `bx-playwright` to the same BoxLang web server that runs TestBox. TestBox installs the profile's browser
 through that deployed module the first time it is used; a separate OS-level BoxLang installation is not required.
 The first run needs network access and may take longer. Set `@browserAutoInstall( false )` to require a pre-installed
 browser, or call `ensureBrowserInstalled()` explicitly from `beforeAll()`. On Linux, install required system libraries
-in the host or container; BrowserSpec only downloads browser files.
+in the host or container; TestBox only downloads browser files.
 
 ```java
 @baseURL( "http://localhost:8090" )
 @browserProfile( "ci" )
-class extends="testbox.system.BrowserSpec" {
+class extends="testbox.system.BaseSpec" {
 
 	function run() {
 		describe( "Ortus Shop", () => {

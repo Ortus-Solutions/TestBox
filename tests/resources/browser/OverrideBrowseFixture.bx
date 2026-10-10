@@ -1,0 +1,22 @@
+/**
+ * Fixture for BrowserAnnotationSpec: a browser spec that declares its own browse(), which TestBox keeps.
+ */
+@browser
+class extends="testbox.system.BaseSpec" {
+
+	function browse( required function callback, struct options = {} ) {
+		return "own browse"
+	}
+
+	function run() {
+		describe( "Override fixture", () => {
+			it( "keeps its own browse()", () => {
+				request.browserAnnotation.override = {
+					"browse"            : browse( () => {} ),
+					"getBrowserSupport" : structKeyExists( variables, "getBrowserSupport" )
+				}
+			} )
+		} )
+	}
+
+}

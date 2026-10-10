@@ -58,7 +58,7 @@
  * 	Launchers that split quoted arguments are supported: the words after `--web-server=` form the command until the next
  * 	runner option, so a command whose own flags share a runner option name (ex: `--directory`) belongs in a script.
  * --web-server-url : The URL polled until the web server answers with a status below 500, defaults to `http://localhost:8080`.
- * 	It is also stored in `server.testbox.webServerURL`, which `testbox.system.BrowserSpec` uses as its default `baseURL`.
+ * 	It is also stored in `server.testbox.webServerURL`, which browser specs use as their default `baseURL`.
  * --web-server-timeout : How long to wait for the web server to answer, in seconds, defaults to `60`.
  * 	When it does not answer in time the runner stops the server, prints the reason and exits with code 1.
  *
@@ -333,7 +333,7 @@ class{
 
 	/**
 	 * Start the web server requested with --web-server and wait until --web-server-url answers.
-	 * The URL is stored in server.testbox.webServerURL for BrowserSpec. When the server does not
+	 * The URL is stored in server.testbox.webServerURL for browser specs. When the server does not
 	 * answer in time, the reason is printed and the runner exits with code 1.
 	 *
 	 * @options  The parsed CLI options

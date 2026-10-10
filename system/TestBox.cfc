@@ -848,6 +848,9 @@ component accessors="true" {
 			return this;
 		}
 
+		// Browser support for bundles with a browser annotation (BoxLang only)
+		var browserSupport = attachBrowserSupport( target );
+
 		// verify call backs
 		if ( structKeyExists( arguments.callbacks, "onBundleStart" ) ) {
 			arguments.callbacks.onBundleStart( target, testResults );
@@ -878,6 +881,15 @@ component accessors="true" {
 				detail  = e.stackTrace,
 				type    = "BundleRunnerMajorException"
 			);
+		} finally {
+			// Close the bundle browser, even when an afterAll() threw
+			if ( !isNull( browserSupport ) ) {
+				try {
+					browserSupport.close();
+				} catch ( Any e ) {
+					// Already closed or its driver is gone: never hide the bundle results
+				}
+			}
 		}
 
 		// Store debug buffer for this bundle
@@ -891,6 +903,26 @@ component accessors="true" {
 		announceToModules( "onBundleEnd", { target : target, testResults : testResults } );
 
 		return this;
+	}
+
+	/**
+	 * Attach browser support to a bundle whose class, or a class it extends, has a `browser`, `browserProfile`
+	 * or `baseURL` annotation: testbox.system.browser.BrowserSupport mixes browse() and friends into it.
+	 * BoxLang only, as bx-playwright runs on BoxLang.
+	 *
+	 * @target The bundle
+	 *
+	 * @return The attached testbox.system.browser.BrowserSupport, or null when the bundle does not browse
+	 */
+	private any function attachBrowserSupport( required target ){
+		if ( !structKeyExists( server, "boxlang" ) ) {
+			return;
+		}
+		var support = new testbox.system.browser.BrowserSupport( arguments.target );
+		if ( !support.isEnabled() ) {
+			return;
+		}
+		return support.attach();
 	}
 
 	/**

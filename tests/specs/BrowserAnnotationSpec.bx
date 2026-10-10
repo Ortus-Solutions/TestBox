@@ -1,0 +1,76 @@
+/**
+ * Browser support turned on by class annotations: `@browser`, `@browserProfile` or `@baseURL` on a spec, or on a
+ * class it extends, gets browse() and friends mixed in by the runner. The browser specs are skipped when
+ * bx-playwright is not installed.
+ */
+class extends="testbox.system.BaseSpec" {
+
+	function run() {
+		describe( "Browser annotations", () => {
+			beforeEach( () => {
+				request.browserAnnotation = {}
+			} )
+
+			it( "mix the browser methods into the spec this and variables scopes", () => {
+				runFixture( "AnnotatedBrowserFixture" )
+				var annotated = request.browserAnnotation.annotated
+				expect( annotated.browse ).toBeTrue()
+				expect( annotated.browserAvailable ).toBeTrue()
+				expect( annotated.ensureBrowserInstalled ).toBeTrue()
+				expect( annotated.getBrowserSupport ).toBeTrue()
+				expect( annotated.closeBrowser ).toBeTrue()
+				expect( annotated.playwright ).toBeTrue()
+				expect( annotated.mixerLeftOver ).toBeFalse()
+				expect( annotated.support ).toBeInstanceOf( "testbox.system.browser.BrowserSupport" )
+			} )
+
+			it( "work in xUnit bundles, and @browserProfile alone turns them on", () => {
+				var results = runFixture( "AnnotatedBrowserTestFixture" )
+				expect( results.getTotalError() ).toBe( 0 )
+				expect( results.getTotalFail() ).toBe( 0 )
+				expect( request.browserAnnotation.xunit.browse ).toBeTrue()
+				expect( request.browserAnnotation.xunit.profiles ).toBe( "ci" )
+			} )
+
+			it( "are inherited from the classes a spec extends", () => {
+				runFixture( "InheritedBrowserFixture" )
+				expect( request.browserAnnotation.inherited ).toBeTrue()
+			} )
+
+			it( "leave specs without them untouched", () => {
+				runFixture( "PlainSpecFixture" )
+				expect( request.browserAnnotation.plain.browse ).toBeFalse()
+				expect( request.browserAnnotation.plain.playwright ).toBeFalse()
+			} )
+
+			it( "keep the methods a spec declares itself", () => {
+				runFixture( "OverrideBrowseFixture" )
+				expect( request.browserAnnotation.override.browse ).toBe( "own browse" )
+				expect( request.browserAnnotation.override.getBrowserSupport ).toBeTrue()
+			} )
+
+			it( title = "browse and close the browser after the bundle", skip = !new testbox.system.browser.BrowserSupport( this ).isAvailable(), body = () => {
+				var results = runFixture( "AnnotatedBrowserFixture" )
+				expect( results.getTotalFail() ).toBe( 0 )
+				expect( results.getTotalError() ).toBe( 0 )
+				expect( request.browserAnnotation.sameManager ).toBeTrue()
+				expect( request.browserAnnotation.manager.isStarted() ).toBeFalse()
+			} )
+		} )
+	}
+
+	/**
+	 * Run a fixture bundle of tests.resources.browser in a nested TestBox run.
+	 *
+	 * @name The fixture class name
+	 *
+	 * @return The TestResult of the run
+	 */
+	private function runFixture( required string name ) {
+		return new testbox.system.TestBox(
+			bundles = "tests.resources.browser.#arguments.name#",
+			options = { coverage : { enabled : false } }
+		).runRaw()
+	}
+
+}

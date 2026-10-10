@@ -1,0 +1,24 @@
+/**
+ * Fixture for BrowserAnnotationSpec: an xUnit bundle turned into a browser spec by `@browserProfile` alone.
+ */
+@browserProfile( "ci" )
+class extends="testbox.system.BaseSpec" {
+
+	function testHasBrowse() {
+		request.browserAnnotation.xunit = {
+			"browse"   : structKeyExists( variables, "browse" ),
+			"profiles" : getBrowserSupport().getProfiles()
+		}
+	}
+
+	function testBrowses() {
+		if ( !browserAvailable() ) {
+			return
+		}
+		browse( ( page ) => {
+			page.setContent( "<h1>xUnit</h1>" )
+			expect( page ).toSee( "xUnit" )
+		} )
+	}
+
+}

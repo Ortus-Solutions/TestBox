@@ -4,7 +4,8 @@
  * ---
  * TestBox matchers for bx-playwright pages and locators. BoxLang only.
  *
- * testbox.system.BrowserSpec registers them for its bundles. Any other BoxLang spec can register them with:
+ * TestBox registers them for every browser bundle (`@browser`, `@browserProfile` or `@baseURL`, or a BrowserSpec).
+ * Any other BoxLang spec can register them with:
  *
  * <pre>
  * addMatchers( new testbox.system.browser.BrowserMatchers() )
