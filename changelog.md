@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - TESTBOX-471 The bundle badge of the HTML reporters showed a negative error count (`-1 error`) when a bundle threw outside a spec, for example in `beforeAll()`. It now shows none.
 - Specs that do not extend `testbox.system.BaseSpec` errored: the virtual BaseSpec missed its private state (`$specStatsHolder`), three of its methods declared a `BaseSpec` return type and `expect()` resolved `Expectation` relative to the spec. They run again.
+- `ensureBrowserInstalled()` downloaded Chrome for Testing for a profile with a branded channel (`chrome`, `msedge`). It now skips the install, as the installed browser is used.
 - A bundle browser that failed to close left the ledger, so no later run closed it. It now stays in the ledger and the error goes to `testbox.log`.
 - The `run` script now quotes its arguments, so runner options with spaces reach the BoxLang runner intact.
 - The `JUnit` and `ANTJunit` reporters failed on BoxLang without the `bx-esapi` module (`encodeForXMLAttribute()`). They now fall back to `xmlFormat()`, also on Adobe with full null support.

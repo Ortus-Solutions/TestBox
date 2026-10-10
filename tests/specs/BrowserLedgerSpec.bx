@@ -1,5 +1,5 @@
 /**
- * The static ledger of testbox.system.browser.BrowserSupport, with fake managers: no browser needed.
+ * The static ledger of testbox.system.browser.BrowserSupport and its browser install, with fake managers: no browser needed.
  * BoxLang only, like browser specs.
  */
 import testbox.system.browser.BrowserSupport;
@@ -92,6 +92,18 @@ class extends="testbox.system.BaseSpec" {
 				expect( BrowserSupport::trackedCount() ).toBe( before )
 				// Safe to call again: the manager is handed to the ledger
 				support.close()
+			} )
+		} )
+
+		describe( "BrowserSupport install", () => {
+			it( "skips the install for a profile with a branded channel", () => {
+				var result = new BrowserSupport( this ).ensureBrowserInstalled( {
+					getConfig : () => {
+						return { browser : "chromium", channel : "chrome" }
+					}
+				} )
+				expect( result.channel ).toBe( "chrome" )
+				expect( result.installed ).toBeEmpty()
 			} )
 		} )
 	}

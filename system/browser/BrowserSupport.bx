@@ -216,7 +216,8 @@ class {
 	}
 
 	/**
-	 * Ask bx-playwright to ensure the browser selected by the resolved bundle profile is installed.
+	 * Ask bx-playwright to ensure the browser selected by the resolved bundle profile is installed. A profile with a
+	 * branded channel, like chrome or msedge, uses the browser installed on the machine, so nothing is installed.
 	 *
 	 * @manager The resolved bx-playwright manager
 	 *
@@ -233,6 +234,12 @@ class {
 			return variables.browserInstallResult
 		}
 		var browser = resolvedManager.getConfig().browser ?: "chromium"
+		var channel = resolvedManager.getConfig().channel ?: ""
+		// A branded channel, like chrome or msedge, runs the browser installed on the machine: nothing to download
+		if ( len( channel ) ) {
+			variables.browserInstallResult = { "browser" : browser, "channel" : channel, "installed" : [] }
+			return variables.browserInstallResult
+		}
 		try {
 			variables.browserInstallResult = playwrightEnsureBrowser( browser )
 			return variables.browserInstallResult
