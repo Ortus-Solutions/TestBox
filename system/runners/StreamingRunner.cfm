@@ -32,6 +32,9 @@
 <!--- Enable batched code coverage reporter, useful for large test bundles which require spreading over multiple testbox run commands. --->
 <cfparam name="url.isBatched"						default="false">
 
+<cfparam name="url.shard" default="">
+<cfparam name="url.shardRunId" default="">
+
 <cfscript>
 // Initialize streaming service and set SSE headers
 streamingService = new testbox.system.util.StreamingService();
@@ -90,6 +93,8 @@ callbacks = streamingService.createStreamingCallbacks();
 try {
 	results = testbox.runRaw(
 		callbacks   = callbacks,
+        shard = url.shard,
+        shardRunId = url.shardRunId,
 		testSuites  = url.testSuites,
 		testSpecs   = url.testSpecs
 	);

@@ -25,7 +25,16 @@
 <!--- Enable batched code coverage reporter, useful for large test bundles which require spreading over multiple testbox run commands. --->
 <cfparam name="url.isBatched"						default="false">
 
+<cfparam name="url.shard" default="">
+<cfparam name="url.shardRunId" default="">
+
 <cfscript>
+if ( ( url.action ?: "" ) == "capabilities" ) {
+    cfcontent( type="application/json", reset=true )
+    writeOutput( serializeJSON( { "sharding" : true, "workers" : false } ) )
+    abort;
+}
+
 // If we have incoming bundles, then clear out the directory
 if( len( url.bundles ) ){
 	url.directory = ""
@@ -61,13 +70,29 @@ if( len( url.directory ) ){
 	}
 }
 
+// Parallel workers write existing lifecycle callbacks to their private event transport.
+parallelCallbacks = {}
+parallelEnv = new testbox.system.util.Env()
+parallelSelection = parallelEnv.getSystemSetting( 'TESTBOX_PARALLEL_SELECTION', '' )
+if ( len( parallelSelection ) ) {
+    selection = deserializeJSON( fileRead( parallelSelection ) )
+    for ( key in [ 'labels', 'excludes', 'testSuites', 'testSpecs' ] ) {
+        url[ key ] = selection[ key ] ?: ''
+    }
+}
+parallelProgress = parallelEnv.getSystemSetting( 'TESTBOX_PARALLEL_PROGRESS', '' )
+if ( len( parallelProgress ) ) {
+    progress = new testbox.system.parallel.ProgressFile( parallelProgress )
+    parallelCallbacks = progress.createStreamingCallbacks()
+}
+
 // Run Tests using correct reporter
 if( url.dryRun ){
 	discovery = testbox.dryRun()
 	cfcontent( type="application/json", reset="true" )
 	results = serializeJSON( discovery )
 } else {
-	results = testbox.run( reporter=url.reporter )
+	results = testbox.run( reporter=url.reporter, shard=url.shard, shardRunId=url.shardRunId, callbacks=parallelCallbacks, labels=url.labels, excludes=url.excludes, testSuites=url.testSuites, testSpecs=url.testSpecs )
 }
 
 function escapePropertyValue( required string value ) {
