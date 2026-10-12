@@ -75,7 +75,7 @@ When a browser spec fails, TestBox attaches a **screenshot**, a Playwright **tra
 	<img src=".github/assets/browser-testing-report-attachments.png" alt="A failing browser spec with its screenshot, trace and video attached" width="800"/>
 </p>
 
-Open the trace with `bxPlaywright show-trace` and step through every action, the DOM, the console and the network:
+Open the trace with `bxplaywright show-trace` and step through every action, the DOM, the console and the network:
 
 <p align="center">
 	<img src=".github/assets/browser-testing-trace-viewer.png" alt="The Playwright trace viewer showing the failed assertion" width="800"/>

@@ -508,7 +508,7 @@ component extends="testbox.system.BaseSpec" {
 						name : "trace.zip"
 					} );
 					expect( view.kind ).toBe( "trace" );
-					expect( view.command ).toBe( "bxPlaywright show-trace ""/tmp/run/trace.zip""" );
+					expect( view.command ).toBe( "bxplaywright show-trace ""/tmp/run/trace.zip""" );
 				} );
 
 				it( "knows videos and plain files", function(){

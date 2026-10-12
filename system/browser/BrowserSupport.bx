@@ -143,12 +143,12 @@ class {
 	}
 
 	/**
-	 * Can browser specs run here? True on BoxLang with the bx-playwright module (registered as `playwright`) loaded.
+	 * Can browser specs run here? True on BoxLang with the bx-playwright module (registered as `bxplaywright`) loaded.
 	 *
 	 * @return True when browser testing is available
 	 */
 	boolean function isAvailable() {
-		return server.keyExists( "boxlang" ) && getModuleList().keyExists( "playwright" )
+		return server.keyExists( "boxlang" ) && getModuleList().keyExists( "bxplaywright" )
 	}
 
 	/**
@@ -160,7 +160,7 @@ class {
 		if ( !server.keyExists( "boxlang" ) ) {
 			return "Browser specs need the BoxLang engine: bx-playwright only runs on BoxLang"
 		}
-		if ( !getModuleList().keyExists( "playwright" ) ) {
+		if ( !getModuleList().keyExists( "bxplaywright" ) ) {
 			return "bx-playwright is not installed: install-bx-module bx-playwright"
 		}
 		return ""
@@ -169,7 +169,7 @@ class {
 	/**
 	 * The bx-playwright manager of the bundle, created on first use with playwright( profiles, settings ).
 	 *
-	 * @return The bx-playwright manager (models.Playwright@playwright)
+	 * @return The bx-playwright manager (models.Playwright@bxplaywright)
 	 *
 	 * @throws TestBox.SkipSpec When browser testing is not available, so the running spec is skipped
 	 */

@@ -911,7 +911,7 @@ component accessors="true" {
 			view.kind = "video";
 		} else if ( type == "trace" ) {
 			view.kind    = "trace";
-			view.command = "bxPlaywright show-trace ""#path#""";
+			view.command = "bxplaywright show-trace ""#path#""";
 		}
 		return view;
 	}

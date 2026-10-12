@@ -31,7 +31,7 @@ class extends="testbox.system.BaseSpec" {
 			} )
 
 			it( "matches a bx-playwright page", () => {
-				if ( !server.keyExists( "boxlang" ) || !getModuleList().keyExists( "playwright" ) ) {
+				if ( !server.keyExists( "boxlang" ) || !getModuleList().keyExists( "bxplaywright" ) ) {
 					skip( "bx-playwright is not installed: install-bx-module bx-playwright" )
 				}
 				var support = new testbox.system.browser.BrowserSupport( this )
