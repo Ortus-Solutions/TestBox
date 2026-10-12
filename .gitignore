@@ -27,4 +27,5 @@ tests/coverageReport.json
 
 # AI
 .opencode/**
-.agents/skills/**.tmp-bx
+.agents/skills/**
+.tmp-bx
