@@ -27,6 +27,14 @@ component extends="testbox.system.BaseSpec" {
 
 	function run(){
 		describe( "ReportHelper", function(){
+			it( "tells TestBox's own templates from user templates in any install folder", function(){
+				var helper = newHelper();
+				expect( helper.isInternal( "/srv/app/testbox/system/Assertion.cfc" ) ).toBeTrue();
+				expect( helper.isInternal( "/home/me/boxlang_modules/bx-testbox/system/Assertion.bx" ) ).toBeTrue();
+				expect( helper.isInternal( "C:\apps\bx-testbox\system\Assertion.bx" ) ).toBeTrue();
+				expect( helper.isInternal( "/srv/app/tests/specs/MyTest.bx" ) ).toBeFalse();
+			} );
+
 			describe( "status presentation", function(){
 				it( "knows the four statuses regardless of case", function(){
 					var helper = newHelper();

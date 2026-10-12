@@ -346,7 +346,8 @@ component extends="BaseReporter" {
 	 */
 	private boolean function isInternalFrame( required string template ){
 		var normalized = replace( arguments.template, "\", "/", "all" );
-		return findNoCase( "/testbox/system/", normalized ) > 0;
+		// No leading slash: a module installed as bx-testbox lives in .../bx-testbox/system/
+		return findNoCase( "testbox/system/", normalized ) > 0;
 	}
 
 	/**

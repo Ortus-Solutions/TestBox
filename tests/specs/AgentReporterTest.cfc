@@ -26,6 +26,16 @@ component extends="testbox.system.BaseSpec" {
 				expect( reporter.getName() ).toBe( "Agent" );
 			} );
 
+			it( "tells TestBox's own frames from user frames in any install folder", function(){
+				var reporter = new testbox.system.reports.AgentReporter();
+				makePublic( reporter, "isInternalFrame" );
+				// a folder called testbox, the bx-testbox folder install-bx-module creates, and a Windows path
+				expect( reporter.isInternalFrame( "/srv/app/testbox/system/Assertion.cfc" ) ).toBeTrue();
+				expect( reporter.isInternalFrame( "/home/me/boxlang_modules/bx-testbox/system/Assertion.bx" ) ).toBeTrue();
+				expect( reporter.isInternalFrame( "C:\apps\bx-testbox\system\Assertion.bx" ) ).toBeTrue();
+				expect( reporter.isInternalFrame( "/srv/app/tests/specs/MyTest.bx" ) ).toBeFalse();
+			} );
+
 			it( "emits valid minified JSON on a single line", function(){
 				var raw = runAgent( variables.mixed );
 				expect( isJSON( raw ) ).toBeTrue( raw );
