@@ -29,6 +29,8 @@
  * --dry-run : Discover the tests that would execute and print them without running any hooks or test bodies, defaults to `false`.
  *             Pass `json` to output the full discovery payload as raw JSON instead of the formatted text output.
  * --eager-failure : Fail fast, defaults to `false`
+ * --fail-on-error : Exit with code 1 when any spec failed or errored (or a bundle failed outside of a spec), defaults to `false`.
+ *             Turn it on in CI so the build fails; `testbox run` from the bx-testbox module turns it on by default.
  * --verbose : Verbose output, defaults to `false`. Get detailed insights into the test execution.
  * --stream : Stream bundle, suite, and spec results as they complete, defaults to `false`. Prints final totals only.
  * --properties-summary : Generate a properties file with the summary of the test results, defaults to `true`.
@@ -124,6 +126,18 @@ class{
 				}
 			}
 		}
+		return execute( rootPath, options, positional )
+	}
+
+	/**
+	 * Run the tests with the command line already parsed. `main()` calls it with what the shell passed;
+	 * the testbox module of bx-testbox calls it with the flags merged from its settings.
+	 *
+	 * @rootPath   The folder the command runs in: reports, mappings and specs are relative to it
+	 * @options    The flags, without dashes: `{ "directory" : "tests.specs", "reporter" : "text" }`. See the options at the top of this file.
+	 * @positional The words that are not flags. The first one is the bundle to run.
+	 */
+	function execute( required string rootPath, required struct options, array positional = [] ){
 		var defaultReportPath = rootPath & "/tests/results"
 		var dryRunValue       = options[ "dry-run" ] ?: false
 		var isDryRun          = dryRunValue != false && dryRunValue != "false"
@@ -188,6 +202,7 @@ class{
 		}
 
 		// Prepare the after run arguments
+		var failOnError = options[ "fail-on-error" ] ?: false
 		var afterRunArgs = {
 			propertiesSummary  : options[ "properties-summary" ] ?: static.DEFAULT_PROPERTIES_SUMMARY,
 			propertiesFilename  : options[ "properties-filename" ] ?: static.DEFAULT_PROPERTIES_FILENAME,
@@ -328,6 +343,14 @@ class{
 		// WRITE THE ANT JUNIT REPORTS
 		if( initArgs.reporter eq "ANTJunit" ){
 			generateAntReports( report, afterRunArgs );
+		}
+
+		// Tell the shell when something failed, after all the reports are written
+		if( isBoolean( failOnError ) && failOnError ){
+			var failedTargets = testResults.getFailedTargets()
+			if( testResults.getTotalFail() + testResults.getTotalError() > 0 || failedTargets.bundleErrors.len() ){
+				createObject( "java", "java.lang.System" ).exit( 1 )
+			}
 		}
 	}
 

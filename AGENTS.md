@@ -327,6 +327,8 @@ For Data Navigator, Set, Range, or other BoxLang runtime features:
 - Do not define functions with tag syntax (`<cffunction>`) in `.cfm` templates; use `<cfscript>` or a CFC. The transpiler drops them silently (BL-2736).
 - Use `install-bx-module bx-cli` to get CommandBox; it is a BoxLang module now.
 
+The module descriptor is `build/bx-module/ModuleConfig.bx` (settings, `main( args )` with `run`, `version`, `help`). Edit it there, not in the staged output. `:verify=true` also runs `smokeTestCommandLine()`, which installs the zip in a temp project and checks the commands, exit codes and `.boxlang.json` precedence.
+
 ## Dependency Notes
 
 Project dependencies are managed by CommandBox in `box.json`:

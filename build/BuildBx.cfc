@@ -65,6 +65,7 @@ component {
 
 		if ( arguments.verify ) {
 			verifyAgainstSource();
+			smokeTestCommandLine();
 		}
 
 		var zipPath = packageModule( arguments.version );
@@ -206,7 +207,7 @@ component {
 	function stageModule( required version, required buildID, required branch ){
 		say( "Staging the module descriptor ..." );
 
-		fileWrite( variables.stageDir & "/ModuleConfig.bx", moduleConfigSource(), "utf-8" );
+		fileCopy( variables.cwd & "/build/bx-module/ModuleConfig.bx", variables.stageDir & "/ModuleConfig.bx" );
 		fileWrite( variables.stageDir & "/box.json", serializeJSON( moduleBoxJson() ), "utf-8" );
 
 		var source = variables.cwd;
@@ -272,6 +273,101 @@ component {
 		say( "Verified: both runs have the same #onSource.failing.len()# failing or erroring spec(s)." );
 	}
 
+	/**
+	 * Install the staged module in a scratch project the way install-bx-module does (a folder named after the
+	 * slug) and drive the `testbox` command: the commands, the exit codes, and the order of flags over the
+	 * .boxlang.json of the project over the module defaults.
+	 */
+	function smokeTestCommandLine(){
+		say( "Smoke test: running the testbox command from the installed module ..." );
+
+		var project = variables.buildDir & "/smoke";
+		directoryCreate( project & "/tests/specs", true, true );
+		directoryCreate( project & "/specs/alt", true, true );
+		directoryCopy( variables.stageDir, project & "/boxlang_modules/bx-testbox", true );
+
+		var spec = function( required string name, required string value ){
+			return 'class extends="testbox.system.BaseSpec" { function run(){ describe( "smoke", () => { it( "works", () => { expect( 1 ).toBe( #arguments.value# ) } ) } ) } }';
+		};
+		fileWrite( project & "/tests/specs/PassTest.bx", spec( "PassTest", "1" ), "utf-8" );
+		fileWrite( project & "/tests/specs/FailTest.bx", spec( "FailTest", "2" ), "utf-8" );
+		fileWrite( project & "/specs/alt/AltTest.bx", spec( "AltTest", "1" ), "utf-8" );
+		var config = project & "/.boxlang.json";
+
+		var cases = [
+			{ name : "version", args : [ "version" ], exit : 0, has : "TestBox " },
+			{ name : "help", args : [ "help" ], exit : 0, has : "Usage: testbox" },
+			{ name : "no command shows the help", args : [], exit : 0, has : "Usage: testbox" },
+			{ name : "unknown command", args : [ "bogus" ], exit : 1, has : "Unknown command" },
+			{ name : "a passing bundle", args : [ "run", "tests.specs.PassTest" ], exit : 0, has : "Passed: 1" },
+			{ name : "a failing bundle exits 1", args : [ "run", "tests.specs.FailTest" ], exit : 1, has : "Failed: 1" },
+			{ name : "--no-fail-on-error", args : [ "run", "--bundles=tests.specs.FailTest", "--no-fail-on-error" ], exit : 0, has : "Failed: 1" },
+			// .boxlang.json changes the defaults of the project
+			{
+				name   : ".boxlang.json sets directory, reporter and failOnError",
+				config : { directory : "specs.alt", reporter : "json", failOnError : false },
+				args   : [ "run" ],
+				exit   : 0,
+				has    : [ '"bundleStats"', "specs.alt.AltTest" ]
+			},
+			{
+				name   : "a flag beats .boxlang.json (reporter)",
+				config : { directory : "specs.alt", reporter : "json" },
+				args   : [ "run", "--reporter=console" ],
+				exit   : 0,
+				has    : [ "Passed: 1" ],
+				hasNot : [ '"bundleStats"' ]
+			},
+			{
+				name   : "a flag beats .boxlang.json (failOnError)",
+				config : { failOnError : false },
+				args   : [ "run", "--bundles=tests.specs.FailTest", "--fail-on-error" ],
+				exit   : 1,
+				has    : [ "Failed: 1" ]
+			}
+		];
+
+		var failures = [];
+		for ( var thisCase in cases ) {
+			if ( fileExists( config ) ) {
+				fileDelete( config );
+			}
+			if ( structKeyExists( thisCase, "config" ) ) {
+				fileWrite( config, serializeJSON( { "modules" : { "testbox" : { "settings" : thisCase.config } } } ), "utf-8" );
+			}
+			var result = exec( [ variables.boxlangBin, "module:testbox" ].append( thisCase.args, true ), project );
+			// plain text to search: no colors, and the columns of the console reporter squeezed to single spaces
+			var output = regexReplace( regexReplace( result.output, '\x1b\[[0-9;]*m', '' ), '[ \t]+', ' ' );
+			var wanted = isArray( thisCase.has ) ? thisCase.has : [ thisCase.has ];
+			var problems = [];
+			if ( result.exitCode != thisCase.exit ) {
+				problems.append( "exit code #result.exitCode#, expected #thisCase.exit#" );
+			}
+			for ( var text in wanted ) {
+				if ( !findNoCase( text, output ) ) {
+					problems.append( "the output has no [#text#]" );
+				}
+			}
+			for ( var text in ( thisCase.hasNot ?: [] ) ) {
+				if ( findNoCase( text, output ) ) {
+					problems.append( "the output has [#text#]" );
+				}
+			}
+			if ( problems.len() ) {
+				failures.append( "#thisCase.name#: " & problems.toList( "; " ) );
+			}
+			say( "  #problems.len() ? 'FAIL' : 'ok  '# #thisCase.name#" );
+		}
+
+		if ( failures.len() ) {
+			throw(
+				type    = "BuildBx.SmokeTestFailed",
+				message = "#failures.len()# command line check(s) failed on the installed module",
+				detail  = failures.toList( chr( 10 ) )
+			);
+		}
+	}
+
 	/************************************* PRIVATE HELPERS *************************************/
 
 	/**
@@ -322,55 +418,6 @@ component {
 	}
 
 	/**
-	 * The module descriptor. It registers a global /testbox mapping, the same way bx-coldbox registers /coldbox,
-	 * so `testbox.system.*` keeps resolving for every existing spec.
-	 */
-	private string function moduleConfigSource(){
-		var nl = chr( 10 );
-		return [
-			"/**",
-			" * bx-testbox: TestBox for BoxLang.",
-			" * Generated by build/BuildBx.cfc from the TestBox CFML source. Do not edit by hand.",
-			" */",
-			"class {",
-			"",
-			"	property name=""moduleRecord"";",
-			"	property name=""log"";",
-			"",
-			"	this.version = ""@build.version@+@build.number@"";",
-			"",
-			"	/**",
-			"	 * A global /testbox mapping, without the bxModules prefix, so testbox.system.* resolves",
-			"	 */",
-			"	this.mapping = {",
-			"		name      : ""testbox"",",
-			"		usePrefix : false",
-			"	};",
-			"",
-			"	this.author      = ""Ortus Solutions, Corp"";",
-			"	this.description = ""The BoxLang edition of the TestBox BDD and xUnit testing framework"";",
-			"	this.webURL      = ""https://www.ortussolutions.com/products/testbox"";",
-			"	this.enabled     = true;",
-			"	this.dependencies = [];",
-			"",
-			"	function configure(){",
-			"		settings                 = {};",
-			"		interceptors             = [];",
-			"		customInterceptionPoints = [];",
-			"	}",
-			"",
-			"	function onLoad(){",
-			"	}",
-			"",
-			"	function onUnload(){",
-			"	}",
-			"",
-			"}",
-			""
-		].toList( nl );
-	}
-
-	/**
 	 * The module package descriptor, derived from the root box.json so the shared metadata has one source
 	 */
 	private struct function moduleBoxJson(){
@@ -392,7 +439,9 @@ component {
 			"location"         : "forgeboxStorage",
 			"boxlang"          : {
 				"minimumVersion" : variables.minBoxLang,
-				"moduleName"     : variables.moduleName
+				"moduleName"     : variables.moduleName,
+				// install-bx-module creates a `testbox` command that runs `boxlang module:testbox`
+				"executable"     : "testbox"
 			},
 			"ignore" : [ "**/.*" ]
 		};
