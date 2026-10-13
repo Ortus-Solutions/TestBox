@@ -269,6 +269,20 @@ component extends="testbox.system.BaseSpec" {
 					expect( origin.user ).toBeTrue();
 				} );
 
+				it( "skips the ColdBox testing helpers to point at the spec", function(){
+					var spec = {
+						status     : "Failed",
+						failOrigin : [
+							frame( "/app/coldbox/system/testing/BaseTestCase.cfc", 1016 ),
+							frame( "/app/tests/specs/browser/ShopSpec.bx", 25 )
+						],
+						error : {}
+					};
+					var origin = newHelper().origin( spec );
+					expect( origin.line ).toBe( 25 );
+					expect( origin.template ).toInclude( "ShopSpec.bx" );
+				} );
+
 				it( "falls back to the first frame when only TestBox frames exist", function(){
 					var spec = {
 						status     : "Failed",
