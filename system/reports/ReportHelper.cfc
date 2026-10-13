@@ -617,10 +617,14 @@ component accessors="true" {
 	}
 
 	/**
-	 * Is the template part of TestBox's own engine?
+	 * Is the template part of TestBox's own engine, or of the ColdBox testing helpers? A failure thrown by a helper such
+	 * as ColdBox's assertRouteIs() points at the spec that called it.
 	 */
 	boolean function isInternal( required string template ){
-		return findNoCase( "/testbox/system/", arguments.template ) > 0;
+		return findNoCase( "/testbox/system/", arguments.template ) > 0 || findNoCase(
+			"/coldbox/system/testing/",
+			arguments.template
+		) > 0;
 	}
 
 	/**
