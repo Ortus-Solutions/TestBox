@@ -134,7 +134,12 @@ class{
 		// This mimics how engines resolve Application.bx|cfc by walking up the directory
 		// tree from the test location. This ensures that mappings defined in the project's
 		// Application (e.g., /qb, /tests, /modules) are available to test bundles.
-		discoverAndLoadApplicationMappings( rootPath, options )
+		var applicationName = discoverAndLoadApplicationMappings( rootPath, options )
+
+		// BoxLang starts an application only for an Application.bx next to the running script, never for this runner.
+		// Start one named after the project's Application, so specs that use the application or session scopes
+		// (such as ColdBox's BaseTestCase) get them
+		startApplication( applicationName )
 
 		// Gather the test arguments from the options
 		var initArgs = {
@@ -804,8 +809,10 @@ class{
 	 *
 	 * @rootPath The project root (CLI execution path)
 	 * @options The parsed CLI options
+	 *
+	 * @return The name of the Application (its `this.name`), or empty string when there is none
 	 */
-	private function discoverAndLoadApplicationMappings( required string rootPath, required struct options ){
+	private string function discoverAndLoadApplicationMappings( required string rootPath, required struct options ){
 		// Determine the starting directory for the upward search.
 		// For --bundles, convert dot-notation to a directory path.
 		// For --directory, use the directory mapping.
@@ -830,8 +837,22 @@ class{
 		// Walk up from startDir to rootPath, looking for Application.cfc or Application.bx
 		var appFile = findApplicationFile( startDir, arguments.rootPath )
 		if( appFile.len() ) {
-			loadApplicationMappings( appFile )
+			return loadApplicationMappings( appFile )
 		}
+		return ""
+	}
+
+	/**
+	 * Start a named application with session management for the test run, keeping the mappings loaded so far.
+	 *
+	 * @name The application name, `TestBoxRunner` when empty
+	 */
+	private function startApplication( string name = "" ){
+		var mappings = getApplicationMetadata().mappings
+		bx:application
+			name=( arguments.name.len() ? arguments.name : "TestBoxRunner" )
+			sessionManagement=true
+			mappings=mappings;
 	}
 
 	/**
@@ -892,8 +913,10 @@ class{
 	 * into the current application context.
 	 *
 	 * @appFilePath The absolute path to the Application file
+	 *
+	 * @return The name of the Application (its `this.name`), or empty string when it has none or cannot be loaded
 	 */
-	private function loadApplicationMappings( required string appFilePath ){
+	private string function loadApplicationMappings( required string appFilePath ){
 		try {
 			// Register a temporary mapping for the Application file's directory
 			// so we can instantiate it via dot-notation.
@@ -913,11 +936,13 @@ class{
 					action="update"
 					mappings=getApplicationMetadata().mappings.append( appComponent.mappings );
 			}
+			return isSimpleValue( appComponent.name ?: "" ) ? ( appComponent.name ?: "" ) : ""
 		} catch( any e ) {
 			// If the Application file can't be loaded (e.g., missing dependencies),
 			// silently continue — the tests may still work without the mappings,
 			// or they'll fail with a more specific error.
 		}
+		return ""
 	}
 
 	/**

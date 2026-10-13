@@ -691,8 +691,14 @@ component accessors="true" {
 		if ( !getFunctionList().keyExists( "getPageContext" ) ) {
 			return this;
 		}
+		// BoxLang with bx-web-support defines getPageContext() outside of web requests too, such as in the CLI runner, where it throws
 		try {
-			var response = getPageContext().getResponse();
+			var pageContext = getPageContext();
+		} catch ( Any e ) {
+			return this;
+		}
+		try {
+			var response = pageContext.getResponse();
 			response.addHeader( "x-testbox-totalDuration", javacast( "string", results.getTotalDuration() ) );
 			response.addHeader( "x-testbox-totalBundles", javacast( "string", results.getTotalBundles() ) );
 			response.addHeader( "x-testbox-totalSuites", javacast( "string", results.getTotalSuites() ) );
