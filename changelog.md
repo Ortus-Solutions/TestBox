@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `build/BuildBx.cfc` builds the BoxLang-only `bx-testbox` module: it runs `boxlang cftranspile` over `system/`, repairs the known transpiler gaps, drops the Lucee and Adobe specific code, and zips the result. `:verify=true` also runs the suite on the CFML source and on the output and requires the same failing specs. It needs BoxLang 1.19+ (the first release with the `cftranspile` fixes BL-2735 and BL-2736).
+- `bx-testbox` ships a `testbox` command: `testbox run`, `testbox version` and `testbox help` (`boxlang module:testbox`, and `testbox` on the PATH through `boxlang.executable`). The defaults of `run` are module settings you can override per project in `.boxlang.json` under `modules.testbox.settings`; a flag beats `.boxlang.json`, which beats the defaults. `:verify=true` smoke tests the command.
+- `BoxLangRunner` has `--fail-on-error`: exit with code 1 when a spec fails or errors, and a new `execute()` entry point.
 - TESTBOX-471 Ask AI on failures: copy a ready-made prompt, preview it, open it in ChatGPT or Claude, or copy it as JSON for a coding agent. It is on by default with a first-use notice and is controlled by the `aiAssist`, `aiProviders`, `aiContextLines`, `aiStackFrames` and `aiPrompt` reporter options.
 - TESTBOX-471 The `urlParams` reporter option sets request params such as `editor` and `aiAssist` when a report is produced from code and there is no url scope.
 - TESTBOX-471 `build/vendor` rebuilds the inlined front-end libraries with one command (`box run-script assets:update`) and CI keeps them honest.

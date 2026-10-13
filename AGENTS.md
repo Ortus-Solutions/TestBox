@@ -315,6 +315,20 @@ For Data Navigator, Set, Range, or other BoxLang runtime features:
 - For BoxLang `BoxSet`, use `isInstanceOf( target, "BoxSet" )` until a stable `isSet()` BIF exists in the BoxLang runtime used by TestBox. Compare sets by `size()` plus `contains()` semantics, not by array order.
 - For Data Navigator path assertions, keep missing-path semantics explicit: positive path assertions fail when a path is missing, while negated path assertions pass when a path is missing.
 
+## bx-testbox Build
+
+`build/BuildBx.cfc` builds `bx-testbox`, the BoxLang-only module, by transpiling `system/` with `boxlang cftranspile`. Run it with `box task run taskfile=build/BuildBx target=run :version=7.2.0 :verify=true` after `box install`, with BoxLang 1.19+ on the PATH or in `BOXLANG_BIN`.
+
+- Edit the CFML source, never the transpiled output. The build recreates the output every time.
+- Keep the CFML source working on Lucee, Adobe and BoxLang. The build removes the Lucee and Adobe code from the output (`patch()`); it never changes the source.
+- `fixup()` and `patch()` assert that what they change exists exactly once, so a build failure after a source change usually means `patch()` needs updating.
+- Do not put a comment between `}` and `else`: `cftranspile` moves it after `else`, which BoxLang cannot parse. Put the comment inside the block.
+- `url` is a real scope: it exists in web mode and not in CLI mode. Guard it with `param name="url" default={};` right before reading it, in every function that reads it. Never use `variables.url`.
+- Do not define functions with tag syntax (`<cffunction>`) in `.cfm` templates; use `<cfscript>` or a CFC. The transpiler drops them silently (BL-2736).
+- Use `install-bx-module bx-cli` to get CommandBox; it is a BoxLang module now.
+
+The module descriptor is `build/bx-module/ModuleConfig.bx` (settings, `main( args )` with `run`, `version`, `help`). Edit it there, not in the staged output. `:verify=true` also runs `smokeTestCommandLine()`, which installs the zip in a temp project and checks the commands, exit codes and `.boxlang.json` precedence.
+
 ## Dependency Notes
 
 Project dependencies are managed by CommandBox in `box.json`:

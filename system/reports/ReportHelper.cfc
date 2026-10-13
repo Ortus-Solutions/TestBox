@@ -620,7 +620,8 @@ component accessors="true" {
 	 * Is the template part of TestBox's own engine?
 	 */
 	boolean function isInternal( required string template ){
-		return findNoCase( "/testbox/system/", arguments.template ) > 0;
+		// No leading slash: a module installed as bx-testbox lives in .../bx-testbox/system/
+		return findNoCase( "testbox/system/", replace( arguments.template, "\", "/", "all" ) ) > 0;
 	}
 
 	/**

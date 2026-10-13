@@ -1,0 +1,225 @@
+/**
+ * bx-testbox: TestBox for BoxLang.
+ *
+ * This is the module descriptor of the bx-testbox artifact. It lives in the TestBox repo as
+ * build/bx-module/ModuleConfig.bx and build/BuildBx.cfc copies it into the module, stamping the version.
+ *
+ * Besides the global /testbox mapping, it gives you a command line:
+ *
+ *   testbox run                         run the specs in tests.specs
+ *   testbox run my.bundle               run one bundle
+ *   testbox run --directory=tests.unit --reporter=text
+ *   testbox version
+ *   testbox help
+ *
+ * `testbox` is a shortcut for `boxlang module:testbox`. The defaults for `run` are the module settings below.
+ * Override them for a project in a .boxlang.json next to where you run it, and for a single run with a flag.
+ * A flag wins over .boxlang.json, which wins over the defaults here.
+ */
+class {
+
+	property name="moduleRecord";
+	property name="log";
+
+	/**
+	 * The module version, stamped by the build
+	 */
+	this.version = "@build.version@+@build.number@";
+
+	/**
+	 * A global /testbox mapping, without the bxModules prefix, so testbox.system.* resolves
+	 */
+	this.mapping = {
+		name      : "testbox",
+		usePrefix : false
+	};
+
+	this.author       = "Ortus Solutions, Corp";
+	this.description  = "The BoxLang edition of the TestBox BDD and xUnit testing framework";
+	this.webURL       = "https://www.ortussolutions.com/products/testbox";
+	this.enabled      = true;
+	this.dependencies = [];
+
+	/**
+	 * The setting names, and the runner flag each one stands for.
+	 * An empty string means "not set": the runner keeps its own default.
+	 */
+	variables.FLAGS = {
+		directory      : "directory",
+		bundles        : "bundles",
+		bundlesPattern : "bundles-pattern",
+		reporter       : "reporter",
+		labels         : "labels",
+		excludes       : "excludes",
+		recurse        : "recurse",
+		verbose        : "verbose",
+		stream         : "stream",
+		retries        : "retries",
+		failOnError    : "fail-on-error",
+		reportPath     : "reportpath",
+		writeReport    : "write-report"
+	};
+
+	function configure(){
+		/**
+		 * The defaults of `testbox run`. Override any of them for a project in a .boxlang.json:
+		 *
+		 *   { "modules": { "testbox": { "settings": { "reporter": "text", "directory": "tests.unit" } } } }
+		 */
+		settings = {
+			// the dot path of the folder with your specs
+			directory      : "tests.specs",
+			// a list of bundles to run instead of a folder
+			bundles        : "",
+			// which files are bundles, such as *Spec*.bx|*Test*.bx
+			bundlesPattern : "",
+			// console, text, min, json, junit, tap, agent, ...
+			reporter       : "console",
+			// only run, or skip, specs with these labels
+			labels         : "",
+			excludes       : "",
+			recurse        : true,
+			verbose        : false,
+			stream         : false,
+			// rerun a failing spec up to this many more times
+			retries        : 0,
+			// exit with code 1 when a spec fails or errors, so a build fails
+			failOnError    : true,
+			// where the reports go, tests/results when empty
+			reportPath     : "",
+			writeReport    : true
+		};
+
+		interceptors             = [];
+		customInterceptionPoints = [];
+	}
+
+	function onLoad(){
+	}
+
+	function onUnload(){
+	}
+
+	/**
+	 * The command line entry point: boxlang module:testbox <command> [flags]
+	 *
+	 * @args The raw arguments after module:testbox
+	 */
+	function main( args = [] ){
+		var parsed      = server.cli.parsed
+		var options     = parsed.options
+		var positionals = parsed.positionals
+		var command     = positionals.len() ? lCase( positionals.first() ) : ""
+
+		// `testbox --help`, `testbox -h` and `testbox --version` are commands too
+		if( !command.len() ){
+			if( options.keyExists( "version" ) ){
+				command = "version"
+			} else {
+				command = "help"
+			}
+		}
+
+		try {
+			switch( command ){
+				case "run":
+					runTests( parsed )
+					break
+				case "version":
+					println( versionLine() )
+					break
+				case "help":
+					println( helpText() )
+					break
+				default:
+					println( "Unknown command [#command#]." )
+					println( "" )
+					println( helpText() )
+					exit( 1 )
+			}
+		} catch( any e ){
+			// BoxLang ends with exit code 0 when the main of a module throws, which would make a failed run look green
+			println( "testbox #command# failed: #e.message#" )
+			if( e.detail.len() ){
+				println( e.detail )
+			}
+			exit( 1 )
+		}
+	}
+
+	/**
+	 * End the process with an exit code
+	 */
+	private function exit( required numeric code ){
+		createObject( "java", "java.lang.System" ).exit( arguments.code )
+	}
+
+	/**
+	 * Run the specs: the module settings are the defaults, the command line flags win, and the BoxLang runner does the work
+	 *
+	 * @parsed server.cli.parsed: the flags in `options` and the words in `positionals`
+	 */
+	private function runTests( required struct parsed ){
+		var merged = {}
+		var flags  = variables.FLAGS
+
+		// 1. the settings: the defaults overridden by the .boxlang.json of the project
+		for( var setting in flags ){
+			var value = moduleRecord.settings[ setting ] ?: ""
+			// an empty string is "not set", but false and 0 are real values
+			if( isSimpleValue( value ) && !isBoolean( value ) && !len( value ) ){
+				continue
+			}
+			merged[ flags[ setting ] ] = value
+		}
+
+		// 2. the flags of this run win
+		merged.append( arguments.parsed.options )
+
+		// 3. hand the merged flags to the runner, and take `run` out of the words so it does not take it for a bundle
+		new testbox.system.runners.BoxLangRunner().execute(
+			rootPath   = server.cli.executionPath,
+			options    = merged,
+			positional = arguments.parsed.positionals.slice( 2 )
+		)
+	}
+
+	private string function versionLine(){
+		var line = "TestBox " & new testbox.system.TestBox().getVersion()
+		if( server.keyExists( "boxlang" ) ){
+			line &= " on BoxLang " & server.boxlang.version
+		}
+		return line
+	}
+
+	private string function helpText(){
+		var defaults = moduleRecord.settings
+		return [
+			versionLine(),
+			"",
+			"Usage: testbox <command> [flags]",
+			"",
+			"Commands:",
+			"  run [bundle]   Run your specs. Without a bundle it runs the folder in --directory.",
+			"  version        Print the TestBox and BoxLang versions.",
+			"  help           Print this help.",
+			"",
+			"Flags of run (a flag wins over the settings below):",
+			"  --directory=tests.specs     The dot path of the folder with the specs (default #defaults.directory#)",
+			"  --bundles=a.b,c.d           Run these bundles instead of a folder",
+			"  --reporter=console          console, text, min, json, junit, tap, agent, ... (default #defaults.reporter#)",
+			"  --labels=a,b  --excludes=c  Only run, or skip, specs with these labels",
+			"  --filter-bundles --filter-suites --filter-specs   Narrow the run to some bundles, suites or specs",
+			"  --no-recurse                Do not look into sub folders",
+			"  --no-fail-on-error          Exit with 0 even when a spec fails (default: exit with 1)",
+			"  --verbose  --stream  --retries=N  --dry-run  --failed  --reportpath=...  --write-report=false",
+			"",
+			"Every flag of the BoxLang runner works. Set your defaults per project in a .boxlang.json:",
+			"",
+			'  { "modules": { "testbox": { "settings": { "reporter": "text", "directory": "tests.unit" } } } }',
+			"",
+			"The settings are: " & variables.FLAGS.keyList().replace( ",", ", ", "all" ) & "."
+		].toList( char( 10 ) )
+	}
+
+}

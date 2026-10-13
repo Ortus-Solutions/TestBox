@@ -27,3 +27,41 @@ jobs:
       - uses: Ortus-Solutions/commandbox-action@v1.0.3
         with:
           cmd: run-script format:check
+
+  bx_testbox:
+    name: Build bx-testbox
+    runs-on: ubuntu-latest
+    # Non-blocking until the job has proven itself on CI
+    continue-on-error: true
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v7
+
+      - name: Setup Java
+        uses: actions/setup-java@v6.0.0
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Setup CommandBox
+        uses: Ortus-Solutions/setup-commandbox@v2.0.1
+
+      - name: Install Dependencies
+        run: box install --production
+
+      # cftranspile needs the fixes from BL-2735 and BL-2736, first released in BoxLang 1.19
+      - name: Install BoxLang 1.19+
+        run: |
+          curl -fsSL -o boxlang.zip https://downloads.ortussolutions.com/ortussolutions/boxlang/boxlang-snapshot.zip
+          unzip -q boxlang.zip -d "$RUNNER_TEMP/boxlang"
+          chmod +x "$RUNNER_TEMP/boxlang/bin/boxlang"
+          echo "BOXLANG_BIN=$RUNNER_TEMP/boxlang/bin/boxlang" >> "$GITHUB_ENV"
+
+      - name: Build and verify bx-testbox
+        run: box task run taskfile=build/BuildBx target=run :version=0.0.0 :buildID=${{ github.run_number }} :branch=development :verify=true
+
+      - name: Upload bx-testbox
+        uses: actions/upload-artifact@v7
+        with:
+          name: bx-testbox
+          path: .artifacts/bx-testbox/**
