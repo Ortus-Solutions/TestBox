@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.2.0] - 2026-10-13
+
 ### Added
 
 - TESTBOX-471 Ask AI on failures: copy a ready-made prompt, preview it, open it in ChatGPT or Claude, or copy it as JSON for a coding agent. It is on by default with a first-use notice and is controlled by the `aiAssist`, `aiProviders`, `aiContextLines`, `aiStackFrames` and `aiPrompt` reporter options.
@@ -161,7 +163,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - TESTBOX-400 Drop Adobe 2018 support
 
-[unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v7.1.0...HEAD
+[unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v7.2.0...HEAD
+[7.2.0]: https://github.com/Ortus-Solutions/TestBox/compare/v7.1.0...v7.2.0
 [7.1.0]: https://github.com/Ortus-Solutions/TestBox/compare/v7.0.0...v7.1.0
 [7.0.0]: https://github.com/Ortus-Solutions/TestBox/compare/v6.5.0...v7.0.0
 [6.5.0]: https://github.com/Ortus-Solutions/TestBox/compare/v6.4.0...v6.5.0
