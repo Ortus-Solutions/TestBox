@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The HTML and Agent reports point a failure at the spec that called a ColdBox testing helper such as `assertRouteIs()`, not at `coldbox/system/testing/BaseTestCase.cfc`: frames under `/coldbox/system/testing/` are treated like TestBox internals when choosing the origin, the code snippet and Open in editor.
+
 ## [7.2.0] - 2026-10-13
 
 ### Added
