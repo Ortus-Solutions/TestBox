@@ -1,0 +1,56 @@
+/**
+ * Copyright Since 2005 TestBox Framework by Luis Majano and Ortus Solutions, Corp
+ * www.ortussolutions.com
+ * ---
+ * Base spec for browser tests, built on the bx-playwright module. BoxLang only.
+ *
+ * <pre>
+ * class extends="testbox.system.BrowserSpec" {
+ *     function run() {
+ *         describe( "Login", () => {
+ *             it( "signs in", () => {
+ *                 browse( ( page ) => {
+ *                     page.visit( "/login" )
+ *                         .fill( "Email", "luis@ortus.com" )
+ *                         .click( "Sign in" )
+ *                     expect( page ).toHavePath( "/dashboard" )
+ *                     expect( page ).toSee( "Welcome" )
+ *                 } )
+ *             } )
+ *         } )
+ *     }
+ * }
+ * </pre>
+ *
+ * Extending it is optional: the `@browser` annotation gives any spec the same browser support, for example
+ * a spec that extends another base class. `@browserProfile` or `@baseURL` alone turn it on as well.
+ *
+ * Class annotations, written as BoxLang annotations above `class`:
+ * - `@browserProfile( "ci" )`: bx-playwright profiles for the bundle browser, a list such as `ci,mobile`
+ * - `@browserAutoInstall( false )`: disable the default first-use browser download when the browser is pre-installed
+ * - `@baseURL( "http://localhost:8080" )`: the URL relative visits resolve against. Defaults to the
+ *   `--web-server-url` of the BoxLang runner when it started a web server, else bx-playwright's own
+ *   setting or `BX_PLAYWRIGHT_BASEURL`
+ *
+ * TestBox attaches testbox.system.browser.BrowserSupport to the bundle, which adds:
+ * - `browse( callback, options )`: run a callback with fresh, isolated browser pages
+ * - `browserAvailable()`: can browser specs run here? Handy for `skip = !browserAvailable()`
+ * - `ensureBrowserInstalled()`: install the profile browser, for example from beforeAll() when auto-install is off
+ * - `getBrowserSupport()`: the bundle BrowserSupport
+ * - `this.playwright()`: the bundle manager. An unqualified `playwright()` still calls the bx-playwright BIF,
+ *   which returns a new manager that the bundle does not close
+ * - the browser matchers of testbox.system.browser.BrowserMatchers, for every spec of the bundle
+ *
+ * The bundle shares one browser, started on first use, and every browse() call gets fresh, isolated pages.
+ * The browser closes after the bundle, even when an afterAll() throws, so your own beforeAll() and afterAll()
+ * methods need no super calls.
+ *
+ * A missing browser is installed on first use by the deployed bx-playwright module. This can make the first
+ * request slower and requires network access. Set `@browserAutoInstall( false )` to require pre-provisioning.
+ * bx-playwright assertion failures (`Playwright.AssertionFailed`) count as spec failures. When bx-playwright
+ * is not installed, or the engine is not BoxLang, browse() and playwright() skip the running spec.
+ * Browser specs are not thread safe: do not use `asyncAll` in suites that browse.
+ */
+@browser
+class extends="testbox.system.BaseSpec" {
+}

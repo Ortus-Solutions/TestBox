@@ -76,10 +76,16 @@ jobs:
       - name: Upload Test Results Artifacts
         if: always()
         uses: actions/upload-artifact@v7
+        id: upload-test-results
         with:
           name: testbox-test-results-${{ matrix.cfengine }}-${{ matrix.jdkVersion }}-${{ matrix.fullNull }}
           path: |
             tests/results/**/*
+
+      - name: Link TestBox Reports In Job Summary
+        if: always()
+        run: |
+          echo "[Download TestBox reports, including the HTML report with embedded screenshots](${{ steps.upload-test-results.outputs.artifact-url }})" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Debugging Info
         if: always()

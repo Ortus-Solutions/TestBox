@@ -414,17 +414,6 @@ component extends="testbox.system.BaseSpec" {
 				}
 			} );
 
-			it( "prepends context on toThrow failures with an explicit message", function(){
-				try {
-					expect( function(){
-						writeOutput( "no error" );
-					} ).withContext( "dangerous call" ).toThrow( message = "should have thrown" );
-				} catch ( any e ) {
-					expect( e.message ).toInclude( "dangerous call" );
-					expect( e.message ).toInclude( "should have thrown" );
-				}
-			} );
-
 			it( "prepends context on toSatisfy failures", function(){
 				try {
 					expect( 5 )

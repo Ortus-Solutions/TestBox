@@ -6,50 +6,65 @@
 </cfoutput>
 
 <!--- LOCAL FUNCTIONS --->
-<cffunction name="getStatusBit" output="false">
-	<cfargument name="status">
-	<cfscript>
-		switch( arguments.status ){
-			case "failed" : { return "not ok"; }
-			case "error" : { return "not ok"; }
-			case "skipped" : { return "ok"; }
-			default : { return "ok"; }
-		}
-	</cfscript>
-</cffunction>
+<cfscript>
+function getStatusBit( status ) output="false" {
+    switch ( arguments.status ) {
+        case "failed": {
+            return "not ok";
+        }
+        case "error": {
+            return "not ok";
+        }
+        case "skipped": {
+            return "ok";
+        }
+        default: {
+            return "ok";
+        }
+    }
+}
+</cfscript>
 
-<cffunction name="renderOrigin" output="false">
-	<cfargument name="origin">
-	<cfscript>
-		var sb = createObject( "java", "java.lang.StringBuilder" ).init("");
-		for( var thisRow in arguments.origin ){
-			for( var thisKey in thisRow ){
-				sb.append( '## #thisKey#:#thisRow[ thisKey ]# #chr(13)#' );
-			}
-		}
-		return sb.toString();
-	</cfscript>
-</cffunction>
+<cfscript>
+function renderOrigin( origin ) output="false" {
+    var sb = createObject( "java", "java.lang.StringBuilder" ).init( "" );
+    for ( var thisRow in arguments.origin ) {
+        for ( var thisKey in thisRow ) {
+            sb.append( "## #thisKey#:#thisRow[ thisKey ]# #chr( 13 )#" );
+        }
+    }
+    return sb.toString();
+}
+</cfscript>
 
 <!--- Recursive Output --->
-<cffunction name="genSuiteReport" output="false">
-	<cfargument name="suiteStats">
-	<cfargument name="bundleStats">
-
-<cfsavecontent variable="local.report"><cfoutput><cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec"><!---
---->#getStatusBit( local.thisSpec.status )# #totalIndex# #arguments.suiteStats.name# #local.thisSpec.displayName#<!---
----><cfif local.thisSpec.status eq "failed"> ## TODO #local.thisSpec.failMessage# #chr(13)#
-#renderOrigin( local.thisSpec.failorigin )#<!---
----><cfelseif local.thisSpec.status eq "skipped"> ## SKIP #chr(13)#<!---
----><cfelseif local.thisSpec.status eq "error"> ## TODO #local.thisSpec.error.message# #chr(13)#
-## #replace( local.thisSpec.error.stackTrace , chr(10), '#chr(13)### ', "all" )# #chr(13)#<!---
----><cfelse>#chr(13)#</cfif>
-<cfset totalIndex++><!---
----></cfloop><!---
----><cfif arrayLen( arguments.suiteStats.suiteStats )>
-<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">#genSuiteReport( local.nestedSuite, arguments.bundleStats )#</cfloop>
-</cfif>
-</cfoutput>
-</cfsavecontent>
-<cfreturn local.report>
-</cffunction>
+<cfscript>
+function genSuiteReport( suiteStats, bundleStats ) output="false" {
+    savecontent variable="local.report" {
+        for ( local.thisSpec in arguments.suiteStats.specStats ) {
+            writeOutput( getStatusBit( local.thisSpec.status ) & " " & totalIndex & " " & arguments.suiteStats.name & " " & local.thisSpec.displayName );
+            if ( local.thisSpec.status == "failed" ) {
+                writeOutput( " ## TODO " & local.thisSpec.failMessage & " " & chr( 13 ) & chr( 10 ) & renderOrigin( local.thisSpec.failorigin ) );
+            } else if ( local.thisSpec.status == "skipped" ) {
+                writeOutput( " ## SKIP " & chr( 13 ) );
+            } else if ( local.thisSpec.status == "error" ) {
+                writeOutput( " ## TODO " & local.thisSpec.error.message & " " & chr( 13 ) & chr( 10 ) );
+                writeOutput( "## " & replace( local.thisSpec.error.stackTrace, chr( 10 ), chr( 13 ) & "## ", "all" ) & " " & chr( 13 ) );
+            } else {
+                writeOutput( chr( 13 ) );
+            }
+            writeOutput( chr( 10 ) );
+            totalIndex++;
+        }
+        if ( arrayLen( arguments.suiteStats.suiteStats ) ) {
+            writeOutput( chr( 10 ) );
+            for ( local.nestedSuite in arguments.suiteStats.suiteStats ) {
+                writeOutput( genSuiteReport( local.nestedSuite, arguments.bundleStats ) );
+            }
+            writeOutput( chr( 10 ) );
+        }
+        writeOutput( chr( 10 ) & chr( 10 ) );
+    }
+    return local.report;
+}
+</cfscript>

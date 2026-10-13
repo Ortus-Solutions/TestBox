@@ -11,6 +11,7 @@ tests/results/**
 
 # Dependencies
 system/modules/**
+build/vendor/node_modules/
 
 # Build Process
 WEB-INF

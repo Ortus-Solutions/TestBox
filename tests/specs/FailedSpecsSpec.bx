@@ -1,0 +1,56 @@
+/**
+ * testbox.system.util.FailedSpecs: the .testbox-failed.json file behind the BoxLang runner --failed option.
+ * What goes in it, TestResult.getFailedTargets(), is covered by FailedTargetsTest on every engine.
+ */
+import testbox.system.util.FailedSpecs;
+
+class extends="testbox.system.BaseSpec" {
+
+	function beforeAll() {
+		variables.reportPath = getTempDirectory() & "testbox-failed-" & createUUID()
+	}
+
+	function afterAll() {
+		if ( directoryExists( variables.reportPath ) ) {
+			directoryDelete( variables.reportPath, true )
+		}
+	}
+
+	function run() {
+		describe( "FailedSpecs", () => {
+			beforeEach( () => {
+				if ( directoryExists( variables.reportPath ) ) {
+					directoryDelete( variables.reportPath, true )
+				}
+			} )
+
+			it( "writes the file into the report path and reads it back", () => {
+				var results = runFixtures( "tests.resources.failures.PlaywrightFailureFixture" )
+				var written = FailedSpecs::write( variables.reportPath, results )
+
+				expect( fileExists( variables.reportPath & "/.testbox-failed.json" ) ).toBeTrue()
+				expect( FailedSpecs::getFilePath( variables.reportPath & "/" ) ).toBe( variables.reportPath & "/.testbox-failed.json" )
+				expect( FailedSpecs::read( variables.reportPath ) ).toBe( written )
+			} )
+
+			it( "reads empty arrays when the file is missing or invalid", () => {
+				expect( FailedSpecs::read( variables.reportPath ) ).toBe( { bundles : [], specs : [], bundleErrors : [] } )
+				directoryCreate( variables.reportPath )
+				fileWrite( FailedSpecs::getFilePath( variables.reportPath ), "not json" )
+				expect( FailedSpecs::read( variables.reportPath ) ).toBe( { bundles : [], specs : [], bundleErrors : [] } )
+			} )
+		} )
+	}
+
+	/**
+	 * Run fixture bundles and return their raw results.
+	 *
+	 * @bundles The fixture bundle paths, as a list
+	 *
+	 * @return The TestResult
+	 */
+	private function runFixtures( required string bundles ) {
+		return new testbox.system.TestBox( bundles = arguments.bundles, options = { coverage : { enabled : false } } ).runRaw()
+	}
+
+}

@@ -86,7 +86,7 @@ component extends="BaseReporter" {
 		// iterate over
 		for ( var thisSuite in arguments.suiteStats ) {
 			// build out full suite name
-			var fullName = encodeForXMLAttribute( arguments.parentName & thisSuite.name );
+			var fullName = encodeXMLAttribute( arguments.parentName & thisSuite.name );
 
 			// build test suite header
 			// cfformat-ignore-start
@@ -100,8 +100,8 @@ component extends="BaseReporter" {
 				time=""#thisSuite.totalDuration / 1000#""
 				skipped=""#thisSuite.totalSkipped#""
 				timestamp=""#dateFormat( now(), "mm/dd/yy" )# #timeFormat( now(), "medium" )#""
-				hostname=""#encodeForXMLAttribute( hostname )#""
-				package=""#encodeForXMLAttribute( arguments.bundleStats.path )#""
+				hostname=""#encodeXMLAttribute( hostname )#""
+				package=""#encodeXMLAttribute( arguments.bundleStats.path )#""
 				>"
 			);
 			// cfformat-ignore-end
@@ -124,7 +124,7 @@ component extends="BaseReporter" {
 					r,
 					arguments.bundlestats,
 					thisSuite.suiteStats,
-					encodeForXMLAttribute( fullName & "##" )
+					encodeXMLAttribute( fullName & "##" )
 				);
 			}
 		}
@@ -144,7 +144,7 @@ component extends="BaseReporter" {
 		// cfformat-ignore-start
 		out.append(
 			"<testcase
-			name=""#encodeForXMLAttribute( stats.name )#""
+			name=""#encodeXMLAttribute( stats.name )#""
 			time=""#stats.totalDuration / 1000#""
 			classname=""#arguments.bundleStats.path#""
 			status=""#stats.status#""
@@ -154,7 +154,7 @@ component extends="BaseReporter" {
 		switch ( stats.status ) {
 			case "failed": {
 				out.append(
-					"<failure message=""#encodeForXMLAttribute( stats.failMessage )#""><![CDATA[
+					"<failure message=""#encodeXMLAttribute( stats.failMessage )#""><![CDATA[
 					#stats.failorigin.toString()#
 					]]></failure>"
 				);
@@ -166,7 +166,7 @@ component extends="BaseReporter" {
 			}
 			case "error": {
 				out.append(
-					"<error type=""#encodeForXMLAttribute( stats.error.type )#"" message=""#encodeForXMLAttribute( stats.error.message )#""><![CDATA[
+					"<error type=""#encodeXMLAttribute( stats.error.type )#"" message=""#encodeXMLAttribute( stats.error.message )#""><![CDATA[
 					#stats.error.stackTrace.toString()#
 					]]></error>"
 				);
@@ -174,6 +174,12 @@ component extends="BaseReporter" {
 			}
 		}
 		// cfformat-ignore-end
+
+		// Files attached with attach(), in the [[ATTACHMENT|path]] format of the JUnit attachments plugin
+		var attachmentsOutput = getJUnitAttachmentsOutput( stats )
+		if ( len( attachmentsOutput ) ) {
+			out.append( "<system-out>#xmlFormat( attachmentsOutput )#</system-out>" )
+		}
 
 		out.append( "</testcase>" );
 	}
@@ -203,7 +209,7 @@ component extends="BaseReporter" {
 			}
 			if ( isSimpleValue( arguments.collection[ thisProp ] ) ) {
 				arguments.buffer.append(
-					"<property name=""#encodeForXMLAttribute( lCase( thisProp ) )#"" value=""#encodeForXMLAttribute( arguments.collection[ thisProp ] )#"" />"
+					"<property name=""#encodeXMLAttribute( lCase( thisProp ) )#"" value=""#encodeXMLAttribute( arguments.collection[ thisProp ] )#"" />"
 				);
 			} else if (
 				isArray( arguments.collection[ thisProp ] ) OR
@@ -211,7 +217,7 @@ component extends="BaseReporter" {
 				isQuery( arguments.collection[ thisProp ] )
 			) {
 				arguments.buffer.append(
-					"<property name=""#encodeForXMLAttribute( lCase( thisProp ) )#"" value=""#encodeForXMLAttribute( arguments.collection[ thisProp ].toString() )#"" />"
+					"<property name=""#encodeXMLAttribute( lCase( thisProp ) )#"" value=""#encodeXMLAttribute( arguments.collection[ thisProp ].toString() )#"" />"
 				);
 			}
 		}

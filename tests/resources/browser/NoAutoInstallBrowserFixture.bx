@@ -1,0 +1,13 @@
+/**
+ * Fixture for BrowserSpecTest: browser auto-install is explicitly disabled.
+ */
+@browserAutoInstall( false )
+class extends="testbox.system.BrowserSpec" {
+
+	/**
+	 * This fixture has no specs to execute.
+	 */
+	function run() {
+	}
+
+}

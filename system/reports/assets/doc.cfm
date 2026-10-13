@@ -1,122 +1,75 @@
+<!---
+	Doc reporter layout: the run as a document. A bundle is a section, a suite a nested section,
+	a spec an entry in a description list. Reads well on screen and on paper.
+--->
+<cfsavecontent variable="local.content">
 <cfoutput>
-<!-- Stats --->
-<section class="border border-info my-1 p-1 bg-light clearfix" id="globalStats">
+#renderPartial( "toolbar", { expand : false } )#
 
-	<h2>Stats (#results.getTotalDuration()# ms)</h2>
-	<p>
-		Bundles/Suites/Specs: #results.getTotalBundles()#/#results.getTotalSuites()#/#results.getTotalSpecs()#
-		<br>
-		<span class="badge badge-success" data-status="passed">Pass: #results.getTotalPass()#</span>
-		<span class="badge badge-warning" data-status="failed">Failures: #results.getTotalFail()#</span>
-		<span class="badge badge-danger" data-status="error">Errors: #results.getTotalError()#</span>
-		<span class="badge badge-secondary" data-status="skipped">Skipped: #results.getTotalSkipped()#</span>
-		<br>
-		<cfif arrayLen( results.getLabels() )>
-		Labels Applied: #arrayToList( results.getLabels() )#<br>
-		</cfif>
-		<cfif results.getCoverageEnabled()>
-		Coverage: #numberFormat( results.getCoverageData().stats.percTotalCoverage*100, '9.9' )#%
-		</cfif>
-	</p>
-</section>
+<div class="tb-doc">
+	<nav class="tb-doc-nav" aria-label="Bundles">
+		<ul>
+			<cfloop array="#variables.bundleStats#" item="thisBundle">
+				<cfif !variables.helper.includesBundle( thisBundle )>
+					<cfcontinue>
+				</cfif>
+				<cfset local.problem = variables.helper.bundleHasProblems( thisBundle )>
+				<li>
+					<a href="##bundle-#variables.helper.safeId( thisBundle.id )#" data-bundle="#variables.helper.safeId( thisBundle.id )#">
+						<svg class="tb-icon tb-st-icon" data-status="#( local.problem ? "failed" : "passed" )#" aria-hidden="true">
+							<use href="##i-#( local.problem ? "x-circle-fill" : "check-circle-fill" )#"/>
+						</svg>
+						#encodeForHtml( thisBundle.name )#
+					</a>
+				</li>
+			</cfloop>
+		</ul>
+	</nav>
 
-<!--- Bundle Info --->
-<cfloop array="#variables.bundleStats#" index="thisBundle">
-	<!--- Skip if not in the includes list --->
-	<cfif len( url.testBundles ) and !listFindNoCase( url.testBundles, thisBundle.path )>
-		<cfcontinue>
-	</cfif>
-	<section class="bundle" id="bundle-#thisBundle.path#">
+	<article>
+		<cfloop array="#variables.bundleStats#" item="thisBundle">
+			<cfif !variables.helper.includesBundle( thisBundle )>
+				<cfcontinue>
+			</cfif>
+			<cfset local.bundleId = variables.helper.safeId( thisBundle.id )>
+			<section
+				class="tb-doc-bundle tb-bundle"
+				id="bundle-#local.bundleId#"
+				data-bundle="#local.bundleId#"
+				aria-labelledby="bundle-title-#local.bundleId#"
+			>
+				<h2 id="bundle-title-#local.bundleId#">#encodeForHtml( thisBundle.name )#</h2>
+				<p class="small text-body-secondary tb-num">
+					<span class="tb-mono">#encodeForHtml( thisBundle.path )#</span>
+					&middot; #variables.helper.plural( thisBundle.totalSpecs, "spec" )#
+					&middot; #encodeForHtml( variables.helper.duration( thisBundle.totalDuration ) )#
+					&middot; <a href="#variables.helper.href( variables.helper.runURL( bundle = thisBundle.path ) )#">Run this bundle</a>
+				</p>
 
-		<!--- bundle stats --->
-		<h2>#thisBundle.name# (#thisBundle.totalDuration# ms)</h2>
-		<p>
-			Suites/Specs: #thisBundle.totalSuites#/#thisBundle.totalSpecs#
-			<br>
-			<span class="badge badge-success" 	data-status="passed" data-bundleid="#thisBundle.id#">Pass: #thisBundle.totalPass#</span>
-			<span class="badge badge-warning" 	data-status="failed" data-bundleid="#thisBundle.id#">Failures: #thisBundle.totalFail#</span>
-			<span class="badge badge-danger" 	data-status="error" data-bundleid="#thisBundle.id#">Errors: #thisBundle.totalError#</span>
-			<span class="badge badge-secondary" 	data-status="skipped" data-bundleid="#thisBundle.id#">Skipped: #thisBundle.totalSkipped#</span>
-		</p>
+				<cfif !isSimpleValue( thisBundle.globalException )>
+					#renderPartial( "exception", { bundle : thisBundle } )#
+				</cfif>
 
-		<!-- Global Error --->
-		<cfif !isSimpleValue( thisBundle.globalException )>
-			<h2>Global Bundle Exception</h2>
-			<p>#thisBundle.globalException.stacktrace#</p>
-		</cfif>
+				<cfloop array="#thisBundle.suiteStats#" item="thisSuite">
+					#renderPartial( "doc-suite", { suite : thisSuite, bundle : thisBundle, level : 3 } )#
+				</cfloop>
 
-		<!-- Iterate over bundle suites -->
-		<cfloop array="#thisBundle.suiteStats#" index="suiteStats">
-			<section class="suite #statusToBootstrapClass( suiteStats.status )#" data-suiteid="#suiteStats.id#">
-			<dl>
-				#genSuiteReport( suiteStats, thisBundle )#
-			</dl>
+				<cfif structKeyExists( thisBundle, "debugBuffer" ) && arrayLen( thisBundle.debugBuffer )>
+					#renderPartial( "debug", { bundle : thisBundle } )#
+				</cfif>
+				<p class="tb-empty" hidden>No specs match the current filters.</p>
 			</section>
 		</cfloop>
+		<p id="tb-no-matches" class="tb-empty" hidden>No bundles match the current filters.</p>
+	</article>
+</div>
 
-	</section>
-</cfloop>
-
-<cffunction name="statusToBootstrapClass" output="false">
-	<cfargument name="status">
-
-	<cfif lcase( arguments.status ) eq "failed">
-		<cfset bootstrapClass = "text-warning">
-	<cfelseif lcase( arguments.status ) eq "error">
-		<cfset bootstrapClass = "text-danger">
-	<cfelseif lcase( arguments.status ) eq "passed">
-		<cfset bootstrapClass = "text-success">
-	<cfelseif lcase( arguments.status ) eq "skipped">
-		<cfset bootstrapClass = "text-secondary">
-	</cfif>
-
-	<cfreturn bootstrapClass>
-</cffunction>
-
-<!--- Recursive Output --->
-<cffunction name="genSuiteReport" output="false">
-	<cfargument name="suiteStats">
-	<cfargument name="bundleStats">
-
-	<cfsavecontent variable="local.report">
-		<cfoutput>
-		<!--- Suite Results --->
-		<h2>+#arguments.suiteStats.name# (#arguments.suiteStats.totalDuration# ms)</h2>
-		<dl>
-			<cfloop array="#arguments.suiteStats.specStats#" index="local.thisSpec">
-				<!--- Spec Results --->
-				<cfset thisSpecStatusClass = statusToBootstrapClass(local.thisSpec.status)>
-
-				<dt class="spec #thisSpecStatusClass#" data-bundleid="#arguments.bundleStats.id#" data-specid="#local.thisSpec.id#">
-					#local.thisSpec.displayName# (#local.thisSpec.totalDuration# ms)
-				</dt>
-
-				<cfif local.thisSpec.status eq "failed">
-					<dd>#encodeForHTML( local.thisSpec.failMessage )#</dd>
-					<dd><textarea cols="100" rows="20">#local.thisSpec.failOrigin.toString()#</textarea></dd>
-				</cfif>
-
-				<cfif local.thisSpec.status eq "error">
-					<dd>#encodeForHTML( local.thisSpec.error.message )#</dd>
-					<dd><textarea cols="100" rows="20">#local.thisSpec.error.stacktrace#</textarea></dd>
-				</cfif>
-			</cfloop>
-
-			<!--- Do we have nested suites --->
-			<cfif arrayLen( arguments.suiteStats.suiteStats )>
-				<cfloop array="#arguments.suiteStats.suiteStats#" index="local.nestedSuite">
-					<section class="suite #statusToBootstrapClass(arguments.suiteStats.status)#" data-bundleid="#arguments.bundleStats.id#">
-					<dl>
-						#genSuiteReport( local.nestedSuite, arguments.bundleStats )#
-					</dl>
-					</section>
-				</cfloop>
-			</cfif>
-
-		</dl>
-		</cfoutput>
-	</cfsavecontent>
-
-	<cfreturn local.report>
-</cffunction>
+<!--- payloads for Ask AI --->
+<cfif variables.helper.getOptions().aiAssist>
+	<cfloop array="#variables.failureList#" item="thisFailure">
+		#renderPartial( "ask-payloads", { failure : thisFailure } )#
+	</cfloop>
+</cfif>
 </cfoutput>
+</cfsavecontent>
+<cfoutput>#renderPartial( "page", { content : local.content } )#</cfoutput>

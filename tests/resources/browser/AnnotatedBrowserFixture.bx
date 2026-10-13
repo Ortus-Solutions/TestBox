@@ -1,0 +1,35 @@
+/**
+ * Fixture for BrowserAnnotationSpec: a plain BaseSpec turned into a browser spec by the `@browser` annotation.
+ * Its specs record what TestBox attached in request.browserAnnotation.
+ */
+@browser
+class extends="testbox.system.BaseSpec" {
+
+	function run() {
+		describe( "Annotated browser fixture", () => {
+			it( "has the browser methods", () => {
+				request.browserAnnotation.annotated = {
+					"browse"                 : structKeyExists( variables, "browse" ) && structKeyExists( this, "browse" ),
+					"browserAvailable"       : structKeyExists( variables, "browserAvailable" ),
+					"ensureBrowserInstalled" : structKeyExists( variables, "ensureBrowserInstalled" ),
+					"getBrowserSupport"      : structKeyExists( variables, "getBrowserSupport" ),
+					"closeBrowser"           : structKeyExists( variables, "closeBrowser" ),
+					"playwright"             : structKeyExists( this, "playwright" ),
+					"mixerLeftOver"          : structKeyExists( this, "$wbMixer" ),
+					"support"                : getBrowserSupport()
+				}
+			} )
+
+			it( title = "browses with an unqualified browse() and the browser matchers", skip = !browserAvailable(), body = () => {
+				browse( ( page ) => {
+					page.setContent( "<title>Annotated</title><h1>Hello</h1>" )
+					expect( page ).toSee( "Hello" )
+					expect( page ).toHaveTitle( "Annotated" )
+				} )
+				request.browserAnnotation.manager = this.playwright()
+				request.browserAnnotation.sameManager = this.playwright() === getBrowserSupport().getManager()
+			} )
+		} )
+	}
+
+}

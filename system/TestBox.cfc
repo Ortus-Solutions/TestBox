@@ -51,7 +51,7 @@ component accessors="true" {
 	 * @reporter       The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a testbox.system.reports.IReporter
 	 * @labels         The list or array of labels that a suite or spec must have in order to execute.
 	 * @excludes       The list or array of labels that a suite or spec must not have in order to execute.
-	 * @options        A structure of configuration options that are optionally used to configure a runner.
+	 * @options        A structure of configuration options that are optionally used to configure a runner. Use `retries` (numeric) to rerun failing or erroring specs that declare no retries of their own.
 	 * @bundlesPattern A globbing pattern list to match bundles to test ONLY, matches directoryList() filters! Ex: *Spec|*Test
 	 */
 	any function init(
@@ -323,7 +323,7 @@ component accessors="true" {
 	 * @reporter     The type of reporter to use for the results, by default is uses our 'simple' report. You can pass in a core reporter string type or an instance of a testbox.system.reports.IReporter. You can also pass a struct if the reporter requires options: {type="", options={}}
 	 * @labels       The list or array of labels that a suite or spec must have in order to execute.
 	 * @excludes     The list or array of labels that a suite or spec must not have in order to execute.
-	 * @options      A structure of configuration options that are optionally used to configure a runner.
+	 * @options      A structure of configuration options that are optionally used to configure a runner. Use `retries` (numeric) to rerun failing or erroring specs that declare no retries of their own.
 	 * @testBundles  A list or array of bundle names that are the ones that will be executed ONLY!
 	 * @testSuites   A list or array of suite names that are the ones that will be executed ONLY!
 	 * @testSpecs    A list or array of test names that are the ones that will be executed ONLY!
@@ -366,7 +366,7 @@ component accessors="true" {
 	 * @directory    The directory to test which can be a simple mapping path or a struct with the following options: [ mapping = the path to the directory using dot notation (myapp.testing.specs), recurse = boolean, filter = closure that receives the path of the class found, it must return true to process or false to continue process ]
 	 * @labels       The list or array of labels that a suite or spec must have in order to execute.
 	 * @excludes     The list or array of labels that a suite or spec must not have in order to execute.
-	 * @options      A structure of configuration options that are optionally used to configure a runner.
+	 * @options      A structure of configuration options that are optionally used to configure a runner. Use `retries` (numeric) to rerun failing or erroring specs that declare no retries of their own.
 	 * @testBundles  A list or array of bundle names that are the ones that will be executed ONLY!
 	 * @testSuites   A list or array of suite names that are the ones that will be executed ONLY!
 	 * @testSpecs    A list or array of test names that are the ones that will be executed ONLY!
@@ -728,13 +728,11 @@ component accessors="true" {
 				type    : buildReporter( variables.reporter ),
 				options : variables.options
 			};
-		}
-		// If the incoming reporter is an object.
-		else if ( isObject( variables.reporter ) ) {
+		} else if ( isObject( variables.reporter ) ) {
+			// If the incoming reporter is an object.
 			iData = { type : variables.reporter, options : variables.options };
-		}
-		// Do we have reporter type and options
-		else if ( isStruct( variables.reporter ) ) {
+		} else if ( isStruct( variables.reporter ) ) {
+			// Do we have reporter type and options
 			iData.type = buildReporter( variables.reporter.type );
 			if ( structKeyExists( variables.reporter, "options" ) ) {
 				iData.options = variables.reporter.options;
@@ -756,6 +754,9 @@ component accessors="true" {
 		switch ( arguments.reporter ) {
 			case "json": {
 				return new "testbox.system.reports.JSONReporter"( );
+			}
+			case "agent": {
+				return new "testbox.system.reports.AgentReporter"( );
 			}
 			case "xml": {
 				return new "testbox.system.reports.XMLReporter"( );
@@ -847,6 +848,9 @@ component accessors="true" {
 			return this;
 		}
 
+		// Browser support for bundles with a browser annotation (BoxLang only)
+		var browserSupport = attachBrowserSupport( target );
+
 		// verify call backs
 		if ( structKeyExists( arguments.callbacks, "onBundleStart" ) ) {
 			arguments.callbacks.onBundleStart( target, testResults );
@@ -877,6 +881,20 @@ component accessors="true" {
 				detail  = e.stackTrace,
 				type    = "BundleRunnerMajorException"
 			);
+		} finally {
+			// Close the bundle browser, even when an afterAll() threw
+			if ( !isNull( browserSupport ) ) {
+				try {
+					browserSupport.close();
+				} catch ( Any e ) {
+					// Never hide the bundle results: log it, the ledger closes the browser on a later run
+					writeLog(
+						type = "error",
+						text = "Error closing the browser of bundle #arguments.bundlePath#: #e.message# #e.detail#",
+						file = "testbox.log"
+					);
+				}
+			}
 		}
 
 		// Store debug buffer for this bundle
@@ -890,6 +908,26 @@ component accessors="true" {
 		announceToModules( "onBundleEnd", { target : target, testResults : testResults } );
 
 		return this;
+	}
+
+	/**
+	 * Attach browser support to a bundle whose class, or a class it extends, has a `browser`, `browserProfile`
+	 * or `baseURL` annotation: testbox.system.browser.BrowserSupport mixes browse() and friends into it.
+	 * BoxLang only, as bx-playwright runs on BoxLang.
+	 *
+	 * @target The bundle
+	 *
+	 * @return The attached testbox.system.browser.BrowserSupport, or null when the bundle does not browse
+	 */
+	private any function attachBrowserSupport( required target ){
+		if ( !structKeyExists( server, "boxlang" ) ) {
+			return;
+		}
+		var support = new testbox.system.browser.BrowserSupport( arguments.target );
+		if ( !support.isEnabled() ) {
+			return;
+		}
+		return support.attach();
 	}
 
 	/**
@@ -927,6 +965,22 @@ component accessors="true" {
 			// If target has overriden method, then don't override it with mixin, simulated inheritance
 			if ( NOT structKeyExists( bundle, key ) AND NOT listFindNoCase( excludedProperties, key ) ) {
 				bundle.injectMixin( key, baseObject[ key ] );
+			}
+		}
+
+		// Mix in the private state the methods rely on, like $assert and $specStatsHolder
+		var baseVariables = variables.utility
+			.getMixerUtil()
+			.start( baseObject )
+			.getVariablesMixin();
+		var bundleVariables = bundle.getVariablesMixin();
+		for ( var key in baseVariables ) {
+			if (
+				!listFindNoCase( "this,super", key )
+				&& !isCustomFunction( baseVariables[ key ] )
+				&& !structKeyExists( bundleVariables, key )
+			) {
+				bundleVariables[ key ] = baseVariables[ key ];
 			}
 		}
 

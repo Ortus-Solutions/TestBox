@@ -9,6 +9,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- TESTBOX-471 Ask AI on failures: copy a ready-made prompt, preview it, open it in ChatGPT or Claude, or copy it as JSON for a coding agent. It is on by default with a first-use notice and is controlled by the `aiAssist`, `aiProviders`, `aiContextLines`, `aiStackFrames` and `aiPrompt` reporter options.
+- TESTBOX-471 The `urlParams` reporter option sets request params such as `editor` and `aiAssist` when a report is produced from code and there is no url scope.
+- TESTBOX-471 `build/vendor` rebuilds the inlined front-end libraries with one command (`box run-script assets:update`) and CI keeps them honest.
+- TESTBOX-469 New `AgentReporter` (`reporter=agent`): a compact, token-efficient JSON reporter for AI agents and automation. It emits totals plus only failed/errored specs, with options `detail`, `maxFailures`, `maxMessageLength`, `includeStack`, `stackDepth`, `includeSkipped` and `includeDebug`.
+- Browser testing on BoxLang with the bx-playwright module, turned on by class annotations: any spec whose class, or a class it extends, has `@browser`, `@browserProfile` or `@baseURL` gets `browse( callback, options )`, `browserAvailable()`, `ensureBrowserInstalled()`, `getBrowserSupport()`, `this.playwright()` and the browser matchers, mixed in by the runner (public methods the spec declares itself are kept, private ones with the same name are replaced). `@browser( false )` turns it off for a class whose parent turns it on. `testbox.system.BrowserSpec` is an optional base class that carries `@browser`. One browser per bundle, closed by the runner after the bundle even when an `afterAll()` throws (when a request aborts, the next run that opens a browser closes the one left behind), and the kept screenshots, trace and videos of a failed `browse()` attached to the spec. Specs skip with an install hint when bx-playwright is missing or the engine is not BoxLang. The logic lives in `testbox.system.browser.BrowserSupport`.
+- Browser matchers in `testbox.system.browser.BrowserMatchers`, registered for every browser bundle and usable from any BoxLang spec with `addMatchers()`: `toHaveTitle()`, `toHaveURL()`, `toHavePath()` and `toSee()` for pages, `toHaveText()`, `toBeVisible()`, `toBeHidden()`, `toHaveCount()` and `toHaveValue()` for locators, plus their `not` forms. They delegate to the retrying bx-playwright assertions, also when negated, and fail with the bx-playwright message.
+- `attach( path, type, name )` in every spec to attach files to the running spec, kept in the new `attachments` array of the spec stats for passed and failed specs. The JSON report includes them, the Simple report links them, the JUnit and ANT JUnit reports add a `<system-out>` with one `[[ATTACHMENT|path]]` line per file, and the text, console and stream outputs list them under failed specs.
+- Spec retries: a `retries` argument on `it()`, `fit()` and `xit()`, a `retries` bundle annotation, a `retries` method annotation for xUnit tests, and a global `retries` runner option (BoxLang runner `--retries=N`). The spec value wins over the bundle annotation, which wins over the global option. A failing or erroring spec reruns its `beforeEach()`, body and `afterEach()` (or `setup()`, test and `teardown()`) up to N more times and records the final attempt. Skipped specs are never retried. The new `attempts` spec stat counts the runs and the text, console, Simple and stream outputs show "(passed after N attempts)".
+- Run only what failed: `TestResult.getFailedTargets()` returns the bundles and spec ids that failed or errored in a run (bundles that failed outside of a spec go to `bundleErrors` and are not rerun). The Simple, Min, Dot and Doc reports show a **Run Failed** button next to **Run All**, a link built from the report itself, so web runners keep no state. The BoxLang runner writes `{reportpath}/.testbox-failed.json` on every run and `./run --failed` reruns only those; when the file is missing or lists nothing, it prints a message and runs nothing.
+- The Simple, Min, Dot and Doc reports show image attachments (failure screenshots) as thumbnails that open full size, embedded in the page so they work over http and in saved reports. Images up to the new `inlineImageMaxKB` reporter option (default `2048`, `0` turns it off) are embedded, larger ones stay links. A trace attachment offers a **Copy show-trace command** button. A failed spec's screenshots are embedded once, in its failure card.
+- BoxLang runner `--web-server`, `--web-server-url` and `--web-server-timeout`: start a web server command before the tests, wait until its URL answers, stop it and its child processes after the tests, and exit with code 1 when it does not answer in time. The URL becomes the default `baseURL` of browser bundles through `server.testbox.webServerURL`.
+
+### Changed
+
+- TESTBOX-471 The HTML reporters (`Simple`, `Min`, `Dot`, `Doc`) are rebuilt on Bootstrap 5.3, Bootstrap Icons, Alpine and Prism, with light and dark themes and the new TestBox logos. Everything is still inlined so reports run airgapped, and a page went from about 1.4 MB to about 0.45 MB.
+- TESTBOX-471 The verdict is the first thing in every HTML report: a sticky green or red banner with the counts, a proportion bar and status filters, and bundle exceptions get their own alert.
+- TESTBOX-471 Re-run links (run bundle, suite or spec) are plain links to the runner that carry only the requested `testBundles`, `testSuites` or `testSpecs`, so a refresh runs it again. Every other runner option falls back to its default.
+- TESTBOX-471 `Dot` opens a spec's details in a drawer instead of `alert()`, `Doc` is a styled page with a bundle navigation, and the status chips of `Min` and `Dot` now filter.
+- TESTBOX-471 Report templates keep only markup. Their logic moved to `system/reports/ReportHelper.cfc` and `BaseHTMLReporter.cfc`.
+- `Playwright.AssertionFailed` exceptions now count as spec failures, like `TestBox.AssertionFailed`, in BDD specs and xUnit tests, keeping their message and detail. Other `Playwright.*` errors still count as errors.
+- xUnit failures now also record the failure detail in the spec stats.
+
+### Fixed
+
+- TESTBOX-471 The bundle badge of the HTML reporters showed a negative error count (`-1 error`) when a bundle threw outside a spec, for example in `beforeAll()`. It now shows none.
+- Specs that do not extend `testbox.system.BaseSpec` errored: the virtual BaseSpec missed its private state (`$specStatsHolder`), three of its methods declared a `BaseSpec` return type and `expect()` resolved `Expectation` relative to the spec. They run again.
+- `ensureBrowserInstalled()` downloaded Chrome for Testing for a profile with a branded channel (`chrome`, `msedge`). It now skips the install, as the installed browser is used.
+- A bundle browser that failed to close left the ledger, so no later run closed it. It now stays in the ledger and the error goes to `testbox.log`.
+- The `run` script now quotes its arguments, so runner options with spaces reach the BoxLang runner intact.
+- The `JUnit` and `ANTJunit` reporters failed on BoxLang without the `bx-esapi` module (`encodeForXMLAttribute()`). They now fall back to `xmlFormat()`, also on Adobe with full null support.
+
+### Removed
+
+- TESTBOX-471 The `url.fullPage` switch of the HTML reporters. A report is always a complete page.
+
 ## [7.1.0] - 2026-09-11
 
 <https://testbox.ortusbooks.com/readme/release-history/whats-new-with-7.1.0>

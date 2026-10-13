@@ -47,6 +47,9 @@ component extends="BaseReporter" {
 		// build top level test suites container
 		buffer.append( "<testsuites>" );
 
+		// the url scope only exists in web mode, so default it for CLI runs
+		param name="url" default={};
+
 		// iterate over bundles
 		var bundlestats = r.getBundleStats();
 		for ( var thisBundle in bundleStats ) {
@@ -71,9 +74,9 @@ component extends="BaseReporter" {
 				skipped=""#thisBundle.totalSkipped#""
 				time=""#thisBundle.totalDuration / 1000#""
 				timestamp=""#dateFormat( now(), "yyyy-mm-dd" )#T#timeFormat( now(), "HH:mm:ss" )#""
-				hostname=""#encodeForXMLAttribute( hostname )#""
-				package=""#encodeForXMLAttribute( thisBundle.path )#""
-				name=""#encodeForXMLAttribute( thisBundle.name )#""
+				hostname=""#encodeXMLAttribute( hostname )#""
+				package=""#encodeXMLAttribute( thisBundle.path )#""
+				name=""#encodeXMLAttribute( thisBundle.name )#""
 				>"
 			);
 			// cfformat-ignore-end
@@ -111,13 +114,13 @@ component extends="BaseReporter" {
 			// cfformat-ignore-start
 			out.append(
 				"<testcase
-				name=""#encodeForXMLAttribute( arguments.bundleStats.name )#""
+				name=""#encodeXMLAttribute( arguments.bundleStats.name )#""
 				time=""#arguments.bundleStats.totalDuration / 1000#""
 				classname=""#arguments.bundleStats.path#""
 				>
 					<error
 						type=""globalException""
-						message=""#encodeForXMLAttribute( arguments.bundleStats.globalException.message )#""><![CDATA[
+						message=""#encodeXMLAttribute( arguments.bundleStats.globalException.message )#""><![CDATA[
 						#arguments.bundleStats.globalException.stackTrace.toString()#
 					]]></error>
 			</testcase>
@@ -171,7 +174,7 @@ return;
 		// cfformat-ignore-start
 		out.append(
 			"<testcase
-			name=""#encodeForXMLAttribute( fullName & " " & stats.name )#""
+			name=""#encodeXMLAttribute( fullName & " " & stats.name )#""
 			time=""#stats.totalDuration / 1000#""
 			classname=""#arguments.bundleStats.path#""
 			>"
@@ -180,7 +183,7 @@ return;
 		switch ( stats.status ) {
 			case "failed": {
 				out.append(
-					"<failure message=""#encodeForXMLAttribute( stats.failMessage )#""><![CDATA["
+					"<failure message=""#encodeXMLAttribute( stats.failMessage )#""><![CDATA["
 				);
 				if ( isArray( stats.failOrigin ) && arrayLen( stats.failOrigin ) ) {
 					for ( var thisContext in stats.failOrigin ) {
@@ -217,7 +220,7 @@ return;
 			}
 			case "error": {
 				out.append(
-					"<error type=""#encodeForXMLAttribute( !isNull( stats.error.type ) ? stats.error.type : '' )#"" message=""#encodeForXMLAttribute( stats.error.message )#""><![CDATA[
+					"<error type=""#encodeXMLAttribute( stats.error.type ?: '' )#"" message=""#encodeXMLAttribute( stats.error.message )#""><![CDATA[
 					#stats.error.stackTrace.toString()#
 					]]></error>"
 				);
@@ -225,6 +228,12 @@ return;
 			}
 		}
 		// cfformat-ignore-end
+
+		// Files attached with attach(), in the [[ATTACHMENT|path]] format of the JUnit attachments plugin
+		var attachmentsOutput = getJUnitAttachmentsOutput( stats )
+		if ( len( attachmentsOutput ) ) {
+			out.append( "<system-out>#xmlFormat( attachmentsOutput )#</system-out>" )
+		}
 
 		out.append( "</testcase>" );
 	}
@@ -256,11 +265,11 @@ return;
 				// Regression known to exist in Lucee 5.2.8.50
 				try {
 					arguments.buffer.append(
-						"<property name=""#encodeForXMLAttribute( lCase( thisProp ) )#"" value=""#encodeForXMLAttribute( arguments.collection[ thisProp ] )#"" />"
+						"<property name=""#encodeXMLAttribute( lCase( thisProp ) )#"" value=""#encodeXMLAttribute( arguments.collection[ thisProp ] )#"" />"
 					);
 				} catch ( any e ) {
 					arguments.buffer.append(
-						"<property name=""#encodeForXMLAttribute( lCase( thisProp ) )#"" value="""" />"
+						"<property name=""#encodeXMLAttribute( lCase( thisProp ) )#"" value="""" />"
 					);
 				}
 			} else if (
@@ -269,7 +278,7 @@ return;
 				isQuery( arguments.collection[ thisProp ] )
 			) {
 				arguments.buffer.append(
-					"<property name=""#encodeForXMLAttribute( lCase( thisProp ) )#"" value=""#encodeForXMLAttribute( arguments.collection[ thisProp ].toString() )#"" />"
+					"<property name=""#encodeXMLAttribute( lCase( thisProp ) )#"" value=""#encodeXMLAttribute( arguments.collection[ thisProp ].toString() )#"" />"
 				);
 			}
 		}

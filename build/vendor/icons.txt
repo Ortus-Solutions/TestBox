@@ -1,0 +1,30 @@
+# One Bootstrap Icons name per line (https://icons.getbootstrap.com). Only these end up in the inlined sprite.
+# Use them in templates as: <svg class="tb-icon"><use href="##i-NAME"/></svg>   (## inside <cfoutput>)
+arrow-repeat
+arrows-collapse
+arrows-expand
+box-arrow-up-right
+braces
+bug
+check-circle-fill
+chevron-down
+chevron-right
+circle-half
+clipboard
+dash-circle
+exclamation-octagon-fill
+exclamation-triangle-fill
+eye
+funnel
+graph-up-arrow
+layers
+moon-stars-fill
+play-fill
+search
+shield-lock
+stars
+stopwatch
+sun-fill
+tag
+x-circle-fill
+x-lg

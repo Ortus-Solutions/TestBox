@@ -1,0 +1,17 @@
+{
+	"name": "testbox-report-assets",
+	"private": true,
+	"description": "Pinned front-end dependencies that TestBox inlines into its HTML reporters. Nothing here ships to users, only the generated files in system/reports/assets/vendor do.",
+	"type": "module",
+	"scripts": {
+		"build": "node build.mjs",
+		"check": "node build.mjs --check",
+		"update": "npx --yes npm-check-updates --upgrade --target minor && npm install && node build.mjs"
+	},
+	"dependencies": {
+		"alpinejs": "3.17.4",
+		"bootstrap": "5.3.8",
+		"bootstrap-icons": "1.13.1",
+		"prismjs": "1.30.0"
+	}
+}

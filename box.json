@@ -1,6 +1,6 @@
 {
     "name":"TestBox",
-    "version":"7.1.0",
+    "version":"7.2.0",
     "location":"https://downloads.ortussolutions.com/ortussolutions/testbox/@build.version@/testbox-@build.version@.zip",
     "author":"Ortus Solutions <info@ortussolutions.com>",
     "slug":"testbox",
@@ -42,7 +42,8 @@
     },
     "devDependencies":{
         "commandbox-boxlang":"*",
-        "commandbox-cfformat":"*"
+        "commandbox-cfformat":"*",
+        "bx-playwright": "be"
     },
     "installPaths":{
         "cbstreams":"system/modules/cbstreams/",
@@ -53,6 +54,9 @@
         "release":"recipe build/release.boxr",
         "format":"cfformat run system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc --overwrite",
         "format:check":"cfformat check system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
+        "assets:build":"!cd build/vendor && npm ci && npm run build",
+        "assets:check":"!cd build/vendor && npm ci && npm run check",
+        "assets:update":"!cd build/vendor && npm ci && npm run update",
         "format:watch":"cfformat watch system/**/*.cfc,test-harness/**/*.cfc,tests/specs/**/*.cfc ./.cfformat.json",
         "start:lucee":"server start serverConfigFile=server-lucee@5.json",
         "start:adobe":"server start serverConfigFile=server-adobe@2025.json",

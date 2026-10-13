@@ -86,7 +86,7 @@ component{
             .params(
 				verbose    = true,
 				outputFile = resultsDir & "/test-results",
-				outputFormats="json,antjunit"
+				outputFormats="json,antjunit,simple"
             )
             .run();
     }
