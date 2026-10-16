@@ -16,7 +16,8 @@ document.addEventListener( "alpine:init", () => {
 			recurse: true,
 			bundlesPattern: "",
 			labels: "",
-			excludes: ""
+			excludes: "",
+			workers: 1
 		},
 
 		// Data
@@ -31,6 +32,12 @@ document.addEventListener( "alpine:init", () => {
 			totalError: 0,
 			totalSkipped: 0
 		},
+
+		parallelCapabilities: null,
+		workerProgress: window.createTestBoxWorkerProgress(),
+		parallelRunId: null,
+		cancelUrl: null,
+		progressTimer: null,
 
 		// UI Filters
 		searchQuery: "",
@@ -62,6 +69,7 @@ document.addEventListener( "alpine:init", () => {
 			this._initialized = true;
 
 			this.loadPreferences();
+			if ( window.parallelRunnerUrl ) this.preferences.runnerUrl = window.parallelRunnerUrl;
 			this.fetchDryRun();
 			this.initKeyboardShortcuts();
 		},
@@ -142,20 +150,20 @@ document.addEventListener( "alpine:init", () => {
 			let url = new URL( this.preferences.runnerUrl, window.location.href );
 
 			// Core parameters from preferences
-			url.searchParams.append( "directory", this.preferences.directory );
-			url.searchParams.append( "recurse", this.preferences.recurse );
-			url.searchParams.append( "bundlesPattern", this.preferences.bundlesPattern );
+			url.searchParams.set( "directory", this.preferences.directory );
+			url.searchParams.set( "recurse", this.preferences.recurse );
+			url.searchParams.set( "bundlesPattern", this.preferences.bundlesPattern );
 
 			if ( this.preferences.labels ) {
-				url.searchParams.append( "labels", this.preferences.labels );
+				url.searchParams.set( "labels", this.preferences.labels );
 			}
 
 			if ( this.preferences.excludes ) {
-				url.searchParams.append( "excludes", this.preferences.excludes );
+				url.searchParams.set( "excludes", this.preferences.excludes );
 			}
 
 			for ( let key in params ) {
-				url.searchParams.append( key, params[ key ] );
+				url.searchParams.set( key, params[ key ] );
 			}
 
 			return url.toString();
@@ -186,6 +194,7 @@ document.addEventListener( "alpine:init", () => {
 					throw new Error( "Invalid JSON returned from runner." );
 				}
 
+				this.parallelCapabilities = data.parallel?.workers ? data.parallel : null;
 				this.initializeState( data );
 			} catch ( e ) {
 				this.globalError = "Failed to load test structure.";
@@ -754,6 +763,8 @@ document.addEventListener( "alpine:init", () => {
 		resetExecutionState( bundlePath = null ) {
 			this.runCompleted = false;
 			this.isStopping = false;
+			this.workerProgress.reset();
+			this.parallelRunId = null;
 
 			const resetSpec = ( sp ) => {
 				sp.status = "pending";
@@ -805,6 +816,7 @@ document.addEventListener( "alpine:init", () => {
 		 * Initiates a full systematic test run handling all loaded framework bundles.
 		 */
 		runAllTests() {
+            if ( this.isLoading || this.isRunning ) return;
 			this.activeBundlePath = null;
 			this.resetExecutionState();
 			this.isRunning = true;
@@ -818,6 +830,7 @@ document.addEventListener( "alpine:init", () => {
 		 * @param {string} bundlePath - Bundle path to run.
 		 */
 		runBundle( bundlePath ) {
+            if ( this.isLoading || this.isRunning ) return;
 			this.activeBundlePath = bundlePath;
 			this.resetExecutionState( bundlePath );
 			this.isRunning = true;
@@ -829,10 +842,8 @@ document.addEventListener( "alpine:init", () => {
 				b.suites.forEach( s => s.expanded = true );
 			}
 
-			// Single-bundle run: only pass streaming + bundles — no directory/recurse/pattern
-			let url = new URL( this.preferences.runnerUrl, window.location.href );
-			url.searchParams.append( "streaming", "true" );
-			url.searchParams.append( "bundles", bundlePath );
+			// Preserve configured label/exclude filters when targeting a bundle.
+			let url = new URL( this.buildRunnerUrl( { streaming: true, bundles: bundlePath } ) );
 			this.startEventSource( url.toString() );
 		},
 
@@ -844,6 +855,7 @@ document.addEventListener( "alpine:init", () => {
 		 * @param {string} suiteId    - Suite unique identifier to run (passed as testSuites param).
 		 */
 		runSuite( bundlePath, suiteId ) {
+            if ( this.isLoading || this.isRunning ) return;
 			this.activeBundlePath = bundlePath;
 			this.resetExecutionState( bundlePath );
 			this.isRunning = true;
@@ -855,10 +867,8 @@ document.addEventListener( "alpine:init", () => {
 				if ( suite ) suite.expanded = true;
 			}
 
-			let url = new URL( this.preferences.runnerUrl, window.location.href );
-			url.searchParams.append( "streaming", "true" );
-			url.searchParams.append( "bundles", bundlePath );
-			url.searchParams.append( "testSuites", suiteId );
+			let url = new URL( this.buildRunnerUrl( { streaming: true, bundles: bundlePath } ) );
+			url.searchParams.set( "testSuites", suiteId );
 			this.startEventSource( url.toString() );
 		},
 
@@ -870,6 +880,7 @@ document.addEventListener( "alpine:init", () => {
 		 * @param {string} specId     - Spec unique identifier to run (passed as testSpecs param).
 		 */
 		runSpec( bundlePath, specId ) {
+            if ( this.isLoading || this.isRunning ) return;
 			this.activeBundlePath = bundlePath;
 			this.resetExecutionState( bundlePath );
 			this.isRunning = true;
@@ -880,10 +891,8 @@ document.addEventListener( "alpine:init", () => {
 				b.suites.forEach( s => s.expanded = true );
 			}
 
-			let url = new URL( this.preferences.runnerUrl, window.location.href );
-			url.searchParams.append( "streaming", "true" );
-			url.searchParams.append( "bundles", bundlePath );
-			url.searchParams.append( "testSpecs", specId );
+			let url = new URL( this.buildRunnerUrl( { streaming: true, bundles: bundlePath } ) );
+			url.searchParams.set( "testSpecs", specId );
 
 			this.startEventSource( url.toString() );
 		},
@@ -895,7 +904,33 @@ document.addEventListener( "alpine:init", () => {
 		 * @param {string} url - The targeted SSE endpoint string.
 		 */
 		startEventSource( url ) {
-			this.eventSource = new EventSource( url );
+			const endpoint = new URL( url, window.location.href );
+            const count = Number( this.preferences.workers );
+            if ( !Number.isInteger( count ) || count < 1 || count > ( this.parallelCapabilities?.maxWorkers || 1 ) ) {
+                this.globalError = this.parallelCapabilities ? "Choose a valid worker count." : "This runner does not support multiple workers. Configure a parallel runner in Settings.";
+                this.closeRun();
+                return;
+            }
+            if ( this.parallelCapabilities ) {
+                this.parallelRunId = crypto.randomUUID().replaceAll( "-", "" );
+                endpoint.searchParams.set( "action", "run" );
+                endpoint.searchParams.set( "workers", count );
+                endpoint.searchParams.set( "runId", this.parallelRunId );
+                const cancel = new URL( endpoint );
+                cancel.searchParams.set( "action", "cancel" );
+                this.cancelUrl = cancel.toString();
+                this.progressTimer = setInterval( () => { this.workerProgress.now = Date.now(); }, 500 );
+            }
+            this.eventSource = new EventSource( endpoint.toString() );
+            if ( this.parallelCapabilities ) {
+                for ( const type of [ "testRunStart", "runPhase", "runCancelling", "workerStart", "workerEnd", "workerError", "bundleStart", "bundleReady", "suiteStart", "specEnd", "bundleEnd", "testRunEnd" ] ) {
+                    this.eventSource.addEventListener( type, e => {
+                        this.workerProgress.apply( type, JSON.parse( e.data ) );
+                        const counts = this.workerProgress.summary;
+                        Object.assign( this.globalStats, { totalPass: counts.passed, totalFail: counts.failed, totalError: counts.errors, totalSkipped: counts.skipped } );
+                    } );
+                }
+            }
 
 			this.eventSource.addEventListener( "bundleStart", ( e ) => {
 				let data = JSON.parse( e.data );
@@ -964,12 +999,14 @@ document.addEventListener( "alpine:init", () => {
 				this.globalError = data.message || "A fatal error occurred during testing.";
 				this.globalErrorDetail = data.detail || "";
 				this.isStopping = true;
-				this.stopTests();
+				this.closeRun();
 			} );
 
 			this.eventSource.addEventListener( "testRunEnd", ( e ) => {
-				let data = JSON.parse( e.data );
-				// Capture all run-level counters so metaGlobalStats can reflect exactly
+				const payload = JSON.parse( e.data );
+                let data = payload.results || payload;
+                this.applyFinalResults( data );
+                // Capture all run-level counters so metaGlobalStats can reflect exactly
 				// what was executed (full harness *or* a single-bundle run).
 				this.globalStats.totalBundles  = data.totalBundles;
 				this.globalStats.totalSuites   = data.totalSuites;
@@ -981,26 +1018,78 @@ document.addEventListener( "alpine:init", () => {
 				this.globalStats.totalSkipped  = data.totalSkipped;
 				this.runCompleted = true;
 				this.isStopping = true;
-				this.stopTests();
+				this.closeRun();
 			} );
 
-			this.eventSource.onerror = () => {
-				// onerror races with testRunEnd on normal server close — defer one tick
-				// so testRunEnd has a chance to set runCompleted/isStopping first.
-				setTimeout( () => {
-					if ( this.isStopping || this.runCompleted || !this.isRunning ) return;
-					this.globalError = "Connection to test runner lost.";
-					this.isStopping = true;
-					this.stopTests();
-				}, 0 );
-			};
+            this.eventSource.onerror = () => {
+                if ( this.runCompleted || !this.isRunning ) return;
+                this.globalError = "Connection to test runner lost.";
+                this.globalErrorDetail = this.parallelRunId ? "Requesting worker shutdown. Cleanup could not be confirmed through the disconnected stream." : "Reload the test structure to try again.";
+                if ( this.parallelRunId ) this.requestCancellation().catch( error => { this.globalErrorDetail += " " + error.message; } );
+                this.closeRun();
+            };
 		},
 
 		/**
 		 * Manually closes the active SSE communication stream dropping the runner state,
 		 * gracefully transitioning dangling/timeout instances to an explicit stopped status.
 		 */
-		stopTests() {
+        async requestCancellation() {
+            if ( !this.cancelUrl ) return;
+            const response = await fetch( this.cancelUrl, { method: "POST" } );
+            if ( !response.ok ) throw new Error( "The runner rejected the cancellation request." );
+            const result = await response.json();
+            if ( !result.cancelling ) throw new Error( "The runner could not confirm an active run to cancel." );
+        },
+
+        async stopTests() {
+            if ( this.isStopping ) return;
+            this.isStopping = true;
+            if ( !this.parallelRunId ) { this.closeRun(); return; }
+            this.workerProgress.apply( "runCancelling", {} );
+            try {
+                await this.requestCancellation();
+                // Keep SSE open until testRunEnd confirms owned cleanup, including force-stop escalation.
+            } catch ( error ) {
+                this.isStopping = false;
+                this.workerProgress.phase = "Cancellation could not be confirmed; retry Stop";
+                this.globalError = "Unable to request worker shutdown.";
+                this.globalErrorDetail = error.message;
+            }
+        },
+
+        applyFinalResults( report ) {
+            const visit = ( suites, path ) => {
+                for ( const suite of suites || [] ) {
+                    const node = this.findSuite( suite.id, path );
+                    if ( node ) node.suite.status = this.determineBundleStatus( suite );
+                    for ( const spec of suite.specStats || [] ) {
+                        const target = this.findSpec( spec.id, path, suite.id );
+                        if ( target ) Object.assign( target.spec, {
+                            status: String( spec.status || "pending" ).toLowerCase(),
+                            totalDuration: spec.totalDuration || 0, hasExecuted: true,
+                            failMessage: spec.failMessage || "", failDetail: spec.failDetail || "",
+                            failOrigin: spec.failOrigin || [], failStacktrace: spec.failStacktrace || "", error: spec.error || null
+                        } );
+                    }
+                    visit( suite.suiteStats, path );
+                }
+            };
+            for ( const result of report.bundleStats || [] ) {
+                const bundle = this.bundles.find( b => b.path === result.path );
+                if ( bundle ) {
+                    for ( const key of [ "totalDuration", "totalPass", "totalFail", "totalError", "totalSkipped" ] ) bundle[ key ] = result[ key ] || 0;
+                    bundle.status = this.determineBundleStatus( result );
+                    bundle.hasStats = this.computeBundleHasStats( bundle );
+                    bundle.debugBuffer = result.debugBuffer || [];
+                }
+                visit( result.suiteStats, result.path );
+            }
+        },
+
+        closeRun() {
+            clearInterval( this.progressTimer );
+            this.progressTimer = null;
 			if ( this.eventSource ) {
 				// Detach handlers before closing to avoid close-related onerror noise.
 				this.eventSource.onerror = null;
@@ -1072,9 +1161,8 @@ document.addEventListener( "alpine:init", () => {
 		 * re-fetching the test bundle structure via a fresh dry run. Stops any active run first.
 		 */
 		refreshTests() {
-			if ( this.isRunning ) {
-				this.stopTests();
-			}
+			if ( this.isRunning ) return;
+			this.workerProgress.reset();
 			this.bundles           = [];
 			this.runCompleted      = false;
 			this.activeBundlePath  = null;

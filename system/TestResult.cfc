@@ -22,6 +22,8 @@ component accessors="true" {
 	property name="labels"       type="array";
 	property name="excludes"     type="array";
 
+	property name="shard" type="struct";
+
 	// bundle stats
 	property name="bundleStats" type="array";
 
@@ -80,6 +82,8 @@ component accessors="true" {
 		variables.testBundles = arguments.testBundles;
 		variables.testSuites  = arguments.testSuites;
 		variables.testSpecs   = arguments.testSpecs;
+
+		variables.shard = {}
 
 		// Bundle Stats
 		variables.bundleStats = [];
@@ -574,6 +578,9 @@ component accessors="true" {
 
 
 		var result = { "coverage" : {} };
+		if ( !structIsEmpty( variables.shard ) ) {
+			result[ "shard" ] = variables.shard
+		}
 
 		// Do simple properties only
 		for ( var thisProp in pList ) {
