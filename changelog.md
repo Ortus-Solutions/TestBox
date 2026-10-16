@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `resolveRetries()` and a handful of reporter and runner helpers no longer use the elvis operator on struct members that may be missing, which left the variable undefined on Adobe 2023 without null support (`Variable SPECRETRIES is undefined`). They use `structKeyExists()` instead.
+
 ## [7.2.1] - 2026-10-16
 
 ### Fixed

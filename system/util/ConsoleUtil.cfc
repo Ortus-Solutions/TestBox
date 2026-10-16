@@ -162,7 +162,12 @@ component {
 	 */
 	function getBundleIndicator( required struct bundle, string format = "console" ){
 		var bundleStatus = getBundleStatus( arguments.bundle );
-		var bundleName   = arguments.bundle.name ?: arguments.bundle.path ?: "";
+		var bundleName   = "";
+		if ( structKeyExists( arguments.bundle, "name" ) ) {
+			bundleName = arguments.bundle.name;
+		} else if ( structKeyExists( arguments.bundle, "path" ) ) {
+			bundleName = arguments.bundle.path;
+		}
 
 		if ( lCase( trim( arguments.format ) ) == "console" ) {
 			var bundleStyle = "green";
