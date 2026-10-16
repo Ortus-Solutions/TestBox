@@ -1658,7 +1658,11 @@ component {
 	any function bindSpecStats( required struct specStats ){
 		var previous = variables.$specStatsHolder.get()
 		variables.$specStatsHolder.set( arguments.specStats )
-		return previous ?: ""
+		// Explicit isNull(): the elvis operator does not rescue a null Java return on Adobe 2023 without null support
+		if ( isNull( previous ) ) {
+			return ""
+		}
+		return previous
 	}
 
 	/**

@@ -177,11 +177,27 @@ component {
 	}
 
 	/**
+	 * Whether this request has a page context. BoxLang with the bx-web-support module defines getPageContext()
+	 * outside of web requests too, such as in the BoxLang CLI runner, where calling it throws.
+	 */
+	private boolean function hasPageContext(){
+		if ( !getFunctionList().keyExists( "getPageContext" ) ) {
+			return false;
+		}
+		try {
+			getPageContext();
+			return true;
+		} catch ( any e ) {
+			return false;
+		}
+	}
+
+	/**
 	 * Helper method to deal with ACF2016's overload of the page context response, come on Adobe, get your act together!
 	 */
 	function getPageContextResponse(){
 		// If running in CLI mode, we don't have a page context
-		if ( !getFunctionList().keyExists( "getPageContext" ) ) {
+		if ( !hasPageContext() ) {
 			return {
 				"setContentType" : function(){
 					// do nothing
@@ -203,7 +219,7 @@ component {
 	 */
 	function resetHTMLResponse(){
 		// If running in CLI mode, we don't have a page context
-		if ( !getFunctionList().keyExists( "getPageContext" ) ) {
+		if ( !hasPageContext() ) {
 			return;
 		}
 		// reset cfhtmlhead from integration tests
