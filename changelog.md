@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.2.2] - 2026-10-16
+
 ### Fixed
 
 - `resolveRetries()` and a handful of reporter and runner helpers no longer use the elvis operator on struct members that may be missing, which left the variable undefined on Adobe 2023 without null support (`Variable SPECRETRIES is undefined`). They use `structKeyExists()` instead.
@@ -175,7 +177,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - TESTBOX-400 Drop Adobe 2018 support
 
-[unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v7.2.1...HEAD
+[unreleased]: https://github.com/Ortus-Solutions/TestBox/compare/v7.2.2...HEAD
+[7.2.2]: https://github.com/Ortus-Solutions/TestBox/compare/v7.2.1...v7.2.2
 [7.2.1]: https://github.com/Ortus-Solutions/TestBox/compare/v7.2.0...v7.2.1
 [7.2.0]: https://github.com/Ortus-Solutions/TestBox/compare/v7.1.0...v7.2.0
 [7.1.0]: https://github.com/Ortus-Solutions/TestBox/compare/v7.0.0...v7.1.0
