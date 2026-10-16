@@ -1499,7 +1499,10 @@ component accessors="true" {
 		required struct suite,
 		required array bundleLabels
 	){
-		var consolidatedLabels = duplicate( structKeyExists( arguments.spec, "labels" ) ? arguments.spec.labels : [] );
+		var consolidatedLabels = [];
+		if ( structKeyExists( arguments.spec, "labels" ) ) {
+			consolidatedLabels = duplicate( arguments.spec.labels );
+		}
 		arrayAppend(
 			consolidatedLabels,
 			arguments.bundleLabels,
