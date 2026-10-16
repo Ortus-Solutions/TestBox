@@ -1610,20 +1610,21 @@ component {
 	 * @return The number of retries, 0 for none
 	 */
 	numeric function resolveRetries( required spec, required runner ){
-		var specRetries = arguments.spec.retries ?: 0
+		// structKeyExists(), not ?:, since Adobe 2023 without null support can leave the variable undefined
+		var specRetries = structKeyExists( arguments.spec, "retries" ) ? arguments.spec.retries : 0
 		if ( isNumeric( specRetries ) && specRetries > 0 ) {
 			return int( specRetries )
 		}
 
 		var md          = getMetadata( this )
 		var annotations = md.keyExists( "annotations" ) ? md.annotations : md
-		if ( isNumeric( annotations.retries ?: "" ) ) {
+		if ( structKeyExists( annotations, "retries" ) && isNumeric( annotations.retries ) ) {
 			return max( 0, int( annotations.retries ) )
 		}
 
 		if ( structKeyExists( arguments.runner, "getOptions" ) ) {
-			var runnerOptions = arguments.runner.getOptions() ?: {}
-			if ( isStruct( runnerOptions ) && isNumeric( runnerOptions.retries ?: "" ) ) {
+			var runnerOptions = arguments.runner.getOptions()
+			if ( !isNull( runnerOptions ) && isStruct( runnerOptions ) && structKeyExists( runnerOptions, "retries" ) && isNumeric( runnerOptions.retries ) ) {
 				return max( 0, int( runnerOptions.retries ) )
 			}
 		}

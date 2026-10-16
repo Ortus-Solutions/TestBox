@@ -103,7 +103,7 @@ component {
 	 * @return The note, or an empty string when the spec ran once
 	 */
 	string function getAttemptsNote( required struct specStats ){
-		var attempts = arguments.specStats.attempts ?: 1
+		var attempts = structKeyExists( arguments.specStats, "attempts" ) ? arguments.specStats.attempts : 1
 		if ( attempts <= 1 ) {
 			return ""
 		}
@@ -119,7 +119,7 @@ component {
 	 * @return An array of { path, type, name } structs, empty when there are none
 	 */
 	array function getSpecAttachments( required struct specStats ){
-		var attachments = arguments.specStats.attachments ?: []
+		var attachments = structKeyExists( arguments.specStats, "attachments" ) ? arguments.specStats.attachments : []
 		return isArray( attachments ) ? attachments : []
 	}
 

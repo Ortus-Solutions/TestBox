@@ -875,7 +875,7 @@ component accessors="true" {
 	 */
 	array function attachments( required struct spec ){
 		var views = [];
-		var list  = arguments.spec.attachments ?: [];
+		var list  = structKeyExists( arguments.spec, "attachments" ) ? arguments.spec.attachments : [];
 		if ( !isArray( list ) ) {
 			return views;
 		}
@@ -891,8 +891,8 @@ component accessors="true" {
 	 * @attachment The { path, type, name } attachment
 	 */
 	struct function attachmentView( required struct attachment ){
-		var path      = arguments.attachment.path ?: "";
-		var type      = lCase( arguments.attachment.type ?: "" );
+		var path      = structKeyExists( arguments.attachment, "path" ) ? arguments.attachment.path : "";
+		var type      = lCase( structKeyExists( arguments.attachment, "type" ) ? arguments.attachment.type : "" );
 		var extension = lCase( listLast( getFileFromPath( path ), "." ) );
 		var href      = "";
 		if ( len( path ) ) {
