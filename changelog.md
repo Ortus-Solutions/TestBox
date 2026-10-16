@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The BoxLang runner starts a named application with session management for the run, named after the project's `Application` (`this.name`) or `TestBoxRunner`, so specs that use the application or session scopes run from the CLI. BoxLang only starts an application for an `Application.bx` next to the running script, which the runner never had.
 - The reporters and the status headers no longer call `getPageContext()` outside of a web request: with the bx-web-support module installed it is defined in the BoxLang CLI runner too, where it throws.
 - The HTML and Agent reports point a failure at the spec that called a ColdBox testing helper such as `assertRouteIs()`, not at `coldbox/system/testing/BaseTestCase.cfc`: frames under `/coldbox/system/testing/` are treated like TestBox internals when choosing the origin, the code snippet and Open in editor.
+- `resolveRetries()` and a handful of reporter and runner helpers no longer use the elvis operator on struct members that may be missing, which left the variable undefined on Adobe 2023 without null support (`Variable SPECRETRIES is undefined`). They use `structKeyExists()` instead.
 
 ## [7.2.0] - 2026-10-13
 
