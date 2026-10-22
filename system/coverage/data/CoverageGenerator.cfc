@@ -3,8 +3,18 @@
  * Copyright Ortus Solutions, Corp
  * www.ortussolutions.com
  * ********************************************************************************
- * I collect code coverage data for a directory of files and generate
- * a query of data that can be consumed by different reporting interfaces.
+ * I am the ABSTRACT base class for collecting code coverage data for a directory
+ * of files and generating a query of data that can be consumed by the different
+ * reporting interfaces.
+ *
+ * Concrete providers subclass me and implement:
+ *   - isProviderAvailable() : whether this engine can capture coverage
+ *   - beginCapture()/endCapture() : start/stop + reset capture
+ *   - getLineMetricsMap()   : per-line hit counts for a single file
+ *   - compileAndLoad()      : force-load a file so the engine records metrics
+ *
+ * Everything a provider needs to tell us is a plain struct keyed by 1-based line
+ * number -> run count. That keeps the query-building identical for every provider.
  */
 component accessors=true {
 
@@ -16,6 +26,9 @@ component accessors=true {
 		variables.LF   = chr( 10 );
 		variables.CRLF = CR & LF;
 
+		// for file globbing
+		variables.pathPatternMatcher = new testbox.system.modules.globber.models.PathPatternMatcher();
+
 		return this;
 	}
 
@@ -25,69 +38,58 @@ component accessors=true {
 	 * @return true if enabled, false if disabled
 	 */
 	boolean function configure(){
-		try {
-			variables.fragentClass = createObject( "java", "com.intergral.fusionreactor.agent.Agent" );
-			// Do a quick test to ensure the line performance instrumentation is loaded.  This will return null for non-supported versions of FR
-			var instrumentation    = fragentClass.getAgentInstrumentation().get( "cflpi" );
-		} catch ( Any e ) {
-			return false;
-		}
-
-		if ( isNull( instrumentation ) ) {
-			return false;
-		}
-
-		// for file globbing
-		variables.pathPatternMatcher = new testbox.system.modules.globber.models.PathPatternMatcher();
-
-		// Detect server
-		if ( listFindNoCase( "Railo,Lucee", server.coldfusion.productname ) ) {
-			variables.templateCompiler = new TemplateCompiler_Lucee();
-		} else {
-			variables.templateCompiler = new TemplateCompiler_Adobe();
-		}
-
-		return true;
+		return isProviderAvailable();
 	}
 
 	/**
-	 * Reset system for a new test.  Turns on line coverage and resets in-memory statistics
+	 * Implement me: is this provider able to capture coverage on the current engine?
+	 *
+	 * @return true if available, false if not
+	 */
+	boolean function isProviderAvailable(){
+		return false;
+	}
+
+	/**
+	 * Implement me: reset the system for a new test.  Turns on line coverage and
+	 * resets in-memory statistics.
 	 */
 	CoverageGenerator function beginCapture(){
-		// Turn on line profiling
-		fragentClass
-			.getAgentInstrumentation()
-			.get( "cflpi" )
-			.setActive( true );
-		// Clear any data in memory
-		fragentClass
-			.getAgentInstrumentation()
-			.get( "cflpi" )
-			.reset();
-
 		return this;
 	}
 
 	/**
-	 * End the capture of data.  Clears up memory and optionally turns off line profiling
+	 * Implement me: end the capture of data.  Clears up memory and optionally turns
+	 * off line profiling.
 	 *
 	 * @leaveLineProfilingOn Set to true to leave line profiling enabled on the server
 	 */
 	CoverageGenerator function endCapture( leaveLineProfilingOn = false ){
-		// Turn off line profiling
-		if ( !leaveLineProfilingOn ) {
-			fragentClass
-				.getAgentInstrumentation()
-				.get( "cflpi" )
-				.setActive( false );
-		}
-		// Clear any data in memory
-		fragentClass
-			.getAgentInstrumentation()
-			.get( "cflpi" )
-			.reset();
-
 		return this;
+	}
+
+	/**
+	 * Implement me: return per-line coverage for a single file.
+	 *
+	 * The returned struct must be keyed by 1-based line number, where each value is
+	 * the NUMBER of times that line ran (0 or more).
+	 *
+	 * @filePath the absolute path to the file to gather coverage for
+	 *
+	 * @return struct of lineNum -> count
+	 */
+	struct function getLineMetricsMap( required string filePath ){
+		return {};
+	}
+
+	/**
+	 * Implement me (optional): force a file to be compiled and loaded so the engine
+	 * records coverage metrics for it even though it never ran.  A no-op by default.
+	 *
+	 * @filePath the absolute path to the file to compile and load
+	 */
+	void function compileAndLoad( required string filePath ){
+		// default no-op
 	}
 
 	/**
@@ -158,91 +160,53 @@ component accessors=true {
 			// Add this to query later
 			var lineData = createObject( "java", "java.util.LinkedHashMap" ).init();
 
-			var jFile         = createObject( "java", "java.io.File" ).init( theFile );
-			var lineMetricMap = fragentClass
-				.getAgentInstrumentation()
-				.get( "cflpi" )
-				.getLineMetrics( jFile.getCanonicalPath() );
-			if ( isNull( lineMetricMap ) ) {
-				lineMetricMap = {};
-			}
+			var lineMetricMap = getLineMetricsMap( theFile );
 			var noDataForFile = false;
-			// If we don't have any metrics for this file, and we're on Railo or Lucee, attempt to force the file to load.
+			// If we don't have any metrics for this file, attempt to force the file
+			// to load, then check again. If it STILL has nothing, count every line
+			// against us as a fallback.
 			if ( !structCount( lineMetricMap ) ) {
 				// Force the engine to compile and load the file even though it was never run.
-				templateCompiler.compileAndLoad( theFile );
+				compileAndLoad( theFile );
 				// Check for metrics again
-				lineMetricMap = fragentClass
-					.getAgentInstrumentation()
-					.get( "cflpi" )
-					.getLineMetrics( theFile );
+				lineMetricMap = getLineMetricsMap( theFile );
 
-				if ( isNull( lineMetricMap ) ) {
+				if ( isNull( lineMetricMap ) || !structCount( lineMetricMap ) ) {
 					lineMetricMap     = structNew();
 					var noDataForFile = true;
 				}
 			}
 			var currentLineNum  = 0;
 			var previousLineRan = 0;
+			// Hoist the "do we have any metrics for this file" test out of the per-line
+			// loop. structCount() on the provider's map is a dynamic call; asking it
+			// once per source line (per file) is needless overhead on large captures.
+			var hasMetrics      = structCount( lineMetricMap ) > 0;
 
 			for ( var line in fileLines ) {
 				currentLineNum++;
-				if ( structCount( lineMetricMap ) && lineMetricMap.containsKey( javacast( "int", currentLineNum ) ) ) {
-					var lineMetric = lineMetricMap.get( javacast( "int", currentLineNum ) );
-					var covered    = lineMetric.getCount();
+				// One int conversion per line, reused by the existence check and the read.
+				var lineNumber = javacast( "int", currentLineNum );
+				if ( hasMetrics && structKeyExists( lineMetricMap, lineNumber ) ) {
+					var covered  = lineMetricMap[ lineNumber ];
+					var previous = previousLineRan;
 
-					// Overrides for buggyiness ************************************************************************
+					// Let the provider apply engine-specific bug-for-bug workarounds
+					// (e.g. FR's flaky closing-`}` / closing-CF-tag detection). The base
+					// does no normalization; providers override normalizeLineCovered().
+					covered = normalizeLineCovered(
+						line,
+						covered,
+						theFile,
+						currentLineNum,
+						previous
+					);
 
-
-					// On Adobe, the first line of classes seems to always report as being executable but not running whether it's a comment or a component declaration
-					if (
-						theFile.right( 4 ) == ".cfc" && currentLineNum == 1 && !covered && line.startsWith(
-							"/" & "*"
-						)
-					) {
+					// A null return means the provider wants to EXCLUDE this line
+					// entirely (not counted as executable).
+					if ( isNull( covered ) ) {
 						continue;
 					}
-
-					// On Adobe, the first line of CFCs seems to always report as being executable but not running whether it's a comment or a component declaration
-					if (
-						theFile.right( 4 ) == ".cfc" && currentLineNum == 1 && !covered && line.startsWith(
-							"component"
-						)
-					) {
-						covered = 1;
-					}
-
-					// Ignore any tag based comments.  Some are reporting as covered, others aren't.  They really all should be ignored.
-					if ( reFindNoCase( "^<!---.*--->$", trim( line ) ) ) {
-						continue;
-					}
-
-					// Ignore any CFscript tags.  They don't consistently report and they aren't really executable in themselves
-					if ( reFindNoCase( "<(\/)?cfscript>", trim( line ) ) ) {
-						continue;
-					}
-
-					// Count as covered any closing CF tags where the previous line ran.  Ending tags don't always seem to get picked up.
-					if ( !covered && previousLineRan && reFindNoCase( "<\/cf.*>", trim( line ) ) ) {
-						covered = previousLineRan;
-					}
-
-					// Count as covered any closing script braces where the previous line ran.  E.x, I've seen trailing } in a switch statement not picked up
-					if ( !covered && previousLineRan && trim( line ) == "}" ) {
-						covered = previousLineRan;
-					}
-
-					// Count as covered any closing parenthesis where the previous line ran.
-					if ( !covered && previousLineRan && ( trim( line ) == ");" || trim( line ) == ")" ) ) {
-						covered = previousLineRan;
-					}
-
-					// Count as covered any cffunction or cfargument tag where the previous line ran.
-					if ( !covered && reFindNoCase( "^<cf(function|argument)", trim( line ) ) && previousLineRan ) {
-						covered = previousLineRan;
-					}
-
-					// Overrides for bugginess ************************************************************************
 
 					lineData[ currentLineNum ] = covered;
 
@@ -269,6 +233,28 @@ component accessors=true {
 
 		// Return the data
 		return qryData;
+	}
+
+	/**
+	 * Provider hook: normalize a single line's covered state to work around
+	 * engine-specific reporting bugs (e.g. FusionReactor on CF engines has flaky
+	 * closing-tag/brace/paren detection). The base applies NO normalization — it
+	 * returns the covered value unchanged. Providers override this to apply their
+	 * own bug-for-bug workarounds.
+	 * <p>
+	 * Providers may indicate that a line should be EXCLUDED entirely from coverage
+	 * (not counted as executable) by returning {@code null}.
+	 *
+	 * @line             the raw source text of the current line
+	 * @covered          the covered value (0/1) already pulled from the provider's metrics
+	 * @theFile          the absolute path of the file being processed
+	 * @lineNum          the 1-based line number
+	 * @previousLineRan  whether the previous line was counted as covered (0/1)
+	 *
+	 * @return the (possibly adjusted) covered value, or null to exclude the line
+	 */
+	function normalizeLineCovered( line, covered, theFile, lineNum, previousLineRan ){
+		return covered;
 	}
 
 	/**

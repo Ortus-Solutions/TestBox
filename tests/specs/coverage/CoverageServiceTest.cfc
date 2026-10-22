@@ -18,15 +18,11 @@ component extends="testbox.system.BaseSpec" {
 					.toHaveKey( "browser" )
 					.toHaveKey( "sonarqube" );
 
-				if ( isFRLoaded() ) {
-					expect( model.getCoverageEnabled() ).toBeTrue(
-						"enables coverage by default if Fusion Reactor loaded"
-					);
-				} else {
-					expect( model.getCoverageEnabled() ).toBeFalse(
-						"manually DISABLES coverage if Fusion Reactor not loaded"
-					);
-				}
+				// Coverage is opt-in: omitting `enabled` never turns it on, even when a
+				// coverage provider (BoxLang profiler / FusionReactor) is available.
+				expect( model.getCoverageEnabled() ).toBeFalse(
+					"coverage stays off unless explicitly enabled"
+				);
 			} );
 			describe( "un-enabled coverage", function(){
 				beforeEach( function(){
@@ -78,15 +74,6 @@ component extends="testbox.system.BaseSpec" {
 				} );
 			} );
 		} );
-	}
-
-	function isFRLoaded(){
-		try {
-			variables.fragentClass = createObject( "java", "com.intergral.fusionreactor.agent.Agent" );
-			return true;
-		} catch ( Any e ) {
-			return false;
-		}
 	}
 
 }

@@ -23,8 +23,7 @@
 <cfparam name="url.coverageWhitelist"				default="">
 <cfparam name="url.coverageBlacklist"				default="/stubs/**,/modules/**,/coverage/**,Application.cfc,Application.bx">
 
-<!--- FYI the "coverageBrowserOutputDir" folder will be DELETED and RECREATED each time
-	  you generate the report. Don't point this setting to a folder that has other important
+<!--- FYI the "coverageBrowserOutputDir" folder will be DELETED and RECREATED each timeCoverageGenerator.cfc
 	  files. Pick a blank, essentially "temp" folder somewhere. Brad may or may not have
 	  learned this the hard way. Learn from his mistakes. :) --->
 <cfparam name="url.coverageBrowserOutputDir"		default="#expandPath( '/tests/results/coverageReport' )#">

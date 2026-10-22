@@ -16,7 +16,7 @@
 <bx:param name="url.streaming"						default="false" type="boolean">
 <bx:param name="url.dryRun"							default="false" type="boolean">
 
-<!--- Code Coverage requires FusionReactor --->
+<!--- Code Coverage uses an auto-detected provider (BoxLang or FusionReactor) --->
 <bx:param name="url.coverageEnabled"				default="false" type="boolean">
 <bx:param name="url.coveragePathToCapture"			default="#expandPath( '/root' )#">
 <bx:param name="url.coverageWhitelist"				default="">

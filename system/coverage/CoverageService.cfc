@@ -137,7 +137,7 @@ component accessors="true" {
 	 */
 	private function setDefaultOptions( struct opts = {} ){
 		if ( !structKeyExists( opts, "enabled" ) || isNull( opts.enabled ) ) {
-			opts.enabled = true;
+			opts.enabled = false;
 		}
 
 		if ( !structKeyExists( opts, "sonarQube" ) || isNull( opts.sonarQube ) ) {
@@ -236,7 +236,7 @@ component accessors="true" {
 	}
 
 	/**
-	 * Interface with FusionReactor to build coverage data
+	 * Build coverage data via the active CoverageGenerator provider
 	 */
 	private function generateCoverageData( required struct opts ){
 		return coverageGenerator.generateData(
@@ -301,9 +301,21 @@ component accessors="true" {
 
 	/**
 	 * Acquire a CoverageGenerator component which does the hard work.
+	 *
+	 * Auto-detects the engine provider: BoxLang when {@code server} exposes the
+	 * "boxlang" key AND its code-profiling provider reports available (profiler
+	 * service reachable + {@code codeProfilerEnabled} config on), otherwise the
+	 * FusionReactor provider.
 	 */
 	private component function loadCoverageGenerator(){
-		return new data.CoverageGenerator();
+		if ( server.keyExists( "boxlang" ) ) {
+			var boxLangGenerator = new data.CoverageGeneratorBoxLang();
+			if ( boxLangGenerator.isProviderAvailable() ) {
+				return boxLangGenerator;
+			}
+		}
+
+		return new data.CoverageGeneratorFusionReactor();
 	}
 
 	/**

@@ -16,7 +16,7 @@
 <cfparam name="url.streaming"						default="false" type="boolean">
 <cfparam name="url.dryRun"							default="false" type="boolean">
 
-<!--- Code Coverage requires FusionReactor --->
+<!--- Code Coverage uses an auto-detected provider (BoxLang or FusionReactor) --->
 <cfparam name="url.coverageEnabled"					default="false">
 <cfparam name="url.coveragePathToCapture"			default="#expandPath( '/root' )#">
 <cfparam name="url.coverageWhitelist"				default="">
