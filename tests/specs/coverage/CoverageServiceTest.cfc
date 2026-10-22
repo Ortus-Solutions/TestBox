@@ -20,9 +20,7 @@ component extends="testbox.system.BaseSpec" {
 
 				// Coverage is opt-in: omitting `enabled` never turns it on, even when a
 				// coverage provider (BoxLang profiler / FusionReactor) is available.
-				expect( model.getCoverageEnabled() ).toBeFalse(
-					"coverage stays off unless explicitly enabled"
-				);
+				expect( model.getCoverageEnabled() ).toBeFalse( "coverage stays off unless explicitly enabled" );
 			} );
 			describe( "un-enabled coverage", function(){
 				beforeEach( function(){

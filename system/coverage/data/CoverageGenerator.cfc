@@ -245,15 +245,21 @@ component accessors=true {
 	 * Providers may indicate that a line should be EXCLUDED entirely from coverage
 	 * (not counted as executable) by returning {@code null}.
 	 *
-	 * @line             the raw source text of the current line
-	 * @covered          the covered value (0/1) already pulled from the provider's metrics
-	 * @theFile          the absolute path of the file being processed
-	 * @lineNum          the 1-based line number
-	 * @previousLineRan  whether the previous line was counted as covered (0/1)
+	 * @line            the raw source text of the current line
+	 * @covered         the covered value (0/1) already pulled from the provider's metrics
+	 * @theFile         the absolute path of the file being processed
+	 * @lineNum         the 1-based line number
+	 * @previousLineRan whether the previous line was counted as covered (0/1)
 	 *
 	 * @return the (possibly adjusted) covered value, or null to exclude the line
 	 */
-	function normalizeLineCovered( line, covered, theFile, lineNum, previousLineRan ){
+	function normalizeLineCovered(
+		line,
+		covered,
+		theFile,
+		lineNum,
+		previousLineRan
+	){
 		return covered;
 	}
 

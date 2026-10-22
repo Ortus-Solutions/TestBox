@@ -29,7 +29,7 @@ component extends="CoverageGenerator" accessors=true {
 			variables.fragentClass = createObject( "java", "com.intergral.fusionreactor.agent.Agent" );
 			// Do a quick test to ensure the line performance instrumentation is loaded.
 			// This will return null for non-supported versions of FR
-			var instrumentation = fragentClass.getAgentInstrumentation().get( "cflpi" );
+			var instrumentation    = fragentClass.getAgentInstrumentation().get( "cflpi" );
 		} catch ( Any e ) {
 			return false;
 		}
@@ -96,8 +96,8 @@ component extends="CoverageGenerator" accessors=true {
 	 * @return struct of lineNum -> count
 	 */
 	struct function getLineMetricsMap( required string filePath ){
-		var jFile         = createObject( "java", "java.io.File" ).init( arguments.filePath );
-		var rawMap        = fragentClass
+		var jFile  = createObject( "java", "java.io.File" ).init( arguments.filePath );
+		var rawMap = fragentClass
 			.getAgentInstrumentation()
 			.get( "cflpi" )
 			.getLineMetrics( jFile.getCanonicalPath() );
@@ -111,7 +111,7 @@ component extends="CoverageGenerator" accessors=true {
 		// depending on version; both expose keySet()/get().
 		var result = createObject( "java", "java.util.LinkedHashMap" ).init();
 		for ( var lineKey in rawMap.keySet() ) {
-			var lineMetric = rawMap.get( lineKey );
+			var lineMetric                       = rawMap.get( lineKey );
 			result[ javacast( "int", lineKey ) ] = javacast( "int", lineMetric.getCount() );
 		}
 
@@ -137,15 +137,21 @@ component extends="CoverageGenerator" accessors=true {
 	 *
 	 * Returns null to EXCLUDE a line from coverage entirely.
 	 *
-	 * @line             the raw source text of the current line
-	 * @covered          the covered value (0/1) pulled from FR's metrics
-	 * @theFile          the absolute path of the file being processed
-	 * @lineNum          the 1-based line number
-	 * @previousLineRan  whether the previous line was counted as covered (0/1)
+	 * @line            the raw source text of the current line
+	 * @covered         the covered value (0/1) pulled from FR's metrics
+	 * @theFile         the absolute path of the file being processed
+	 * @lineNum         the 1-based line number
+	 * @previousLineRan whether the previous line was counted as covered (0/1)
 	 *
 	 * @return the adjusted covered value, or null to exclude the line
 	 */
-	function normalizeLineCovered( line, covered, theFile, lineNum, previousLineRan ){
+	function normalizeLineCovered(
+		line,
+		covered,
+		theFile,
+		lineNum,
+		previousLineRan
+	){
 		// On Adobe, the first line of classes seems to always report as being executable but not running whether it's a comment or a component declaration
 		if (
 			arguments.theFile.right( 4 ) == ".cfc" && arguments.lineNum == 1 && !arguments.covered && arguments.line.startsWith(
@@ -185,12 +191,18 @@ component extends="CoverageGenerator" accessors=true {
 		}
 
 		// Count as covered any closing parenthesis where the previous line ran.
-		if ( !arguments.covered && arguments.previousLineRan && ( trim( arguments.line ) == ");" || trim( arguments.line ) == ")" ) ) {
+		if (
+			!arguments.covered && arguments.previousLineRan && (
+				trim( arguments.line ) == ");" || trim( arguments.line ) == ")"
+			)
+		) {
 			return arguments.previousLineRan;
 		}
 
 		// Count as covered any cffunction or cfargument tag where the previous line ran.
-		if ( !arguments.covered && reFindNoCase( "^<cf(function|argument)", trim( arguments.line ) ) && arguments.previousLineRan ) {
+		if (
+			!arguments.covered && reFindNoCase( "^<cf(function|argument)", trim( arguments.line ) ) && arguments.previousLineRan
+		) {
 			return arguments.previousLineRan;
 		}
 

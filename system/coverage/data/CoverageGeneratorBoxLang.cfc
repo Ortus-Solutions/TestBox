@@ -23,8 +23,8 @@ component extends="CoverageGenerator" accessors=true {
 		super.init();
 
 		// Cache the java interop handles once (not per-call)
-		variables.runnableLoader  = createObject( "java", "ortus.boxlang.runtime.runnables.RunnableLoader" ).getInstance();
-		variables.boxpiler       = variables.runnableLoader.getBoxpiler();
+		variables.runnableLoader   = createObject( "java", "ortus.boxlang.runtime.runnables.RunnableLoader" ).getInstance();
+		variables.boxpiler         = variables.runnableLoader.getBoxpiler();
 		variables.resolvedFilePath = createObject( "java", "ortus.boxlang.runtime.util.ResolvedFilePath" );
 
 		return this;
@@ -41,8 +41,9 @@ component extends="CoverageGenerator" accessors=true {
 	 * marks at compile time when that flag is on, so without it there'd be no spans
 	 * to capture even though the service is present.
 	 *
-	 * @return true if the profiler service is reachable and code profiling is
 	 *         enabled in the runtime config, false otherwise
+	 *
+	 * @return true if the profiler service is reachable and code profiling is
 	 */
 	boolean function isProviderAvailable(){
 		if ( !server.keyExists( "boxlang" ) ) {
@@ -65,7 +66,7 @@ component extends="CoverageGenerator" accessors=true {
 	 * {@code codeProfilerEnabled} is true (checked by {@link #isProviderAvailable()}).
 	 * Here we clear the page pool + compiled classes so everything recompiles WITH
 	 * instrumentation under this capture, and set live capture active.
-	 * 
+	 *
 	 */
 	CoverageGenerator function beginCapture(){
 		// Tell the boxpiler to recompile everything under this capture by clearing
@@ -73,7 +74,7 @@ component extends="CoverageGenerator" accessors=true {
 		// the same two-step the BoxLang JUnit profiler harness does so that every
 		// recompile emits profiler marks.
 		pagePoolClear();
-		//variables.boxpiler.clearClassFiles();
+		// variables.boxpiler.clearClassFiles();
 		variables.profiler.setActive( true );
 
 		return this;
@@ -108,7 +109,7 @@ component extends="CoverageGenerator" accessors=true {
 		// here — this method runs once per file, so that would be O(files^2).
 		// fileLines() resolves the path itself (exact, normalized, then
 		// case/separator-insensitive) and returns an empty map if it isn't tracked.
-		var lines = variables.profiler.fileLines( arguments.filePath );
+		var lines  = variables.profiler.fileLines( arguments.filePath );
 		// Return a NATIVE struct, NOT a java.util.Map. The base class probes this map
 		// once per source line (existence check + index read), and every one of those
 		// probes against a raw Java Map pays dynamic-interop overhead — which is what
@@ -146,7 +147,7 @@ component extends="CoverageGenerator" accessors=true {
 		// Use the handles cached in init() rather than createObject() per file: this
 		// runs once for every file that had no captured metrics, so re-resolving the
 		// same Java classes thousands of times is pure overhead.
-		var lowerPath = lcase( arguments.filePath );
+		var lowerPath = lCase( arguments.filePath );
 		if ( lowerPath.endsWith( ".cfc" ) || lowerPath.endsWith( ".bx" ) ) {
 			variables.boxpiler.compileClass( variables.resolvedFilePath.of( arguments.filePath ) );
 		} else {
@@ -162,7 +163,7 @@ component extends="CoverageGenerator" accessors=true {
 	 * @return the normalized path
 	 */
 	private string function normalizeFilePath( required string filePath ){
-		return lcase( arguments.filePath.replace( "\", "/", "all" ) );
+		return lCase( arguments.filePath.replace( "\", "/", "all" ) );
 	}
 
 }
