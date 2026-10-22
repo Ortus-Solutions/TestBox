@@ -14,7 +14,7 @@
     },
     "JVM":{
         "javaVersion":"openjdk21_jre",
-        "args":"-Dcoldfusion.runtime.remotemethod.matchArguments=false"
+        "args":"-Dcoldfusion.runtime.remotemethod.matchArguments=false -Dcoldfusion.saferegex.maxsubjectlen=1000000"
     },
     "cfconfig":{
         "file":".cfconfig.json"

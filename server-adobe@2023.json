@@ -16,7 +16,7 @@
         "file":".cfconfig.json"
     },
     "JVM":{
-        "args":"-Dcoldfusion.runtime.remotemethod.matchArguments=false"
+        "args":"-Dcoldfusion.runtime.remotemethod.matchArguments=false -Dcoldfusion.saferegex.maxsubjectlen=1000000"
     },
     "scripts":{
         "onServerInstall":"cfpm install zip,debugger"
