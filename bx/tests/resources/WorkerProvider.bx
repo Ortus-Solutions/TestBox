@@ -1,0 +1,9 @@
+/**
+ * Application extension point: create one isolated environment per worker.
+ * Override startWorker(context), pollWorker(handle) and stopWorker(handle).
+ * See testbox/system/parallel/README.md for lifecycle and result contracts.
+ * The base class refuses execution until a provider is implemented; no shared
+ * application scope or database is assumed safe for concurrent tests.
+ */
+class extends="testbox.system.parallel.WorkerProvider" {
+}

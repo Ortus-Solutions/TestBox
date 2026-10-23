@@ -216,6 +216,10 @@ box testbox run
 # Navigate to: http://localhost/testbox/system/runners/HTMLRunner.cfm
 ```
 
+### Parallel workers and CI shards
+
+Run isolated workers from the CLI or RUN IDE, or split bundles across independent CI jobs. See [parallel execution and the environment-provider examples](system/parallel/README.md) for setup, result merging, resource requirements and measured limitations.
+
 ## 🧪 Testing Approaches
 
 ### BDD Style (Behavior-Driven Development)

@@ -53,6 +53,15 @@ component
 		// Discover the test suite data to use for testing
 		var testSuites      = getTestSuites( arguments.target, targetMD );
 		var testSuitesCount = arrayLen( testSuites );
+		// Descriptors are ready before expensive beforeAll fixture setup.
+		if ( structKeyExists( arguments.callbacks, "onBundleReady" ) ) {
+			arguments.callbacks.onBundleReady(
+				arguments.target,
+				arguments.testResults,
+				testSuites
+			);
+		}
+
 
 		// Start recording stats for this bundle
 		var bundleStats = arguments.testResults.startBundleStats( bundlePath = targetMD.name, name = bundleName );

@@ -1,0 +1,7 @@
+<bx:script>
+// Optional parallel endpoint. Configure isolation in resources/WorkerProvider.bx.
+new testbox.system.parallel.Runner(
+    provider = new tests.resources.WorkerProvider(),
+    directory = "tests.specs"
+).serve();
+</bx:script>

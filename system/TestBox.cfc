@@ -314,6 +314,56 @@ component accessors="true" {
 		return this;
 	}
 
+	/** Skip non-executable declarations before assigning independent CI jobs. */
+	private array function getShardBundles(){
+		return variables.bundles.filter( function( path ){
+			var metadata    = server.keyExists( "boxlang" ) ? getClassMetadata( path ) : getComponentMetadata( path )
+			var annotations = metadata.annotations ?: metadata
+			if (
+				metadata.type == "interface" || ( annotations.modifier ?: "" ) == "abstract" || structKeyExists(
+					annotations,
+					"abstract"
+				)
+			) {
+				return false
+			}
+			// Lucee omits the component modifier from metadata. Use the same
+			// abstract-component guard as serial execution before assigning it.
+			if ( server.keyExists( "lucee" ) && !server.keyExists( "boxlang" ) ) {
+				try {
+					getBundle( path )
+				} catch ( "AbstractComponentException" e ) {
+					return false
+				}
+			}
+			return true
+		} )
+	}
+
+	/** Run this instance's discovered bundles through a configured environment provider. */
+	struct function runParallel(
+		required any provider,
+		numeric workers = 1,
+		struct context  = {},
+		any emit        = function( type, data ){
+		}
+	){
+		var runContext     = structCopy( arguments.context )
+		runContext.filters = structCopy( arguments.context.filters ?: {} )
+		if ( !structKeyExists( runContext.filters, "labels" ) ) {
+			runContext.filters.labels = arrayToList( variables.labels )
+		}
+		if ( !structKeyExists( runContext.filters, "excludes" ) ) {
+			runContext.filters.excludes = arrayToList( variables.excludes )
+		}
+		return new testbox.system.parallel.Coordinator( arguments.provider ).run(
+			bundles = variables.bundles,
+			workers = arguments.workers,
+			context = runContext,
+			emit    = arguments.emit
+		);
+	}
+
 	/**
 	 * Run me some testing goodness, this can use the constructed object variables or the ones
 	 * you can send right here.
@@ -341,7 +391,9 @@ component accessors="true" {
 		any testSuites       = [],
 		any testSpecs        = [],
 		any callbacks        = {},
-		boolean eagerFailure = false
+		boolean eagerFailure = false,
+		string shard         = "",
+		string shardRunId    = ""
 	){
 		// reporter passed?
 		if ( !isNull( arguments.reporter ) ) {
@@ -373,6 +425,7 @@ component accessors="true" {
 	 * @callbacks    A struct of listener callbacks or a class with callbacks for listening to progress of the testing: onBundleStart,onBundleEnd,onSuiteStart,onSuiteEnd,onSpecStart,onSpecEnd
 	 * @eagerFailure If this boolean is set to true, then execution of more bundle tests will stop once the first failure/error is detected. By default this is false.
 	 */
+
 	testbox.system.TestResult function runRaw(
 		any bundles,
 		any directory,
@@ -383,7 +436,9 @@ component accessors="true" {
 		any testSuites       = [],
 		any testSpecs        = [],
 		any callbacks        = {},
-		boolean eagerFailure = false
+		boolean eagerFailure = false,
+		string shard         = "",
+		string shardRunId    = ""
 	){
 		// inflate options if passed
 		if ( !isNull( arguments.options ) ) {
@@ -442,9 +497,34 @@ component accessors="true" {
 			inflateBundles( arguments.bundles );
 		}
 
+		// CI jobs choose disjoint bundles without provisioning worker environments here.
+		var selectedBundles = variables.bundles
+		var shardSelection  = {}
+		if ( len( arguments.shard ) ) {
+			if ( arguments.eagerFailure || variables.coverageService.getCoverageEnabled() ) {
+				throw(
+					type    = "TestBox.Sharding.InvalidPlan",
+					message = "Sharding does not support eager failure or combined coverage recordings."
+				)
+			}
+			shardSelection = new testbox.system.parallel.ShardPlan().select(
+				getShardBundles(),
+				arguments.shard,
+				arguments.shardRunId,
+				{
+					"labels"      : variables.labels,
+					"excludes"    : variables.excludes,
+					"testBundles" : arguments.testBundles,
+					"testSuites"  : arguments.testSuites,
+					"testSpecs"   : arguments.testSpecs
+				}
+			)
+			selectedBundles = shardSelection.bundles
+		}
+
 		// create results object
 		var results = new testbox.system.TestResult(
-			bundleCount = arrayLen( variables.bundles ),
+			bundleCount = arrayLen( selectedBundles ),
 			labels      = variables.labels,
 			excludes    = variables.excludes,
 			testBundles = arguments.testBundles,
@@ -455,7 +535,7 @@ component accessors="true" {
 		coverageService.beginCapture();
 
 		// iterate and run the test bundles
-		for ( var thisBundlePath in variables.bundles ) {
+		for ( var thisBundlePath in selectedBundles ) {
 			// Skip interfaces, they are not testable
 			var thisMD = server.keyExists( "boxlang" ) ? getClassMetadata( thisBundlePath ) : getComponentMetadata(
 				thisBundlePath
@@ -488,6 +568,14 @@ component accessors="true" {
 					break;
 				}
 			}
+		}
+
+		if ( !structIsEmpty( shardSelection ) ) {
+			results.setShard( {
+				"index"    : shardSelection.index,
+				"plan"     : shardSelection.plan,
+				"complete" : true
+			} )
 		}
 
 		// mark end of testing bundles
@@ -627,7 +715,9 @@ component accessors="true" {
 		string testBundles   = "",
 		string testSuites    = "",
 		string testSpecs     = "",
-		boolean eagerFailure = false
+		boolean eagerFailure = false,
+		string shard         = "",
+		string shardRunId    = ""
 	) output=true{
 		// local init
 		init();
