@@ -37,7 +37,10 @@ component extends="testbox.system.BaseSpec" {
 
 					var row = getFileRow( model.generateData( getFixtureDir(), [], [] ), "CommentsOnly.bxm" );
 
-					expect( row.numExecutableLines ).toBe( 0, "a file with no executable code has no executable lines" );
+					expect( row.numExecutableLines ).toBe(
+						0,
+						"a file with no executable code has no executable lines"
+					);
 					expect( row.percCoverage ).toBe( 1, "a file with no executable code reports 100% coverage" );
 				} );
 

@@ -138,7 +138,12 @@ component accessors=true {
 		}
 
 		// Get a recursive list of all CFM and CFC files in  project root.
-		var fileList = directoryList( arguments.pathToCapture, true, "path", "*.cf?|*.bx?|*.bx" );
+		var fileList = directoryList(
+			arguments.pathToCapture,
+			true,
+			"path",
+			"*.cf?|*.bx?|*.bx"
+		);
 
 		// start data structure
 		var qryData = queryNew(
