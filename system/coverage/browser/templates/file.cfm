@@ -52,6 +52,10 @@
 						</tr>
 					</tbody>
 				</table>
+				<cfif structKeyExists( fileData, "compileError" ) AND !isNull( fileData.compileError ) AND len( fileData.compileError )>
+					<!--- A file we could not compile has no measurable lines: show the engine's own error across the full width --->
+					<div class="alert alert-danger" role="alert" style="white-space: pre-wrap;">#encodeForHtml( fileData.compileError )#</div>
+				</cfif>
 				<hr width="100%">
 
 <script type="text/syntaxhighlighter" class="brush: #brush#"><![CDATA[

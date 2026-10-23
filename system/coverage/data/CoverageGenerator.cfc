@@ -93,6 +93,20 @@ component accessors=true {
 	}
 
 	/**
+	 * Log and throw when the engine cannot compile a file during coverage capture.
+	 *
+	 * @filePath the absolute path of the file that failed to compile
+	 * @error    the native error raised by the engine's compiler
+	 */
+	void function throwCompileFailure( required string filePath, required any error ){
+		var message = "Error getting TestBox Code Coverage for file: [#arguments.filePath#] -- #arguments.error.message#";
+
+		writeLog( type = "error", text = message, file = "testbox.log" );
+
+		throw( type = "coverage.failureToCompile", message = message );
+	}
+
+	/**
 	 * Implement me (optional): does this file contain ANY executable code?
 	 *
 	 * A file with no executable code at all (for example a template or class that holds
@@ -147,8 +161,8 @@ component accessors=true {
 
 		// start data structure
 		var qryData = queryNew(
-			"filePath,relativeFilePath,filePathHash,numLines,numCoveredLines,numExecutableLines,percCoverage,lineData",
-			"varchar,varchar,varchar,integer,integer,integer,decimal,object"
+			"filePath,relativeFilePath,filePathHash,numLines,numCoveredLines,numExecutableLines,percCoverage,lineData,compileError",
+			"varchar,varchar,varchar,integer,integer,integer,decimal,object,varchar"
 		);
 
 		for ( var theFile in fileList ) {
@@ -184,7 +198,9 @@ component accessors=true {
 				numCoveredLines    : 0,
 				numExecutableLines : 0,
 				percCoverage       : 0,
-				filePathHash       : hash( theFile )
+				filePathHash       : hash( theFile ),
+				// The error message when the file could not be compiled, empty otherwise
+				compileError       : ""
 			};
 			// Add this to query later
 			var lineData = createObject( "java", "java.util.LinkedHashMap" ).init();
@@ -196,18 +212,26 @@ component accessors=true {
 			// the file is simply not executable: if it is executable we count every line
 			// against us as a fallback, otherwise the file reports 100%.
 			if ( !structCount( lineMetricMap ) ) {
-				// Force the engine to compile and load the file even though it was never run.
-				compileAndLoad( theFile );
-				// Check for metrics again
-				lineMetricMap = getLineMetricsMap( theFile );
+				try {
+					// Force the engine to compile and load the file even though it was never run.
+					compileAndLoad( theFile );
+					// Check for metrics again
+					lineMetricMap = getLineMetricsMap( theFile );
 
-				if ( isNull( lineMetricMap ) || !structCount( lineMetricMap ) ) {
-					lineMetricMap = structNew();
-					// The file still has no metrics after a forced compile. If the provider
-					// can tell us the file simply has NO executable code (e.g. a template
-					// that holds nothing but a comment) then we leave the file with zero
-					// executable lines so it reports 100% instead of a bogus 0%.
-					noDataForFile = hasExecutableCode( theFile );
+					if ( isNull( lineMetricMap ) || !structCount( lineMetricMap ) ) {
+						lineMetricMap = structNew();
+						// The file still has no metrics after a forced compile. If the provider
+						// can tell us the file simply has NO executable code (e.g. a template
+						// that holds nothing but a comment) then we leave the file with zero
+						// executable lines so it reports 100% instead of a bogus 0%.
+						noDataForFile = hasExecutableCode( theFile );
+					}
+				} catch ( "coverage.failureToCompile" e ) {
+					// Can't compile it, so we can't know its executable lines: count them all
+					// against the file (0%) and keep the error for the report.
+					lineMetricMap            = structNew();
+					noDataForFile            = true;
+					strFiledata.compileError = e.message;
 				}
 			}
 			var currentLineNum  = 0;

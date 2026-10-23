@@ -75,8 +75,8 @@ component accessors="true" {
 	 */
 	private function aggregateCoverageData( required any coverageQuery ){
 		var totalCoverage = queryNew(
-			"filePath,relativeFilePath,filePathHash,numLines,numCoveredLines,numExecutableLines,percCoverage,lineData",
-			"varchar,varchar,varchar,integer,integer,integer,decimal,object"
+			"filePath,relativeFilePath,filePathHash,numLines,numCoveredLines,numExecutableLines,percCoverage,lineData,compileError",
+			"varchar,varchar,varchar,integer,integer,integer,decimal,object,varchar"
 		);
 		if ( fileExists( getCoverageReportFile() ) ) {
 			var currentCoverage  = arguments.coverageQuery;
@@ -108,6 +108,8 @@ component accessors="true" {
 					} else {
 						amended[ "percCoverage" ] = 1;
 					}
+					// Keep the compile-error flag when coverage runs are batched.
+					amended[ "compileError" ] = structKeyExists( row, "compileError" ) ? row[ "compileError" ] : "";
 					// Because Lucee rots. See LDEV-4269.
 					queryAddRow( totalCoverage, 1 );
 					amended.each( function( key, value ){

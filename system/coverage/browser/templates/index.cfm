@@ -51,7 +51,7 @@
 			</table>
 
 			<cfquery name="qryCoverageDataSorted" dbtype="query">
-				SELECT filePath, relativeFilePath, numLines, numCoveredLines, numExecutableLines, percCoverage
+				SELECT filePath, relativeFilePath, numLines, numCoveredLines, numExecutableLines, percCoverage, compileError
 				from qryCoverageData
 				order by percCoverage
 			</cfquery>
@@ -67,7 +67,13 @@
 					<cfloop query="qryCoverageDataSorted">
 					<cfset percentage = numberFormat( percCoverage * 100, '9.9' )>
 					<tr class="file">
-						<td class="file-name" data-sort-value="#relativeFilePath#"><a href="#relativeFilePath#.html">#relativeFilePath#</a></td>
+						<td class="file-name" data-sort-value="#relativeFilePath#">
+							<a href="#relativeFilePath#.html">#relativeFilePath#</a>
+							<cfif !isNull( compileError ) && len( compileError )>
+								<!--- A file we could not compile has no measurable lines: note it beside the file name --->
+								<span class="badge badge-danger" title="#encodeForHtml( compileError )#">Failed to compile</span>
+							</cfif>
+						</td>
 						<td class="file-coverage" data-sort-value="#percentage#">
 							<div class="progress position-relative" style="height: 1.4rem;">
 								<div

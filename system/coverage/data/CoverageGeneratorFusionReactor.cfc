@@ -122,11 +122,22 @@ component extends="CoverageGenerator" accessors=true {
 	 * Force a file to be compiled and loaded (via the engine's template compiler)
 	 * so FR records metrics for it even though it never ran.
 	 *
+	 * A file that does not compile (a syntax error, for example) has no metrics we
+	 * can trust, so we log the failure and throw a "coverage.failureToCompile" error
+	 * for the base class to flag the file with an error status instead of reporting
+	 * a bogus 100% for a file we could not measure.
+	 *
 	 * @filePath the absolute path to the file to compile and load
 	 */
 	void function compileAndLoad( required string filePath ){
-		if ( structKeyExists( variables, "templateCompiler" ) ) {
+		if ( !structKeyExists( variables, "templateCompiler" ) ) {
+			return;
+		}
+
+		try {
 			variables.templateCompiler.compileAndLoad( arguments.filePath );
+		} catch ( any e ) {
+			throwCompileFailure( arguments.filePath, e );
 		}
 	}
 

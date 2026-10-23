@@ -929,6 +929,20 @@ body {
 	font-weight: 650;
 }
 
+/* The coverage browser pages use the TestBox brand tones (see css/main.css). Keep the
+   coverage bars the same colors in both reports. */
+.tb-coverage__bar .bg-success {
+	background-color: #75cc39 !important;
+}
+
+.tb-coverage__bar .bg-warning {
+	background-color: #fdc02e !important;
+}
+
+.tb-coverage__bar .bg-danger {
+	background-color: #d93749 !important;
+}
+
 .tb-debug > summary,
 .tb-debug-toggle {
 	cursor: pointer;

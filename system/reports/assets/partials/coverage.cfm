@@ -10,14 +10,16 @@
 			<svg class="tb-icon" aria-hidden="true"><use href="##i-graph-up-arrow"/></svg> Code coverage
 		</h2>
 		<div
-			class="progress tb-coverage__bar"
+			class="progress tb-coverage__bar position-relative"
 			role="progressbar"
 			aria-label="Total coverage"
 			aria-valuenow="#local.percent#"
 			aria-valuemin="0"
 			aria-valuemax="100"
 		>
-			<div class="progress-bar bg-#encodeForHtml( local.tone )# tb-num" style="width: #local.percent#%">#local.percent#%</div>
+			<div class="progress-bar bg-#encodeForHtml( local.tone )#" style="width: #local.percent#%"></div>
+			<div class="progress-bar bg-secondary" style="width: #100 - local.percent#%"></div>
+			<span class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center text-light tb-num">#local.percent#%</span>
 		</div>
 		<span class="small text-body-secondary">Files processed <strong class="text-body tb-num">#local.stats.numFiles#</strong></span>
 		<button
@@ -48,9 +50,16 @@
 						<cfloop query="local.files">
 							<cfset local.filePercent = numberFormat( local.files.percCoverage * 100, "9.9" )>
 							<li class="d-flex flex-wrap align-items-center gap-2">
-								<span class="tb-mono small flex-grow-1 text-break">#encodeForHtml( replaceNoCase( local.files.filePath, variables.testbox.getCoverageService().getCoverageOptions().pathToCapture, "" ) )#</span>
-								<div class="progress tb-coverage__bar" role="progressbar" aria-valuenow="#local.filePercent#" aria-valuemin="0" aria-valuemax="100">
-									<div class="progress-bar bg-#encodeForHtml( variables.helper.coverageTone( local.filePercent, variables.testbox ) )# tb-num" style="width: #local.filePercent#%">#local.filePercent#%</div>
+								<span class="tb-mono small flex-grow-1 text-break">
+									#encodeForHtml( replaceNoCase( local.files.filePath, variables.testbox.getCoverageService().getCoverageOptions().pathToCapture, "" ) )#
+									<cfif len( compileError )>
+										<span class="badge text-bg-danger">Failed to compile</span>
+									</cfif>
+								</span>
+								<div class="progress tb-coverage__bar position-relative" role="progressbar" aria-valuenow="#local.filePercent#" aria-valuemin="0" aria-valuemax="100">
+									<div class="progress-bar bg-#encodeForHtml( variables.helper.coverageTone( local.filePercent, variables.testbox ) )#" style="width: #local.filePercent#%"></div>
+									<div class="progress-bar bg-secondary" style="width: #100 - local.filePercent#%"></div>
+									<span class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center text-light tb-num">#local.filePercent#%</span>
 								</div>
 							</li>
 						</cfloop>

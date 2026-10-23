@@ -135,6 +135,11 @@ component extends="CoverageGenerator" accessors=true {
 	 * mirrors what the FusionReactor/Lucee/Adobe providers do with their template
 	 * compilers.
 	 *
+	 * A file that does not compile (a syntax error, for example) has no blueprint,
+	 * so we log the failure and throw a "coverage.failureToCompile" error for the
+	 * base class to flag the file with an error status instead of reporting a bogus
+	 * 100% for a file we could not measure.
+	 *
 	 * @filePath the absolute path to the file to compile and load
 	 */
 	void function compileAndLoad( required string filePath ){
@@ -147,11 +152,15 @@ component extends="CoverageGenerator" accessors=true {
 		// Use the handles cached in init() rather than createObject() per file: this
 		// runs once for every file that had no captured metrics, so re-resolving the
 		// same Java classes thousands of times is pure overhead.
-		var lowerPath = lCase( arguments.filePath );
-		if ( lowerPath.endsWith( ".cfc" ) || lowerPath.endsWith( ".bx" ) ) {
-			variables.boxpiler.compileClass( variables.resolvedFilePath.of( arguments.filePath ) );
-		} else {
-			variables.boxpiler.compileTemplate( variables.resolvedFilePath.of( arguments.filePath ) );
+		try {
+			var lowerPath = lCase( arguments.filePath );
+			if ( lowerPath.endsWith( ".cfc" ) || lowerPath.endsWith( ".bx" ) ) {
+				variables.boxpiler.compileClass( variables.resolvedFilePath.of( arguments.filePath ) );
+			} else {
+				variables.boxpiler.compileTemplate( variables.resolvedFilePath.of( arguments.filePath ) );
+			}
+		} catch ( any e ) {
+			throwCompileFailure( arguments.filePath, e );
 		}
 	}
 
