@@ -101,7 +101,11 @@ component accessors=true {
 	void function throwCompileFailure( required string filePath, required any error ){
 		var message = "Error getting TestBox Code Coverage for file: [#arguments.filePath#] -- #arguments.error.message#";
 
-		writeLog( type = "error", text = message, file = "testbox.log" );
+		writeLog(
+			type = "error",
+			text = message,
+			file = "testbox.log"
+		);
 
 		throw( type = "coverage.failureToCompile", message = message );
 	}
