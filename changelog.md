@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Code coverage no longer reports 0% for a file that has no executable code, such as a template or class that holds nothing but comments. Coverage providers can now tell "this file has no executable lines" apart from "we have no coverage data for this file" through the new `hasExecutableCode()` hook in `CoverageGenerator`; the BoxLang provider answers it from the compiled blueprint's (empty) span list. Those files now report 100% instead of a bogus 0%.
+
 ## [7.2.2] - 2026-10-16
 
 ### Fixed

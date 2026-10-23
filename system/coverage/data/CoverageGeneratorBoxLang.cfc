@@ -166,4 +166,26 @@ component extends="CoverageGenerator" accessors=true {
 		return lCase( arguments.filePath.replace( "\", "/", "all" ) );
 	}
 
+	/**
+	 * BoxLang registers a compile-time blueprint for every file it compiles, and the
+	 * blueprint holds the file's executable SPANS. A file with no executable code at
+	 * all — for example a template or class that holds nothing but a comment —
+	 * compiles to a blueprint with an EMPTY span list, which is why the profiler
+	 * reports no lines for it. That gives us a reliable way to tell "this file has no
+	 * executable lines" apart from "we have no coverage data for this file", so we
+	 * don't wrongly count a comment-only file against itself and report it as 0%.
+	 *
+	 * I am only ever called AFTER {@link #compileAndLoad()}, so the blueprint has
+	 * already been registered under this capture and a non-empty span list means the
+	 * file really does have executable lines (whether or not any of them ran).
+	 *
+	 * @filePath the absolute path to the file to inspect
+	 *
+	 * @return true if the file has at least one executable span, false if it has none
+	 */
+	boolean function hasExecutableCode( required string filePath ){
+		var spans = variables.profiler.fileSpans( arguments.filePath );
+		return isNull( spans ) ? false : spans.size() > 0;
+	}
+
 }

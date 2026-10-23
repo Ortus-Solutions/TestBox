@@ -1,0 +1,6 @@
+<!--- A helper with real executable code. Used to verify un-instrumented files with code are counted against themselves. --->
+<bx:script>
+	function greeting( name ){
+		return "Hello, " & arguments.name;
+	}
+</bx:script>

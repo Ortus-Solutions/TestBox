@@ -1,0 +1,1 @@
+<!--- A helper with no executable code at all: only a comment. Used to verify files with no executable lines report 100% coverage. --->

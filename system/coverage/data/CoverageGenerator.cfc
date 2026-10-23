@@ -93,6 +93,30 @@ component accessors=true {
 	}
 
 	/**
+	 * Implement me (optional): does this file contain ANY executable code?
+	 *
+	 * A file with no executable code at all (for example a template or class that holds
+	 * nothing but comments) can never be "covered", so it must NOT be counted against
+	 * itself or it reports a misleading 0% coverage. Providers that CAN tell the
+	 * difference between "this file has no executable lines" and "we simply could not
+	 * capture metrics for this file" override me and return false for such files, which
+	 * leaves the file with zero executable lines and therefore a 100% coverage figure.
+	 *
+	 * I am only ever consulted for a file that produced NO metrics even after
+	 * {@link #compileAndLoad()}, so a provider must be able to answer reliably at that
+	 * point. Providers that cannot make the distinction return true (the default), which
+	 * preserves the legacy behavior of counting every line of an un-instrumented file
+	 * against it.
+	 *
+	 * @filePath the absolute path to the file to inspect
+	 *
+	 * @return true if the file has at least one executable line, false if it has none
+	 */
+	boolean function hasExecutableCode( required string filePath ){
+		return true;
+	}
+
+	/**
 	 *
 	 * @pathToCapture The full path to a folder of code.  Searched recursively
 	 * @whitelist     Comma-delimited list or array of file paths to include
@@ -114,7 +138,7 @@ component accessors=true {
 		}
 
 		// Get a recursive list of all CFM and CFC files in  project root.
-		var fileList = directoryList( arguments.pathToCapture, true, "path", "*.cf?" );
+		var fileList = directoryList( arguments.pathToCapture, true, "path", "*.cf?|*.bx?|*.bx" );
 
 		// start data structure
 		var qryData = queryNew(
@@ -162,9 +186,10 @@ component accessors=true {
 
 			var lineMetricMap = getLineMetricsMap( theFile );
 			var noDataForFile = false;
-			// If we don't have any metrics for this file, attempt to force the file
-			// to load, then check again. If it STILL has nothing, count every line
-			// against us as a fallback.
+			// If we don't have any metrics for this file, attempt to force the file to
+			// load, then check again. If it STILL has nothing, ask the provider whether
+			// the file is simply not executable: if it is executable we count every line
+			// against us as a fallback, otherwise the file reports 100%.
 			if ( !structCount( lineMetricMap ) ) {
 				// Force the engine to compile and load the file even though it was never run.
 				compileAndLoad( theFile );
@@ -172,8 +197,12 @@ component accessors=true {
 				lineMetricMap = getLineMetricsMap( theFile );
 
 				if ( isNull( lineMetricMap ) || !structCount( lineMetricMap ) ) {
-					lineMetricMap     = structNew();
-					var noDataForFile = true;
+					lineMetricMap = structNew();
+					// The file still has no metrics after a forced compile. If the provider
+					// can tell us the file simply has NO executable code (e.g. a template
+					// that holds nothing but a comment) then we leave the file with zero
+					// executable lines so it reports 100% instead of a bogus 0%.
+					noDataForFile = hasExecutableCode( theFile );
 				}
 			}
 			var currentLineNum  = 0;
