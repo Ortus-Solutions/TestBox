@@ -283,7 +283,10 @@ component accessors=true {
 				}
 			}
 
-			if ( strFiledata.numExecutableLines ) {
+			if ( len( strFiledata.compileError ) ) {
+				// A file we could not compile is never covered, even when it has no lines to count
+				strFiledata.percCoverage = 0;
+			} else if ( strFiledata.numExecutableLines ) {
 				strFiledata.percCoverage = strFiledata.numCoveredLines / strFiledata.numExecutableLines;
 			} else {
 				// If there's no executable lines in the file, show it as 100% even though we can't divide by zero
