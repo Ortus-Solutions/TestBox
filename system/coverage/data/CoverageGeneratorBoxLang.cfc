@@ -215,10 +215,11 @@ component extends="CoverageGenerator" accessors=true {
 	 * file we could not register (a class already loaded before this capture, for
 	 * example) is not a file without code. Those fall back to true.
 	 *
+	 *         registered with none
+	 *
 	 * @filePath the absolute path to the file to inspect
 	 *
 	 * @return true if the file has at least one executable span, false if it is
-	 *         registered with none
 	 */
 	boolean function hasExecutableCode( required string filePath ){
 		var spans = variables.profiler.fileSpans( arguments.filePath );
