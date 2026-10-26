@@ -69,12 +69,13 @@ component extends="CoverageGenerator" accessors=true {
 	 *
 	 */
 	CoverageGenerator function beginCapture(){
-		// Tell the boxpiler to recompile everything under this capture by clearing
-		// BOTH its in-memory page pool and its on-disk compiled class files. This is
-		// the same two-step the BoxLang JUnit profiler harness does so that every
-		// recompile emits profiler marks.
+		// Fresh capture session: drop the span execution counts and blueprints the
+		// previous session left behind, otherwise they accumulate across runs.
+		variables.profiler.reset();
+		// Clear the in-memory page pool. We do NOT wipe the compiled class files: an
+		// unchanged file is not recompiled, so its blueprint is recovered from the
+		// already-compiled class by compileAndLoad() instead of by recompiling it.
 		pagePoolClear();
-		// variables.boxpiler.clearClassFiles();
 		variables.profiler.setActive( true );
 
 		return this;
@@ -135,6 +136,12 @@ component extends="CoverageGenerator" accessors=true {
 	 * mirrors what the FusionReactor/Lucee/Adobe providers do with their template
 	 * compilers.
 	 *
+	 * An unchanged file is NOT recompiled by the boxpiler, and the class's static
+	 * initializer (which registers its blueprint) has already run, so compiling alone
+	 * does not bring the blueprint back. Every instrumented class carries its own
+	 * blueprint in a static field, so we hand that back to the profiler instead of
+	 * wasting a recompile.
+	 *
 	 * A file that does not compile (a syntax error, for example) has no blueprint,
 	 * so we log the failure and throw a "coverage.failureToCompile" error for the
 	 * base class to flag the file with an error status instead of reporting a bogus
@@ -145,22 +152,43 @@ component extends="CoverageGenerator" accessors=true {
 	void function compileAndLoad( required string filePath ){
 		// Compilation differs by file type: .cfc/.bx are CLASSES (compiled via the
 		// boxpiler's compileClass), everything else is a TEMPLATE (compiled via the
-		// boxpiler's compileTemplate). Both register an instrumented blueprint under
-		// the active coverage capture. Compile ONLY — never load/run the file, or
+		// boxpiler's compileTemplate). Compile ONLY — never load/run the file, or
 		// report generation would execute arbitrary application code.
 		//
 		// Use the handles cached in init() rather than createObject() per file: this
 		// runs once for every file that had no captured metrics, so re-resolving the
 		// same Java classes thousands of times is pure overhead.
 		try {
+			var resolved  = variables.resolvedFilePath.of( arguments.filePath );
 			var lowerPath = lCase( arguments.filePath );
-			if ( lowerPath.endsWith( ".cfc" ) || lowerPath.endsWith( ".bx" ) ) {
-				variables.boxpiler.compileClass( variables.resolvedFilePath.of( arguments.filePath ) );
-			} else {
-				variables.boxpiler.compileTemplate( variables.resolvedFilePath.of( arguments.filePath ) );
-			}
+			var compiled  = ( lowerPath.endsWith( ".cfc" ) || lowerPath.endsWith( ".bx" ) )
+			 ? variables.boxpiler.compileClass( resolved )
+			 : variables.boxpiler.compileTemplate( resolved );
+
+			registerBlueprintFromClass( compiled, arguments.filePath );
 		} catch ( any e ) {
 			throwCompileFailure( arguments.filePath, e );
+		}
+	}
+
+	/**
+	 * Register the coverage blueprint an ALREADY COMPILED class carries.
+	 *
+	 * Every instrumented class keeps its own blueprint in the public static
+	 * {@code codeProfilerBlueprint} field, and the profiler exposes
+	 * {@code registerBlueprintForFile()} to take it back. This is how we recover a
+	 * blueprint for a file the boxpiler did not recompile (its source has not
+	 * changed) and whose static initializer already ran, without a wasteful
+	 * recompile. Registration is idempotent, so calling it again is harmless.
+	 *
+	 * @compiledClass the class the boxpiler compiled and loaded for the file
+	 * @filePath      the absolute path of the file the class was compiled from
+	 */
+	private void function registerBlueprintFromClass( required any compiledClass, required string filePath ){
+		var blueprint = arguments.compiledClass::codeProfilerBlueprint ?: null;
+
+		if ( !isNull( blueprint ) ) {
+			variables.profiler.registerBlueprintForFile( arguments.filePath, blueprint );
 		}
 	}
 
@@ -179,22 +207,37 @@ component extends="CoverageGenerator" accessors=true {
 	 * BoxLang registers a compile-time blueprint for every file it compiles, and the
 	 * blueprint holds the file's executable SPANS. A file with no executable code at
 	 * all — for example a template or class that holds nothing but a comment —
-	 * compiles to a blueprint with an EMPTY span list, which is why the profiler
-	 * reports no lines for it. That gives us a reliable way to tell "this file has no
-	 * executable lines" apart from "we have no coverage data for this file", so we
-	 * don't wrongly count a comment-only file against itself and report it as 0%.
+	 * compiles to a blueprint with an EMPTY span list, so we can tell it apart from a
+	 * file we simply have no data for and not report it as a misleading 0%.
 	 *
-	 * I am only ever called AFTER {@link #compileAndLoad()}, so the blueprint has
-	 * already been registered under this capture and a non-empty span list means the
-	 * file really does have executable lines (whether or not any of them ran).
+	 * An empty span list only means "no executable code" when the file is actually
+	 * REGISTERED: the profiler reports no spans for an unregistered file too, and a
+	 * file we could not register (a class already loaded before this capture, for
+	 * example) is not a file without code. Those fall back to true.
 	 *
 	 * @filePath the absolute path to the file to inspect
 	 *
-	 * @return true if the file has at least one executable span, false if it has none
+	 * @return true if the file has at least one executable span, false if it is
+	 *         registered with none
 	 */
 	boolean function hasExecutableCode( required string filePath ){
 		var spans = variables.profiler.fileSpans( arguments.filePath );
-		return isNull( spans ) ? false : spans.size() > 0;
+		return isNull( spans ) ? true : ( spans.size() > 0 || !isFileRegistered( arguments.filePath ) );
+	}
+
+	/**
+	 * Is this file registered with the profiler?
+	 *
+	 * @filePath the absolute path to check
+	 */
+	private boolean function isFileRegistered( required string filePath ){
+		var normalized = normalizeFilePath( arguments.filePath );
+		for ( var key in variables.profiler.trackedBlueprints().keySet() ) {
+			if ( normalizeFilePath( key ) == normalized ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
