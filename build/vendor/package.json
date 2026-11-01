@@ -9,9 +9,9 @@
 		"update": "npx --yes npm-check-updates --upgrade --target minor && npm install && node build.mjs"
 	},
 	"dependencies": {
-		"alpinejs": "3.17.4",
+		"alpinejs": "3.17.5",
 		"bootstrap": "5.3.8",
-		"bootstrap-icons": "1.13.1",
+		"bootstrap-icons": "1.13.2",
 		"prismjs": "1.30.0"
 	}
 }
