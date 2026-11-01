@@ -21,10 +21,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-===== alpinejs 3.17.4 =====
+===== alpinejs 3.17.5 =====
 alpinejs is licensed under the MIT license. Author: Caleb Porzio. Source: https://alpinejs.dev.
 
-===== bootstrap-icons 1.13.1 =====
+===== bootstrap-icons 1.13.2 =====
 The MIT License (MIT)
 
 Copyright (c) 2019-2024 The Bootstrap Authors
