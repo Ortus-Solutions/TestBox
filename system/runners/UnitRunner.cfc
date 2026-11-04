@@ -56,8 +56,17 @@ component
 			arguments.testResults
 		);
 		var testSuitesCount = arrayLen( testSuites );
+		// Descriptors are ready before expensive beforeAll fixture setup.
+		if ( structKeyExists( arguments.callbacks, "onBundleReady" ) ) {
+			arguments.callbacks.onBundleReady(
+				arguments.target,
+				arguments.testResults,
+				testSuites
+			);
+		}
+
 		// Start recording stats for this bundle
-		var bundleStats     = arguments.testResults.startBundleStats( bundlePath = bundlePath, name = bundleName );
+		var bundleStats = arguments.testResults.startBundleStats( bundlePath = bundlePath, name = bundleName );
 
 		// Verify we can run this bundle
 		if (

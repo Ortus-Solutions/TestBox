@@ -11,6 +11,18 @@ bx:param name="url.labels"          default="";
 bx:param name="url.excludes"        default="";
 bx:param name="url.runnerUrl"       default="runner.bxm";
 bx:param name="url.editor"          default="vscode";
+bx:param name="url.workers"         default="1";
+assetBase = request.testboxAssetBase ?: "assets/";
+// No optional encoding module is required by this standalone skeleton.
+assetBaseEncoded = replace( assetBase, "&", "&amp;", "all" );
+for ( item in [ { character: char( 34 ), entity: "&quot;" }, { character: char( 39 ), entity: "&" & char( 35 ) & "39;" }, { character: "<", entity: "&lt;" }, { character: ">", entity: "&gt;" } ] ) {
+    assetBaseEncoded = replace( assetBaseEncoded, item.character, item.entity, "all" );
+}
+initialOptions = {};
+for ( key in [ "directory", "recurse", "bundlesPattern", "labels", "excludes", "runnerUrl", "editor", "workers" ] ) {
+    initialOptions[ key ] = url[ key ];
+}
+initialOptionsJSON = replace( JSONSerialize( initialOptions ), "<", char( 92 ) & "u003c", "all" );
 </bx:script>
 <!--- HTML CODE --->
 <bx:output>
@@ -20,28 +32,21 @@ bx:param name="url.editor"          default="vscode";
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>TestBox Run IDE</title>
-	<link rel="icon" type="image/svg+xml" href="assets/images/testbox-icon-full-L.svg">
+	<link rel="icon" type="image/svg+xml" href="#assetBaseEncoded#images/testbox-icon-full-L.svg">
 
 	<!--- Vendor CSS --->
-	<link rel="stylesheet" href="assets/css/vendor/bootstrap.min.css">
+	<link rel="stylesheet" href="#assetBaseEncoded#css/vendor/bootstrap.min.css">
 
 	<!--- Bootstrap Icons --->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 	<!--- App CSS --->
-	<link rel="stylesheet" href="assets/css/run.css?v=20260316-theme4">
+	<link rel="stylesheet" href="#assetBaseEncoded#css/run.css">
 
 	<script>
 		// Pass server context URL parameters to Javascript
-		window.initialOptions = {
-			directory: "#url.directory#",
-			recurse: #url.recurse#,
-			bundlesPattern: "#url.bundlesPattern#",
-			labels: "#url.labels#",
-			excludes: "#url.excludes#",
-			runnerUrl: "#url.runnerUrl#",
-			editor: "#url.editor#"
-		};
+        window.initialOptions = #initialOptionsJSON#;
+        window.parallelRunnerUrl = #JSONSerialize( structKeyExists( request, "testboxAssetBase" ) ? url.runnerUrl : "" )#;
 	</script>
 </head>
 <body
@@ -63,7 +68,7 @@ bx:param name="url.editor"          default="vscode";
 				data-bs-title="About TestBox Run"
 				x-tooltip.bottom>
 				<img
-					:src="preferences.theme === 'dark' ? 'assets/images/testbox-logo-full-light-L.svg' : 'assets/images/testbox-logo-full-dark-L.svg'"
+					:src="preferences.theme === 'dark' ? '#assetBaseEncoded#images/testbox-logo-full-light-L.svg' : '#assetBaseEncoded#images/testbox-logo-full-dark-L.svg'"
 					alt="TestBox"
 					height="30"
 					class="me-2 d-inline-block align-text-top"> RUN
@@ -115,6 +120,7 @@ bx:param name="url.editor"          default="vscode";
 					<button
 						class="btn btn-sm btn-success"
 						@click="runAllTests()"
+                        aria-label="Run all tests"
 						x-show="!isRunning"
 						:disabled="isLoading"
 						data-bs-title="Run All (Ctrl/Cmd + Enter)"
@@ -124,6 +130,8 @@ bx:param name="url.editor"          default="vscode";
 					<button
 						class="btn btn-sm btn-danger"
 						@click="stopTests()"
+                        :disabled="isStopping"
+                        aria-label="Stop tests"
 						x-show="isRunning"
 						data-bs-title="Stop the current run"
 						x-tooltip.bottom>
@@ -175,10 +183,14 @@ bx:param name="url.editor"          default="vscode";
 					</div>
 
 					<div class="tb-compact-actions">
+                        <button class="btn btn-sm btn-danger" x-show="isRunning" @click="stopTests()" :disabled="isStopping" aria-label="Stop tests">
+                            <i class="bi bi-stop-fill"></i> <span x-text="isStopping ? 'Stopping…' : 'Stop'"></span>
+                        </button>
 						<button
 							class="btn btn-sm btn-success d-inline-flex align-items-center gap-1"
 							type="button"
 							@click="runAllTests()"
+                        aria-label="Run all tests"
 							x-show="!isRunning"
 							:disabled="isLoading"
 							data-bs-title="Run All"
@@ -238,7 +250,43 @@ bx:param name="url.editor"          default="vscode";
 			</div>
 		</template>
 
-		<!--- Results Summary Card --->
+		<!--- Worker selection and progress use the same runner protocol as the CLI. --->
+        <div class="run-worker-options d-flex flex-wrap align-items-center gap-3 mb-3">
+            <div class="d-flex align-items-center gap-2">
+                <label class="form-label mb-0" for="workerCount">Workers</label>
+                <input id="workerCount" type="number" min="1" step="1" :max="parallelCapabilities?.maxWorkers || 1"
+                    class="form-control form-control-sm worker-count" x-model.number="preferences.workers"
+                    :disabled="isLoading || isRunning || !parallelCapabilities" aria-describedby="workerHelp">
+            </div>
+            <span id="workerHelp" class="text-body-secondary small" x-text="parallelCapabilities ? 'Maximum concurrent environments. Targeted bundles use one worker.' : 'This runner uses one environment. Choose a parallel runner in Settings to enable workers.'"></span>
+        </div>
+        <section class="worker-progress mb-3" x-show="workerProgress.workers.length" x-cloak aria-label="Worker progress">
+            <div class="worker-progress-heading d-flex flex-wrap justify-content-between align-items-center gap-2 p-3">
+                <div>
+                    <strong x-text="workerProgress.summary.bundles + '/' + workerProgress.plural( workerProgress.summary.total, 'bundle' ) + ' completed'"></strong>
+                    <span class="text-body-secondary ms-2 worker-counts" x-text="workerProgress.summary.passed + ' passed / ' + workerProgress.summary.failed + ' failed / ' + workerProgress.plural( workerProgress.summary.errors, 'error' )"></span>
+                    <div class="small text-body-secondary mt-1" role="status" x-text="workerProgress.phase"></div>
+                </div>
+                <time class="font-monospace" x-text="workerProgress.elapsed()" aria-label="Run elapsed time"></time>
+            </div>
+            <template x-for="worker in workerProgress.workers" :key="worker.id">
+                <div class="worker-progress-row px-3 py-2" :class="'worker-' + worker.state">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi" :class="worker.state === 'working' ? 'bi-arrow-repeat spinner-icon text-primary' : worker.state === 'completed' ? 'bi-check-circle-fill text-success' : worker.state === 'cancelled' ? 'bi-stop-circle text-body-secondary' : 'bi-exclamation-circle-fill text-danger'" aria-hidden="true"></i>
+                        <strong x-text="'Worker ' + worker.id"></strong>
+                        <span class="text-body-secondary small" x-text="worker.completed + '/' + workerProgress.plural( worker.total, 'bundle' )"></span>
+                    </div>
+                    <span class="worker-counts small" x-text="worker.passed + ' passed / ' + worker.failed + ' failed / ' + workerProgress.plural( worker.errors, 'error' )"></span>
+                    <div class="worker-current small" x-text="workerProgress.status( worker )"></div>
+                    <time class="font-monospace small text-body-secondary" x-text="worker.started ? workerProgress.elapsed( worker.started, worker.stopped ) : worker.stopped ? 'Not started' : 'Waiting'"></time>
+                </div>
+            </template>
+            <template x-for="(error, index) in workerProgress.runnerErrors" :key="index">
+                <p class="text-danger small px-3 py-2 mb-0" role="alert" x-text="error.message"></p>
+            </template>
+        </section>
+
+        <!--- Results Summary Card --->
 		<div class="card results-summary-card mb-3" :class="'status-bd-' + globalRunStatus" x-show="!globalError">
 			<div class="card-body p-0">
 				<div class="d-flex">
@@ -762,7 +810,7 @@ bx:param name="url.editor"          default="vscode";
 				<div class="modal-body pt-0 pb-4 px-4 text-center">
 					<!--- Logo --->
 					<img
-						:src="preferences.theme === 'dark' ? 'assets/images/testbox-logo-full-light-L.svg' : 'assets/images/testbox-logo-full-dark-L.svg'"
+						:src="preferences.theme === 'dark' ? '#assetBaseEncoded#images/testbox-logo-full-light-L.svg' : '#assetBaseEncoded#images/testbox-logo-full-dark-L.svg'"
 						alt="TestBox"
 						class="about-logo mb-1">
 					<p class="text-muted small mb-3">The leading BDD &amp; TDD testing framework for BoxLang &amp; CFML</p>
@@ -823,10 +871,11 @@ bx:param name="url.editor"          default="vscode";
 	<!--- ============================================================================================================ --->
 	<!-- JAVASCRIPT -->
 	<!--- ============================================================================================================ --->
-	<script defer src="assets/js/vendor/bootstrap.bundle.min.js"></script>
-	<script defer src="assets/js/run.js?v=20260316-15"></script>
-	<script defer src="assets/js/vendor/alpine-collapse.min.js"></script>
-	<script defer src="assets/js/vendor/alpine.min.js"></script>
+	<script defer src="#assetBaseEncoded#js/vendor/bootstrap.bundle.min.js"></script>
+	<script defer src="#assetBaseEncoded#js/worker-progress.js"></script>
+	<script defer src="#assetBaseEncoded#js/run.js"></script>
+	<script defer src="#assetBaseEncoded#js/vendor/alpine-collapse.min.js"></script>
+	<script defer src="#assetBaseEncoded#js/vendor/alpine.min.js"></script>
 </body>
 </html>
 </bx:output>

@@ -694,3 +694,19 @@ li:hover .spec-play-btn-hover:hover { opacity: 1 !important; }
 		display: none;
 	}
 }
+/* Parallel worker progress stays alongside the existing RUN summary and test tree. */
+.worker-count { width: 5rem; font-variant-numeric: tabular-nums; }
+.worker-progress { border: 1px solid var(--bs-border-color); border-radius: var(--bs-border-radius); overflow: hidden; }
+.worker-progress-heading { background: var(--bs-tertiary-bg); }
+.worker-progress-row { display: grid; grid-template-columns: minmax(12rem, auto) minmax(15rem, auto) minmax(0, 1fr) auto; gap: .75rem 1.5rem; align-items: start; border-top: 1px solid var(--bs-border-color); }
+.worker-counts, .worker-progress time { font-variant-numeric: tabular-nums; }
+.worker-current { overflow-wrap: anywhere; }
+@media (max-width: 991px) {
+    .worker-progress-row { grid-template-columns: minmax(0, 1fr) auto; gap: .4rem 1rem; }
+    .worker-counts { grid-column: 1; }
+    .worker-current { grid-column: 1 / -1; grid-row: 3; }
+    .worker-progress-row time { grid-column: 2; grid-row: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .worker-progress .spinner-icon { animation: none; }
+}
